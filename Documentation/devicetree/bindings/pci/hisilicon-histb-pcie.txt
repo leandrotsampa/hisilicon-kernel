@@ -1,0 +1,66 @@
+HiSilicon STB PCIe host bridge DT description
+
+HiSilicon PCIe host controller is based on Designware PCI core.
+It shares common functions with PCIe Designware core driver and inherits
+common properties defined in
+Documentation/devicetree/bindings/pci/designware-pci.txt.
+
+Additional properties are described here:
+
+Required properties
+- compatible: Should be one of the following strings
+		 "hisilicon,histb-pcie",
+		 "hisilicon,hi3798cv200-pcie"
+- reg: Should contain sysctl, rc_dbi, config registers location and length.
+- reg-names: Must include the following entries:
+  "sysctrl": system control registers of PCIe controller;
+  "rc_dbi": configuration space of PCIe controller;
+  "config": configuration transaction space of PCIe controller.
+- interrupts: MSI interrupt.
+- interrupt-names: Must include "msi" entries.
+- clocks: List of phandle and clock specifier pairs as listed
+		in clock-names property.
+- clock-name: Must include the following entries:
+  "aux_clk": auxiliary gate clock;
+  "pipe_clk": pipe gate clock;
+  "sys_clk": sys gate clock;
+  "bus_clk": bus gate clock.
+- resets: List of phandle and reset specifier pairs as listed
+			in reset-names property
+- reset-names: Must include the following entries:
+  "soft_reset": soft reset;
+  "sys_reset": sys reset;
+  "bus_rest": bus reset.
+
+Optional properties:
+- power-gpios: pcie device power control gpio if needed;
+- power-gpios-active-high: must include this propty
+		if active level is high.
+- status: Either "ok" or "disabled".
+
+Example:
+	pcie@f9860000 {
+		compatible = "hisilicon,histb-pcie", "snps,dw-pcie";
+		reg = <0xf9860000 0x1000>,
+			<0xf0000000 0x2000>,
+			<0xf2000000 0x01000000>;
+		reg-names = "sysctrl", "rc_dbi", "config";
+		#address-cells = <3>;
+		#size-cells = <2>;
+		device_type = "pci";
+		num-lanes = <1>;
+		ranges=<0x81000000 0 0 0xf4000000 0 0x00010000
+			0x82000000 0 0xf3000000 0xf3000000 0 0x01000000>;
+		interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "msi";
+		#interrupt-cells = <1>;
+		interrupt-map-mask = <0 0 0 7>;
+		interrupt-map = <0x0 0 0 1 &gic 0 131 4>;
+		clocks = <&crg PCIE_AUX_CLK>,
+			 <&crg PCIE_PIPE_CLK>,
+			 <&crg PCIE_SYS_CLK>,
+			 <&crg PCIE_BUS_CLK>;
+		clock-names = "aux_clk", "pipe_clk", "sys_clk", "bus_clk";
+		resets = <&crg 0x18c 6>, <&crg 0x18c 5>, <&crg 0x18c 4>;
+		reset-names = "soft_reset", "sys_reset", "bus_reset";
+	};
