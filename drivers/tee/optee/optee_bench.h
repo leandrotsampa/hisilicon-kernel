@@ -16,7 +16,6 @@
 #define _OPTEE_BENCH_H
 
 #include <linux/rwsem.h>
-#include <linux/tee_drv.h>
 
 /*
  * Cycle count divider is enabled (in PMCR),
