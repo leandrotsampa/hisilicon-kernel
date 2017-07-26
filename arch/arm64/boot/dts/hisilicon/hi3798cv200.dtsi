@@ -120,6 +120,27 @@
 			#size-cells = <1>;
 			ranges = <0x0 0x8a20000 0x1000>;
 
+			usb2_phy1: phy@120 {
+				compatible = "hisilicon,hi3798cv200-usb2-phy";
+				reg = <0x120 0x4>;
+				#phy-cells = <1>;
+				clocks = <&crg HISTB_USB2_PHY1_REF_CLK>;
+				resets = <&crg 0xbc 4>,
+					 <&crg 0xbc 8>,
+					 <&crg 0xbc 9>;
+				reset-names = "power_on", "utmi0", "utmi1";
+			};
+
+			usb2_phy2: phy@124 {
+				compatible = "hisilicon,hi3798cv200-usb2-phy";
+				reg = <0x124 0x4>;
+				#phy-cells = <1>;
+				clocks = <&crg HISTB_USB2_PHY2_REF_CLK>;
+				resets = <&crg 0xbc 6>,
+					 <&crg 0xbc 10>;
+				reset-names = "power_on", "utmi0";
+			};
+
 			combphy1: phy@858 {
 				compatible = "hisilicon,hi3798cv200-combphy";
 				reg = <0x858 0x8>;
@@ -549,6 +570,56 @@
 			reset-names = "soft", "sys", "bus";
 			phys = <&combphy1 PHY_TYPE_PCIE>;
 			phy-names = "phy";
+			status = "disabled";
+		};
+
+		ohci: ohci@9880000 {
+			compatible = "generic-ohci";
+			reg = <0x9880000 0x10000>;
+			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&crg HISTB_USB2_BUS_CLK>,
+				 <&crg HISTB_USB2_12M_CLK>,
+				 <&crg HISTB_USB2_48M_CLK>;
+			clock-names = "bus", "clk12", "clk48";
+			resets = <&crg 0xb8 12>;
+			reset-names = "bus";
+			phys = <&usb2_phy1 0>;
+			phy-names = "usb";
+			status = "disabled";
+		};
+
+		ehci: ehci@9890000 {
+			compatible = "generic-ehci";
+			reg = <0x9890000 0x10000>;
+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&crg HISTB_USB2_BUS_CLK>,
+				 <&crg HISTB_USB2_PHY_CLK>,
+				 <&crg HISTB_USB2_UTMI_CLK>;
+			clock-names = "bus", "phy", "utmi";
+			resets = <&crg 0xb8 12>,
+				 <&crg 0xb8 16>,
+				 <&crg 0xb8 13>;
+			reset-names = "bus", "phy", "utmi";
+			phys = <&usb2_phy1 0>;
+			phy-names = "usb";
+			status = "disabled";
+		};
+
+		otg: usb@98c0000 {
+			compatible = "hisilicon,hi3798cv200-usb";
+			reg = <0x98c0000 0x40000>;
+			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&crg HISTB_USB2_OTG_UTMI_CLK>;
+			clock-names = "otg";
+			resets = <&crg 0xb8 17>;
+			reset-names = "dwc2";
+			phys = <&usb2_phy1 0>;
+			phy-names = "usb2-phy";
+			dr_mode = "peripheral";
+			g-use-dma;
+			g-rx-fifo-size = <271>;
+			g-np-tx-fifo-size = <64>;
+			g-tx-fifo-size = <128 128>;
 			status = "disabled";
 		};
 	};
