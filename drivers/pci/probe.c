@@ -16,7 +16,9 @@
 #include <linux/aer.h>
 #include <linux/acpi.h>
 #include <asm-generic/pci-bridge.h>
+#include <linux/irqreturn.h>
 #include "pci.h"
+#include "host/pcie-designware.h"
 
 #define CARDBUS_LATENCY_TIMER	176	/* secondary latency timer */
 #define CARDBUS_RESERVE_BUSNR	3
@@ -801,7 +803,7 @@ static void pci_enable_crs(struct pci_dev *pdev)
  * them, we proceed to assigning numbers to the remaining buses in
  * order to avoid overlaps between old and new bus numbers.
  */
-int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass)
+int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass, unsigned int irq)
 {
 	struct pci_bus *child;
 	int is_cardbus = (dev->hdr_type == PCI_HEADER_TYPE_CARDBUS);
@@ -866,7 +868,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass)
 			child->bridge_ctl = bctl;
 		}
 
-		cmax = pci_scan_child_bus(child);
+		cmax = pci_scan_child_bus(child, irq);
 		if (cmax > subordinate)
 			dev_warn(&dev->dev, "bridge has subordinate %02x but max busn %02x\n",
 				 subordinate, cmax);
@@ -926,7 +928,7 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max, int pass)
 
 		if (!is_cardbus) {
 			child->bridge_ctl = bctl;
-			max = pci_scan_child_bus(child);
+			max = pci_scan_child_bus(child, irq);
 		} else {
 			/*
 			 * For CardBus bridges, we leave 4 bus numbers
@@ -2023,7 +2025,7 @@ void pcie_bus_configure_settings(struct pci_bus *bus)
 }
 EXPORT_SYMBOL_GPL(pcie_bus_configure_settings);
 
-unsigned int pci_scan_child_bus(struct pci_bus *bus)
+unsigned int pci_scan_child_bus(struct pci_bus *bus, unsigned int irq)
 {
 	unsigned int devfn, pass, max = bus->busn_res.start;
 	struct pci_dev *dev;
@@ -2049,8 +2051,12 @@ unsigned int pci_scan_child_bus(struct pci_bus *bus)
 
 	for (pass = 0; pass < 2; pass++)
 		list_for_each_entry(dev, &bus->devices, bus_list) {
+			if(0 != irq){
+				dev->irq = irq;
+				pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
+			}
 			if (pci_is_bridge(dev))
-				max = pci_scan_bridge(bus, dev, max, pass);
+				max = pci_scan_bridge(bus, dev, max, pass, irq);
 		}
 
 	/*
@@ -2263,6 +2269,7 @@ struct pci_bus *pci_scan_root_bus_msi(struct device *parent, int bus,
 	bool found = false;
 	struct pci_bus *b;
 	int max;
+	struct pcie_port *pp = (struct pcie_port *)sysdata;
 
 	resource_list_for_each_entry(window, resources)
 		if (window->res->flags & IORESOURCE_BUS) {
@@ -2283,13 +2290,17 @@ struct pci_bus *pci_scan_root_bus_msi(struct device *parent, int bus,
 		pci_bus_insert_busn_res(b, bus, 255);
 	}
 
-	max = pci_scan_child_bus(b);
+	if(0 > pp->irq)
+		pp->irq = 0;
+
+	max = pci_scan_child_bus(b, pp->irq);
 
 	if (!found)
 		pci_bus_update_busn_res_end(b, max);
 
 	return b;
 }
+EXPORT_SYMBOL(pci_scan_root_bus_msi);
 
 struct pci_bus *pci_scan_root_bus(struct device *parent, int bus,
 		struct pci_ops *ops, void *sysdata, struct list_head *resources)
@@ -2310,7 +2321,8 @@ struct pci_bus *pci_scan_bus(int bus, struct pci_ops *ops,
 	pci_add_resource(&resources, &busn_resource);
 	b = pci_create_root_bus(NULL, bus, ops, sysdata, &resources);
 	if (b) {
-		pci_scan_child_bus(b);
+		pci_scan_child_bus(b, 0);
+		pci_bus_add_devices(b);
 	} else {
 		pci_free_resource_list(&resources);
 	}
@@ -2334,7 +2346,7 @@ unsigned int pci_rescan_bus_bridge_resize(struct pci_dev *bridge)
 	unsigned int max;
 	struct pci_bus *bus = bridge->subordinate;
 
-	max = pci_scan_child_bus(bus);
+	max = pci_scan_child_bus(bus, 0);
 
 	pci_assign_unassigned_bridge_resources(bridge);
 
@@ -2356,7 +2368,7 @@ unsigned int pci_rescan_bus(struct pci_bus *bus)
 {
 	unsigned int max;
 
-	max = pci_scan_child_bus(bus);
+	max = pci_scan_child_bus(bus, 0);
 	pci_assign_unassigned_bus_resources(bus);
 	pci_bus_add_devices(bus);
 

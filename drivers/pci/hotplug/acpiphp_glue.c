@@ -496,7 +496,7 @@ static void enable_slot(struct acpiphp_slot *slot)
 				continue;
 
 			if (pci_is_bridge(dev)) {
-				max = pci_scan_bridge(bus, dev, max, pass);
+				max = pci_scan_bridge(bus, dev, max, pass, 0);
 				if (pass && dev->subordinate) {
 					check_hotplug_bridge(slot, dev);
 					pcibios_resource_survey_bus(dev->subordinate);

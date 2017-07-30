@@ -996,7 +996,7 @@ static int __init dino_probe(struct parisc_device *dev)
 		return 0;
 	}
 
-	max = pci_scan_child_bus(bus);
+	max = pci_scan_child_bus(bus, 0);
 	pci_bus_update_busn_res_end(bus, max);
 
 	/* This code *depends* on scanning being single threaded

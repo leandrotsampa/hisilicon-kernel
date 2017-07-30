@@ -825,7 +825,7 @@ static inline void pci_dev_assign_slot(struct pci_dev *dev) { }
 int pci_scan_slot(struct pci_bus *bus, int devfn);
 struct pci_dev *pci_scan_single_device(struct pci_bus *bus, int devfn);
 void pci_device_add(struct pci_dev *dev, struct pci_bus *bus);
-unsigned int pci_scan_child_bus(struct pci_bus *bus);
+unsigned int pci_scan_child_bus(struct pci_bus *bus, unsigned int irq);
 void pci_bus_add_device(struct pci_dev *dev);
 void pci_read_bridge_bases(struct pci_bus *child);
 struct resource *pci_find_parent_resource(const struct pci_dev *dev,
@@ -1206,7 +1206,7 @@ int pci_add_dynid(struct pci_driver *drv,
 const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
 					 struct pci_dev *dev);
 int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
-		    int pass);
+		    int pass, unsigned int irq);
 
 void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
 		  void *userdata);
