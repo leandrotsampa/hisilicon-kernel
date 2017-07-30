@@ -1833,6 +1833,9 @@ extern void zone_pcp_reset(struct zone *zone);
 
 /* page_alloc.c */
 extern int min_free_kbytes;
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+extern int cma_watermark;
+#endif
 
 /* nommu.c */
 extern atomic_long_t mmap_pages_allocated;

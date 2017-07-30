@@ -1672,6 +1672,16 @@ static struct ctl_table vm_table[] = {
 		.extra2		= (void *)&mmap_rnd_compat_bits_max,
 	},
 #endif
+
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+	{
+		.procname	= "cma_watermark",
+		.data		= &cma_watermark,
+		.maxlen		= sizeof(cma_watermark),
+		.mode		= 0644,
+		.proc_handler	= cma_watermark_sysctl_handler,
+	},
+#endif
 	{ }
 };
 

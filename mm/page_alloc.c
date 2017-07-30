@@ -238,6 +238,13 @@ compound_page_dtor * const compound_page_dtors[] = {
  */
 int min_free_kbytes = 1024;
 int user_min_free_kbytes = -1;
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+/*
+ * Try to set water mark of cma when  cma is used by system.
+ */
+int cma_watermark;
+static bool is_cma_wmark_set = false;
+#endif
 
 /*
  * Extra memory for the system to try freeing. Used to temporarily
@@ -1281,6 +1288,18 @@ void __init page_alloc_init_late(void)
 #endif /* CONFIG_DEFERRED_STRUCT_PAGE_INIT */
 
 #ifdef CONFIG_CMA
+
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+void __init init_alloc_ratio_counter(struct zone *zone)
+{
+	if (zone->has_cma)
+		return;
+	zone->has_cma = 1;
+	zone->nr_try_movable = 0;
+	zone->nr_try_cma = 0;
+}
+#endif /* CONFIG_CMA_ADVANCE_SHARE*/
+
 /* Free whole pageblock and set its migration type to MIGRATE_CMA. */
 void __init init_cma_reserved_pageblock(struct page *page)
 {
@@ -1308,6 +1327,9 @@ void __init init_cma_reserved_pageblock(struct page *page)
 	}
 
 	adjust_managed_page_count(page, pageblock_nr_pages);
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+	init_alloc_ratio_counter(page_zone(page));
+#endif /* CONFIG_CMA_ADVANCE_SHARE */
 }
 #endif
 
@@ -1810,6 +1832,107 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 	return NULL;
 }
 
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+static struct page *__rmqueue_cma(struct zone *zone, unsigned int order,
+				  int migratetype)
+{
+#ifdef CONFIG_CMA_MEM_SHARED
+	long free , free_cma , free_wmark;
+	struct page *page;
+	long cma_multiplex;
+	long cma_wm;
+
+	if (migratetype != MIGRATE_MOVABLE || !zone->has_cma)
+		return NULL;
+
+	if (is_cma_wmark_set) {
+		cma_wm = cma_watermark >> (PAGE_SHIFT - 10);
+		if (cma_wm < (low_wmark_pages(zone))) {
+			/*
+			 * The parameter is illegal and set default value:
+			 * high_wmark_pages(zone). The parameter should be larger
+			 * than high water mark of the zone!
+			 */
+			cma_watermark = (high_wmark_pages(zone)) << (PAGE_SHIFT - 10);
+			cma_wm = cma_watermark >> (PAGE_SHIFT - 10);
+			is_cma_wmark_set = false;
+		}
+	} else {
+		cma_watermark = (high_wmark_pages(zone)) << (PAGE_SHIFT - 10);
+		cma_wm = cma_watermark >> (PAGE_SHIFT - 10);
+	}
+
+	zone->cma_wmark = cma_watermark;
+	cma_multiplex = cma_wm - low_wmark_pages(zone);
+
+	/* Reset ratio counter */
+	free_cma = zone_page_state(zone, NR_FREE_CMA_PAGES);
+
+	free = zone_page_state(zone, NR_FREE_PAGES);
+	free_wmark = free - free_cma - low_wmark_pages(zone);
+
+	/*
+	 * No cma free pages or there is more sys mem which means there is more
+	 * mem then cma_watermark,so recharge only movable allocation
+	 */
+	if ((free_cma <= 0) || (free_wmark - cma_multiplex > 0)) {
+		zone->nr_try_movable = 1;
+		zone->nr_try_cma = 0;
+		goto alloc_movable;
+	}
+
+	/*
+	 * free_wmark is below than 0, and it means that normal pages are under
+	 * the pressure, so we recharge only cma allocation.
+	 */
+	if (free_wmark <= 0) {
+		zone->nr_try_cma = 1;
+		zone->nr_try_movable = 0;
+		goto alloc_cma;
+	}
+
+	/*
+	 * when free sys mem between high_wmark_pages(zone) and
+	 * low_wmark_pages(zone), sys mem and cma mem could be
+	 * allocated by turns
+	 */
+	if (zone->nr_try_movable)
+		goto alloc_movable;
+
+	if (zone->nr_try_cma)
+		goto alloc_cma;
+
+	if (free_wmark > free_cma) {
+		zone->nr_try_movable =
+			(free_wmark * pageblock_nr_pages) / free_cma;
+		zone->nr_try_cma = pageblock_nr_pages;
+	} else {
+		zone->nr_try_movable = pageblock_nr_pages;
+		zone->nr_try_cma = free_cma * pageblock_nr_pages / free_wmark;
+	}
+
+	/* Reset complete, start on movable first */
+alloc_movable:
+	zone->nr_try_movable--;
+	return NULL;
+
+alloc_cma:
+	if (zone->nr_try_cma) {
+		/* Okay. Now, we can try to allocate the page from cma region */
+		zone->nr_try_cma--;
+		page = __rmqueue_smallest(zone, order, MIGRATE_CMA);
+
+		/* CMA pages can vanish through CMA allocation  */
+		if (unlikely(!page && order == 0))
+			zone->nr_try_cma = 0;
+
+		return page;
+	}
+#endif
+	return NULL;
+}
+#endif /* CONFIG_CMA_ADVANCE_SHARE */
+
 /*
  * Do the hard work of removing an element from the buddy allocator.
  * Call me with the zone->lock already held.
@@ -1817,17 +1940,23 @@ __rmqueue_fallback(struct zone *zone, unsigned int order, int start_migratetype)
 static struct page *__rmqueue(struct zone *zone, unsigned int order,
 				int migratetype, gfp_t gfp_flags)
 {
-	struct page *page;
+	struct page *page = NULL;
 
-	page = __rmqueue_smallest(zone, order, migratetype);
-	if (unlikely(!page)) {
-		if (migratetype == MIGRATE_MOVABLE)
-			page = __rmqueue_cma_fallback(zone, order);
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+	if (IS_ENABLED(CONFIG_CMA))
+		page = __rmqueue_cma(zone, order, migratetype);
+#endif /* CONFIG_CMA_ADVANCE_SHARE */
+	if (!page) {
+		page = __rmqueue_smallest(zone, order, migratetype);
+		if (unlikely(!page)) {
+			if (migratetype == MIGRATE_MOVABLE)
+				page = __rmqueue_cma_fallback(zone, order);
 
-		if (!page)
-			page = __rmqueue_fallback(zone, order, migratetype);
+			if (!page)
+				page = __rmqueue_fallback(zone, order,
+							  migratetype);
+		}
 	}
-
 	trace_mm_page_alloc_zone_locked(page, order, migratetype);
 	return page;
 }
@@ -2072,7 +2201,8 @@ void free_hot_cold_page(struct page *page, bool cold)
 	 * excessively into the page allocator
 	 */
 	if (migratetype >= MIGRATE_PCPTYPES) {
-		if (unlikely(is_migrate_isolate(migratetype))) {
+		if (unlikely(is_migrate_isolate(migratetype)) ||
+		    is_migrate_cma(migratetype)) {
 			free_one_page(zone, page, pfn, 0, migratetype);
 			goto out;
 		}
@@ -3748,7 +3878,11 @@ void show_free_areas(unsigned int filter)
 
 	for_each_populated_zone(zone) {
 		int i;
-
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+		unsigned long cma_wm = zone->cma_wmark;
+#else
+		unsigned long cma_wm = 0;
+#endif
 		if (skip_free_areas_node(filter, zone_to_nid(zone)))
 			continue;
 
@@ -3788,6 +3922,7 @@ void show_free_areas(unsigned int filter)
 			" writeback_tmp:%lukB"
 			" pages_scanned:%lu"
 			" all_unreclaimable? %s"
+			" cma_watermark:%lukB"
 			"\n",
 			zone->name,
 			K(zone_page_state(zone, NR_FREE_PAGES)),
@@ -3820,7 +3955,8 @@ void show_free_areas(unsigned int filter)
 			K(zone_page_state(zone, NR_FREE_CMA_PAGES)),
 			K(zone_page_state(zone, NR_WRITEBACK_TEMP)),
 			K(zone_page_state(zone, NR_PAGES_SCANNED)),
-			(!zone_reclaimable(zone) ? "yes" : "no")
+			(!zone_reclaimable(zone) ? "yes" : "no"),
+			cma_wm
 			);
 		printk("lowmem_reserve[]:");
 		for (i = 0; i < MAX_NR_ZONES; i++)
@@ -5275,6 +5411,10 @@ static void __paginginit free_area_init_core(struct pglist_data *pgdat)
 		zone_seqlock_init(zone);
 		zone->zone_pgdat = pgdat;
 		zone_pcp_init(zone);
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+		if (IS_ENABLED(CONFIG_CMA))
+			zone->has_cma = 0;
+#endif
 
 		/* For bootup, initialized properly in watermark setup */
 		mod_zone_page_state(zone, NR_ALLOC_BATCH, zone->managed_pages);
@@ -6221,6 +6361,17 @@ int min_free_kbytes_sysctl_handler(struct ctl_table *table, int write,
 	return 0;
 }
 
+#ifdef CONFIG_CMA_ADVANCE_SHARE
+int cma_watermark_sysctl_handler(struct ctl_table *table, int write,
+				 void __user *buffer, size_t *length, loff_t *ppos)
+{
+	proc_dointvec(table, write, buffer, length, ppos);
+	if (write)
+		is_cma_wmark_set = true;
+	return 0;
+}
+#endif /* CONFIG_CMA_ADVANCE_SHARE */
+
 #ifdef CONFIG_NUMA
 int sysctl_min_unmapped_ratio_sysctl_handler(struct ctl_table *table, int write,
 	void __user *buffer, size_t *length, loff_t *ppos)
@@ -6785,7 +6936,7 @@ int alloc_contig_range(unsigned long start, unsigned long end,
 
 	/* Make sure the range is really isolated. */
 	if (test_pages_isolated(outer_start, end, false)) {
-		pr_info("%s: [%lx, %lx) PFNs busy\n",
+		pr_warn_once("%s: [%lx, %lx) PFNs busy\n",
 			__func__, outer_start, end);
 		ret = -EBUSY;
 		goto done;
