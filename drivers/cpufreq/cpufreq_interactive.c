@@ -467,6 +467,7 @@ exit:
 
 static void cpufreq_interactive_idle_end(void)
 {
+	unsigned long flags;
 	struct cpufreq_interactive_cpuinfo *pcpu =
 		&per_cpu(cpuinfo, smp_processor_id());
 
@@ -477,6 +478,8 @@ static void cpufreq_interactive_idle_end(void)
 		return;
 	}
 
+	local_irq_save(flags);
+
 	/* Arm the timer for 1-2 ticks later if not already. */
 	if (!timer_pending(&pcpu->cpu_timer)) {
 		cpufreq_interactive_timer_resched(pcpu);
@@ -485,6 +488,8 @@ static void cpufreq_interactive_idle_end(void)
 		del_timer(&pcpu->cpu_slack_timer);
 		cpufreq_interactive_timer(smp_processor_id());
 	}
+
+	local_irq_restore(flags);
 
 	up_read(&pcpu->enable_sem);
 }
