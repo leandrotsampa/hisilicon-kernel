@@ -424,6 +424,11 @@ static int gfs_bind(struct usb_composite_dev *cdev)
 		if (unlikely(ret < 0))
 			goto error_unbind;
 	}
+
+	/* add adb idvendor and adb device name */
+	coverwrite.idVendor = 0x18d1;
+	coverwrite.serial_number = "0123456789";
+
 	usb_composite_overwrite_options(cdev, &coverwrite);
 	return 0;
 
