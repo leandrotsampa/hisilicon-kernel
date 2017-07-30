@@ -362,7 +362,7 @@ static int pcie_pme_probe(struct pcie_device *srv)
 	pcie_pme_interrupt_enable(port, false);
 	pcie_clear_root_pme_status(port);
 
-	ret = request_irq(srv->irq, pcie_pme_irq, IRQF_SHARED, "PCIe PME", srv);
+	ret = request_irq(CONFIG_PCIE_PME_IRQ, pcie_pme_irq, IRQF_SHARED, "PCIe PME", srv);
 	if (ret) {
 		kfree(data);
 	} else {
@@ -408,7 +408,7 @@ static int pcie_pme_suspend(struct pcie_device *srv)
 	}
 	spin_lock_irq(&data->lock);
 	if (wakeup) {
-		ret = enable_irq_wake(srv->irq);
+		ret = enable_irq_wake(CONFIG_PCIE_PME_IRQ);
 		data->suspend_level = PME_SUSPEND_WAKEUP;
 	}
 	if (!wakeup || ret) {
@@ -420,7 +420,7 @@ static int pcie_pme_suspend(struct pcie_device *srv)
 	}
 	spin_unlock_irq(&data->lock);
 
-	synchronize_irq(srv->irq);
+	synchronize_irq(CONFIG_PCIE_PME_IRQ);
 
 	return 0;
 }
@@ -440,7 +440,7 @@ static int pcie_pme_resume(struct pcie_device *srv)
 		pcie_clear_root_pme_status(port);
 		pcie_pme_interrupt_enable(port, true);
 	} else {
-		disable_irq_wake(srv->irq);
+		disable_irq_wake(CONFIG_PCIE_PME_IRQ);
 	}
 	data->suspend_level = PME_SUSPEND_NONE;
 	spin_unlock_irq(&data->lock);
@@ -455,7 +455,7 @@ static int pcie_pme_resume(struct pcie_device *srv)
 static void pcie_pme_remove(struct pcie_device *srv)
 {
 	pcie_pme_suspend(srv);
-	free_irq(srv->irq, srv);
+	free_irq(CONFIG_PCIE_PME_IRQ, srv);
 	kfree(get_service_data(srv));
 }
 
