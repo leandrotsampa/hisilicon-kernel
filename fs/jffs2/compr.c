@@ -21,6 +21,8 @@ static DEFINE_SPINLOCK(jffs2_compressor_list_lock);
 /* Available compressors are on this list */
 static LIST_HEAD(jffs2_compressor_list);
 
+static DEFINE_MUTEX(compr_mutex);
+
 /* Actual compression mode */
 static int jffs2_compression_mode = JFFS2_COMPR_MODE_PRIORITY;
 
@@ -170,6 +172,7 @@ uint16_t jffs2_compress(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 		break;
 	case JFFS2_COMPR_MODE_SIZE:
 	case JFFS2_COMPR_MODE_FAVOURLZO:
+		mutex_lock(&compr_mutex);
 		orig_slen = *datalen;
 		orig_dlen = *cdatalen;
 		spin_lock(&jffs2_compressor_list_lock);
@@ -228,6 +231,7 @@ uint16_t jffs2_compress(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 			*cpage_out = output_buf;
 		}
 		spin_unlock(&jffs2_compressor_list_lock);
+		mutex_unlock(&compr_mutex);
 		break;
 	case JFFS2_COMPR_MODE_FORCELZO:
 		ret = jffs2_selected_compress(JFFS2_COMPR_LZO, data_in,
