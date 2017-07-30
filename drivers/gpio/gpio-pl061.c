@@ -277,12 +277,14 @@ static struct irq_chip pl061_irqchip = {
 	.irq_set_type	= pl061_irq_type,
 };
 
+static int gpio_base = 0;
+
 static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	struct device *dev = &adev->dev;
 	struct pl061_platform_data *pdata = dev_get_platdata(dev);
 	struct pl061_gpio *chip;
-	int ret, irq, i, irq_base;
+	int ret, irq, /* i,*/ irq_base;
 
 	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
 	if (chip == NULL)
@@ -296,8 +298,9 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 			return -ENODEV;
 		}
 	} else {
-		chip->gc.base = -1;
+		chip->gc.base = gpio_base * PL061_GPIO_NR;
 		irq_base = 0;
+		gpio_base++;
 	}
 
 	chip->base = devm_ioremap_resource(dev, &adev->res);
@@ -437,7 +440,7 @@ static int __init pl061_gpio_init(void)
 {
 	return amba_driver_register(&pl061_gpio_driver);
 }
-module_init(pl061_gpio_init);
+arch_initcall_sync(pl061_gpio_init);
 
 MODULE_AUTHOR("Baruch Siach <baruch@tkos.co.il>");
 MODULE_DESCRIPTION("PL061 GPIO driver");
