@@ -592,6 +592,7 @@ int mmc_send_tuning(struct mmc_host *host, u32 opcode, int *cmd_error)
 {
 	struct mmc_request mrq = {NULL};
 	struct mmc_command cmd = {0};
+	struct mmc_command stop = {0};
 	struct mmc_data data = {0};
 	struct scatterlist sg;
 	struct mmc_ios *ios = &host->ios;
@@ -614,9 +615,13 @@ int mmc_send_tuning(struct mmc_host *host, u32 opcode, int *cmd_error)
 
 	mrq.cmd = &cmd;
 	mrq.data = &data;
+	mrq.stop = &stop;
 
 	cmd.opcode = opcode;
 	cmd.flags = MMC_RSP_R1 | MMC_CMD_ADTC;
+
+	stop.opcode = MMC_STOP_TRANSMISSION;
+	stop.flags = MMC_RSP_R1;
 
 	data.blksz = size;
 	data.blocks = 1;
