@@ -29,12 +29,15 @@
 #include <linux/rcupdate.h>
 #include "input-compat.h"
 
+#include <linux/vinput.h>
+
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@suse.cz>");
 MODULE_DESCRIPTION("Input core");
 MODULE_LICENSE("GPL");
 
 #define INPUT_MAX_CHAR_DEVICES		1024
 #define INPUT_FIRST_DYNAMIC_DEV		256
+static int ignore_input = 0;
 static DEFINE_IDA(input_ida);
 
 static LIST_HEAD(input_dev_list);
@@ -123,6 +126,12 @@ static unsigned int input_to_handler(struct input_handle *handle,
 	return count;
 }
 
+void input_block_status(int status)
+{
+	ignore_input = status;
+}
+EXPORT_SYMBOL(input_block_status);
+
 /*
  * Pass values first through all filters and then, if event has not been
  * filtered out, through all open handles. This function is called with
@@ -135,6 +144,11 @@ static void input_pass_values(struct input_dev *dev,
 	struct input_value *v;
 
 	if (!count)
+		return;
+
+	if (ignore_input == INPUT_BLOCK ||
+	   (ignore_input == INPUT_HALFBLOCK && vals->code != INPUT_POWER &&
+	   vals->code != INPUT_RESERVED))
 		return;
 
 	rcu_read_lock();
