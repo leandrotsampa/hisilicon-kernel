@@ -4,6 +4,8 @@
 
 comment "MMC/SD/SDIO Host Controller Drivers"
 
+source "drivers/mmc/host/himciv200/Kconfig"
+
 config MMC_ARMMMCI
 	tristate "ARM AMBA Multimedia Card Interface support"
 	depends on ARM_AMBA

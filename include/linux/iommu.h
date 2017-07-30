@@ -75,6 +75,15 @@ struct iommu_domain_geometry {
 #define IOMMU_DOMAIN_DMA	(__IOMMU_DOMAIN_PAGING |	\
 				 __IOMMU_DOMAIN_DMA_API)
 
+struct iommu_domain_capablity {
+	unsigned int  iova_start;  /* First address that can be mapped    */
+	unsigned int  iova_end;    /* Last address that can be mapped     */
+	unsigned int  iova_align;  /* domain io address aligned           */
+	unsigned int  pg_sz;       /* io domain page size                 */
+	unsigned int  pgtbl_base;
+	bool off_on;               /* iommu is online or offline          */
+};
+
 struct iommu_domain {
 	unsigned type;
 	const struct iommu_ops *ops;
@@ -82,6 +91,7 @@ struct iommu_domain {
 	void *handler_token;
 	struct iommu_domain_geometry geometry;
 	void *iova_cookie;
+	struct iommu_domain_capablity capablity;
 };
 
 enum iommu_cap {
@@ -108,11 +118,30 @@ enum iommu_attr {
 	DOMAIN_ATTR_GEOMETRY,
 	DOMAIN_ATTR_PAGING,
 	DOMAIN_ATTR_WINDOWS,
+	DOMAIN_ATTR_CAPABLITY,
+	DOMAIN_ATTR_FORMAT_DATA,
 	DOMAIN_ATTR_FSL_PAMU_STASH,
 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
 	DOMAIN_ATTR_FSL_PAMUV1,
 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
 	DOMAIN_ATTR_MAX,
+};
+
+/* metadata for iommu mapping */
+struct iommu_map_format {
+	unsigned long iova_start;
+	unsigned long iova_size;
+	unsigned long iommu_ptb_base;
+	unsigned long iommu_iova_base;
+	unsigned long phys_page_line;
+	unsigned long virt_page_line;
+	unsigned long is_tile;
+};
+
+struct tile_format {
+	unsigned long is_tile;
+	unsigned long phys_page_line;
+	unsigned long virt_page_line;
 };
 
 /**
@@ -165,6 +194,18 @@ struct iommu_ops {
 		     size_t size);
 	size_t (*map_sg)(struct iommu_domain *domain, unsigned long iova,
 			 struct scatterlist *sg, unsigned int nents, int prot);
+	int (*map_range)(struct iommu_domain *domain, unsigned long iova,
+			 struct scatterlist *sg, size_t size, int prot);
+	size_t (*unmap_range)(struct iommu_domain *domain, unsigned long iova,
+			      size_t size);
+	int (*map_tile)(struct iommu_domain *domain, unsigned long iova,
+			struct scatterlist *sg, size_t size, int prot,
+			struct tile_format *format);
+	size_t (*unmap_tile)(struct iommu_domain *domain, unsigned long iova,
+			     size_t size);
+	int (*get_pgtbl_base)(struct iommu_domain *domain,
+			      unsigned long iova_start, unsigned long *ptb_base,
+			      unsigned long *iova_base);
 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
 	int (*add_device)(struct device *dev);
 	void (*remove_device)(struct device *dev);
@@ -173,8 +214,7 @@ struct iommu_ops {
 			       enum iommu_attr attr, void *data);
 	int (*domain_set_attr)(struct iommu_domain *domain,
 			       enum iommu_attr attr, void *data);
-
-	/* Request/Free a list of direct mapping requirements for a device */
+		/* Request/Free a list of direct mapping requirements for a device */
 	void (*get_dm_regions)(struct device *dev, struct list_head *list);
 	void (*put_dm_regions)(struct device *dev, struct list_head *list);
 
@@ -220,6 +260,20 @@ extern size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova,
 extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
 				struct scatterlist *sg,unsigned int nents,
 				int prot);
+
+int iommu_map_range(struct iommu_domain *domain, unsigned long iova,
+		    struct scatterlist *sg, size_t size, int prot);
+extern size_t iommu_unmap_range(struct iommu_domain *domain, unsigned long iova,
+				size_t size);
+int iommu_map_tile(struct iommu_domain *domain, unsigned long iova,
+		   struct scatterlist *sg, size_t size, int prot,
+		   struct tile_format *format);
+int iommu_unmap_tile(struct iommu_domain *domain, unsigned long iova,
+		     size_t size);
+extern int iommu_get_pgtbl_base(struct iommu_domain *domain,
+				unsigned long iova_start, unsigned long *ptb_base,
+				unsigned long *iova_base);
+
 extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
 extern void iommu_set_fault_handler(struct iommu_domain *domain,
 			iommu_fault_handler_t handler, void *token);
@@ -442,6 +496,13 @@ static inline struct iommu_group *iommu_group_alloc(void)
 static inline void *iommu_group_get_iommudata(struct iommu_group *group)
 {
 	return NULL;
+}
+
+static inline int iommu_get_pgtbl_base(struct iommu_domain *domain,
+				       unsigned long iova_start, unsigned long *ptb_base,
+				       unsigned long *iova_base)
+{
+	return -EINVAL;
 }
 
 static inline void iommu_group_set_iommudata(struct iommu_group *group,

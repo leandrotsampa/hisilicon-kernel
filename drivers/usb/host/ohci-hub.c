@@ -9,6 +9,8 @@
 
 /*-------------------------------------------------------------------------*/
 
+#include <linux/hisilicon/hiotg.h>
+
 /*
  * OHCI Root Hub ... the nonsharable stuff
  */
@@ -499,6 +501,8 @@ int ohci_hub_status_data(struct usb_hcd *hcd, char *buf)
 	for (i = 0; i < ohci->num_ports; i++) {
 		u32	status = roothub_portstatus (ohci, i);
 
+		set_usbhost_connect(hcd, i, status & RH_PS_CCS, 1);
+
 		/* can't autostop if ports are connected */
 		any_connected |= (status & RH_PS_CCS);
 
@@ -744,6 +748,7 @@ int ohci_hub_control(
 			goto error;
 		wIndex--;
 		temp = roothub_portstatus (ohci, wIndex);
+		set_usbhost_connect(hcd, wIndex, temp & RH_PS_CCS, 1);
 		put_unaligned_le32(temp, buf);
 
 		if (*(u16*)(buf+2))	/* only if wPortChange is interesting */

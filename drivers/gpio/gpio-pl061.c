@@ -279,6 +279,11 @@ static struct irq_chip pl061_irqchip = {
 
 static int gpio_base = 0;
 
+u32 get_gpio_group_count(void)
+{
+	return gpio_base;
+}
+
 static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	struct device *dev = &adev->dev;

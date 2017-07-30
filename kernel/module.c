@@ -4132,3 +4132,14 @@ void module_layout(struct module *mod,
 }
 EXPORT_SYMBOL(module_layout);
 #endif
+
+/*
+ * support client modules get system all module start address
+ * this function used by ca run time check function.
+ */
+int module_get_pointer(struct list_head **first)
+{
+	*first = &modules;
+	return 0;
+}
+EXPORT_SYMBOL(module_get_pointer);

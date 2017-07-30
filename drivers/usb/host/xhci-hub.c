@@ -1109,6 +1109,22 @@ int xhci_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 			temp = readl(port_array[wIndex]);
 			break;
+			/* For downstream facing ports (these):  one hub port is put
+			 * into test mode according to USB2 11.24.2.13, then the hub
+			 * must be reset (which for root hub now means rmmod+modprobe,
+			 * or else system reboot).
+			 */
+		case USB_PORT_FEAT_TEST:
+			 if (hcd->speed != HCD_USB2)
+				goto error;
+			if (!timeout || timeout > 5)
+				goto error;
+			xhci_quiesce(xhci);
+			xhci_halt(xhci);
+			temp = readl(port_array[wIndex]  + PORTPMSC);
+			temp |= timeout << 28;
+			writel(temp, port_array[wIndex] + PORTPMSC);
+			break;
 		case USB_PORT_FEAT_U1_TIMEOUT:
 			if (hcd->speed < HCD_USB3)
 				goto error;

@@ -13,7 +13,6 @@ config ASHMEM
 
 	  It is, in theory, a good memory allocator for low-memory devices,
 	  because it can discard shared memory units when under memory pressure.
-
 config ANDROID_LOGGER
 	tristate "Android log driver"
 	default n
@@ -30,7 +29,6 @@ config ANDROID_LOGGER
 	  Log reading and writing is performed via normal Linux reads and
 	  optimized writes. This optimization avoids logging having too
 	  much overhead in the system.
-
 config ANDROID_TIMED_OUTPUT
 	bool "Timed output class driver"
 	default y

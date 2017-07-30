@@ -551,7 +551,7 @@ int xhci_init(struct usb_hcd *hcd)
 		xhci_dbg_trace(xhci, trace_xhci_dbg_init,
 				"xHCI doesn't need link TRB QUIRK");
 	}
-	retval = xhci_mem_init(xhci, GFP_KERNEL);
+	retval = xhci_mem_init(xhci, GFP_ATOMIC);
 	xhci_dbg_trace(xhci, trace_xhci_dbg_init, "Finished xhci_init");
 
 	/* Initializing Compliance Mode Recovery Data If Needed */

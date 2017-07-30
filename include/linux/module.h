@@ -801,4 +801,6 @@ static inline bool module_sig_ok(struct module *module)
 }
 #endif	/* CONFIG_MODULE_SIG */
 
+int module_get_pointer(struct list_head **first);
+
 #endif /* _LINUX_MODULE_H */

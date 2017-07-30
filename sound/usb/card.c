@@ -73,7 +73,11 @@ MODULE_LICENSE("GPL");
 MODULE_SUPPORTED_DEVICE("{{Generic,USB Audio}}");
 
 
+#ifdef CONFIG_ANDROID
+static int index[9] = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+#else
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
+#endif
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;/* Enable this card */
 /* Vendor/product IDs for this card */

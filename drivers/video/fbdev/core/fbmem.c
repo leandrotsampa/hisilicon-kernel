@@ -35,6 +35,7 @@
 
 #include <asm/fb.h>
 
+#include <linux/dma-buf.h>
 
     /*
      *  Frame buffer device initialization and setup routines
@@ -1084,6 +1085,22 @@ fb_blank(struct fb_info *info, int blank)
 }
 EXPORT_SYMBOL(fb_blank);
 
+#ifdef CONFIG_DMA_SHARED_BUFFER
+int fb_get_dmabuf(struct fb_info *info, int flags)
+{
+	struct dma_buf *dmabuf;
+
+	if (info->fbops->fb_dmabuf_export == NULL)
+		return -ENOTTY;
+
+	dmabuf = info->fbops->fb_dmabuf_export(info);
+	if (IS_ERR(dmabuf))
+		return PTR_ERR(dmabuf);
+
+	return dma_buf_fd(dmabuf, flags);
+}
+#endif
+
 static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 			unsigned long arg)
 {
@@ -1094,6 +1111,7 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 	struct fb_cmap cmap_from;
 	struct fb_cmap_user cmap;
 	struct fb_event event;
+	struct fb_dmabuf_export dmaexp;
 	void __user *argp = (void __user *)arg;
 	long ret = 0;
 
@@ -1211,6 +1229,23 @@ static long do_fb_ioctl(struct fb_info *info, unsigned int cmd,
 		unlock_fb_info(info);
 		console_unlock();
 		break;
+#ifdef CONFIG_DMA_SHARED_BUFFER
+	case FBIOGET_DMABUF:
+		if (copy_from_user(&dmaexp, argp, sizeof(dmaexp)))
+			return -EFAULT;
+
+		if (!lock_fb_info(info))
+			return -ENODEV;
+		dmaexp.fd = fb_get_dmabuf(info, dmaexp.flags);
+		unlock_fb_info(info);
+
+		if (dmaexp.fd < 0)
+			return dmaexp.fd;
+
+		ret = copy_to_user(argp, &dmaexp, sizeof(dmaexp))
+			? -EFAULT : 0;
+		break;
+#endif
 	default:
 		if (!lock_fb_info(info))
 			return -ENODEV;
@@ -1365,6 +1400,9 @@ static long fb_compat_ioctl(struct file *file, unsigned int cmd,
 	case FBIOPAN_DISPLAY:
 	case FBIOGET_CON2FBMAP:
 	case FBIOPUT_CON2FBMAP:
+#ifdef CONFIG_DMA_SHARED_BUFFER
+	case FBIOGET_DMABUF:
+#endif
 		arg = (unsigned long) compat_ptr(arg);
 	case FBIOBLANK:
 		ret = do_fb_ioctl(info, cmd, arg);

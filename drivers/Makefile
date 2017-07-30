@@ -5,6 +5,13 @@
 # Rewritten to use lists instead of if-statements.
 #
 
+obj-y				+= hisilicon/
+
+ifeq ($(CONFIG_POPLAR_MSP),y)
+obj-y += common/
+obj-y += msp/
+endif
+
 obj-y				+= irqchip/
 obj-y				+= bus/
 

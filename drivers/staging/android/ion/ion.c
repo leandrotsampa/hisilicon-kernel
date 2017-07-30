@@ -36,6 +36,7 @@
 #include <linux/debugfs.h>
 #include <linux/dma-buf.h>
 #include <linux/idr.h>
+#include <linux/hisilicon/tee_smmu.h>
 
 #include "ion.h"
 #include "ion_priv.h"
@@ -191,6 +192,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	buffer->heap = heap;
 	buffer->flags = flags;
 	kref_init(&buffer->ref);
+	buffer->iommu_map = NULL;
 
 	ret = heap->ops->allocate(heap, buffer, len, align, flags);
 
@@ -271,6 +273,14 @@ err2:
 
 void ion_buffer_destroy(struct ion_buffer *buffer)
 {
+	if (buffer->iommu_map) {
+		pr_info("%s: iommu map not released, do unmap now!\n",
+								__func__);
+		buffer->heap->ops->unmap_iommu(buffer->iommu_map);
+		kfree(buffer->iommu_map);
+		buffer->iommu_map = NULL;
+	}
+
 	if (WARN_ON(buffer->kmap_cnt > 0))
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	buffer->heap->ops->unmap_dma(buffer->heap, buffer);
@@ -488,6 +498,44 @@ static int ion_handle_add(struct ion_client *client, struct ion_handle *handle)
 	return 0;
 }
 
+int set_buffer_cached(struct ion_client *client, struct ion_handle *handle,
+							unsigned long flags)
+{
+	struct ion_buffer *buffer;
+
+	mutex_lock(&client->lock);
+	if (!ion_handle_validate(client, handle)) {
+		mutex_unlock(&client->lock);
+		return -EINVAL;
+	}
+
+	buffer = handle->buffer;
+	buffer->flags = flags;
+	mutex_unlock(&client->lock);
+	return 0;
+}
+EXPORT_SYMBOL(set_buffer_cached);
+
+struct sg_table *get_pages_from_buffer(struct ion_client *client,
+			struct ion_handle *handle, unsigned long *size)
+{
+	struct ion_buffer *buffer;
+	struct sg_table *table;
+
+	mutex_lock(&client->lock);
+	if (!ion_handle_validate(client, handle)) {
+		mutex_unlock(&client->lock);
+		return NULL;
+	}
+	buffer = handle->buffer;
+	*size = buffer->size;
+	table = buffer->sg_table;
+
+	mutex_unlock(&client->lock);
+	return table;
+}
+EXPORT_SYMBOL(get_pages_from_buffer);
+
 struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 			     size_t align, unsigned int heap_id_mask,
 			     unsigned int flags)
@@ -701,6 +749,216 @@ void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle)
 	mutex_unlock(&client->lock);
 }
 EXPORT_SYMBOL(ion_unmap_kernel);
+
+static int do_iommu_map(struct ion_buffer *buffer,
+		struct iommu_map_format *format)
+{
+	struct ion_iommu_map *map;
+	int ret = 0;
+
+	map = kzalloc(sizeof(*map), GFP_KERNEL);
+	if (!map) {
+		pr_err("alloc ion_iommu_map failed!\n");
+		return -ENOMEM;
+	}
+
+	/* set tile format info */
+	map->format.is_tile = format->is_tile;
+	if (map->format.is_tile) {
+		map->format.phys_page_line = format->phys_page_line;
+		map->format.virt_page_line = format->virt_page_line;
+	}
+
+	/* do iommu map */
+	ret = buffer->heap->ops->map_iommu(buffer, map);
+	if (ret) {
+		kfree(map);
+		return ret;
+	}
+
+	/* init the map count as 1 */
+	kref_init(&map->ref);
+
+	/* bind iommu_map to buffer */
+	map->buffer = buffer;
+	buffer->iommu_map = map;
+
+	return 0;
+}
+
+int ion_map_iommu(struct ion_client *client, struct ion_handle *handle,
+					struct iommu_map_format *format)
+{
+	struct ion_buffer *buffer;
+	int ret = 0;
+
+	/* lock client */
+	mutex_lock(&client->lock);
+
+	/* check if the handle belongs to client. */
+	if (!ion_handle_validate(client, handle)) {
+		pr_err("%s: invalid handle passed to iommu map.\n", __func__);
+		mutex_unlock(&client->lock);
+		return -EINVAL;
+	}
+
+	buffer = handle->buffer;
+
+	/* lock buffer */
+	mutex_lock(&buffer->lock);
+
+	if (!handle->buffer->heap->ops->map_iommu) {
+		pr_err("%s: map_iommu is not implemented by this heap.\n",
+								__func__);
+		ret = -ENODEV;
+		goto out;
+	}
+
+	/* buffer size sould align to 4k */
+	if (buffer->size & ~PAGE_MASK) {
+		pr_err("%s: buffer size %lx is not aligned to %lx",
+			__func__, (unsigned long)(buffer->size), PAGE_SIZE);
+		ret = -EINVAL;
+		goto out;
+	}
+
+
+	/* buffer->iommu_map != NULL means buffer has mapped */
+	if (buffer->iommu_map) {
+		struct iommu_map_format *mapped_fmt =
+					&buffer->iommu_map->format;
+
+		pr_debug("This buffer has already iommu mapped!\n");
+
+		/* map tile format should be same as last time */
+		if (format->is_tile && (
+		    (format->phys_page_line != mapped_fmt->phys_page_line) ||
+		    (format->virt_page_line != mapped_fmt->virt_page_line))) {
+			WARN(1, "map_iommu format do not match!\n");
+			ret = -EINVAL;
+			goto out;
+		}
+
+		/* increase iommu map count */
+		kref_get(&buffer->iommu_map->ref);
+	} else {
+		/* do iommu map */
+		ret = do_iommu_map(buffer, format);
+		if (ret) {
+			pr_err("%s: do_iommu_map failed!\n", __func__);
+			goto out;
+		}
+	}
+
+	memcpy(format, &buffer->iommu_map->format, sizeof(*format));
+
+out:
+	/* unlock buffer and unlock client */
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+
+	return ret;
+}
+EXPORT_SYMBOL(ion_map_iommu);
+
+static void do_iommu_unmap(struct kref *kref)
+{
+	struct ion_iommu_map *map = container_of(kref,
+				struct ion_iommu_map, ref);
+	struct ion_buffer *buffer = map->buffer;
+
+	buffer->heap->ops->unmap_iommu(map);
+
+	buffer->iommu_map = NULL;
+
+	kfree(map);
+}
+
+void ion_unmap_iommu(struct ion_client *client, struct ion_handle *handle)
+{
+	struct ion_iommu_map *iommu_map;
+	struct ion_buffer *buffer;
+
+	mutex_lock(&client->lock);
+
+	/* check if the handle belongs to client. */
+	if (!ion_handle_validate(client, handle)) {
+		pr_err("%s: invalid handle passed to iommu unmap.\n", __func__);
+		mutex_unlock(&client->lock);
+		return;
+	}
+
+	buffer = handle->buffer;
+
+	mutex_lock(&buffer->lock);
+
+	iommu_map = buffer->iommu_map;
+	if (!iommu_map) {
+		WARN(1, "This buffer have not been map iommu\n");
+		goto out;
+	}
+
+	kref_put(&iommu_map->ref, do_iommu_unmap);
+
+out:
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+}
+EXPORT_SYMBOL(ion_unmap_iommu);
+
+int ion_map_sec_iommu(struct ion_client *client, struct ion_handle *handle,
+					struct iommu_map_format *format)
+{
+	struct ion_buffer *buffer;
+	int ret = 0;
+
+	/* lock client */
+	mutex_lock(&client->lock);
+
+	/* check if the handle belongs to client. */
+	if (!ion_handle_validate(client, handle)) {
+		pr_err("%s: invalid handle passed to sec iommu map.\n", __func__);
+		mutex_unlock(&client->lock);
+		return -EINVAL;
+	}
+
+	buffer = handle->buffer;
+
+	/* lock buffer */
+	mutex_lock(&buffer->lock);
+
+	/* set sec flags  */
+	buffer->sec_flag = 1;
+
+	/* unlock buffer and unlock client */
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+
+	ret = ion_map_iommu(client, handle, format);
+	if (ret) {
+		pr_err("%s failed!\n", __func__);
+		goto out;
+	}
+
+	return ret;
+out:
+
+	mutex_lock(&client->lock);
+	mutex_lock(&buffer->lock);
+	buffer->sec_flag = 0;
+	/* unlock buffer and unlock client */
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+
+	return ret;
+}
+
+int ion_unmap_sec_iommu(struct ion_client *client, struct ion_handle *handle)
+{
+	ion_unmap_iommu(client, handle);
+
+	return 0;
+}
 
 static int ion_debug_client_show(struct seq_file *s, void *unused)
 {
@@ -1244,8 +1502,14 @@ static int ion_sync_for_device(struct ion_client *client, int fd)
 	}
 	buffer = dmabuf->priv;
 
+	/* clean cache*/
 	dma_sync_sg_for_device(NULL, buffer->sg_table->sgl,
 			       buffer->sg_table->nents, DMA_BIDIRECTIONAL);
+#ifdef CONFIG_ION_HISI
+	/* invalidate cache*/
+	dma_sync_sg_for_cpu(NULL, buffer->sg_table->sgl,
+				buffer->sg_table->nents, DMA_FROM_DEVICE);
+#endif
 	dma_buf_put(dmabuf);
 	return 0;
 }
@@ -1276,6 +1540,8 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		struct ion_allocation_data allocation;
 		struct ion_handle_data handle;
 		struct ion_custom_data custom;
+		struct ion_phys_data phys;
+		struct ion_map_iommu_data map_iommu;
 	} data;
 
 	dir = ion_ioctl_dir(cmd);
@@ -1333,6 +1599,21 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			ret = data.fd.fd;
 		break;
 	}
+	case ION_IOC_PHYS:
+	{
+		struct ion_handle *handle;
+		int valid ;
+
+		handle = ion_handle_get_by_id(client, data.phys.handle);
+		if (IS_ERR(handle))
+			return PTR_ERR(handle);
+		valid = ion_phys(client, handle, &data.phys.phys_addr,
+							&data.phys.len);
+		ion_handle_put(handle);
+		if (valid)
+			return -EINVAL;
+		break;
+	}
 	case ION_IOC_IMPORT:
 	{
 		struct ion_handle *handle;
@@ -1355,6 +1636,78 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			return -ENOTTY;
 		ret = dev->custom_ioctl(client, data.custom.cmd,
 						data.custom.arg);
+		break;
+	}
+	case ION_IOC_MAP_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ret = ion_map_iommu(client, handle, &data.map_iommu.format);
+		if (ret) {
+			pr_err("%s: iommu map failed!\n", __func__);
+			ion_handle_put(handle);
+			return -EFAULT;
+		}
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_UNMAP_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+		ion_unmap_iommu(client, handle);
+		data.map_iommu.format.iova_start = 0;
+		data.map_iommu.format.iova_size = 0;
+
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_MAP_SEC_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ret = ion_map_sec_iommu(client, handle, &data.map_iommu.format);
+		if (ret) {
+			pr_err("%s: map to sec smmu failed!\n", __func__);
+			ion_handle_put(handle);
+			return -EFAULT;
+		}
+
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_UNMAP_SEC_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ion_unmap_sec_iommu(client, handle);
+		data.map_iommu.format.iova_start = 0;
+		data.map_iommu.format.iova_size = 0;
+
+		ion_handle_put(handle);
 		break;
 	}
 	default:

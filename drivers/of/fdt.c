@@ -1101,15 +1101,20 @@ void * __init __weak early_init_dt_alloc_memory_arch(u64 size, u64 align)
 
 bool __init early_init_dt_verify(void *params)
 {
+	extern void *fdt_init_hisi(void *fdt);
+
 	if (!params)
 		return false;
 
-	/* check device tree validity */
-	if (fdt_check_header(params))
-		return false;
-
 	/* Setup flat device-tree pointer */
-	initial_boot_params = params;
+	initial_boot_params = fdt_init_hisi(params);
+
+	/* check device tree validity */
+	if (fdt_check_header(params)) {
+		initial_boot_params = NULL;
+		return false;
+	}
+
 	of_fdt_crc32 = crc32_be(~0, initial_boot_params,
 				fdt_totalsize(initial_boot_params));
 	return true;

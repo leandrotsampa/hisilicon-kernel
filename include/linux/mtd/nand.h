@@ -87,6 +87,7 @@ extern int nand_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len);
 #define NAND_CMD_PARAM		0xec
 #define NAND_CMD_GET_FEATURES	0xee
 #define NAND_CMD_SET_FEATURES	0xef
+#define NAND_CMD_SYNC_RESET	0xfc
 #define NAND_CMD_RESET		0xff
 
 #define NAND_CMD_LOCK		0x2a
@@ -699,6 +700,7 @@ struct nand_chip {
 		struct nand_jedec_params jedec_params;
 	};
 
+	int read_retry_type;
 	int read_retries;
 
 	flstate_t state;
@@ -736,6 +738,8 @@ struct nand_chip {
 #define NAND_MFR_SANDISK	0x45
 #define NAND_MFR_INTEL		0x89
 #define NAND_MFR_ATO		0x9b
+#define NAND_MFR_GIGA		0xc8
+#define NAND_MFR_WINBOND	0xef
 
 /* The maximum expected count of bytes in the NAND ID sequence */
 #define NAND_MAX_ID_LEN 8
@@ -767,6 +771,15 @@ struct nand_chip {
 			{ .strength_ds = (_strength), .step_ds = (_step) }
 #define NAND_ECC_STRENGTH(type)		((type)->ecc.strength_ds)
 #define NAND_ECC_STEP(type)		((type)->ecc.step_ds)
+
+#define NAND_RR_NONE                   0x0
+#define NAND_RR_HYNIX_BG_BDIE          0x1
+#define NAND_RR_HYNIX_BG_CDIE          0x2
+#define NAND_RR_HYNIX_CG_ADIE          0x3
+#define NAND_RR_MICRON                 0x4
+#define NAND_RR_SAMSUNG                0x5
+#define NAND_RR_TOSHIBA_V2012          0x6
+#define NAND_RR_TOSHIBA_V2013          0x7
 
 /**
  * struct nand_flash_dev - NAND Flash Device ID Structure
@@ -817,6 +830,7 @@ struct nand_flash_dev {
 		uint16_t step_ds;
 	} ecc;
 	int onfi_timing_mode_default;
+	int read_retry_type;
 };
 
 /**

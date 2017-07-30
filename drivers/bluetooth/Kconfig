@@ -320,4 +320,11 @@ config BT_WILINK
 	  Say Y here to compile support for Texas Instrument's WiLink7 driver
 	  into the kernel or say M to compile it as module (btwilink).
 
+config BT_MT76X2U
+	tristate "MediaTek MT76x2 USB driver"
+	default n
+	help
+	  Driver for the MediaTek MT76x2 family of USB based
+	  Bluetooth devices (btmtk_usb).
+
 endmenu

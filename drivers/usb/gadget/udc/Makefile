@@ -1,7 +1,10 @@
 #
 # USB peripheral controller drivers
 #
+ifndef CONFIG_USB_HISI_UDC
 obj-$(CONFIG_USB_GADGET)	+= udc-core.o
+endif
+obj-$(CONFIG_USB_HISI_UDC)	+= hiudc/
 obj-$(CONFIG_USB_DUMMY_HCD)	+= dummy_hcd.o
 obj-$(CONFIG_USB_NET2272)	+= net2272.o
 obj-$(CONFIG_USB_NET2280)	+= net2280.o
