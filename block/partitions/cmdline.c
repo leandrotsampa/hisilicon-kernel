@@ -45,12 +45,15 @@ static int add_part(int slot, struct cmdline_subpart *subpart, void *param)
 	snprintf(tmp, sizeof(tmp), "(%s)", info->volname);
 	strlcat(state->pp_buf, tmp, PAGE_SIZE);
 
+	if (subpart->flags & PF_RDONLY)
+		state->parts[slot].flags |= ADDPART_FLAG_READONLY;
+
 	state->parts[slot].has_info = true;
 
 	return 0;
 }
 
-static int __init cmdline_parts_setup(char *s)
+int cmdline_parts_setup(char *s)
 {
 	cmdline = s;
 	return 1;

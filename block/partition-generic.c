@@ -318,6 +318,9 @@ struct hd_struct *add_partition(struct gendisk *disk, int partno,
 	p->partno = partno;
 	p->policy = get_disk_ro(disk);
 
+	if (flags & ADDPART_FLAG_READONLY)
+		p->policy = 1;
+
 	if (info) {
 		struct partition_meta_info *pinfo = alloc_part_info(disk);
 		if (!pinfo)
