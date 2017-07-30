@@ -72,7 +72,47 @@
 
 #include <linux/crc32.h>
 #include <linux/slab.h>
+#include <linux/kmod.h>
 #include "ubifs.h"
+
+static void ubifs_error_uevent(struct ubifs_info *c)
+{
+	int i;
+	int ret;
+	char *argv[2];
+	char *envp[4];
+	char *pbuf;
+	char *buf;
+	int buflen = 1024;
+
+	ubifs_msg(c, "Error - UBI device %d, volume %d, name \"%s\"",
+		c->vi.ubi_num, c->vi.vol_id, c->vi.name);
+	pbuf = buf = kmalloc(buflen + 1, GFP_KERNEL);
+	if (!buf) {
+		ubifs_err(c, "Out of memory.\n");
+		return;
+	}
+	i = 0;
+	argv[i++] = "/etc/restore";
+	argv[i] = NULL;
+	i = 0;
+	envp[i++] = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/system/bin:";
+	ret = snprintf(pbuf, buflen, "DEVICE=%s", c->vi.name) + 1;
+	envp[i++] = pbuf;
+	pbuf += ret;
+	buflen -= ret;
+
+	ret = snprintf(pbuf, buflen, "FS=ubifs") + 1;
+	envp[i++] = pbuf;
+	pbuf += ret;
+	buflen -= ret;
+
+	envp[i] = NULL;
+	ret = call_usermodehelper(argv[0], argv, envp, UMH_WAIT_EXEC);
+	if (ret)
+		ubifs_err(c, "Run /etc/restore restore ubifs failed. errno:%d\n", ret);
+	kfree(buf);
+}
 
 /**
  * ubifs_ro_mode - switch UBIFS to read read-only mode.
@@ -87,6 +127,7 @@ void ubifs_ro_mode(struct ubifs_info *c, int err)
 		c->vfs_sb->s_flags |= MS_RDONLY;
 		ubifs_warn(c, "switched to read-only mode, error %d", err);
 		dump_stack();
+		ubifs_error_uevent(c);
 	}
 }
 
