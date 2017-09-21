@@ -345,7 +345,7 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 	}
 	gpiochip_set_chained_irqchip(&chip->gc, &pl061_irqchip,
 				     irq, pl061_irq_handler);
-
+#if 0
 	for (i = 0; i < PL061_GPIO_NR; i++) {
 		if (pdata) {
 			if (pdata->directions & (BIT(i)))
@@ -355,7 +355,7 @@ static int pl061_probe(struct amba_device *adev, const struct amba_id *id)
 				pl061_direction_input(&chip->gc, i);
 		}
 	}
-
+#endif
 	amba_set_drvdata(adev, chip);
 	dev_info(&adev->dev, "PL061 GPIO chip @%pa registered\n",
 		 &adev->res.start);
