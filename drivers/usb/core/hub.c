@@ -1497,6 +1497,7 @@ static int hub_configure(struct usb_hub *hub,
 			hub->mA_per_port = hdev->bus_mA;
 			hub->limited_power = 1;
 		}
+#if 0
 	} else if ((hubstatus & (1 << USB_DEVICE_SELF_POWERED)) == 0) {
 		int remaining = hdev->bus_mA -
 			hub->descriptor->bHubContrCurrent;
@@ -1511,6 +1512,7 @@ static int hub_configure(struct usb_hub *hub,
 					"to use all downstream ports\n");
 		hub->mA_per_port = unit_load;	/* 7.2.1 */
 
+#endif
 	} else {	/* Self-powered external hub */
 		/* FIXME: What about battery-powered external hubs that
 		 * provide less current per port? */
