@@ -60,11 +60,7 @@ typedef struct hiVPSS_WBC_S
     HI_U32 u32CompleteCount;	       //��д������ת����
     VPSS_WBC_DATA_S stDataList[VPSS_WBC_MAX_NODE];     //��д�����ṹ
     VPSS_WBC_ATTR_S stWbcAttr;	       //��д��������
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;	       //֡����Ϣ
-#else
-    MMZ_BUFFER_S stMMZBuf;	       //֡����Ϣ
-#endif
 
     SMMU_BUFFER_S stTEEBuf;	       //֡����Ϣ
 

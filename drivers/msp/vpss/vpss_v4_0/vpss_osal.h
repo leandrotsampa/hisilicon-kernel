@@ -130,9 +130,7 @@ HI_S32 VPSS_OSAL_GetSysMemSize(HI_U32 *pu32MemSize);
 HI_U8 *VPSS_OSAL_MEMMap(HI_BOOL bSecure, HI_U32 u32StartPhyAddr);
 HI_S32 VPSS_OSAL_MEMUnmap(HI_BOOL bSecure, HI_U32 u32StartPhyAddr, HI_U8 *pu8StartVirAddr);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
 HI_U32 VPSS_OSAL_SmmuToPhyAddr(HI_U32 u32SmmuAddr);
-#endif
 
 typedef struct hiVPSS_MEM_S
 {

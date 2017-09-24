@@ -2138,36 +2138,13 @@ HI_S32 VPSS_CTRL_StorePrivData(VPSS_BUFFER_S *pstVpssBuf, HI_DRV_VIDEO_FRAME_S *
     HI_DRV_VIDEO_FRAME_S *pstPrivFrame;
     VPSS_MEM_S *pstPrivDataBuf;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
-#else
-    HI_S32 s32Ret;
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
     pstPrivDataBuf = &(pstVpssBuf->stPrivDataBuf);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     pstPrivFrame = (HI_DRV_VIDEO_FRAME_S *)pstPrivDataBuf->pu8StartVirAddr;
     if (HI_NULL != pstPrivFrame)
     {
 	VPSS_SAFE_MEMCPY(pstPrivFrame, pstPrivFrmData, sizeof(HI_DRV_VIDEO_FRAME_S));
     }
-#else
-    stMMZBuf.u32StartPhyAddr = pstPrivDataBuf->u32StartPhyAddr;
-    stMMZBuf.u32Size = pstPrivDataBuf->u32Size;
-    s32Ret = HI_DRV_MMZ_Map(&stMMZBuf);
-    if (HI_SUCCESS == s32Ret)
-    {
-	pstPrivFrame = (HI_DRV_VIDEO_FRAME_S *)stMMZBuf.pu8StartVirAddr;
-
-	VPSS_SAFE_MEMCPY(pstPrivFrame, pstPrivFrmData, sizeof(HI_DRV_VIDEO_FRAME_S));
-    }
-    else
-    {
-	VPSS_ERROR("Get PrivDataBuf Failed,PhyAddr=%#x\n",
-		   pstPrivDataBuf->u32StartPhyAddr);
-    }
-#endif
 
     return HI_SUCCESS;
 }

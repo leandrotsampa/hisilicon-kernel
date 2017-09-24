@@ -342,7 +342,6 @@ HI_S32 VPSS_WBC_Init(VPSS_WBC_S *pstWbc, VPSS_WBC_ATTR_S *pstAttr)
     }
     u32TotalBuffSize = VPSS_WBC_GetTotalBufSize(pstAttr, u32NodeBuffSize + u32Stride);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	if (VPSS_IS_TILE_FMT(pstAttr->ePixFormat))
@@ -382,25 +381,6 @@ HI_S32 VPSS_WBC_Init(VPSS_WBC_S *pstWbc, VPSS_WBC_ATTR_S *pstAttr)
 	u32PhyAddr = pstWbc->stMMUBuf.u32StartSmmuAddr;
 	pu8VirAddr = pstWbc->stMMUBuf.pu8StartVirAddr;
     }
-#else
-    if (VPSS_IS_TILE_FMT(pstAttr->ePixFormat))
-    {
-	s32Ret = HI_DRV_MMZ_AllocAndMap("VPSS_WbcBuf", HI_NULL, u32TotalBuffSize, 0, &(pstWbc->stMMZBuf));
-    }
-    else
-    {
-	s32Ret = HI_DRV_MMZ_Alloc("VPSS_WbcBuf", HI_NULL, u32TotalBuffSize, 0, &(pstWbc->stMMZBuf));
-    }
-
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS WBC Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-
-    u32PhyAddr = pstWbc->stMMZBuf.u32StartPhyAddr;
-    pu8VirAddr = pstWbc->stMMZBuf.pu8StartVirAddr;
-#endif
 
     u32NodeCount = (HI_U32)pstWbc->stWbcAttr.enMode;
     if (u32NodeCount >= VPSS_WBC_MODE_BUTT)
@@ -502,7 +482,6 @@ HI_S32 VPSS_WBC_DeInit(VPSS_WBC_S *pstWbc)
 	}
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstWbc->stMMUBuf.u32StartSmmuAddr)
     {
 	if (HI_NULL != pstWbc->stMMUBuf.pu8StartVirAddr)
@@ -515,19 +494,6 @@ HI_S32 VPSS_WBC_DeInit(VPSS_WBC_S *pstWbc)
 	}
 
     }
-#else
-    if (0 != pstWbc->stMMZBuf.u32StartPhyAddr)
-    {
-	if (HI_NULL != pstWbc->stMMZBuf.pu8StartVirAddr)
-	{
-	    HI_DRV_MMZ_UnmapAndRelease(& (pstWbc->stMMZBuf));
-	}
-	else
-	{
-	    HI_DRV_MMZ_Release(& (pstWbc->stMMZBuf));
-	}
-    }
-#endif
 
     memset(pstWbc, 0, sizeof(VPSS_WBC_S));
 

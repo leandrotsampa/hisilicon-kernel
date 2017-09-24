@@ -53,7 +53,6 @@ HI_S32 VPSS_ST_RGME_Init(VPSS_ST_RGME_S *pstStRgme, VPSS_MC_ATTR_S *pstAttr)
 
     VPSS_ST_RGME_CalBufSize(&u32NodeBuffSize, &(pstStRgme->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_RGME_MAX_NODE;
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap("VPSS_SttRgmeBuf", u32TotalBuffSize, 0, &(pstStRgme->stTEEBuf));
@@ -80,18 +79,6 @@ HI_S32 VPSS_ST_RGME_Init(VPSS_ST_RGME_S *pstStRgme, VPSS_MC_ATTR_S *pstAttr)
 	u32PhyAddr = pstStRgme->stMMUBuf.u32StartSmmuAddr;
 	pu8VirAddr = pstStRgme->stMMUBuf.pu8StartVirAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttRgmeBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStRgme->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS Strgme Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStRgme->stMMZBuf.pu8StartVirAddr, 0, pstStRgme->stMMZBuf.u32Size);
-    u32PhyAddr = pstStRgme->stMMZBuf.u32StartPhyAddr;
-    pu8VirAddr = pstStRgme->stMMZBuf.pu8StartVirAddr;
-#endif
-
 
     pListHead = &(pstStRgme->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -132,17 +119,10 @@ HI_S32 VPSS_ST_RGME_DeInit(VPSS_ST_RGME_S *pstStRgme)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStRgme->stTEEBuf));
     }
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStRgme->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStRgme->stMMUBuf));
     }
-#else
-    if (0 != pstStRgme->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStRgme->stMMZBuf));
-    }
-#endif
     memset(pstStRgme, 0, sizeof(VPSS_ST_RGME_S));
 
 
@@ -225,17 +205,10 @@ HI_S32 VPSS_ST_RGME_Reset(VPSS_ST_RGME_S *pstStRgme)
 
     pstStRgme->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStRgme->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStRgme->stMMUBuf.pu8StartVirAddr, 0, pstStRgme->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStRgme->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStRgme->stMMZBuf.pu8StartVirAddr, 0, pstStRgme->stMMZBuf.u32Size);
-    }
-#endif
 
     return HI_SUCCESS;
 
@@ -284,7 +257,6 @@ HI_S32 VPSS_ST_BLKMV_Init(VPSS_ST_BLKMV_S *pstStBlkmv, VPSS_MC_ATTR_S *pstAttr)
     VPSS_ST_BLKMV_CalBufSize(&u32NodeBuffSize, &(pstStBlkmv->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_BLKMV_MAX_NODE;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttBlkmvBuf", u32TotalBuffSize, 0, &(pstStBlkmv->stTEEBuf));
@@ -306,16 +278,6 @@ HI_S32 VPSS_ST_BLKMV_Init(VPSS_ST_BLKMV_S *pstStBlkmv, VPSS_MC_ATTR_S *pstAttr)
 	memset((HI_U8 *)pstStBlkmv->stMMUBuf.pu8StartVirAddr, 0, pstStBlkmv->stMMUBuf.u32Size);
 	u32PhyAddr = pstStBlkmv->stMMUBuf.u32StartSmmuAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttBlkmvBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStBlkmv->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS Stblkmv Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStBlkmv->stMMZBuf.pu8StartVirAddr, 0, pstStBlkmv->stMMZBuf.u32Size);
-    u32PhyAddr = pstStBlkmv->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstStBlkmv->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -359,19 +321,11 @@ HI_S32 VPSS_ST_BLKMV_DeInit(VPSS_ST_BLKMV_S *pstStBlkmv)
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStBlkmv->stTEEBuf));
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStBlkmv->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStBlkmv->stMMUBuf));
     }
-#else
-    if (0 != pstStBlkmv->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStBlkmv->stMMZBuf));
-    }
-#endif
     memset(pstStBlkmv, 0, sizeof(VPSS_ST_BLKMV_S));
-
 
     return HI_SUCCESS;
 }
@@ -453,17 +407,11 @@ HI_S32 VPSS_ST_BLKMV_Reset(VPSS_ST_BLKMV_S *pstStBlkmv)
 
     pstStBlkmv->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStBlkmv->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStBlkmv->stMMUBuf.pu8StartVirAddr, 0, pstStBlkmv->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStBlkmv->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStBlkmv->stMMZBuf.pu8StartVirAddr, 0, pstStBlkmv->stMMZBuf.u32Size);
-    }
-#endif
+
     return HI_SUCCESS;
 }
 
@@ -511,7 +459,6 @@ HI_S32 VPSS_ST_BLKMT_Init(VPSS_ST_BLKMT_S *pstStBLKMT, VPSS_MC_ATTR_S *pstAttr)
     VPSS_ST_BLKMT_CalBufSize(&u32NodeBuffSize, &(pstStBLKMT->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_BLKMT_MAX_NODE;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttBLKMTBuf", u32TotalBuffSize, 0, &(pstStBLKMT->stTEEBuf));
@@ -533,16 +480,6 @@ HI_S32 VPSS_ST_BLKMT_Init(VPSS_ST_BLKMT_S *pstStBLKMT, VPSS_MC_ATTR_S *pstAttr)
 	memset((HI_U8 *)pstStBLKMT->stMMUBuf.pu8StartVirAddr, 0, pstStBLKMT->stMMUBuf.u32Size);
 	u32PhyAddr = pstStBLKMT->stMMUBuf.u32StartSmmuAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttBLKMTBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStBLKMT->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS StBLKMT Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStBLKMT->stMMZBuf.pu8StartVirAddr, 0, pstStBLKMT->stMMZBuf.u32Size);
-    u32PhyAddr = pstStBLKMT->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstStBLKMT->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -584,17 +521,10 @@ HI_S32 VPSS_ST_BLKMT_DeInit(VPSS_ST_BLKMT_S *pstStBLKMT)
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStBLKMT->stTEEBuf));
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStBLKMT->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStBLKMT->stMMUBuf));
     }
-#else
-    if (0 != pstStBLKMT->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStBLKMT->stMMZBuf));
-    }
-#endif
     memset(pstStBLKMT, 0, sizeof(VPSS_ST_BLKMT_S));
 
 
@@ -671,17 +601,11 @@ HI_S32 VPSS_ST_BLKMT_Reset(VPSS_ST_BLKMT_S *pstStBLKMT)
 
     pstStBLKMT->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStBLKMT->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStBLKMT->stMMUBuf.pu8StartVirAddr, 0, pstStBLKMT->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStBLKMT->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStBLKMT->stMMZBuf.pu8StartVirAddr, 0, pstStBLKMT->stMMZBuf.u32Size);
-    }
-#endif
+
     return HI_SUCCESS;
 }
 
@@ -732,7 +656,7 @@ HI_S32 VPSS_ST_DICNT_Init(VPSS_ST_DICNT_S *pstStDICNT, VPSS_MC_ATTR_S *pstAttr)
     VPSS_ST_DICNT_CalBufSize(&u32NodeBuffSize, &(pstStDICNT->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_DICNT_MAX_NODE;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
+
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttDICNTBuf", u32TotalBuffSize, 0, &(pstStDICNT->stTEEBuf));
@@ -754,16 +678,6 @@ HI_S32 VPSS_ST_DICNT_Init(VPSS_ST_DICNT_S *pstStDICNT, VPSS_MC_ATTR_S *pstAttr)
 	memset((HI_U8 *)pstStDICNT->stMMUBuf.pu8StartVirAddr, 0, pstStDICNT->stMMUBuf.u32Size);
 	u32PhyAddr = pstStDICNT->stMMUBuf.u32StartSmmuAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttDICNTBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStDICNT->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS StDICNT Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStDICNT->stMMZBuf.pu8StartVirAddr, 0, pstStDICNT->stMMZBuf.u32Size);
-    u32PhyAddr = pstStDICNT->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstStDICNT->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -805,17 +719,10 @@ HI_S32 VPSS_ST_DICNT_DeInit(VPSS_ST_DICNT_S *pstStDICNT)
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStDICNT->stTEEBuf));
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStDICNT->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStDICNT->stMMUBuf));
     }
-#else
-    if (0 != pstStDICNT->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStDICNT->stMMZBuf));
-    }
-#endif
     memset(pstStDICNT, 0, sizeof(VPSS_ST_DICNT_S));
 
 
@@ -895,17 +802,11 @@ HI_S32 VPSS_ST_DICNT_Reset(VPSS_ST_DICNT_S *pstStDICNT)
 
     pstStDICNT->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStDICNT->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStDICNT->stMMUBuf.pu8StartVirAddr, 0, pstStDICNT->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStDICNT->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStDICNT->stMMZBuf.pu8StartVirAddr, 0, pstStDICNT->stMMZBuf.u32Size);
-    }
-#endif
+
     return HI_SUCCESS;
 }
 
@@ -955,7 +856,6 @@ HI_S32 VPSS_ST_PRJH_Init(VPSS_ST_PRJH_S *pstStPrjh, VPSS_MC_ATTR_S *pstAttr)
 
     VPSS_ST_PRJH_CalBufSize(&u32NodeBuffSize, &(pstStPrjh->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_PRJH_MAX_NODE;
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap("VPSS_SttprjhBuf", u32TotalBuffSize, 0, &pstStPrjh->stTEEBuf);
@@ -978,16 +878,6 @@ HI_S32 VPSS_ST_PRJH_Init(VPSS_ST_PRJH_S *pstStPrjh, VPSS_MC_ATTR_S *pstAttr)
 	memset((HI_U8 *)pstStPrjh->stMMUBuf.pu8StartVirAddr, 0, pstStPrjh->stMMUBuf.u32Size);
 	u32PhyAddr = pstStPrjh->stMMUBuf.u32StartSmmuAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttprjhBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStPrjh->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS Stprjh Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStPrjh->stMMZBuf.pu8StartVirAddr, 0, pstStPrjh->stMMZBuf.u32Size);
-    u32PhyAddr = pstStPrjh->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstStPrjh->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -1026,18 +916,12 @@ HI_S32 VPSS_ST_PRJH_DeInit(VPSS_ST_PRJH_S *pstStPrjh)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStPrjh->stTEEBuf));
     }
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStPrjh->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStPrjh->stMMUBuf));
     }
-#else
-    if (0 != pstStPrjh->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStPrjh->stMMZBuf));
-    }
-#endif
     memset(pstStPrjh, 0, sizeof(VPSS_ST_PRJH_S));
+
     return HI_SUCCESS;
 
 }
@@ -1113,17 +997,10 @@ HI_S32 VPSS_ST_PRJH_Reset(VPSS_ST_PRJH_S *pstStPrjh)
 
     pstStPrjh->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStPrjh->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStPrjh->stMMUBuf.pu8StartVirAddr, 0, pstStPrjh->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStPrjh->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStPrjh->stMMZBuf.pu8StartVirAddr, 0, pstStPrjh->stMMZBuf.u32Size);
-    }
-#endif
 
     return HI_SUCCESS;
 
@@ -1173,7 +1050,6 @@ HI_S32 VPSS_ST_PRJV_Init(VPSS_ST_PRJV_S *pstStPrjv, VPSS_MC_ATTR_S *pstAttr)
     VPSS_ST_PRJV_CalBufSize(&u32NodeBuffSize, &(pstStPrjv->u32stride), pstAttr);
     u32TotalBuffSize = u32NodeBuffSize * VPSS_PRJV_MAX_NODE;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttprjvBuf", u32TotalBuffSize, 0, &(pstStPrjv->stTEEBuf));
@@ -1195,16 +1071,6 @@ HI_S32 VPSS_ST_PRJV_Init(VPSS_ST_PRJV_S *pstStPrjv, VPSS_MC_ATTR_S *pstAttr)
 	memset((HI_U8 *)pstStPrjv->stMMUBuf.pu8StartVirAddr, 0, pstStPrjv->stMMUBuf.u32Size);
 	u32PhyAddr = pstStPrjv->stMMUBuf.u32StartSmmuAddr;
     }
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap( "VPSS_SttprjvBuf", HI_NULL, u32TotalBuffSize, 0, &(pstStPrjv->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS Stprjv Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    memset((HI_U8 *)pstStPrjv->stMMZBuf.pu8StartVirAddr, 0, pstStPrjv->stMMZBuf.u32Size);
-    u32PhyAddr = pstStPrjv->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstStPrjv->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -1244,18 +1110,12 @@ HI_S32 VPSS_ST_PRJV_DeInit(VPSS_ST_PRJV_S *pstStPrjv)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStPrjv->stTEEBuf));
     }
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStPrjv->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_UnmapAndRelease(&(pstStPrjv->stMMUBuf));
     }
-#else
-    if (0 != pstStPrjv->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstStPrjv->stMMZBuf));
-    }
-#endif
     memset(pstStPrjv, 0, sizeof(VPSS_ST_PRJV_S));
+
     return HI_SUCCESS;
 
 }
@@ -1331,18 +1191,11 @@ HI_S32 VPSS_ST_PRJV_Reset(VPSS_ST_PRJV_S *pstStPrjv)
 
     pstStPrjv->u32Cnt = 0;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstStPrjv->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstStPrjv->stMMUBuf.pu8StartVirAddr, 0, pstStPrjv->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstStPrjv->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstStPrjv->stMMZBuf.pu8StartVirAddr, 0, pstStPrjv->stMMZBuf.u32Size);
-    }
 
-#endif
     return HI_SUCCESS;
 
 

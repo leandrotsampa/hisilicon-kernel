@@ -440,7 +440,6 @@ HI_U8 *VPSS_OSAL_MEMMap(HI_BOOL bSecure, HI_U32 u32StartPhyAddr)
 
     if (HI_FALSE == bSecure)
     {
-#ifdef HI_VPSS_SMMU_SUPPORT
 	SMMU_BUFFER_S stMMU = {0};
 
 	stMMU.u32StartSmmuAddr = u32StartPhyAddr;
@@ -454,23 +453,6 @@ HI_U8 *VPSS_OSAL_MEMMap(HI_BOOL bSecure, HI_U32 u32StartPhyAddr)
 	    VPSS_ERROR("HI_DRV_SMMU_Map alloc failed\n");
 	    return HI_NULL;
 	}
-#else
-	MMZ_BUFFER_S stMMZ = {0};
-
-	stMMZ.u32StartPhyAddr = u32StartPhyAddr;
-	s32Ret = HI_DRV_MMZ_Map(&stMMZ);
-
-	if (HI_SUCCESS == s32Ret)
-	{
-	    return stMMZ.pu8StartVirAddr;
-	}
-	else
-	{
-	    VPSS_ERROR("HI_DRV_MMZ_Map alloc failed\n");
-	    return HI_NULL;
-	}
-
-#endif
     }
     else
     {
@@ -485,20 +467,12 @@ HI_S32 VPSS_OSAL_MEMUnmap(HI_BOOL bSecure, HI_U32 u32StartPhyAddr, HI_U8 *pu8Sta
 
     if (HI_FALSE == bSecure)
     {
-#ifdef HI_VPSS_SMMU_SUPPORT
 	SMMU_BUFFER_S stMMU = {0};
 
 	stMMU.u32StartSmmuAddr = u32StartPhyAddr;
 	stMMU.pu8StartVirAddr = pu8StartVirAddr;
 
 	HI_DRV_SMMU_Unmap(&stMMU);
-#else
-	MMZ_BUFFER_S stMMZ = {0};
-
-	stMMZ.u32StartPhyAddr = u32StartPhyAddr;
-	stMMZ.pu8StartVirAddr = pu8StartVirAddr;
-	HI_DRV_MMZ_Unmap(&stMMZ);
-#endif
     }
     else
     {
@@ -1977,7 +1951,6 @@ HI_S32 VPSS_OSAL_AllocateMem(HI_U8 u8flag,
 
     if (u8flag == VPSS_MEM_FLAG_NORMAL)
     {
-#ifdef HI_VPSS_SMMU_SUPPORT
 	SMMU_BUFFER_S stMMU;
 
 	s32Ret = HI_DRV_SMMU_Alloc( pu8MemName,
@@ -1990,20 +1963,6 @@ HI_S32 VPSS_OSAL_AllocateMem(HI_U8 u8flag,
 
 	    pstMem->u8flag = u8flag;
 	}
-#else
-	MMZ_BUFFER_S stMMZ;
-
-	s32Ret = HI_DRV_MMZ_Alloc( pu8MemName, HI_NULL,
-				   u32Size, 0, &stMMZ);
-	if (s32Ret == HI_SUCCESS)
-	{
-	    pstMem->u32Size = stMMZ.u32Size;
-	    pstMem->u32StartPhyAddr = stMMZ.u32StartPhyAddr;
-	    pstMem->pu8StartVirAddr = stMMZ.pu8StartVirAddr;
-
-	    pstMem->u8flag = u8flag;
-	}
-#endif
     }
     else if (u8flag == VPSS_MEM_FLAG_SECURE)
     {
@@ -2031,7 +1990,6 @@ HI_S32 VPSS_OSAL_FreeMem(VPSS_MEM_S *pstMem)
 
     if (pstMem->u8flag == VPSS_MEM_FLAG_NORMAL)
     {
-#ifdef HI_VPSS_SMMU_SUPPORT
 	SMMU_BUFFER_S stMMU;
 
 	stMMU.u32StartSmmuAddr = pstMem->u32StartPhyAddr;
@@ -2039,15 +1997,6 @@ HI_S32 VPSS_OSAL_FreeMem(VPSS_MEM_S *pstMem)
 	stMMU.u32Size = pstMem->u32Size;
 
 	HI_DRV_SMMU_Release(&stMMU);
-#else
-	MMZ_BUFFER_S stMMZ;
-
-	stMMZ.u32StartPhyAddr = pstMem->u32StartPhyAddr;
-	stMMZ.pu8StartVirAddr = pstMem->pu8StartVirAddr;
-	stMMZ.u32Size = pstMem->u32Size;
-
-	HI_DRV_MMZ_Release(&stMMZ);
-#endif
     }
     else if (pstMem->u8flag == VPSS_MEM_FLAG_SECURE)
     {
@@ -2063,7 +2012,6 @@ HI_S32 VPSS_OSAL_FreeMem(VPSS_MEM_S *pstMem)
     return s32Ret;
 }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
 HI_U32 VPSS_OSAL_SmmuToPhyAddr( HI_U32 u32SmmuAddr)
 {
     HI_U32 PageIndex = 0;
@@ -2102,8 +2050,6 @@ HI_U32 VPSS_OSAL_SmmuToPhyAddr( HI_U32 u32SmmuAddr)
     //VPSS_FATAL("\n%s,%d,~ PhyAddr = 0x%x\n",__func__,__LINE__,PhyAddr);
     return PhyAddr;
 }
-#endif
-
 
 
 #ifdef __cplusplus

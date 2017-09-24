@@ -54,12 +54,7 @@ typedef struct hiVPSS_RGME_S
     HI_U32 u32CompleteCount;	       //��д������ת����
     VPSS_WBC_MCDEI_DATA_S stDataList[VPSS_RGME_WBC_MAX_NODE];	   //��д�����ṹ
     VPSS_RGME_ATTR_S stRgmeAttr;	 //��д��������
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;	       //֡����Ϣ
-#else
-    MMZ_BUFFER_S stMMZBuf;	      //֡����Ϣ
-#endif
-
 
     SMMU_BUFFER_S stTEEBuf;
 
@@ -113,12 +108,7 @@ typedef struct hiVPSS_BLEND_S
     HI_U32 u32CompleteCount;	       //��д������ת����
     VPSS_WBC_MCDEI_DATA_S stDataList[VPSS_BLEND_WBC_MAX_NODE];	    //��д�����ṹ
     VPSS_BLEND_ATTR_S stBlendAttr;	   //��д��������
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;	       //֡����Ϣ
-#else
-    MMZ_BUFFER_S stMMZBuf;	      //֡����Ϣ
-#endif
-
 
     SMMU_BUFFER_S stTEEBuf;
 

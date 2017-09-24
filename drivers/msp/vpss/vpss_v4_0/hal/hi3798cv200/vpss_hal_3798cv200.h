@@ -125,22 +125,11 @@ typedef struct hiVPSS_HAL_CTX_S
     HI_U32   au32AppPhy[VPSS_HAL_TASK_NODE_BUTT];
     HI_U8   *apu8AppVir[VPSS_HAL_TASK_NODE_BUTT];
     MMZ_BUFFER_S stRegBuf;
-
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S     stDeTileMMUBuf;	   //��tileʹ�õ���ʱbuffer
-#else
-    MMZ_BUFFER_S     stDeTileMMZBuf;	   //��tileʹ�õ���ʱbuffer
-#endif
-
-
     SMMU_BUFFER_S     stDeTileTEEBuf;
 
 #ifdef VPSS_SUPPORT_OUT_TUNNEL
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S   stLowDelayBuf_MMU;
-#else
-    MMZ_BUFFER_S    stLowDelayBuf_MMZ;
-#endif
 #endif
 
 } VPSS_HAL_CTX_S;
@@ -198,11 +187,7 @@ typedef struct hiVPSS_HAL_PORT_INFO_S
 
 typedef struct hiVPSS_HAL_RefList
 {
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stRefListBuf_mmu;
-#else
-    MMZ_BUFFER_S  stRefListBuf_mmz;
-#endif
 
     HI_DRV_VID_FRAME_ADDR_S stRefListAddr[DEF_VPSS_HAL_REF_LIST_NUM];
     HI_BOOL		    abRefNodeValid[DEF_VPSS_HAL_REF_LIST_NUM];

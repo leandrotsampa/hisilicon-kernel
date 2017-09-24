@@ -51,13 +51,7 @@ typedef struct hiVPSS_ST_RGME_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_RGME_MAX_NODE];
-
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
     SMMU_BUFFER_S stTEEBuf;
 
     LIST *pstFirstRef;
@@ -97,14 +91,7 @@ typedef struct hiVPSS_ST_BLKMV_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_BLKMV_MAX_NODE];
-
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
-
     SMMU_BUFFER_S stTEEBuf;
 
     LIST *pstFirstRef;
@@ -144,14 +131,7 @@ typedef struct hiVPSS_ST_BLKMT_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_BLKMT_MAX_NODE];
-
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
-
     SMMU_BUFFER_S stTEEBuf;
 
     LIST *pstFirstRef;
@@ -193,12 +173,7 @@ typedef struct hiVPSS_ST_DICNT_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_DICNT_MAX_NODE];
-
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
     SMMU_BUFFER_S stTEEBuf;
     LIST *pstFirstRef;
 } VPSS_ST_DICNT_S;
@@ -238,15 +213,8 @@ typedef struct hiVPSS_ST_PRJH_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_PRJH_MAX_NODE];
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
-
     SMMU_BUFFER_S stTEEBuf;
-
 
     LIST *pstFirstRef;
 } VPSS_ST_PRJH_S;
@@ -285,12 +253,7 @@ typedef struct hiVPSS_ST_PRJV_S
     HI_U32 u32Height;
     HI_U32 u32stride;
     VPSS_MC_DATA_S stDataList[VPSS_PRJV_MAX_NODE];
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
-
     SMMU_BUFFER_S stTEEBuf;
 
     LIST *pstFirstRef;

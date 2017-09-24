@@ -148,18 +148,12 @@ HI_S32 VPSS_HAL_H265RefListDeInit(VPSS_HAL_RefList_S *pstRefList)
 
     if (pstRefList->bRefListValid)
     {
-#ifdef HI_VPSS_SMMU_SUPPORT
 	if (0 != pstRefList->stRefListBuf_mmu.u32Size)
 	{
 	    u32BaseAddr = pstRefList->stRefListBuf_mmu.u32StartSmmuAddr;
 	    HI_DRV_SMMU_Release(&(pstRefList->stRefListBuf_mmu));
 	    memset(&pstRefList->stRefListBuf_mmu, 0, sizeof(pstRefList->stRefListBuf_mmu));
 	}
-#else
-	u32BaseAddr = pstRefList->stRefListBuf_mmz.u32StartPhyAddr;
-	HI_DRV_MMZ_Release(&(pstRefList->stRefListBuf_mmz));
-	memset(&pstRefList->stRefListBuf_mmz, 0, sizeof(pstRefList->stRefListBuf_mmz));
-#endif
 
 	VPSS_DBG_INFO("VPSS_HAL_H265RefListDeInit free %x\n", u32BaseAddr);
 
@@ -205,7 +199,6 @@ HI_S32 VPSS_HAL_H265RefListInit(VPSS_HAL_RefList_S *pstRefList, HI_S32 s32Width,
 	return HI_FAILURE;
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (bSecure)
     {
 	s32Ret = HI_DRV_SMMU_Alloc( "VPSS_H265RefBuf_MMU",
@@ -228,20 +221,6 @@ HI_S32 VPSS_HAL_H265RefListInit(VPSS_HAL_RefList_S *pstRefList, HI_S32 s32Width,
 	VPSS_FATAL("Alloc VPSS_H265RefBuf_MMU Failed\n");
 	return HI_FAILURE;
     }
-
-#else
-    s32Ret = HI_DRV_MMZ_Alloc("VPSS_H265RefBuf_MMZ",
-			      "VPSS",
-			      s32Width * s32Height * 3 / 2 * DEF_VPSS_HAL_REF_LIST_NUM,
-			      0,
-			      &(pstRefList->stRefListBuf_mmz));
-    if (s32Ret != HI_SUCCESS)
-    {
-	VPSS_FATAL("Alloc VPSS_H265RefBuf_MMZ Failed\n");
-	return HI_FAILURE;
-    }
-    u32StartAddr = pstRefList->stRefListBuf_mmz.u32StartPhyAddr;
-#endif
 
     VPSS_DBG_INFO("VPSS_HAL_H265RefListInit malloc W H adr %d %d %x\n", s32Width, s32Height, u32StartAddr);
 
@@ -974,7 +953,6 @@ HI_S32 VPSS_HAL_SetPortCropCfg(VPSS_IP_E enIP,
 HI_S32 VPSS_HAL_SetSMMUCfg(VPSS_IP_E enIP, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,
 			   VPSS_HAL_INFO_S *pstHalInfo)
 {
-#ifdef HI_VPSS_SMMU_SUPPORT
     HI_U32 u32PageAddr;
     HI_U32 u32ErrReadAddr;
     HI_U32 u32ErrWriteAddr;
@@ -988,7 +966,6 @@ HI_S32 VPSS_HAL_SetSMMUCfg(VPSS_IP_E enIP, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,
     VPSS_REG_SetGlobalBypass(pstHalCtx->pu8BaseRegVir, HI_FALSE);
 
     VPSS_REG_SetSmmuIntEn(pstHalCtx->pu8BaseRegVir, HI_TRUE);
-#endif
     return HI_SUCCESS;
 }
 
@@ -1159,13 +1136,8 @@ HI_S32 VPSS_HAL_SetPortCfg(VPSS_IP_E enIP, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,
 		VPSS_REG_SetTunlEn(pu32AppVir, enPort, HI_TRUE);
 		VPSS_REG_SetTunlFinishLine(pu32AppVir, enPort,
 					   pstOutFrm->u32Height * 30 / 100);
-#ifdef HI_VPSS_SMMU_SUPPORT
 		VPSS_REG_SetTunlAddr(pu32AppVir, enPort,
 				     pstHalCtx->stLowDelayBuf_MMU.u32StartSmmuAddr);
-#else
-		VPSS_REG_SetTunlAddr(pu32AppVir, enPort,
-				     pstHalCtx->stLowDelayBuf_MMZ.u32StartPhyAddr);
-#endif
 	    }
 	    else
 #endif
@@ -1884,18 +1856,12 @@ HI_S32 VPSS_HAL_SetFieldNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 #endif
     if (pstHalInfo->stInInfo.u32Width > 128
 	&& pstHalInfo->stInInfo.u32Height > 64)
@@ -1954,10 +1920,8 @@ HI_S32 VPSS_HAL_SetHDRNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
     VPSS_REG_SetTNrEn(pu32AppVir, HI_FALSE); /* Ĭ�ϰ�TNR�� */
     VPSS_REG_SetSNrEn(pu32AppVir, HI_FALSE); /* Ĭ�ϰ�SNR�� */
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetTNrEn(pu32AppVir, HI_FALSE); /* Ĭ�ϰ�TNR�� */
     VPSS_REG_SetSNrEn(pu32AppVir, HI_FALSE); /* Ĭ�ϰ�SNR�� */
-#endif
 
 #if 0
     /*rwzb*/
@@ -2060,19 +2024,10 @@ HI_S32 VPSS_HAL_SetHDRNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xc00);
-
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xe0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
 #endif
-#endif
-
 
     if (pstHalInfo->stInInfo.u32Width > 128
 	&& pstHalInfo->stInInfo.u32Height > 64)
@@ -2236,18 +2191,11 @@ HI_S32 VPSS_HAL_SetFrameNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
-
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 #endif
 
     if (pstHalInfo->stInInfo.u32Width > 128
@@ -2370,17 +2318,11 @@ HI_S32 VPSS_HAL_SetNVRHighSpeedNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_REG_Set4PixEn(pu32AppVir, HI_TRUE);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
     VPSS_REG_SetDbmEn(pu32AppVir, HI_FALSE);
     VPSS_REG_SetBlkDetEn(pu32AppVir, HI_FALSE);
@@ -2471,11 +2413,7 @@ HI_S32 VPSS_HAL_TunnelOut_GetBufAddr(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo
 
     pstHalCtx = &stHalCtx[enIP];
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     u32WriteAddr = pstHalCtx->stLowDelayBuf_MMU.u32StartSmmuAddr;
-#else
-    u32WriteAddr = pstHalCtx->stLowDelayBuf_MMZ.u32StartPhyAddr;
-#endif
 
     return u32WriteAddr;
 }
@@ -2490,7 +2428,6 @@ HI_S32 VPSS_HAL_AllocDetileBuffer(VPSS_IP_E enIP, HI_BOOL bSecure)
 
     pstHalCtx = &stHalCtx[enIP];
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (bSecure)
     {
 	if (pstHalCtx->stDeTileTEEBuf.u32Size == 0)
@@ -2517,17 +2454,6 @@ HI_S32 VPSS_HAL_AllocDetileBuffer(VPSS_IP_E enIP, HI_BOOL bSecure)
 	    }
 	}
     }
-#else
-    if (pstHalCtx->stDeTileMMZBuf.u32Size == 0)
-    {
-	s32Ret = HI_DRV_MMZ_AllocAndMap("VPSS_DETILE_BUF", "VPSS", 1920 * 1080 * 2, 0, &(pstHalCtx->stDeTileMMZBuf));
-	if (s32Ret != HI_SUCCESS)
-	{
-	    VPSS_FATAL("Alloc Detile buffer Failed\n");
-	    return HI_FAILURE;
-	}
-    }
-#endif
 
     return HI_SUCCESS;
 }
@@ -2537,7 +2463,6 @@ HI_VOID VPSS_HAL_FreeDetileBuffer(VPSS_IP_E enIP)
 
     pstHalCtx = &stHalCtx[enIP];
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstHalCtx->stDeTileMMUBuf.u32Size != 0)
     {
 	(HI_VOID)HI_DRV_SMMU_Release(&(pstHalCtx->stDeTileMMUBuf));
@@ -2549,13 +2474,6 @@ HI_VOID VPSS_HAL_FreeDetileBuffer(VPSS_IP_E enIP)
 	(HI_VOID)HI_DRV_SMMU_Release(&(pstHalCtx->stDeTileTEEBuf));
 	memset(&(pstHalCtx->stDeTileTEEBuf), 0, sizeof(SMMU_BUFFER_S));
     }
-#else
-    if (pstHalCtx->stDeTileMMZBuf.u32Size != 0)
-    {
-	HI_DRV_MMZ_UnmapAndRelease(&(pstHalCtx->stDeTileMMZBuf));
-	memset(&(pstHalCtx->stDeTileMMZBuf), 0, sizeof(MMZ_BUFFER_S));
-    }
-#endif
 
     return;
 }
@@ -2584,7 +2502,6 @@ HI_S32 VPSS_HAL_SetDetileNode_STEP1(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 	return HI_FAILURE;
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pInInfo->bSecure)
     {
 	u32DetileBufferAddr = pstHalCtx->stDeTileTEEBuf.u32StartSmmuAddr;
@@ -2593,10 +2510,6 @@ HI_S32 VPSS_HAL_SetDetileNode_STEP1(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
     {
 	u32DetileBufferAddr = pstHalCtx->stDeTileMMUBuf.u32StartSmmuAddr;
     }
-#else
-    u32DetileBufferAddr = pstHalCtx->stDeTileMMZBuf.u32StartPhyAddr;
-#endif
-
 
     s32Ret = VPSS_HAL_ConfigDeTileFrame(&(pstHalInfo->stDeTileFrame),
 					u32DetileBufferAddr,
@@ -2713,17 +2626,11 @@ HI_S32 VPSS_HAL_SetDetileNode_STEP1(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xa0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
     VPSS_Tnr_ADDR = u32AppPhy + VPSS_REG_SIZE_CALC(VPSS_CTRL, VPSS_TNR_MODE) - sizeof(HI_U32);
     VPSS_Tnr_CLUT_ADDR = u32AppPhy + VPSS_REG_SIZE_CALC(VPSS_CTRL, VPSS_TNR_CLUT10) - sizeof(HI_U32);
@@ -2835,17 +2742,11 @@ HI_S32 VPSS_HAL_SetFirst3FieldNode_STEP2(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHal
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
     VPSS_Tnr_ADDR = u32AppPhy + VPSS_REG_SIZE_CALC(VPSS_CTRL, VPSS_TNR_MODE) - sizeof(HI_U32);
     VPSS_Tnr_CLUT_ADDR = u32AppPhy + VPSS_REG_SIZE_CALC(VPSS_CTRL, VPSS_TNR_CLUT10) - sizeof(HI_U32);
@@ -2990,19 +2891,12 @@ HI_S32 VPSS_HAL_Set5FieldNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
     // VPSS_REG_Set4PixEn(pu32AppVir,HI_FALSE);
-
 #endif
 
     VPSS_Tnr_ADDR = u32AppPhy + VPSS_REG_SIZE_CALC(VPSS_CTRL, VPSS_TNR_MODE) - sizeof(HI_U32);
@@ -3135,18 +3029,12 @@ HI_S32 VPSS_HAL_SetUHDNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     VPSS_HAL_SetAlgParaAddr(pu32AppVir, u32AppPhy);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xc00);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xe0);
 
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 #endif
 
     VPSS_REG_SetDbmEn(pu32AppVir, HI_FALSE);
@@ -3376,17 +3264,11 @@ HI_S32 VPSS_HAL_SetRotateNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 
     //t00273561
     VPSS_REG_SetSttWrAddr(pu32AppVir, pstHalInfo->u32stt_w_phy_addr);
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
 #endif
 #endif
@@ -3658,14 +3540,9 @@ HI_S32 VPSS_HAL_SetNode_H265_Step1_Interlace(VPSS_IP_E enIP, VPSS_HAL_INFO_S *ps
 	VPSS_REG_EnPort(pu32AppVir, enPort, HI_TRUE);
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
     return HI_SUCCESS;
 }
@@ -3854,17 +3731,11 @@ HI_S32 VPSS_HAL_SetNode_H265_Step2_Dei(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalIn
 
     VPSS_REG_SetSttWrAddr(pu32AppVir, pstHalInfo->u32stt_w_phy_addr);
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0x0);
 
     VPSS_HAL_SetSMMUCfg(enIP, pu32AppVir, u32AppPhy, pstHalInfo);
-#else
-    VPSS_REG_SetRchSmmuBypass(pu32AppVir, 0xffffffff);
-
-    VPSS_REG_SetWchSmmuBypass(pu32AppVir, 0xffffffff);
-#endif
 
     pstHalInfo->pstH265RefList->u32RefListHead = (pstHalInfo->pstH265RefList->u32RefListHead + 1) % DEF_VPSS_HAL_REF_LIST_NUM;
 
@@ -4010,30 +3881,15 @@ HI_S32 VPSS_HAL_Init(VPSS_IP_E enIP)
 	return HI_FAILURE;
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     memset(&(pstHalCtx->stDeTileMMUBuf), 0, sizeof(SMMU_BUFFER_S));
-#else
-    memset(&(pstHalCtx->stDeTileMMZBuf), 0, sizeof(MMZ_BUFFER_S));
-#endif
 
 #ifdef VPSS_SUPPORT_OUT_TUNNEL
-#ifdef HI_VPSS_SMMU_SUPPORT
     s32Ret = HI_DRV_SMMU_AllocAndMap("VPSS_LowDelay_mmu",
 				     4096, 0, &pstHalCtx->stLowDelayBuf_MMU);
 
     VPSS_DBG_INFO("VPSS alloc LowDelayBuf smmu:%#x vir:%#x\n",
 		  pstHalCtx->stLowDelayBuf_MMU.u32StartSmmuAddr,
 		  pstHalCtx->stLowDelayBuf_MMU.pu8StartVirAddr);
-
-#else
-    s32Ret = HI_DRV_MMZ_AllocAndMap("VPSS_LowDelay_mmz", HI_NULL,
-				    4096, 0, &pstHalCtx->stLowDelayBuf_MMZ);
-
-    VPSS_DBG_INFO("VPSS alloc LowDelayBuf mmz:%#x vir:%#x\n",
-		  pstHalCtx->stLowDelayBuf_MMZ.u32StartPhyAddr,
-		  pstHalCtx->stLowDelayBuf_MMZ.pu8StartVirAddr);
-#endif
-
     if (s32Ret != HI_SUCCESS)
     {
 	VPSS_FATAL("Alloc VPSS_LowDelayBuf Failed\n");
@@ -4076,13 +3932,8 @@ HI_S32 VPSS_HAL_DelInit(VPSS_IP_E enIP)
     memset(&pstHalCtx->stRegBuf, 0, sizeof(MMZ_BUFFER_S));
 
 #ifdef VPSS_SUPPORT_OUT_TUNNEL
-#ifdef HI_VPSS_SMMU_SUPPORT
     HI_DRV_SMMU_UnmapAndRelease(&pstHalCtx->stLowDelayBuf_MMU);
     memset(&(pstHalCtx->stLowDelayBuf_MMU), 0x0, sizeof(pstHalCtx->stLowDelayBuf_MMU));
-#else
-    HI_DRV_MMZ_UnmapAndRelease(&pstHalCtx->stLowDelayBuf_MMZ);
-    memset(&(pstHalCtx->stLowDelayBuf_MMZ), 0x0, sizeof(pstHalCtx->stLowDelayBuf_MMZ));
-#endif
 #endif
 
     VPSS_HAL_FreeDetileBuffer(enIP);

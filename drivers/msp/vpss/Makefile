@@ -12,7 +12,6 @@ EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
 		-I$(srctree)/drivers/msp/include
 
 
-EXTRA_CFLAGS += -DHI_VPSS_SMMU_SUPPORT
 MOD_NAME := hi_vpss
 
 obj-y += $(MOD_NAME).o

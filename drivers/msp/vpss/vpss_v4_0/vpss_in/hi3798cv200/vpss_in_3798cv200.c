@@ -1123,11 +1123,7 @@ HI_S32 VPSS_IN_GetInfo_V3(VPSS_IN_ENTITY_S *pstEntity, VPSS_IN_INFO_TYPE_E enTyp
 
 		ppu32VirAddr = (HI_U32 **)pstInfo;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
 		*ppu32VirAddr = (HI_U32 *)pstStWbc->stMMUBuf.pu8StartVirAddr;
-#else
-		*ppu32VirAddr = (HI_U32 *)pstStWbc->stMMZBuf.pu8StartVirAddr;
-#endif
 		s32Ret = HI_SUCCESS;
 	    }
 	    else
@@ -1147,11 +1143,7 @@ HI_S32 VPSS_IN_GetInfo_V3(VPSS_IN_ENTITY_S *pstEntity, VPSS_IN_INFO_TYPE_E enTyp
 
 		pu32VirAddr = (HI_U32 *)pstInfo;
 
-#ifdef HI_VPSS_SMMU_SUPPORT
 		*pu32VirAddr = pstStWbc->stMMUBuf.u32StartSmmuAddr;
-#else
-		*pu32VirAddr = pstStWbc->stMMZBuf.u32StartPhyAddr;
-#endif
 		s32Ret = HI_SUCCESS;
 	    }
 	    else

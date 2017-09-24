@@ -25,11 +25,7 @@ typedef struct hiVPSS_DIESTINFO_S
     HI_U32 u32Stride;
     HI_U32 u32DieInfoSize;
     VPSS_DIE_DATA_S stDataList[VPSS_DIE_MAX_NODE];
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
 
     SMMU_BUFFER_S stTEEBuf;
     LIST *pstFirstRef;
@@ -84,11 +80,7 @@ typedef struct hiVPSS_NRMADINFO_S
     HI_U32 u32NRMADSize;
     HI_U32 u32madstride;
     VPSS_NR_DATA_S stDataList[VPSS_NR_MAX_NODE];
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
 
     SMMU_BUFFER_S stTEEBuf;
 
@@ -114,11 +106,7 @@ typedef struct hiVPSS_STTWBC_S
 {
     HI_BOOL bInit;		       //��ʼ����ʶ
     HI_U32 u32Cnt;
-#ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stMMUBuf;
-#else
-    MMZ_BUFFER_S stMMZBuf;
-#endif
 } VPSS_STTWBC_S;
 
 /* STT WBC */

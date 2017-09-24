@@ -60,7 +60,6 @@ HI_S32 VPSS_RGME_Init(VPSS_RGME_S *pstRgme, VPSS_RGME_ATTR_S *pstAttr)
     }
 
     u32TotalBuffSize = u32NodeBuffSize * VPSS_RGME_WBC_MAX_NODE;
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_Alloc( "VPSS_RgmeWbcBuf", u32TotalBuffSize, 0, &(pstRgme->stTEEBuf));
@@ -78,15 +77,6 @@ HI_S32 VPSS_RGME_Init(VPSS_RGME_S *pstRgme, VPSS_RGME_ATTR_S *pstAttr)
 	return HI_FAILURE;
     }
 
-#else
-    s32Ret = HI_DRV_MMZ_Alloc( "VPSS_RgmeWbcBuf", HI_NULL, u32TotalBuffSize, 0, &(pstRgme->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS RGME WBC Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    u32PhyAddr = pstRgme->stMMZBuf.u32StartPhyAddr;
-#endif
     pListHead = &(pstRgme->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
     pstRgme->pstFirstRef = pListHead;
@@ -127,17 +117,10 @@ HI_S32 VPSS_RGME_DeInit(VPSS_RGME_S *pstRgme)
 	HI_DRV_SMMU_Release(&(pstRgme->stTEEBuf));
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstRgme->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_Release(&(pstRgme->stMMUBuf));
     }
-#else
-    if (0 != pstRgme->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_Release(&(pstRgme->stMMZBuf));
-    }
-#endif
     memset(pstRgme, 0, sizeof(VPSS_RGME_S));
 
     return HI_SUCCESS;
@@ -252,17 +235,10 @@ HI_S32 VPSS_RGME_Reset(VPSS_RGME_S *pstRgme)
 	VPSS_WARN("Vpss rgme wbc reset error(not init).\n");
 	return HI_FAILURE;
     }
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstRgme->stMMUBuf.pu8StartVirAddr)
     {
 	memset((HI_U8 *)pstRgme->stMMUBuf.pu8StartVirAddr, 0, pstRgme->stMMUBuf.u32Size);
     }
-#else
-    if (0 != pstRgme->stMMZBuf.pu8StartVirAddr)
-    {
-	memset((HI_U8 *)pstRgme->stMMZBuf.pu8StartVirAddr, 0, pstRgme->stMMZBuf.u32Size);
-    }
-#endif
     pstRgme->u32CompleteCount = 0;
 
     return HI_SUCCESS;
@@ -319,7 +295,6 @@ HI_S32 VPSS_BLEND_Init(VPSS_BLEND_S *pstBlend, VPSS_BLEND_ATTR_S *pstAttr)
     }
 #endif
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
 	s32Ret = HI_DRV_SMMU_Alloc("VPSS_BlendWbcBuf", u32TotalBuffSize, 0, &(pstBlend->stTEEBuf));
@@ -340,16 +315,6 @@ HI_S32 VPSS_BLEND_Init(VPSS_BLEND_S *pstBlend, VPSS_BLEND_ATTR_S *pstAttr)
 	}
 	u32PhyAddr = pstBlend->stMMUBuf.u32StartSmmuAddr;
     }
-
-#else
-    s32Ret = HI_DRV_MMZ_Alloc( "VPSS_BlendWbcBuf", HI_NULL, u32TotalBuffSize, 0, &(pstBlend->stMMZBuf));
-    if (HI_FAILURE == s32Ret)
-    {
-	VPSS_FATAL("VPSS blend WBC Alloc memory failed.\n");
-	return HI_FAILURE;
-    }
-    u32PhyAddr = pstBlend->stMMZBuf.u32StartPhyAddr;
-#endif
 
     pListHead = &(pstBlend->stDataList[0].node);
     INIT_LIST_HEAD(pListHead);
@@ -387,18 +352,10 @@ HI_S32 VPSS_BLEND_DeInit(VPSS_BLEND_S *pstBlend)
 	HI_DRV_SMMU_Release(&(pstBlend->stTEEBuf));
     }
 
-#ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstBlend->stMMUBuf.u32StartSmmuAddr)
     {
 	HI_DRV_SMMU_Release(&(pstBlend->stMMUBuf));
     }
-#else
-    if (0 != pstBlend->stMMZBuf.u32StartPhyAddr)
-    {
-	HI_DRV_MMZ_Release(&(pstBlend->stMMZBuf));
-    }
-
-#endif
 
     memset(pstBlend, 0, sizeof(VPSS_BLEND_S));
 
