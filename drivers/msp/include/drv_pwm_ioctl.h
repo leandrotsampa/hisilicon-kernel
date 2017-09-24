@@ -31,18 +31,6 @@
 #endif
 #endif
 
-#define HI_FATAL_PWM(fmt...) \
-	    HI_FATAL_PRINT(HI_ID_PWM, fmt)
-
-#define HI_ERR_PWM(fmt...) \
-	    HI_ERR_PRINT(HI_ID_PWM, fmt)
-
-#define HI_WARN_PWM(fmt...) \
-	    HI_WARN_PRINT(HI_ID_PWM, fmt)
-
-#define HI_INFO_PWM(fmt...) \
-	    HI_INFO_PRINT(HI_ID_PWM, fmt)
-
 typedef struct tagPWM_REG_S
 {
     HI_U32	u32Cfg;
