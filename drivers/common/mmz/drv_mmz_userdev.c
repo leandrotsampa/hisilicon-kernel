@@ -108,11 +108,7 @@ int mmz_flush_dcache_mmb(struct mmb_info *pmi)
 
 int mmz_flush_all_dcache(void)
 {
-#ifdef CONFIG_SMP
 	on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
-#else
-	mmz_flush_dcache_all();
-#endif
 	return 0;
 }
 

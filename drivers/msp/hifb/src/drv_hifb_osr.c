@@ -4402,11 +4402,7 @@ HI_S32 hifb_map_vir_flsuh(size,vir)
     return;
     }
     if (len > L2_CACHE_SIZE)
-#ifdef CONFIG_SMP
-    on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
-#else
-    mmz_flush_dcache_all();
-#endif
+   	 on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
     else{
       mmz_flush_dcache_area((void *)viraddr,(size_t)len);
     }
