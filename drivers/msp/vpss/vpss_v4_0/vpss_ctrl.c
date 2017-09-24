@@ -2128,9 +2128,7 @@ HI_S32 VPSS_CTRL_UpdatePqWbcData(VPSS_INSTANCE_S *pstInstance, PQ_VPSS_WBC_REG_S
     (HI_VOID)VPSS_HAL_GetBaseRegAddr(VPSS_IP_0,
 				     &u32BaseRegPhyAddr,
 				     &pu8BaseRegVirAddr);
-#ifndef HI_TEE_SUPPORT
     DRV_PQ_GetWbcInfo(&stPqWbcInfo);
-#endif
 
     return HI_SUCCESS;
 }
@@ -2765,10 +2763,8 @@ HI_S32 VPSS_CTRL_CreateThread(VPSS_IP_E enIp)
     param.sched_priority = 99;
     sched_setscheduler(g_stVpssCtrl[enIp].hThread, SCHED_RR, &param);
 
-#ifndef HI_TEE_SUPPORT
     //kthread_bind(g_stVpssCtrl[enIp].hThread, 3);
     //kthread_bind(g_stVpssCtrl[enIp].hThread, 0);
-#endif
 
     wake_up_process(g_stVpssCtrl[enIp].hThread);
 

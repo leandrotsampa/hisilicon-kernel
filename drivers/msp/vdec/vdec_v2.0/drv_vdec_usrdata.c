@@ -133,9 +133,6 @@ HI_S32 USRDATA_Alloc(HI_HANDLE hHandle, HI_DRV_VDEC_USERDATABUF_S *pstBuf)
     stBufInstCfg.pu8UsrVirAddr = HI_NULL;
     stBufInstCfg.pu8KnlVirAddr = HI_NULL;
     stBufInstCfg.u32Size = pstBuf->u32Size;
-	#ifdef HI_TEE_SUPPORT
-    stBufInstCfg.bTvp	       = HI_FALSE;
-	#endif
     snprintf(stBufInstCfg.aszName, sizeof(stBufInstCfg.aszName),"VDEC_UsrData%02d", (HI_U8)hHandle);
     s32Ret = BUFMNG_Create(&hBuf, &stBufInstCfg);
     if (s32Ret != HI_SUCCESS)
@@ -383,15 +380,7 @@ HI_S32 USRDATA_Put(HI_HANDLE hHandle, USRDAT* pstUsrData, HI_UNF_VIDEO_USERDATA_
 	return HI_FAILURE;
     }
 
-#ifdef HI_TEE_SUPPORT
-    if (HI_TRUE == pstChan->bTvp)
-    {
-    }
-    else
-#endif
-    {
-	memcpy(stBuf.pu8KnlVirAddr + sizeof(VDEC_VIDEO_USERDATA_S), pstUsrData->data, pstUsrData->data_size);
-    }
+    memcpy(stBuf.pu8KnlVirAddr + sizeof(VDEC_VIDEO_USERDATA_S), pstUsrData->data, pstUsrData->data_size);
 
     pstPutData->pu8Buffer = (HI_U64)(HI_SIZE_T)(stBuf.pu8UsrVirAddr + sizeof(VDEC_VIDEO_USERDATA_S));
     stBuf.u32Marker = enType;

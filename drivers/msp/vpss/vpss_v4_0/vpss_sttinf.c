@@ -53,12 +53,7 @@ HI_S32 VPSS_STTINFO_DieInit(VPSS_DIESTINFO_S *pstDieStInfo,
 #ifdef HI_VPSS_SMMU_SUPPORT
     if (bSecure)
     {
-#ifdef HI_TEE_SUPPORT
-	s32Ret = HI_DRV_SECSMMU_Alloc("VPSS_SttDieBuf", u32TotalBuffSize, 0, &pstDieStInfo->stTEEBuf);
-
-#else
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttDieBuf", u32TotalBuffSize, 0, &(pstDieStInfo->stTEEBuf));
-#endif
 	if (HI_FAILURE == s32Ret)
 	{
 	    VPSS_FATAL("VPSS STTDie Alloc memory failed.\n");
@@ -118,11 +113,7 @@ HI_S32 VPSS_STTINFO_DieDeInit(VPSS_DIESTINFO_S *pstDieStInfo)
     }
     if (0 != pstDieStInfo->stTEEBuf.u32StartSmmuAddr)
     {
-#ifdef HI_TEE_SUPPORT
-	(HI_VOID)HI_DRV_SECSMMU_Release(&pstDieStInfo->stTEEBuf);
-#else
 	HI_DRV_SMMU_UnmapAndRelease(&(pstDieStInfo->stTEEBuf));
-#endif
     }
 #ifdef HI_VPSS_SMMU_SUPPORT
     if (0 != pstDieStInfo->stMMUBuf.u32StartSmmuAddr)
@@ -315,12 +306,8 @@ HI_S32 VPSS_STTINFO_NrInit(VPSS_NRMADINFO_S *pstNrMadInfo, VPSS_NR_ATTR_S *pstAt
 #ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
-#ifdef HI_TEE_SUPPORT
-	s32Ret = HI_DRV_SECSMMU_Alloc("VPSS_SttNrBuf_TEE", u32TotalBuffSize, 0, &pstNrMadInfo->stTEEBuf);
-#else
 	s32Ret = HI_DRV_SMMU_AllocAndMap( "VPSS_SttNrBuf_SMMU",
 					  u32TotalBuffSize, 0, &(pstNrMadInfo->stTEEBuf));
-#endif
 	if (HI_FAILURE == s32Ret)
 	{
 	    VPSS_FATAL("VPSS Nr Alloc memory failed.\n");
@@ -419,11 +406,7 @@ HI_S32 VPSS_STTINFO_NrDeInit(VPSS_NRMADINFO_S *pstNrMadInfo)
     }
     if (0 != pstNrMadInfo->stTEEBuf.u32StartSmmuAddr)
     {
-#ifdef HI_TEE_SUPPORT
-	(HI_VOID)HI_DRV_SECSMMU_Release(&pstNrMadInfo->stTEEBuf);
-#else
 	HI_DRV_SMMU_UnmapAndRelease(&(pstNrMadInfo->stTEEBuf));
-#endif
     }
 
 #ifdef HI_VPSS_SMMU_SUPPORT

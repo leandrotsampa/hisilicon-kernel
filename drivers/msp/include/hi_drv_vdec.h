@@ -114,9 +114,6 @@ typedef struct hiVDEC_STREAM_BUF_S
     HI_U32		u32Size;    /* Buffer size[in] */
     HI_HANDLE		hHandle;    /* Stream buffer handle [out] */
     HI_U32		u32PhyAddr; /* Buffer phy address [out] */
-	#ifdef HI_TEE_SUPPORT
-    HI_BOOL		bTvp;	   /*Trust Video Path Flag[in]*/
-	#endif
     HI_HANDLE		hVdec;	    /* Vdec handle [in] */
 }HI_DRV_VDEC_STREAM_BUF_S;
 

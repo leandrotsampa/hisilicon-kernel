@@ -172,9 +172,6 @@ typedef struct tagVDEC_SPECIAL_INFO_S
 {
     VDEC_BUFFER_S	 frmBufRec;
     BUFFER_NODE_STATUS	 enbufferNodeStatus;
-#ifdef HI_TEE_SUPPORT
-    HI_BOOL		 bIsSecFrm;
-#endif
     VDEC_BUFFER_S	 hdrBufRec;
     BUFFER_NODE_STATUS	 enhdrNodeStatus;
     HI_BOOL		 bCanRls;
@@ -218,10 +215,6 @@ HI_VOID HI_DRV_VDEC_UnmapAndRelease(VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_AllocMem(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf,
 			    HI_BOOL bTvp, HI_BOOL bMap);
 HI_VOID HI_DRV_VDEC_ReleaseMem(VDEC_BUFFER_S* psMBuf, HI_BOOL bTvp, HI_BOOL bMap);
-#ifdef HI_TEE_SUPPORT
-HI_S32 HI_DRV_VDEC_Alloc_TVP(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf);
-HI_VOID HI_DRV_VDEC_Release_TVP(VDEC_BUFFER_S* psMBuf);
-#endif
 HI_S32 HI_DRV_VDEC_Alloc(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_MapCache(VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_Flush(VDEC_BUFFER_S* psMBuf);

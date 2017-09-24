@@ -383,16 +383,6 @@ HI_S32 HI_DRV_SYS_SetIrqAffinity(HI_MOD_ID_E eModuleId, HI_U32 u32irqNum, const 
 		s32CpuIndex = GENERAL_DEV_CPU_INDEX;
 		HI_INFO_SYS("Gereral device interrupts use CPU %d!\n", GENERAL_DEV_CPU_INDEX);
 		break;
-
-#ifdef HI_FPGA_SUPPORT
-#ifdef HI_TEE_SUPPORT
-	    /* TO avoid VPSS's reg r/w operation collision with VDH. (they are both on FPGA4) */
-	    case HI_ID_VFMW:
-	    case HI_ID_VPSS:
-		s32CpuIndex = 0;
-		break;
-#endif
-#endif
 	    default:
 		s32CpuIndex = MEDIA_CPU_INDEX;
 		HI_INFO_SYS("Media interrupts use CPU %d!\n", MEDIA_CPU_INDEX);

@@ -140,9 +140,6 @@ typedef struct hiVPSS_MEM_S
     HI_U32 u32Size;
     HI_U32 u32StartPhyAddr;
     HI_U8  *pu8StartVirAddr;
-#ifdef HI_TEE_SUPPORT
-    SMMU_BUFFER_S stTeeMem;
-#endif
 } VPSS_MEM_S;
 
 HI_S32 VPSS_OSAL_AllocateMem(HI_U8 u8flag,

@@ -200,9 +200,6 @@ typedef struct hiVPSS_HAL_RefList
 {
 #ifdef HI_VPSS_SMMU_SUPPORT
     SMMU_BUFFER_S stRefListBuf_mmu;
-#ifdef HI_TEE_SUPPORT
-    SMMU_BUFFER_S stRefListBuf_tee;
-#endif
 #else
     MMZ_BUFFER_S  stRefListBuf_mmz;
 #endif

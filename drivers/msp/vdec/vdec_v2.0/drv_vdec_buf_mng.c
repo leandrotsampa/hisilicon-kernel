@@ -215,9 +215,6 @@ typedef struct tagBUFMNG_INST_S
     HI_U32	u32Index;	    /* Index */
 #endif
     BUFMNG_ALLOC_TYPE_E enAllocType;/* MMZ alloc type */
-#ifdef HI_TEE_SUPPORT
-    HI_BOOL	bTvp;
-#endif
     HI_BOOL bMMZMap;		    /* Need unmap when destroy */
     spinlock_t stSpinLock;	    /* Spin lock */
     struct list_head stBlockHead;   /* Buffer manager block list head */
@@ -267,14 +264,6 @@ static BUFMNG_GLOBAL_S s_stBMParam =
 HI_S32 HI_DRV_VDEC_AllocMem(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf,
 			    HI_BOOL bTvp, HI_BOOL bMap)
 {
-#ifdef HI_TEE_SUPPORT
-    if (HI_TRUE == bTvp)
-    {
-	return HI_DRV_VDEC_Alloc_TVP(bufname, zone_name, size, align, psMBuf);
-    }
-    else
-#endif
-    {
 	if (HI_TRUE == bMap)
 	{
 	    return HI_DRV_VDEC_AllocAndMap(bufname, zone_name, size, align, psMBuf);
@@ -283,28 +272,18 @@ HI_S32 HI_DRV_VDEC_AllocMem(const char *bufname, char *zone_name, HI_U32 size, i
 	{
 	    return HI_DRV_VDEC_Alloc(bufname, zone_name, size, align, psMBuf);
 	}
-    }
 }
 
 /*�ͷ��ڴ溯����bSec(1:��ȫ�ڴ棬0:�ǰ�ȫ�ڴ�),bMap(1:��cpuӳ�䣬0:����cpuӳ��)*/
 HI_VOID HI_DRV_VDEC_ReleaseMem(VDEC_BUFFER_S *psMBuf, HI_BOOL bTvp, HI_BOOL bMap)
 {
-#ifdef HI_TEE_SUPPORT
-    if (HI_TRUE == bTvp)
+    if (HI_TRUE == bMap)
     {
-	HI_DRV_VDEC_Release_TVP(psMBuf);
+	HI_DRV_VDEC_UnmapAndRelease(psMBuf);
     }
     else
-#endif
     {
-	if (HI_TRUE == bMap)
-	{
-	    HI_DRV_VDEC_UnmapAndRelease(psMBuf);
-	}
-	else
-	{
-	    HI_DRV_VDEC_Release(psMBuf);
-	}
+	HI_DRV_VDEC_Release(psMBuf);
     }
 }
 
@@ -343,41 +322,6 @@ HI_VOID HI_DRV_VDEC_UnmapAndRelease(VDEC_BUFFER_S *psMBuf)
 
     return;
 }
-
-#ifdef HI_TEE_SUPPORT
-HI_S32 HI_DRV_VDEC_Alloc_TVP(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf)
-{
-    HI_S32 s32Ret = HI_FAILURE;
-    SMMU_BUFFER_S stSMMUBuf;
-    if(HI_NULL == psMBuf)
-    {
-	HI_ERR_VDEC("invalid param!\n");
-	return s32Ret;
-    }
-
-    s32Ret = HI_DRV_SECSMMU_Alloc(bufname, size, align, &stSMMUBuf);
-    psMBuf->pu8StartVirAddr  = stSMMUBuf.pu8StartVirAddr;
-    psMBuf->u32StartPhyAddr  = stSMMUBuf.u32StartSmmuAddr;
-    psMBuf->u32Size	     = stSMMUBuf.u32Size;
-
-    return s32Ret;
-
-}
-HI_VOID HI_DRV_VDEC_Release_TVP(VDEC_BUFFER_S *psMBuf)
-{
-    SMMU_BUFFER_S stSMMUBuf;
-    if(HI_NULL == psMBuf)
-    {
-	HI_ERR_VDEC("invalid param!\n");
-	return;
-    }
-
-    stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
-    stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
-    stSMMUBuf.u32Size	       = psMBuf->u32Size;
-    HI_DRV_SECSMMU_Release(&stSMMUBuf);
-}
-#endif
 
 HI_S32 HI_DRV_VDEC_Alloc(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf)
 {
@@ -531,16 +475,7 @@ static HI_S32 BUFMNG_CreateCheckPara(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pst
 
 static HI_VOID BUFMNG_DestroyBuffer(HI_BOOL bTvp, VDEC_BUFFER_S* pstVDECAllocBuf)
 {
-#ifdef HI_TEE_SUPPORT
-    if (bTvp)
-    {
-	HI_DRV_VDEC_Release_TVP(pstVDECAllocBuf);
-    }
-    else
-#endif
-    {
-	HI_DRV_VDEC_UnmapAndRelease(pstVDECAllocBuf);
-    }
+    HI_DRV_VDEC_UnmapAndRelease(pstVDECAllocBuf);
 
     return;
 }
@@ -561,36 +496,16 @@ static HI_S32 BUFMNG_CreatBuffer(BUFMNG_INST_CONFIG_S *pstConfig,
     else
 #endif
     {
-#ifdef HI_TEE_SUPPORT
+	s32Ret = HI_DRV_VDEC_AllocAndMap(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
 
-	if (pstConfig->bTvp == HI_TRUE)
+	if (s32Ret != HI_SUCCESS)
 	{
-	    s32Ret = HI_DRV_VDEC_Alloc_TVP(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
-
-	    if (s32Ret != HI_SUCCESS)
-	    {
-		HI_FATAL_BUFMNG("%s: Alloc SEC MMU(%s) failed.\n", __func__, pstConfig->aszName);
-		return HI_ERR_BM_NO_MEMORY;
-	    }
-
-	    pstConfig->u32PhyAddr = pstVDECAllocBuf->u32StartPhyAddr;
-	    pstConfig->pu8KnlVirAddr = (HI_U8*)(HI_SIZE_T)pstVDECAllocBuf->u32StartPhyAddr;
-	    pstConfig->pu8UsrVirAddr = (HI_U8*)(HI_SIZE_T)pstVDECAllocBuf->u32StartPhyAddr;
+	    HI_FATAL_BUFMNG("Alloc VDEC fail:0x%x.\n", s32Ret);
+	    return HI_ERR_BM_NO_MEMORY;
 	}
-	else
-#endif
-	{
-	    s32Ret = HI_DRV_VDEC_AllocAndMap(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
 
-	    if (s32Ret != HI_SUCCESS)
-	    {
-		HI_FATAL_BUFMNG("Alloc VDEC fail:0x%x.\n", s32Ret);
-		return HI_ERR_BM_NO_MEMORY;
-	    }
-
-	    pstConfig->u32PhyAddr = pstVDECAllocBuf->u32StartPhyAddr;
-	    pstConfig->pu8KnlVirAddr = (HI_U8*)pstVDECAllocBuf->pu8StartVirAddr;
-	}
+	pstConfig->u32PhyAddr = pstVDECAllocBuf->u32StartPhyAddr;
+	pstConfig->pu8KnlVirAddr = (HI_U8*)pstVDECAllocBuf->pu8StartVirAddr;
     }
 
     return s32Ret;
@@ -641,9 +556,6 @@ HI_S32 BUFMNG_Create(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 
     /* Init instance parameter */
     pstInst->hBuf = *phBuf;
-#ifdef HI_TEE_SUPPORT
-    pstInst->bTvp = pstConfig->bTvp;
-#endif
     pstInst->u32PhyAddr = pstConfig->u32PhyAddr;
     pstInst->pu8UsrVirAddr = pstConfig->pu8UsrVirAddr;
     if (HI_NULL == pstConfig->pu8KnlVirAddr)
@@ -786,16 +698,7 @@ HI_S32 BUFMNG_Destroy(HI_HANDLE hBuf)
 	stVDECBuf.pu8StartVirAddr = pstInst->pu8KnlVirAddr;
 	stVDECBuf.u32Size = pstInst->u32Size;
 	BUFMNG_SPIN_UNLOCK(pstInst->stSpinLock);
-#ifdef HI_TEE_SUPPORT
-
-	if (HI_TRUE == pstInst->bTvp)
-	{
-	}
-	else
-#endif
-	{
-	    HI_DRV_VDEC_Unmap(&stVDECBuf);
-	}
+	HI_DRV_VDEC_Unmap(&stVDECBuf);
     }
 
     /* If need, free */
@@ -815,17 +718,7 @@ HI_S32 BUFMNG_Destroy(HI_HANDLE hBuf)
 	    stVDECBuf.pu8StartVirAddr = pstInst->pu8KnlVirAddr;
 	    stVDECBuf.u32Size = pstInst->u32Size;
 	    BUFMNG_SPIN_UNLOCK(pstInst->stSpinLock);
-#ifdef HI_TEE_SUPPORT
-
-	    if (HI_TRUE == pstInst->bTvp)
-	    {
-		HI_DRV_VDEC_Release_TVP(&stVDECBuf);
-	    }
-	    else
-#endif
-	    {
-		HI_DRV_VDEC_UnmapAndRelease(&stVDECBuf);
-	    }
+	    HI_DRV_VDEC_UnmapAndRelease(&stVDECBuf);
 	}
     }
 

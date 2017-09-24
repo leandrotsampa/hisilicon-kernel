@@ -6,10 +6,6 @@
 #include "vpss_osal.h"
 #include <linux/wait.h>
 
-#ifdef HI_TEE_SUPPORT
-#include "sec_mmz.h"
-#endif
-
 #ifdef __cplusplus
 #if __cplusplus
 extern "C" {
@@ -2011,21 +2007,6 @@ HI_S32 VPSS_OSAL_AllocateMem(HI_U8 u8flag,
     }
     else if (u8flag == VPSS_MEM_FLAG_SECURE)
     {
-#ifdef HI_TEE_SUPPORT
-
-	s32Ret = HI_DRV_SECSMMU_Alloc(pu8MemName, u32Size, 16, &pstMem->stTeeMem);
-	if (s32Ret == HI_SUCCESS)
-	{
-	    pstMem->u32Size = u32Size;
-	    pstMem->u32StartPhyAddr = pstMem->stTeeMem.u32StartSmmuAddr;
-	    pstMem->pu8StartVirAddr = HI_NULL;
-	    pstMem->u8flag = u8flag;
-	}
-	else
-	{
-	    VPSS_ERROR("alloc secure buffer failed\n");
-	}
-#else
 	MMZ_BUFFER_S stMMZ;
 
 	s32Ret = HI_DRV_MMZ_Alloc( pu8MemName, HI_NULL,
@@ -2039,12 +2020,8 @@ HI_S32 VPSS_OSAL_AllocateMem(HI_U8 u8flag,
 
 	    pstMem->u8flag = u8flag;
 	}
-#endif
     }
-    else
-    {
 
-    }
     return s32Ret;
 }
 
@@ -2074,9 +2051,6 @@ HI_S32 VPSS_OSAL_FreeMem(VPSS_MEM_S *pstMem)
     }
     else if (pstMem->u8flag == VPSS_MEM_FLAG_SECURE)
     {
-#ifdef HI_TEE_SUPPORT
-	(HI_VOID)HI_DRV_SECSMMU_Release(&pstMem->stTeeMem);
-#else
 	MMZ_BUFFER_S stMMZ;
 
 	stMMZ.u32StartPhyAddr = pstMem->u32StartPhyAddr;
@@ -2084,10 +2058,6 @@ HI_S32 VPSS_OSAL_FreeMem(VPSS_MEM_S *pstMem)
 	stMMZ.u32Size = pstMem->u32Size;
 
 	HI_DRV_MMZ_Release(&stMMZ);
-#endif
-    }
-    else
-    {
     }
 
     return s32Ret;

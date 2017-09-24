@@ -63,11 +63,7 @@ HI_S32 VPSS_RGME_Init(VPSS_RGME_S *pstRgme, VPSS_RGME_ATTR_S *pstAttr)
 #ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
-#ifdef HI_TEE_SUPPORT
-	s32Ret = HI_DRV_SECSMMU_Alloc("VPSS_RgmeWbcBuf", u32TotalBuffSize, 0, &pstRgme->stTEEBuf);
-#else
 	s32Ret = HI_DRV_SMMU_Alloc( "VPSS_RgmeWbcBuf", u32TotalBuffSize, 0, &(pstRgme->stTEEBuf));
-#endif
 	u32PhyAddr = pstRgme->stTEEBuf.u32StartSmmuAddr;
     }
     else
@@ -128,11 +124,7 @@ HI_S32 VPSS_RGME_DeInit(VPSS_RGME_S *pstRgme)
 
     if (0 != pstRgme->stTEEBuf.u32StartSmmuAddr)
     {
-#ifdef HI_TEE_SUPPORT
-	(HI_VOID)HI_DRV_SECSMMU_Release(&pstRgme->stTEEBuf);
-#else
 	HI_DRV_SMMU_Release(&(pstRgme->stTEEBuf));
-#endif
     }
 
 #ifdef HI_VPSS_SMMU_SUPPORT
@@ -330,11 +322,7 @@ HI_S32 VPSS_BLEND_Init(VPSS_BLEND_S *pstBlend, VPSS_BLEND_ATTR_S *pstAttr)
 #ifdef HI_VPSS_SMMU_SUPPORT
     if (pstAttr->bSecure)
     {
-#ifdef HI_TEE_SUPPORT
-	s32Ret = HI_DRV_SECSMMU_Alloc("VPSS_BlendWbcBuf", u32TotalBuffSize, 0, &pstBlend->stTEEBuf);
-#else
 	s32Ret = HI_DRV_SMMU_Alloc("VPSS_BlendWbcBuf", u32TotalBuffSize, 0, &(pstBlend->stTEEBuf));
-#endif
 	if (HI_FAILURE == s32Ret)
 	{
 	    VPSS_FATAL("VPSS blend WBC Alloc memory failed.\n");
@@ -396,11 +384,7 @@ HI_S32 VPSS_BLEND_DeInit(VPSS_BLEND_S *pstBlend)
 
     if (0 != pstBlend->stTEEBuf.u32StartSmmuAddr)
     {
-#ifdef HI_TEE_SUPPORT
-	(HI_VOID)HI_DRV_SECSMMU_Release(&pstBlend->stTEEBuf);
-#else
 	HI_DRV_SMMU_Release(&(pstBlend->stTEEBuf));
-#endif
     }
 
 #ifdef HI_VPSS_SMMU_SUPPORT
