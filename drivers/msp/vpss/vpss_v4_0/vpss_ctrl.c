@@ -2065,22 +2065,6 @@ HI_S32 VPSS_CTRL_UpdatePqWbcData(VPSS_INSTANCE_S *pstInstance, PQ_VPSS_WBC_REG_S
     stPqWbcInfo.stOriCoordinate.s32Width = 0;
     stPqWbcInfo.stOriCoordinate.s32Height = 0;
     stPqWbcInfo.stCropCoordinate = stPqWbcInfo.stOriCoordinate;
-#ifdef VPSS_SUPPORT_ALG_MCNR
-    if (VPSS_ALG_IS_MCNR_ENABLE(pstCur->u32Width, pstCur->u32Height))
-    {
-	stPqWbcInfo.bMcnrEnableFlag = HI_TRUE;
-    }
-    else
-    {
-	stPqWbcInfo.bMcnrEnableFlag = HI_FALSE;
-    }
-
-    if ((pstInstance->stRwzbInfo.stDetInfo.isRWZB > 0)
-	|| VPSS_NOT_SUPPORT_MCNR_FMT(pstCur->ePixFormat))
-    {
-	stPqWbcInfo.bMcnrEnableFlag = HI_FALSE;
-    }
-#endif
     if (pstCur->bProgressive == HI_FALSE)
     {
 	VPSS_ST_RGME_CFG_S stStRgmeCfg;
@@ -2093,21 +2077,6 @@ HI_S32 VPSS_CTRL_UpdatePqWbcData(VPSS_INSTANCE_S *pstInstance, PQ_VPSS_WBC_REG_S
     }
     else
     {
-#ifdef VPSS_SUPPORT_ALG_MCNR
-	//���� mctnr ����ʱ��ҲҪ���� pRGMV
-	if (HI_TRUE == stPqWbcInfo.bMcnrEnableFlag)
-	{
-	    VPSS_ST_RGME_CFG_S stStRgmeCfg;
-	    stInIntf.pfnGetInfo(&(pstInstance->stInEntity), VPSS_IN_INFO_RGME, HI_DRV_BUF_ADDR_LEFT, &stStRgmeCfg);
-	    stPqWbcInfo.pRGMV = (HI_VOID *)(stStRgmeCfg.pu8Nx2WriteAddr);
-	    stPqWbcInfo.stride = stStRgmeCfg.u32Stride;
-	}
-	else
-	{
-	    stPqWbcInfo.pRGMV = HI_NULL;
-	    stPqWbcInfo.stride = 0;
-	}
-#endif
 	stPqWbcInfo.u32DeiEnFlag = HI_FALSE;
     }
 

@@ -44,21 +44,6 @@ HI_BOOL VPSS_INST_McDeiSupport(HI_DRV_VIDEO_FRAME_S *pstSrcImage)
     return HI_TRUE;
 }
 
-#ifdef VPSS_SUPPORT_ALG_MCNR
-HI_BOOL VPSS_INST_McNrSupport(HI_DRV_VIDEO_FRAME_S *pstSrcImage)
-{
-    if (VPSS_ALG_IS_MCNR_ENABLE(pstSrcImage->u32Width, pstSrcImage->u32Height))
-    {
-	if (HI_FALSE == VPSS_NOT_SUPPORT_MCNR_FMT(pstSrcImage->ePixFormat))
-	{
-	    return HI_TRUE;
-	}
-    }
-
-    return HI_FALSE;
-}
-#endif
-
 HI_VOID VPSS_INST_SetMcDeiFrameInfo(HI_DRV_VIDEO_FRAME_S *pstFrame,
 				    VPSS_HAL_FRAME_S *pstHalFrm, HI_DRV_BUF_ADDR_E enBufLR)
 {
@@ -109,13 +94,6 @@ HI_S32 VPSS_INST_McDeiInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo, HI_DRV_VIDEO_FRAME_S
     VPSS_ST_BLKMV_S	 *pstBlkmvInfo;
     VPSS_ST_PRJH_S	 *pstPrjhInfo;
     VPSS_ST_PRJV_S	 *pstPrjvInfo;
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_S	 *pstBlkmtInfo;
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_S	 *pstDiCntCfg;
-#endif
-
 
     if ((HI_NULL == pstMcdeiInfo) || (HI_NULL == pstSrcImage))
     {
@@ -135,44 +113,6 @@ HI_S32 VPSS_INST_McDeiInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo, HI_DRV_VIDEO_FRAME_S
 	stSttAttr.u32Height = u32StreamH * 2; //�����ǰ��ճ�ģʽ����, �߶ȹ̶�/2, ��������ʱ�ϲ�*2
     }
 
-#ifdef VPSS_SUPPORT_MCDEI_IN_H265I
-	{
-	    HI_DRV_VIDEO_PRIVATE_S *pstFrmPriv;
-	    HI_VDEC_PRIV_FRAMEINFO_S *pstVdecPriv;
-
-	    pstFrmPriv = (HI_DRV_VIDEO_PRIVATE_S *) & (pstSrcImage->u32Priv[0]);
-	    pstVdecPriv = (HI_VDEC_PRIV_FRAMEINFO_S *) & (pstFrmPriv->u32Reserve[0]);
-
-		if ((HI_UNF_VCODEC_TYPE_HEVC == pstVdecPriv->entype)
-				&& (HI_FALSE == pstSrcImage->bProgressive)
-				&& (HI_DRV_FIELD_ALL != pstSrcImage->enFieldMode)
-				&& (HI_DRV_FIELD_ALL == pstSrcImage->enBufValidMode))
-		{
-			u32StreamH = u32StreamH * 2;
-			stSttAttr.u32Height = u32StreamH;
-		}
-	}
-#endif
-
-#ifdef VPSS_SUPPORT_ALG_MCNR
-    pstMcdeiInfo->bMcEnable = VPSS_INST_McDeiSupport(pstSrcImage);
-    pstMcdeiInfo->bMcNrEnable = VPSS_INST_McNrSupport(pstSrcImage);
-
-    if ((pstMcdeiInfo->bMcNrEnable) || (pstMcdeiInfo->bMcEnable))
-    {
-	pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
-	pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
-	pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
-	u32InitResult |= VPSS_ST_RGME_Init(pstRgmeInfo, &stSttAttr);
-	u32InitResult |= VPSS_ST_PRJH_Init(pstPrjhInfo, &stSttAttr);
-	u32InitResult |= VPSS_ST_PRJV_Init(pstPrjvInfo, &stSttAttr);
-    }
-
-    if (HI_TRUE != pstMcdeiInfo->bMcEnable)
-    {
-	return u32InitResult;
-    }
-#else
     pstMcdeiInfo->bMcEnable = VPSS_INST_McDeiSupport(pstSrcImage);
     if (HI_TRUE != pstMcdeiInfo->bMcEnable)
     {
@@ -185,18 +125,9 @@ HI_S32 VPSS_INST_McDeiInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo, HI_DRV_VIDEO_FRAME_S
     u32InitResult |= VPSS_ST_RGME_Init(pstRgmeInfo, &stSttAttr);
     u32InitResult |= VPSS_ST_PRJH_Init(pstPrjhInfo, &stSttAttr);
     u32InitResult |= VPSS_ST_PRJV_Init(pstPrjvInfo, &stSttAttr);
-#endif
     pstRgmeWbcInfo = &(pstMcdeiInfo->stRgmeWbcInfo);
     pstBlendWbcInfo = &(pstMcdeiInfo->stBlendWbcInfo);
     pstBlkmvInfo = &(pstMcdeiInfo->stBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    pstBlkmtInfo = &(pstMcdeiInfo->stBlkmtInfo);
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    pstDiCntCfg = &(pstMcdeiInfo->stDiCntInfo);
-#endif
-
 
     stWbcBlendAttr.u32Width = u32StreamW;
     stWbcBlendAttr.u32Height = u32StreamH;
@@ -217,14 +148,6 @@ HI_S32 VPSS_INST_McDeiInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo, HI_DRV_VIDEO_FRAME_S
     u32InitResult |= VPSS_BLEND_Init(pstBlendWbcInfo, &stWbcBlendAttr);
     u32InitResult |= VPSS_RGME_Init(pstRgmeWbcInfo, &stWbcRgmeAttr);
     u32InitResult |= VPSS_ST_BLKMV_Init(pstBlkmvInfo, &stSttAttr);
-#ifdef VPSS_SUPPORT_BLKMT
-    u32InitResult |= VPSS_ST_BLKMT_Init(pstBlkmtInfo, &stSttAttr);
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    stSttAttr.u32Width = u32StreamW;
-    u32InitResult |= VPSS_ST_DICNT_Init(pstDiCntCfg, &stSttAttr);
-#endif
 
     return u32InitResult;
 }
@@ -237,14 +160,6 @@ HI_S32 VPSS_INST_McDeiDeInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_ST_BLKMV_S	 *pstBlkmvInfo;
     VPSS_ST_PRJH_S	 *pstPrjhInfo;
     VPSS_ST_PRJV_S	 *pstPrjvInfo;
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_S	 *pstBlkmtInfo;
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_S	 *pstDiCntInfo;
-#endif
-
-
 
     if (HI_NULL == pstMcdeiInfo)
     {
@@ -256,13 +171,6 @@ HI_S32 VPSS_INST_McDeiDeInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     pstBlendWbcInfo = &(pstMcdeiInfo->stBlendWbcInfo);
     pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
     pstBlkmvInfo = &(pstMcdeiInfo->stBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    pstBlkmtInfo = &(pstMcdeiInfo->stBlkmtInfo);
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    pstDiCntInfo = &(pstMcdeiInfo->stDiCntInfo);
-#endif
-
     pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
     pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
 
@@ -276,16 +184,9 @@ HI_S32 VPSS_INST_McDeiDeInit(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_RGME_DeInit(pstRgmeWbcInfo);
     VPSS_ST_RGME_DeInit(pstRgmeInfo);
     VPSS_ST_BLKMV_DeInit(pstBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_DeInit(pstBlkmtInfo);
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_DeInit(pstDiCntInfo);
-#endif
-
     VPSS_ST_PRJH_DeInit(pstPrjhInfo);
     VPSS_ST_PRJV_DeInit(pstPrjvInfo);
+
     return HI_SUCCESS;
 }
 HI_S32 VPSS_INST_McDeiComplete(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
@@ -294,13 +195,6 @@ HI_S32 VPSS_INST_McDeiComplete(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_BLEND_S	 *pstBlendWbcInfo;
     VPSS_ST_RGME_S	 *pstRgmeInfo;
     VPSS_ST_BLKMV_S	 *pstBlkmvInfo;
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_S	 *pstBlkmtInfo;
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_S	 *pstDiCntInfo;
-#endif
-
 
     VPSS_ST_PRJH_S	 *pstPrjhInfo;
     VPSS_ST_PRJV_S	 *pstPrjvInfo;
@@ -314,30 +208,9 @@ HI_S32 VPSS_INST_McDeiComplete(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     pstBlendWbcInfo = &(pstMcdeiInfo->stBlendWbcInfo);
     pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
     pstBlkmvInfo = &(pstMcdeiInfo->stBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    pstBlkmtInfo = &(pstMcdeiInfo->stBlkmtInfo);
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    pstDiCntInfo = &(pstMcdeiInfo->stDiCntInfo);
-#endif
-
-
     pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
     pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
 
-#ifdef VPSS_SUPPORT_ALG_MCNR
-    if ((HI_TRUE == pstMcdeiInfo->bMcNrEnable) || (HI_TRUE == pstMcdeiInfo->bMcEnable))
-    {
-	VPSS_ST_RGME_Complete(pstRgmeInfo);
-	VPSS_ST_PRJH_Complete(pstPrjhInfo);
-	VPSS_ST_PRJV_Complete(pstPrjvInfo);
-    }
-    if (HI_TRUE != pstMcdeiInfo->bMcEnable)
-    {
-	return HI_SUCCESS;
-    }
-#else
     if (HI_TRUE != pstMcdeiInfo->bMcEnable)
     {
 	return HI_SUCCESS;
@@ -346,17 +219,9 @@ HI_S32 VPSS_INST_McDeiComplete(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_ST_RGME_Complete(pstRgmeInfo);
     VPSS_ST_PRJH_Complete(pstPrjhInfo);
     VPSS_ST_PRJV_Complete(pstPrjvInfo);
-#endif
-
     VPSS_BLEND_CompleteImage(pstBlendWbcInfo);
     VPSS_RGME_CompleteImage(pstRgmeWbcInfo);
     VPSS_ST_BLKMV_Complete(pstBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_Complete(pstBlkmtInfo);
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_Complete(pstDiCntInfo);
-#endif
 
     return HI_SUCCESS;
 }
@@ -368,12 +233,6 @@ HI_S32 VPSS_INST_McDeiReset(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_BLEND_S	 *pstBlendWbcInfo;
     VPSS_ST_RGME_S	 *pstRgmeInfo;
     VPSS_ST_BLKMV_S	 *pstBlkmvInfo;
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_S	 *pstBlkmtInfo;
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_S	 *pstDiCntInfo;
-#endif
 
     VPSS_ST_PRJH_S	 *pstPrjhInfo;
     VPSS_ST_PRJV_S	 *pstPrjvInfo;
@@ -387,29 +246,10 @@ HI_S32 VPSS_INST_McDeiReset(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     pstBlendWbcInfo = &(pstMcdeiInfo->stBlendWbcInfo);
     pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
     pstBlkmvInfo = &(pstMcdeiInfo->stBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    pstBlkmtInfo = &(pstMcdeiInfo->stBlkmtInfo);
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    pstDiCntInfo = &(pstMcdeiInfo->stDiCntInfo);
-#endif
 
     pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
     pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
 
-#ifdef VPSS_SUPPORT_ALG_MCNR
-    if ((HI_TRUE == pstMcdeiInfo->bMcNrEnable) || (HI_TRUE == pstMcdeiInfo->bMcEnable))
-    {
-	VPSS_RGME_Reset(pstRgmeWbcInfo);
-	VPSS_ST_PRJH_Reset(pstPrjhInfo);
-	VPSS_ST_PRJV_Reset(pstPrjvInfo);
-    }
-
-    if (HI_TRUE != pstMcdeiInfo->bMcEnable)
-    {
-	return HI_SUCCESS;
-    }
-#else
     if (HI_TRUE != pstMcdeiInfo->bMcEnable)
     {
 	return HI_SUCCESS;
@@ -418,17 +258,9 @@ HI_S32 VPSS_INST_McDeiReset(VPSS_MCDEI_INFO_S *pstMcdeiInfo)
     VPSS_RGME_Reset(pstRgmeWbcInfo);
     VPSS_ST_PRJH_Reset(pstPrjhInfo);
     VPSS_ST_PRJV_Reset(pstPrjvInfo);
-#endif
     VPSS_BLEND_Reset(pstBlendWbcInfo);
     VPSS_ST_RGME_Reset(pstRgmeInfo);
     VPSS_ST_BLKMV_Reset(pstBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_Reset(pstBlkmtInfo);
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_Reset(pstDiCntInfo);
-#endif
 
     return HI_SUCCESS;
 }
@@ -444,15 +276,6 @@ HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_
     VPSS_BLEND_S	 *pstBlendWbcInfo;
     VPSS_ST_RGME_S	 *pstRgmeInfo;
     VPSS_ST_BLKMV_S	 *pstBlkmvInfo;
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_S	 *pstBlkmtInfo;
-#endif
-
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_S	 *pstDiCntInfo;
-#endif
-
-
     VPSS_ST_PRJH_S	 *pstPrjhInfo;
     VPSS_ST_PRJV_S	 *pstPrjvInfo;
 
@@ -466,13 +289,6 @@ HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_
     pstBlendWbcInfo = &(pstMcdeiInfo->stBlendWbcInfo);
     pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
     pstBlkmvInfo = &(pstMcdeiInfo->stBlkmvInfo);
-#ifdef VPSS_SUPPORT_BLKMT
-    pstBlkmtInfo = &(pstMcdeiInfo->stBlkmtInfo);
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    pstDiCntInfo = &(pstMcdeiInfo->stDiCntInfo);
-#endif
-
     pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
     pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
 
@@ -500,14 +316,6 @@ HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_
     /* MCDEI STT INFO */
     VPSS_ST_RGME_GetCfg(pstRgmeInfo, &(pstHalInfo->stMcdeiStInfo.stRgmeCfg));
     VPSS_ST_BLKMV_GetCfg(pstBlkmvInfo, &(pstHalInfo->stMcdeiStInfo.stBlkmvCfg));
-#ifdef VPSS_SUPPORT_BLKMT
-    VPSS_ST_BLKMT_GetCfg(pstBlkmtInfo, &(pstHalInfo->stMcdeiStInfo.stBlkmtCfg));
-#endif
-#ifdef VPSS_SUPPORT_DICNT
-    VPSS_ST_DICNT_GetCfg(pstDiCntInfo, &(pstHalInfo->stMcdeiStInfo.stDiCntCfg));
-#endif
-
-
     VPSS_ST_PRJH_GetCfg(pstPrjhInfo, &(pstHalInfo->stMcdeiStInfo.stPrjhCfg));
     VPSS_ST_PRJV_GetCfg(pstPrjvInfo, &(pstHalInfo->stMcdeiStInfo.stPrjvCfg));
 
@@ -541,30 +349,7 @@ HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_
     }
     return HI_SUCCESS;
 }
-#ifdef VPSS_SUPPORT_ALG_MCNR
-HI_S32 VPSS_INST_SetHalMcNrInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_S *pstHalInfo,
-				HI_DRV_BUF_ADDR_E enLR, HI_DRV_VIDEO_FRAME_S *pstSrcImage)
-{
-    VPSS_ST_RGME_S	 *pstRgmeInfo;
-    VPSS_ST_PRJH_S	 *pstPrjhInfo;
-    VPSS_ST_PRJV_S	 *pstPrjvInfo;
 
-    if ((HI_TRUE != pstMcdeiInfo->bMcNrEnable))
-    {
-	return HI_SUCCESS;
-    }
-
-    pstRgmeInfo = &(pstMcdeiInfo->stRgmeInfo);
-    pstPrjhInfo = &(pstMcdeiInfo->stPrjhInfo);
-    pstPrjvInfo = &(pstMcdeiInfo->stPrjvInfo);
-
-    VPSS_ST_RGME_GetCfg(pstRgmeInfo, &(pstHalInfo->stMcdeiStInfo.stRgmeCfg));
-    VPSS_ST_PRJH_GetCfg(pstPrjhInfo, &(pstHalInfo->stMcdeiStInfo.stPrjhCfg));
-    VPSS_ST_PRJV_GetCfg(pstPrjvInfo, &(pstHalInfo->stMcdeiStInfo.stPrjvCfg));
-
-    return HI_SUCCESS;
-}
-#endif
 #ifdef __cplusplus
 #if __cplusplus
 }
