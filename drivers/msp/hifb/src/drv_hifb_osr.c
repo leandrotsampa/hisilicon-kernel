@@ -4391,13 +4391,9 @@ static HI_S32 hifb_map_mem_kernel_to_user(struct fb_info *info, struct vm_area_s
 }
 #if 0/** ˢӳ�䵽�û�̬�������ַcache **/
 #define L2_CACHE_SIZE  (512 * 1024)
-#ifdef CONFIG_64BIT
 #define mmz_flush_dcache_all		flush_cache_all
 #define mmz_flush_dcache_area		__flush_dcache_area
-#else
-#define mmz_flush_dcache_all		__cpuc_flush_kern_all
-#define mmz_flush_dcache_area		__cpuc_flush_dcache_area
-#endif
+
 HI_S32 hifb_map_vir_flsuh(size,vir)
 {
     if ((NULL == viraddr) || (0 == len)) {

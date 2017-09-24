@@ -43,10 +43,6 @@
 #include <linux/dma-mapping.h>
 #include <asm/memory.h>
 
-#ifndef CONFIG_64BIT
-#include <linux/highmem.h>
-#endif
-
 #include <asm/tlbflush.h>
 #include <asm/pgtable.h>
 #include <linux/seq_file.h>
@@ -197,60 +193,11 @@ void flush_inner_cache(void *viraddr, unsigned int len)
 		mmz_flush_dcache_area((void *)viraddr,(size_t)len);
 }
 
-#ifndef CONFIG_64BIT
-static void flush_outer(hil_mmb_t *mmb)
-{
-	struct scatterlist *sg;
-	int i;
-	unsigned long size;
-	struct sg_table *table;
-	struct mmz_iommu *common = &mmz_iommu;
-
-	table = get_pages_from_buffer(common->client, mmb->handle, &size);
-	if (!table) {
-		HI_PRINT("%s: get pages failed!\n", __func__);
-		return;
-	}
-
-	for_each_sg(table->sgl, sg, table->nents, i) {
-		struct page *page = sg_page(sg);
-		HI_U32 len = PAGE_ALIGN(sg->length);
-		HI_U32 phys = __pfn_to_phys(page_to_pfn(page));
-
-		outer_flush_range(phys, phys + len);
-	}
-}
-
-/* just for A9	  */
-void flush_outer_cache_range(mmb_addr_t phyaddr, mmb_addr_t len,
-					unsigned int iommu)
-{
-	hil_mmb_t *mmb;
-
-	if (!iommu) {
-		outer_flush_range(phyaddr, phyaddr + len);
-		return;
-	}
-
-	mmb = hil_mmb_getby_phys(phyaddr, iommu);
-	if (NULL == mmb) {
-		HI_PRINT("%s:invalid args!\n", __func__);
-		return;
-	}
-
-	if (!mmb->iommu) {
-		outer_flush_range(mmb->phys_addr, mmb->phys_addr + mmb->length);
-	} else {
-		flush_outer(mmb);
-	}
-}
-#else
 void flush_outer_cache_range(mmb_addr_t phyaddr, mmb_addr_t len,
 						unsigned int iommu)
 {
 	return;
 }
-#endif
 
 int hil_mmz_destroy(hil_mmz_t *zone)
 {
@@ -667,40 +614,15 @@ static void __dma_clear_buffer(struct ion_handle *handle)
 		for_each_sg(table->sgl, sg, table->nents, i) {
 			struct page *page = sg_page(sg);
 			HI_U32 length = PAGE_ALIGN(sg->length);
-#ifdef CONFIG_64BIT
 			void *ptr = page_address(page);
 			/* memset(ptr, 0, size); */
 			mmz_flush_dcache_area(ptr, length);
-#else
-			HI_U32 phys = __pfn_to_phys(page_to_pfn(page));
-
-			if (PageHighMem(page)) {
-				while(length > 0) {
-					void *ptr = kmap_atomic(page);
-
-					/* memset(ptr, 0, PAGE_SIZE); */
-					mmz_flush_dcache_area(ptr, PAGE_SIZE);
-					__kunmap_atomic(ptr);
-					page++;
-					length -= PAGE_SIZE;
-				}
-			} else {
-				void *ptr = page_address(page);
-				/* memset(ptr, 0, size); */
-				mmz_flush_dcache_area(ptr, length);
-			}
-			outer_flush_range(phys, phys + length);
-#endif
 		}
 	} else {
 #ifdef CONFIG_SMP
 	on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
 #else
 	mmz_flush_dcache_all();
-#endif
-
-#ifndef CONFIG_64BIT
-	outer_flush_all();
 #endif
 	}
 }
@@ -848,13 +770,7 @@ int hil_mmb_unmap(hil_mmb_t *mmb, void *addr)
 
 	if (kdata->map_cached) {
 		up(&mmz_lock);
-#ifndef CONFIG_64BIT
-		__cpuc_flush_dcache_area((void *)kdata->kvirt,
-						(size_t)mmb->length);
-		flush_outer_cache_range(phyaddr, mmb->length, mmb->iommu);
-#else
 		__flush_dcache_area((void *)kdata->kvirt, (size_t)mmb->length);
-#endif
 		down(&mmz_lock);
 	}
 

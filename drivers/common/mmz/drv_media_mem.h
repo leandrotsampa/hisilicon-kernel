@@ -37,13 +37,8 @@ typedef unsigned int		HI_U32;
 #endif
 
 #define L2_CACHE_SIZE  (512*1024)
-#ifdef CONFIG_64BIT
 #define mmz_flush_dcache_all		flush_cache_all
 #define mmz_flush_dcache_area		__flush_dcache_area
-#else
-#define mmz_flush_dcache_all		__cpuc_flush_kern_all
-#define mmz_flush_dcache_area		__cpuc_flush_dcache_area
-#endif
 
 /* alloc status	  */
 #define HI_USER_ALLOC		(0)

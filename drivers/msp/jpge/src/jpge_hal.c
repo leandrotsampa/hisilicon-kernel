@@ -275,20 +275,11 @@ static HI_S32 Jpge_StartOneFrame(Jpge_EncPara_S	 *pstEncPara, Jpge_EncIn_S *pEnc
     /** ����û�����buffer��ʵ�ʱ���������ݵ�ƫ��λ�ã����������ַʹ�� **/
     pstEncPara->Vir2BusOffset = BusBitBuf - pEncIn->BusOutBuf;
 
-#ifdef CONFIG_64BIT
     #ifdef CONFIG_SMP
 	on_each_cpu((smp_call_func_t)flush_cache_all, NULL, 1);
     #else
 	flush_cache_all();
     #endif
-#else
-    #ifdef CONFIG_SMP
-	on_each_cpu((smp_call_func_t)__cpuc_flush_kern_all, NULL, 1);
-    #else
-	__cpuc_flush_kern_all();
-    #endif
-    outer_flush_all(); // flush l2cache
-#endif
 
     return HI_SUCCESS;
 }

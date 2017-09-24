@@ -113,11 +113,6 @@ int mmz_flush_all_dcache(void)
 #else
 	mmz_flush_dcache_all();
 #endif
-
-#ifndef CONFIG_64BIT
-	/* just for A9 core */
-	outer_flush_all();
-#endif
 	return 0;
 }
 
