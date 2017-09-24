@@ -17,10 +17,6 @@ extern "C"{
 #include "hi_mpi_vdec.h"
 #include "hi_drv_dev.h"
 
-//#define PRE_ALLOC_VDEC_VDH_MMZ (1)
-#define PRE_ALLOC_VDEC_SCD_MMZ (0)
-#define PRE_ALLOC_VDEC_ESBUF_MMZ (0)
-
 /**Compress Info*/
 typedef struct hiVDEC_COMPRESS_INFO_S
 {

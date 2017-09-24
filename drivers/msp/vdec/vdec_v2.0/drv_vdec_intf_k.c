@@ -287,17 +287,6 @@ VDEC_PREMMZ_NODE_S st_VdecChanPreUsedMMZInfo[HI_VDEC_MAX_PRENODE_NUM];
 HI_U32 g_VdecPreMMZNodeNum = 0;
 
 
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-VDEC_BUFFER_S g_stSCDMMZ = {0, 0, 0};
-HI_BOOL g_bVdecPreSCDMMZUsed = HI_FALSE;
-#endif
-
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-#define ESBUF_MMZ_SIZE (20*1024*1024)
-VDEC_BUFFER_S g_stESBUFMMZ = {0, 0, 0};
-HI_BOOL g_bVdecPreESBUFMMZUsed = HI_FALSE;
-#endif
-
 static HI_S32	VDEC_RegChanProc(HI_S32 s32Num);
 static HI_VOID	VDEC_UnRegChanProc(HI_S32 s32Num);
 static HI_S32	VDEC_Chan_VpssRecvFrmBuf(VPSS_HANDLE hVpss, HI_DRV_VIDEO_FRAME_S* pstFrm);
@@ -10000,29 +9989,6 @@ HI_S32 VDEC_Chan_AllocVFMWMem(HI_HANDLE hHandle)
     /* Alloc SCD buffer */
     if (pstChan->stMemSize.ScdDetailMem > 0)
     {
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-
-	/* Only first handle use g_stVDHMMZ */
-	if ((HI_FALSE == g_bVdecPreSCDMMZUsed) && (pstChan->stMemSize.ScdDetailMem <= g_stSCDMMZ.u32Size))
-	{
-	    g_bVdecPreSCDMMZUsed = HI_TRUE;
-	    s32Ret = HI_DRV_VDEC_Map(&g_stSCDMMZ);
-
-	    if (HI_SUCCESS != s32Ret)
-	    {
-		HI_ERR_VDEC("Chan %d HI_DRV_VDEC_Map SCD MMZ err!\n", hHandle);
-	    }
-
-	    pstChan->stSCDMMZBuf.u32Size = pstChan->stMemSize.ScdDetailMem;
-	    pstChan->stSCDMMZBuf.u32StartPhyAddr = g_stSCDMMZ.u32StartPhyAddr;
-	    pstChan->stSCDMMZBuf.pu8StartVirAddr = g_stSCDMMZ.pu8StartVirAddr;
-
-	    pstChan->stEOSBuffer.u32StartPhyAddr = pstChan->stSCDMMZBuf.u32StartPhyAddr + g_stSCDMMZ.u32Size - HI_VDEC_EOS_MEM_SIZE;
-	    pstChan->stEOSBuffer.pu8StartVirAddr = pstChan->stSCDMMZBuf.pu8StartVirAddr + g_stSCDMMZ.u32Size - HI_VDEC_EOS_MEM_SIZE;
-	    pstChan->stEOSBuffer.u32Size = HI_VDEC_EOS_MEM_SIZE;
-	}
-	else
-#endif
 	{
 	    HI_U32	BufSize = ((pstChan->stMemSize.ScdDetailMem + 0x3ff) & 0xfffffc00) + HI_VDEC_EOS_MEM_SIZE;
 	    s32Ret = HI_DRV_VDEC_AllocAndMap("VFMW_SCD", HI_NULL, BufSize, 0, &pstChan->stSCDMMZBuf);
@@ -10079,15 +10045,6 @@ HI_S32 VDEC_Chan_AllocVFMWMem(HI_HANDLE hHandle)
     return HI_SUCCESS;
 
 err2:
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-
-    if (g_bVdecPreSCDMMZUsed && (pstChan->stSCDMMZBuf.u32StartPhyAddr == g_stSCDMMZ.u32StartPhyAddr))
-    {
-	g_bVdecPreSCDMMZUsed = HI_FALSE;
-	HI_DRV_VDEC_Unmap(&g_stSCDMMZ);
-    }
-    else
-#endif
     {
 	HI_DRV_VDEC_UnmapAndRelease(&pstChan->stSCDMMZBuf);
     }
@@ -10109,14 +10066,6 @@ HI_S32 VDEC_Chan_FreeVFMWMem(HI_HANDLE hHandle)
     }
 
     /* Free vfmw memory */
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-    if (pstChan->stSCDMMZBuf.u32StartPhyAddr == g_stSCDMMZ.u32StartPhyAddr)
-    {
-	g_bVdecPreSCDMMZUsed = HI_FALSE;
-	HI_DRV_VDEC_Unmap(&g_stSCDMMZ);
-    }
-    else
-#endif
     {
 	HI_DRV_VDEC_UnmapAndRelease(&pstChan->stSCDMMZBuf);
     }
@@ -15937,9 +15886,6 @@ static HI_VOID VDEC_GetMemConfig(HI_U32* pu32ScdBufSize, HI_U32* pu32VdhBufSize)
 
 HI_S32 VDEC_AllocPreBuffer(HI_VOID)
 {
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ) || (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-    HI_S32		ret;
-#endif
     HI_U32		ScdBufSize = 0;
     HI_U32		VdhBufSize = 0;
 
@@ -15947,47 +15893,10 @@ HI_S32 VDEC_AllocPreBuffer(HI_VOID)
     VDEC_GetMemConfig(&ScdBufSize, &VdhBufSize);
 
     /*2:alloc pre scd memory*/
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-
-    if (ScdBufSize > 0)
-    {
-	ret = HI_DRV_VDEC_Alloc("VFMW_SCD_PRE", "VFMW", ScdBufSize + HI_VDEC_SCD_EXT_MEM + HI_VDEC_EOS_MEM_SIZE, 0, &g_stSCDMMZ);
-
-	if (HI_SUCCESS != ret)
-	{
-	    HI_ERR_VDEC("SCD Alloc 0x%x failed\n", ScdBufSize);
-	    return HI_FAILURE;
-	}
-    }
-
-#endif
 
     /*4:alloc pre es_buffer memory*/
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-    ret = HI_DRV_VDEC_AllocAndMap("VDEC_ESBuf_PRE", "VDEC", ESBUF_MMZ_SIZE, 0, &g_stESBUFMMZ);
-
-    if (HI_SUCCESS != ret)
-    {
-	HI_ERR_VDEC("ESBUF Alloc 0x%x failed\n", ESBUF_MMZ_SIZE);
-	goto err3;
-    }
-
-#endif
 
     return HI_SUCCESS;
-
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-err3:
-#endif
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-err1:
-    HI_DRV_VDEC_Release(&g_stSCDMMZ);
-    memset(&g_stSCDMMZ, 0, sizeof(MMZ_BUFFER_S));
-#endif
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ) || (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-    HI_ERR_VDEC("ScdBufSize:%d,VdhBufSize:%d\n", ScdBufSize, VdhBufSize);
-    return HI_FAILURE;
-#endif
 }
 HI_S32 VDEC_DRV_Init(HI_VOID)
 {
@@ -16030,29 +15939,7 @@ HI_S32 VDEC_DRV_Init(HI_VOID)
 
 HI_VOID VDEC_DRV_Exit(HI_VOID)
 {
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-
-    if (0 != g_stESBUFMMZ.u32Size)
-    {
-	HI_DRV_VDEC_Release(&g_stESBUFMMZ);
-	g_stESBUFMMZ.u32Size = 0;
-    }
-
-#endif
-
-#if (1 == PRE_ALLOC_VDEC_SCD_MMZ)
-
-    if (0 != g_stSCDMMZ.u32Size)
-    {
-	HI_DRV_VDEC_UnmapAndRelease(&g_stSCDMMZ);
-	g_stSCDMMZ.u32Size = 0;
-    }
-
-#endif
-
     HI_DRV_MODULE_UnRegister(HI_ID_VDEC);
-
-    return;
 }
 
 HI_S32 HI_DRV_VDEC_Init(HI_VOID)

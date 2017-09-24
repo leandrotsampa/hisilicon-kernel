@@ -151,11 +151,6 @@ do								   \
 	} \
     }
 
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-extern VDEC_BUFFER_S g_stESBUFMMZ;
-extern HI_BOOL g_bVdecPreESBUFMMZUsed;
-#endif
-
 
 /************************ Static Structure Definition ************************/
 
@@ -485,16 +480,6 @@ static HI_S32 BUFMNG_CreatBuffer(BUFMNG_INST_CONFIG_S *pstConfig,
 {
     HI_S32 s32Ret = HI_ERR_BM_FREE_ERR;
 
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-
-    if ((HI_FALSE == g_bVdecPreESBUFMMZUsed) && (pstConfig->u32Size <= g_stESBUFMMZ.u32Size))
-    {
-	g_bVdecPreESBUFMMZUsed = HI_TRUE;
-	pstConfig->u32PhyAddr = g_stESBUFMMZ.u32StartPhyAddr;
-	pstConfig->pu8KnlVirAddr = (HI_U8*)g_stESBUFMMZ.pu8StartVirAddr;
-    }
-    else
-#endif
     {
 	s32Ret = HI_DRV_VDEC_AllocAndMap(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
 
@@ -569,14 +554,6 @@ HI_S32 BUFMNG_Create(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 	    HI_ERR_BUFMNG("HI_DRV_VDEC_Map fail!\n");
 	    if (BUFMNG_ALLOC_INNER == pstConfig->enAllocType)
 	    {
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-
-		if (g_bVdecPreESBUFMMZUsed)
-		{
-		    g_bVdecPreESBUFMMZUsed = HI_FALSE;
-		}
-		else
-#endif
 		{
 		    BUFMNG_DestroyBuffer(pstConfig->bTvp, &stVDECAllocBuf);
 		}
@@ -704,14 +681,6 @@ HI_S32 BUFMNG_Destroy(HI_HANDLE hBuf)
     /* If need, free */
     if (BUFMNG_ALLOC_INNER == pstInst->enAllocType)
     {
-#if (1 == PRE_ALLOC_VDEC_ESBUF_MMZ)
-
-	if (g_bVdecPreESBUFMMZUsed)
-	{
-	    g_bVdecPreESBUFMMZUsed = HI_FALSE;
-	}
-	else
-#endif
 	{
 	    BUFMNG_SPIN_LOCK(pstInst->stSpinLock);
 	    stVDECBuf.u32StartPhyAddr = pstInst->u32PhyAddr;
