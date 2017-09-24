@@ -84,11 +84,6 @@ typedef struct hiVPSS_FB_STATE_S
     HI_U32 u32ListFul;
     HI_VOID *pstTarget_1;
     HI_U32 u32OutRate;
-#if FB_DBG
-    HI_U32 u32List[DEF_HI_DRV_VPSS_PORT_BUFFER_MAX_NUMBER][2];
-    HI_U32 u32FulList[DEF_HI_DRV_VPSS_PORT_BUFFER_MAX_NUMBER];
-    HI_U32 u32EmptyList[DEF_HI_DRV_VPSS_PORT_BUFFER_MAX_NUMBER];
-#endif
 } VPSS_FB_STATE_S;
 typedef enum
 {

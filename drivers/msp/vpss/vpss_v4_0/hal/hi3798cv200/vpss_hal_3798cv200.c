@@ -3268,7 +3268,6 @@ HI_S32 VPSS_HAL_SetRotateNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
     return HI_SUCCESS;
 }
 
-#ifdef ZME_2L_TEST //@f00241306
 HI_S32 VPSS_HAL_SetZME2LNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,	 HI_U32 u32PortId)
 {
 #if 0
@@ -3361,7 +3360,6 @@ HI_S32 VPSS_HAL_SetZME2LNode(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo, HI_U32
 #endif
     return HI_SUCCESS;
 }
-#endif
 
 
 HI_S32 VPSS_HAL_SetNode_H265_Step1_Interlace(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
@@ -4093,12 +4091,10 @@ HI_S32 VPSS_HAL_SetNodeInfo(VPSS_IP_E enIP,
 	case VPSS_HAL_NODE_HDR_DETILE_NOALG:
 	    s32Ret = VPSS_HAL_SetHDRNode(enIP, pstHalInfo,  pu32AppVir, u32AppPhy);
 	    break;
-#ifdef ZME_2L_TEST
 	case VPSS_HAL_NODE_ZME_2L:
 	    u32PortId = enTaskNodeId - VPSS_HAL_TASK_NODE_P0_ZME_L2;
 	    VPSS_HAL_SetZME2LNode(enIP, pstHalInfo,  pu32AppVir, u32AppPhy, u32PortId);
 	    break;
-#endif
 #if 0
 	case VPSS_HAL_NODE_2D_3Field:
 	    //VPSS_HAL_SetFrameNode(pstHalInfo,	 pu32AppVir);

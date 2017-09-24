@@ -22,14 +22,6 @@ extern "C" {
 #endif
 #endif
 
-#if DEF_VPSS_STATIC
-HI_U32 g_u32LogicStart = 0;
-HI_U32 g_u32LogicEnd = 0;
-
-HI_U32 g_u32LogicTime[15];
-HI_U32 g_u32LogicCycle[2][15];
-HI_U32 g_u32Pos = 0;
-#endif
 static VPSS_CTRL_S g_stVpssCtrl[VPSS_IP_BUTT] =
 {
     {
@@ -539,7 +531,6 @@ HI_S32 VPSS_CTRL_FixTask(VPSS_IP_E enIp, HI_DRV_BUF_ADDR_E enLR, VPSS_TASK_S *ps
 	    pstFrmNode = pstTask->pstFrmNode[i * 2 + enLR];
 	}
 
-#ifdef ZME_2L_TEST
 #ifndef VPSS_HAL_WITH_CBB
 	if ( HI_TRUE == pstTask->pstInstance->stPort[i].bNeedRotate)
 	{
@@ -552,7 +543,6 @@ HI_S32 VPSS_CTRL_FixTask(VPSS_IP_E enIp, HI_DRV_BUF_ADDR_E enLR, VPSS_TASK_S *ps
 	{
 	    pstFrmNode = pstTask->pstFrmNodeZME1L;
 	}
-#endif
 
 #ifdef VPSS_HAL_WITH_CBB
 	VPSS_INST_GetRotate(pstInst, i, &pstHalInfo->astPortInfo[i], pstCur);
@@ -561,7 +551,7 @@ HI_S32 VPSS_CTRL_FixTask(VPSS_IP_E enIp, HI_DRV_BUF_ADDR_E enLR, VPSS_TASK_S *ps
 	{
 	    pstHalInfo->astPortInfo[i].bEnable = HI_TRUE;
 	    pstHalInfo->astPortInfo[i].bConfig = HI_FALSE;
-	    pstHalInfo->astPortInfo[i].bCmpLoss = VPSS_ISLOSS_CMP;
+	    pstHalInfo->astPortInfo[i].bCmpLoss = HI_FALSE;
 
 	    pstHalInfo->astPortInfo[i].bOutLowDelay = pstTask->bOutLowDelay;
 	    if ((pstCur->ePixFormat == HI_DRV_PIX_FMT_NV12
@@ -593,7 +583,6 @@ HI_S32 VPSS_CTRL_FixTask(VPSS_IP_E enIp, HI_DRV_BUF_ADDR_E enLR, VPSS_TASK_S *ps
 		pstHalInfo->astPortInfo[i].stOutInfo.bUVInver = HI_FALSE;
 	    }
 
-#ifdef ZME_2L_TEST
 	    VPSS_INST_SetOutFrameInfo(pstInst, i,
 				      &pstFrmNode->stBuffer, &pstFrmNode->stOutFrame, enLR);
 	    if (pstHalInfo->astPortInfo[i].bOutLowDelay)
@@ -604,24 +593,6 @@ HI_S32 VPSS_CTRL_FixTask(VPSS_IP_E enIp, HI_DRV_BUF_ADDR_E enLR, VPSS_TASK_S *ps
 	    {
 		pstFrmNode->stOutFrame.u32TunnelPhyAddr = HI_NULL;
 	    }
-#else
-	    //�����������ת��ʹ����תBUFFER
-#ifndef VPSS_HAL_WITH_CBB
-	    if ((HI_DRV_VPSS_ROTATION_90 == pstInst->stPort[i].enRotation)
-		|| (HI_DRV_VPSS_ROTATION_270 == pstInst->stPort[i].enRotation))
-#else
-	    if (0)
-#endif
-	    {
-		VPSS_INST_SetOutFrameInfo(pstInst, i,
-					  &g_stVpssCtrl[enIp].stRoBuf[i], &pstFrmNode->stOutFrame, enLR);
-	    }
-	    else
-	    {
-		VPSS_INST_SetOutFrameInfo(pstInst, i,
-					  &pstFrmNode->stBuffer, &pstFrmNode->stOutFrame, enLR);
-	    }
-#endif
 
 	    VPSS_INST_SetHalFrameInfo(&pstFrmNode->stOutFrame,
 				      &pstHalInfo->astPortInfo[i].stOutInfo, enLR);
@@ -1019,7 +990,6 @@ HI_BOOL VPSS_CTRL_CheckZME1LStart(VPSS_TASK_S *pstTask, HI_U32 PortId)
     return HI_FALSE;
 }
 
-#ifdef ZME_2L_TEST
 /******************************************************************************
 brief	   : CNcomment :  check rotate and ZME_2L task
 	   :  ����������:
@@ -1289,7 +1259,6 @@ HI_S32 VPSS_CTRL_StartZME2LTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask, HI_U32 Por
     VPSS_HAL_SetNodeInfo(enIp, pstHalInfo, VPSS_HAL_TASK_NODE_P0_ZME_L2 + PortId );
     return HI_SUCCESS;
 }
-#endif
 
 HI_S32 VPSS_CTRL_StartRotateTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask, HI_U32 PortId)
 {
@@ -1301,16 +1270,9 @@ HI_S32 VPSS_CTRL_StartRotateTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask, HI_U32 Po
     pstHalInfo = &pstTask->stVpssHalInfo;
     pstInst = pstTask->pstInstance;
 
-#ifdef ZME_2L_TEST
     //set rotation input frame info
     pstInputFrame = &(pstTask->pstFrmNodeRoBuf[PortId]->stOutFrame);
     VPSS_INST_SetHalFrameInfo(pstInputFrame, &pstHalInfo->stInInfo, HI_DRV_BUF_ADDR_LEFT);
-#else
-    //set rotation input frame info
-    pstInputFrame = &(pstTask->pstFrmNode[PortId * 2 + HI_DRV_BUF_ADDR_LEFT]->stOutFrame);
-    VPSS_INST_SetHalFrameInfo(pstInputFrame, &pstHalInfo->stInInfo, HI_DRV_BUF_ADDR_LEFT);
-
-#endif
 
     //set rotation output frame info
     pstOutputInfo = pstTask->pstFrmNode[PortId * 2 + HI_DRV_BUF_ADDR_LEFT];
@@ -1882,14 +1844,12 @@ HI_S32 VPSS_CTRL_StartTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask)
 #endif
 
     pstTask->pstInstance->u32LogicTimeoutCnt++;
-#ifdef ZME_2L_TEST
     s32Ret = VPSS_CTRL_Zme2lAndRotateCfg(enIp, pstTask);
     if (HI_SUCCESS != s32Ret)
     {
 	VPSS_ERROR("Check ZME_2L Failed\n");
 	return s32Ret;
     }
-#endif
 
     if (VPSS_CTRL_Check2DH265InterlaceStart(pstTask))
     {
@@ -1922,7 +1882,6 @@ HI_S32 VPSS_CTRL_StartTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask)
 	    }
 	}
     }
-#ifdef ZME_2L_TEST
     //ZME_2L
     for (i = 0; i < DEF_HI_DRV_VPSS_PORT_MAX_NUMBER; i++)
     {
@@ -1938,41 +1897,14 @@ HI_S32 VPSS_CTRL_StartTask(VPSS_IP_E enIp, VPSS_TASK_S *pstTask)
 	{
 	}
     }
-#else
-    //rotate
-    for (i = 0; i < DEF_HI_DRV_VPSS_PORT_MAX_NUMBER; i++)
-    {
-	if (VPSS_CTRL_CheckRotateStart(pstTask, i))
-	{
-	    VPSS_CTRL_StartRotateTask(enIp, pstTask, i);
-	}
-	else
-	{
-	    //�ͷ���ת�ڴ棬��ʡSDK�ռ�ռ��
-	    if (0 != g_stVpssCtrl[enIp].stRoBuf[i].stMemBuf.u32Size)
-	    {
-		VPSS_OSAL_FreeMem(&(g_stVpssCtrl[enIp].stRoBuf[i].stMemBuf));
-		g_stVpssCtrl[enIp].stRoBuf[i].stMemBuf.u32Size = 0;
-	    }
-	}
-    }
-#endif
     bStart3D = VPSS_CTRL_Check3DStart(pstTask);
     if (bStart3D)
     {
 	(HI_VOID)VPSS_CTRL_Start3DTask(enIp, pstTask);
     }
 
-#if DEF_VPSS_LOGIC_WORK
     s32Ret = VPSS_HAL_StartLogic(enIp, pstTask->pstInstance->abNodeVaild);
-#else
-    s32Ret = HI_SUCCESS;
-#endif
-
     pstTask->pstInstance->aulLogicStartTime[pstTask->pstInstance->u32TimeStampIndex] = jiffies;
-#if DEF_VPSS_STATIC
-    g_u32LogicStart = jiffies;
-#endif
 
     return s32Ret;
 }
@@ -2537,7 +2469,6 @@ HI_S32 VPSS_CTRL_ThreadProc(HI_VOID *pArg)
 		   start logic running, waitting for irq to wakeup thread
 		   */
 		pstVpssCtrl->stTask.stState = TASK_STATE_WAIT;
-#if DEF_VPSS_LOGIC_WORK
 		if (pstVpssCtrl->stTask.bOutLowDelay)
 		{
 		    s32WaitRet = VPSS_OSAL_WaitEvent(&(pstVpssCtrl->stTaskLowDelay), HZ);
@@ -2546,10 +2477,6 @@ HI_S32 VPSS_CTRL_ThreadProc(HI_VOID *pArg)
 		{
 		    s32WaitRet = VPSS_OSAL_WaitEvent(&(pstVpssCtrl->stTaskNext), HZ);
 		}
-#else
-		msleep(10);
-		s32WaitRet = HI_SUCCESS;
-#endif
 		if (s32WaitRet == HI_SUCCESS)
 		{
 		    pstVpssCtrl->s32ThreadPos = 3;
@@ -2620,7 +2547,6 @@ HI_S32 VPSS_CTRL_ThreadProc(HI_VOID *pArg)
 	    }
 
 	    VPSS_OSAL_ResetEvent(&(pstVpssCtrl->stNewTask), EVENT_UNDO, EVENT_UNDO);
-#ifdef ZME_2L_TEST
 	    /*���ϲ����stop����ʱ���ͷŻ����buffer*/
 	    if ( HI_NULL != pstVpssCtrl->stTask.pstFrmNodeZME1L)
 	    {
@@ -2635,7 +2561,6 @@ HI_S32 VPSS_CTRL_ThreadProc(HI_VOID *pArg)
 		    pstVpssCtrl->stTask.pstFrmNodeZME1L = HI_NULL;
 		}
 	    }
-#endif
 	}
 
     }
@@ -2965,7 +2890,6 @@ HI_S32 VPSS_CTRL_DelInit(HI_VOID)
 
 	    for (u32Count = 0; u32Count < DEF_HI_DRV_VPSS_PORT_MAX_NUMBER; u32Count ++)
 	    {
-#ifdef ZME_2L_TEST
 		if ( g_stVpssCtrl[i].stTask.pstFrmNodeRoBuf[u32Count] != HI_NULL)
 		{
 		    pstVpssBuf = &(g_stVpssCtrl[i].stTask.pstFrmNodeRoBuf[u32Count]->stBuffer);
@@ -2994,15 +2918,6 @@ HI_S32 VPSS_CTRL_DelInit(HI_VOID)
 			g_stVpssCtrl[i].stTask.pstFrmNodeZME1L = HI_NULL;
 		    }
 		}
-#else
-		pstVpssBuf = &(g_stVpssCtrl[i].stRoBuf[u32Count]);
-		if (pstVpssBuf->stMemBuf.u32Size != 0)
-		{
-		    VPSS_OSAL_FreeMem(&(pstVpssBuf->stMemBuf));
-		    pstVpssBuf->u32Stride = 0;
-		    pstVpssBuf->stMemBuf.u32Size = 0;
-		}
-#endif
 	    }
 	}
 
@@ -3336,10 +3251,6 @@ irqreturn_t VPSS0_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id)
     {
 	//VPSS_FATAL("NODE  state = %x \n", u32State);
 	VPSS_HAL_ClearIntState(VPSS_IP_0, 0x1);
-
-#if DEF_VPSS_STATIC
-	VPSS_HAL_GetCycleCnt(VPSS_IP_0, &(g_u32LogicCycle[0][g_u32Pos]));
-#endif
     }
 
     if (u32State & 0x88)
@@ -3347,15 +3258,6 @@ irqreturn_t VPSS0_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id)
 #if 1
 	VPSS_HAL_ClearIntState(VPSS_IP_0, 0x88);
 
-#if DEF_VPSS_STATIC
-	VPSS_HAL_GetCycleCnt(VPSS_IP_0, &(g_u32LogicCycle[1][g_u32Pos]));
-
-	g_u32LogicEnd = jiffies;
-
-	g_u32LogicTime[g_u32Pos] = g_u32LogicEnd - g_u32LogicStart;
-
-	g_u32Pos = (g_u32Pos + 1) % 15;
-#endif
 	VPSS_OSAL_GiveEvent(&(g_stVpssCtrl[VPSS_IP_0].stTaskNext), EVENT_DONE, EVENT_UNDO);
 
 #endif
@@ -3475,21 +3377,9 @@ irqreturn_t VPSS0_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id)
     {
 	VPSS_OSAL_GiveEvent(&(g_stVpssCtrl[VPSS_IP_0].stTaskLowDelay), EVENT_DONE, EVENT_UNDO);
     }
-#if DEF_VPSS_STATIC
-    if (abISRStat[CBB_ISR_NODE_COMPLETE])
-    {
-	VPSS_HAL_GetCycleCnt(VPSS_IP_0, &(g_u32LogicCycle[0][g_u32Pos]));
-    }
-#endif
 
     if (abISRStat[CBB_ISR_LIST_COMPLETE])
     {
-#if DEF_VPSS_STATIC
-	VPSS_HAL_GetCycleCnt(VPSS_IP_0, &(g_u32LogicCycle[1][g_u32Pos]));
-	g_u32LogicEnd = jiffies;
-	g_u32LogicTime[g_u32Pos] = g_u32LogicEnd - g_u32LogicStart;
-	g_u32Pos = (g_u32Pos + 1) % 15;
-#endif
 	VPSS_OSAL_GiveEvent(&(g_stVpssCtrl[VPSS_IP_0].stTaskNext), EVENT_DONE, EVENT_UNDO);
     }
 
@@ -3559,21 +3449,8 @@ irqreturn_t VPSS1_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id)
 	VPSS_FATAL(" Tunnel = %x \n", u32IntState);
     }
 
-    if (abISRStat[CBB_ISR_NODE_COMPLETE])
-    {
-#if DEF_VPSS_STATIC
-	VPSS_HAL_GetCycleCnt(VPSS_IP_1, &(g_u32LogicCycle[0][g_u32Pos]));
-#endif
-    }
-
     if (abISRStat[CBB_ISR_LIST_COMPLETE])
     {
-#if DEF_VPSS_STATIC
-	VPSS_HAL_GetCycleCnt(VPSS_IP_1, &(g_u32LogicCycle[1][g_u32Pos]));
-	g_u32LogicEnd = jiffies;
-	g_u32LogicTime[g_u32Pos] = g_u32LogicEnd - g_u32LogicStart;
-	g_u32Pos = (g_u32Pos + 1) % 15;
-#endif
 	VPSS_OSAL_GiveEvent(&(g_stVpssCtrl[VPSS_IP_1].stTaskNext), EVENT_DONE, EVENT_UNDO);
     }
 

@@ -1785,21 +1785,6 @@ HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 
     s32SrcModuleID = (pstInstance->hDst & 0x00ff0000) >> 16;
 
-#if DEF_VPSS_STATIC
-
-    PROC_PRINT(p,
-	       "-----Logic Process Jiffies----|" "Node 0 Cycle	   Node 1 Cycle\n"
-	      );
-
-    for (u32Count = 0; u32Count < 15; u32Count++)
-    {
-	PROC_PRINT(p,
-		   "%d			  |%d		   %d\n",
-		   g_u32LogicTime[u32Count],
-		   g_u32LogicCycle[0][u32Count],
-		   g_u32LogicCycle[1][u32Count]);
-    }
-#else
     PROC_PRINT(p,
 	       "--------VPSS%04x---------------|"   "------------------------PortInfo------------------------|\n"
 	       "ID		 :0x%-8x   |"	    "ID		      :0x%-8x  |0x%-8x	|0x%-8x	 |\n"
@@ -1815,11 +1800,7 @@ HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 	       "P/I Setting   :%-10s	  |"	    "HorizonFlip      :%-12s|%-12s|%-12s|\n"
 	       "Deinterlace   :%-10s	  |"	    "VerticalFlip     :%-12s|%-12s|%-12s|\n"
 	       "Sharpness     :%-10s	  |"	    "Rotation	      :%-12s|%-12s|%-12s|\n"
-#ifdef ZME_2L_TEST
 	       "*ProgRevise   :%-10s	  |"	    "*ZME1LResolution :%4d*%-4d	  |%4d*%-4d   |%4d*%-4d	  |\n"
-#else
-	       "*ProgRevise   :%-10s	  |"	    "				   |		|	     |\n"
-#endif
 	       "			       |"   "OutBitWidth      :%-12s|%-12s|%-12s|\n"
 	       "--------Detect Info------------|"   "				   |		|	     |\n"
 	       "TopFirst(Src):%6s(%-6s)	  |"	    "				   |		|	     |\n"
@@ -1893,7 +1874,6 @@ HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 	       g_pRotationString[pstPortPrc[0]->enRotation],
 	       g_pRotationString[pstPortPrc[1]->enRotation],
 	       g_pRotationString[pstPortPrc[2]->enRotation],
-#ifdef ZME_2L_TEST
 	       g_pAlgModeString[pstInEntity->bProgRevise],
 	       pstInstance->stPort[0].u32ZME1LWidth,
 	       pstInstance->stPort[0].u32ZME1LHeight,
@@ -1901,9 +1881,6 @@ HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 	       pstInstance->stPort[1].u32ZME1LHeight,
 	       pstInstance->stPort[2].u32ZME1LWidth,
 	       pstInstance->stPort[2].u32ZME1LHeight,
-#else
-	       g_pAlgModeString[pstInEntity->bProgRevise],
-#endif
 	       (pstInstance->stPort[0].enOutBitWidth < HI_DRV_PIXEL_BITWIDTH_BUTT) ?
 	       (HI_CHAR *)g_pOutBitWidthString[pstInstance->stPort[0].enOutBitWidth] : "UNKONWN",
 	       (pstInstance->stPort[1].enOutBitWidth < HI_DRV_PIXEL_BITWIDTH_BUTT) ?
@@ -1923,7 +1900,6 @@ HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 		   "I" : "P",
 		   (pstStreamInfo->u32StreamTopFirst == 0) ? "I" : "P"
 		  );
-#endif
 #if 1
     PROC_PRINT(p,
 	       "-----SourceFrameList Info------|"  "--------------------OutFrameList Info-------------------|\n"
@@ -2249,9 +2225,7 @@ HI_S32 VPSS_CTRL_ProcWrite(struct file *file,
     }
 
 
-#if DEF_VPSS_DEBUG
     VPSS_DBG_SendDbgCmd(&(pstInstance->stDbgCtrl), &stDbgCmd);
-#endif
     return count;
 
 PROC_EXIT:

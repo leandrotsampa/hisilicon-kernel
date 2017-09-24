@@ -21,8 +21,6 @@
 #define VPSS_CODE_LASTGITNO	  "a057738946d2c16638f22b3ccceb18824eb7a8e4"
 
 #define DEF_FILE_NAMELENGTH 64
-#define VPSS_ISLOSS_CMP	    HI_FALSE
-#define DEF_VPSS_LOGIC_WORK 1
 typedef struct list_head LIST;
 
 #if 1
@@ -43,12 +41,6 @@ typedef struct list_head LIST;
 	}\
     }
 #endif
-#define ZME_2L_TEST   //@f00241306
-#define FB_DBG 0
-#define DEF_VPSS_STATIC 0
-#define DEF_VPSS_DEBUG 1
-#define DEF_VPSS_HIGH_4K 1
-#define DEF_VPSS_ANDROID_BYPASS 1
 
 #define VPSS_NAME  "HI_VPSS"
 
@@ -274,13 +266,8 @@ typedef union
 #define VPSS_UHD_MIDDLE_W	1920
 #define VPSS_UHD_MIDDLE_H	2160
 
-#if DEF_VPSS_HIGH_4K
 #define VPSS_UHD_HIGH_W		3840
 #define VPSS_UHD_HIGH_H		2160
-#else
-#define VPSS_UHD_HIGH_W		1920
-#define VPSS_UHD_HIGH_H		2160
-#endif
 
 #define COLOR_NORMAL		"\033[0m"
 #define COLOR_BLACK		"\033[30m"

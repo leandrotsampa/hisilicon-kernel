@@ -519,7 +519,6 @@ HI_S32 VPSS_INST_DebugCfg(VPSS_INSTANCE_S *pstInstance)
     VPSS_PORT_S *pstPort;
     HI_DRV_VPSS_PORT_CFG_S *pstPortCfg;
     HI_U32 u32SrcWH;
-#if DEF_VPSS_DEBUG
     {
 	VPSS_HANDLE hDbgPart;
 	hDbgPart = DEF_DBG_SRC_ID;
@@ -549,7 +548,6 @@ HI_S32 VPSS_INST_DebugCfg(VPSS_INSTANCE_S *pstInstance)
 			     &hDbgPart,
 			     &(pstInstance->stInEntity.stDbginfo));
     }
-#endif
 
     for (u32Count = 0;
 	 u32Count < DEF_HI_DRV_VPSS_PORT_MAX_NUMBER;
@@ -560,7 +558,6 @@ HI_S32 VPSS_INST_DebugCfg(VPSS_INSTANCE_S *pstInstance)
 
 	if (pstPort->s32PortId != VPSS_INVALID_HANDLE)
 	{
-#if DEF_VPSS_DEBUG
 	    {
 		VPSS_HANDLE hDbgPart;
 		switch (((HI_U32)pstPort->s32PortId) & 0x000000ff)
@@ -604,7 +601,6 @@ HI_S32 VPSS_INST_DebugCfg(VPSS_INSTANCE_S *pstInstance)
 		&(pstPort->enRotation));
 
 	    }
-#endif
 	}
     }
 
@@ -1615,7 +1611,6 @@ HI_S32 VPSS_INST_ReplyUserCommand(VPSS_INSTANCE_S *pstInstance,
 	case HI_DRV_VPSS_USER_COMMAND_CHECKBYPASS:
 	    VPSS_CHECK_NULL(pArgs);
 	    pstBypassInfo = (HI_DRV_VPSS_BYPASSATTR_S *)pArgs;
-#if DEF_VPSS_ANDROID_BYPASS
 	    if (HI_TRUE == pstInstance->stInEntity.stTransFbInfo.bNeedTrans)
 	    {
 		if (pstBypassInfo->u32InputWidth > 1920)
@@ -1631,9 +1626,6 @@ HI_S32 VPSS_INST_ReplyUserCommand(VPSS_INSTANCE_S *pstInstance,
 	    {
 		 pstBypassInfo->bVpssBypass =  HI_FALSE;
 	    }
-#else
-	    pstBypassInfo->bVpssBypass = HI_FALSE;
-#endif
 	    break;
 	case HI_DRV_VPSS_USER_COMMAND_CHECKAVAILABLE:
 	    VPSS_CHECK_NULL(pArgs);
@@ -1708,7 +1700,6 @@ HI_S32 VPSS_INST_GetPortFrame(VPSS_INSTANCE_S *pstInstance, VPSS_HANDLE hPort, H
 
     if (s32Ret == HI_SUCCESS)
     {
-#if DEF_VPSS_DEBUG
 	{
 	    VPSS_HANDLE hDbgPart;
 	    switch (((HI_U32)pstPort->s32PortId) & 0x000000ff)
@@ -1745,7 +1736,6 @@ HI_S32 VPSS_INST_GetPortFrame(VPSS_INSTANCE_S *pstInstance, VPSS_HANDLE hPort, H
 	    &hDbgPart,
 	    pstFrame);
 	}
-#endif
     }
     return s32Ret;
 }
@@ -1865,7 +1855,6 @@ HI_S32 VPSS_INST_GetUserImage(VPSS_INSTANCE_S *pstInstance,
     return s32Ret;
 }
 
-#if DEF_VPSS_ANDROID_BYPASS
 HI_S32 VPSS_INST_CheckByPass(VPSS_INSTANCE_S *pstInstance)
 {
     HI_U32 u32Count;
@@ -1948,7 +1937,6 @@ HI_S32 VPSS_INST_CheckByPass(VPSS_INSTANCE_S *pstInstance)
     VPSS_VFREE(pstFrame);
     return HI_SUCCESS;
 }
-#endif
 
 HI_S32 VPSS_INST_CheckUndoImage(VPSS_INSTANCE_S *pstInstance)
 {
@@ -1978,12 +1966,9 @@ HI_S32 VPSS_INST_CheckUndoImage(VPSS_INSTANCE_S *pstInstance)
 
 	(HI_VOID)DRV_PQ_UpdateVpssPQ(pstInstance->ID, &stVpssPqInfo, &pstInstance->stPqRegData, &pstInstance->stPqWbcReg, &pstInstance->stPQModule);
     }
-#if DEF_VPSS_ANDROID_BYPASS
     (HI_VOID)VPSS_INST_CheckByPass(pstInstance);
-#endif
+
     return s32Ret;
-
-
 }
 
 HI_S32 VPSS_INST_CheckInstAvailable(VPSS_INSTANCE_S *pstInstance)
@@ -2538,7 +2523,6 @@ HI_VOID VPSS_INST_SetOutFrameInfo(VPSS_INSTANCE_S *pstInst, HI_U32 PortId, VPSS_
 	//u32DstH = pstInst->stStreamInfo.u32StreamH;
     }
 
-#ifdef ZME_2L_TEST
     if (HI_TRUE == pstPort->bNeedZME2L) //�����Ҫ�������ţ���Ҫ��������port�������
     {
 	pstFrm->u32Width  = u32SrcW;
@@ -2556,48 +2540,6 @@ HI_VOID VPSS_INST_SetOutFrameInfo(VPSS_INSTANCE_S *pstInst, HI_U32 PortId, VPSS_
 	pstFrm->u32Width  = u32DstW;
 	pstFrm->u32Height = u32DstH;
     }
-#else
-#ifndef VPSS_HAL_WITH_CBB
-    if ((HI_DRV_VPSS_ROTATION_90 == pstPort->enRotation)
-	|| (HI_DRV_VPSS_ROTATION_270 == pstPort->enRotation))
-    {
-	HI_U32 u32BufSize = 0;
-	HI_U32 u32BufStride = 0;
-
-	pstFrm->u32Width  = u32DstH;
-	pstFrm->u32Height = u32DstW;
-	VPSS_OSAL_CalBufSize(&u32BufSize, &u32BufStride, pstFrm->u32Height
-			     , pstFrm->u32Width, pstPort->eFormat, pstPort->enOutBitWidth);
-	if ((pstBuf->stMemBuf.u32Size != u32BufSize)
-	    || (pstBuf->u32Stride != u32BufStride))
-	{
-	    if (pstBuf->stMemBuf.u32Size != 0)
-	    {
-		VPSS_OSAL_FreeMem(&(pstBuf->stMemBuf));
-	    }
-
-	    s32Ret = VPSS_OSAL_AllocateMem(VPSS_MEM_FLAG_NORMAL,
-					   u32BufSize,
-					   "VPSS_RoBuf",
-					   HI_NULL,
-					   &(pstBuf->stMemBuf));
-	    if (s32Ret != HI_SUCCESS)
-	    {
-		VPSS_FATAL("Alloc RoBuf Failed\n");
-	    }
-
-	    pstBuf->u32Stride = u32BufStride;
-	}
-
-
-    }
-    else
-#endif
-    {
-	pstFrm->u32Width  = u32DstW;
-	pstFrm->u32Height = u32DstH;
-    }
-#endif
     /* keep pts equal src frame*/
     s32Ret = stIntf.pfnSetInfo(&(pstInst->stInEntity), VPSS_SET_INFO_PTS, enBufLR, pstFrm);
     if (HI_FAILURE == s32Ret)
@@ -3190,7 +3132,6 @@ HI_VOID VPSS_INST_GetVideoRect(VPSS_INSTANCE_S *pstInst,
 	return ;
     }
 
-#ifdef ZME_2L_TEST
     if (HI_TRUE == pstInst->stPort[PortId].bNeedZME2L) //�����Ҫ�������ţ��������������Ϊ�������
     {
 	u32DstW = pstInst->stPort[PortId].u32ZME1LWidth;
@@ -3211,19 +3152,6 @@ HI_VOID VPSS_INST_GetVideoRect(VPSS_INSTANCE_S *pstInst,
 	u32DstW = pstInst->stPort[PortId].s32OutputWidth;
 	u32DstH = pstInst->stPort[PortId].s32OutputHeight;
     }
-#else
-    if ((HI_DRV_VPSS_ROTATION_90 == pstInst->stPort[PortId].enRotation)
-	|| (HI_DRV_VPSS_ROTATION_270 == pstInst->stPort[PortId].enRotation))
-    {
-	u32DstW = pstInst->stPort[PortId].s32OutputHeight;
-	u32DstH = pstInst->stPort[PortId].s32OutputWidth;
-    }
-    else
-    {
-	u32DstW = pstInst->stPort[PortId].s32OutputWidth;
-	u32DstH = pstInst->stPort[PortId].s32OutputHeight;
-    }
-#endif
 
     if ((u32DstW == 0) || u32DstH == 0)
     {

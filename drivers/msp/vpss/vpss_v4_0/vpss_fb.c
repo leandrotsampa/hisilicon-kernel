@@ -868,19 +868,6 @@ HI_S32 VPSS_FB_GetState(VPSS_FB_INFO_S *pstFrameList, VPSS_FB_STATE_S *pstFbStat
 	    VPSS_FATAL("Get FbList Error\n");
 	    break;
 	}
-#if FB_DBG
-	pstFbNode = list_entry(pos, VPSS_FB_NODE_S, node);
-
-	pstFbState->u32FulList[u32Count] = (HI_U32)pstFbNode;
-
-	pstFbState->u32List[u32Total][0] = pstFbNode->stOutFrame.u32FrameIndex;
-	pstFbState->u32List[u32Total][1] = u32DoneFlag;
-
-	if (pstFbState->pstTarget_1 == pstFbNode)
-	{
-	    u32DoneFlag = 2;
-	}
-#endif
 	if (pstFrameList->pstTarget_1 == pos)
 	{
 	    pstFbState->u32WaitSinkRlsNumb = u32Count + 1;
@@ -900,28 +887,11 @@ HI_S32 VPSS_FB_GetState(VPSS_FB_INFO_S *pstFrameList, VPSS_FB_STATE_S *pstFbStat
 	    VPSS_FATAL("Get FbList Error\n");
 	    break;
 	}
-#if FB_DBG
-	pstFbNode = list_entry(pos, VPSS_FB_NODE_S, node);
-	pstFbState->u32EmptyList[u32Count] = (HI_U32)pstFbNode;
-
-	pstFbState->u32List[u32Total][0] = -1;
-	pstFbState->u32List[u32Total][1] = 0;
-#endif
-
 	u32Count++;
 	u32Total++;
     }
     VPSS_OSAL_UpSpin(&(pstFrameList->stEmptyBufSpin), &flags);
     pstFbState->u32EmptyListNumb = u32Count;
-
-#if FB_DBG
-    while (u32Total < DEF_HI_DRV_VPSS_PORT_BUFFER_MAX_NUMBER)
-    {
-	pstFbState->u32List[u32Total][0] = -1;
-	pstFbState->u32List[u32Total][1] = 3;
-	u32Total++;
-    }
-#endif
 
     pstFbState->u32ExtListNumb = pstFrameList->u32ExtNumb;
     pstFbState->u32TotalNumb = pstFrameList->stBufListCfg.u32BufNumber;

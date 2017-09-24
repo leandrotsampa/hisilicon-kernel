@@ -121,12 +121,10 @@ typedef struct hiVPSS_PORT_S
     HI_BOOL bCurDropped;
     HI_BOOL bPassThrough;
 
-#ifdef ZME_2L_TEST
     HI_BOOL bNeedZME2L;
     HI_BOOL bNeedRotate;
     HI_U32  u32ZME1LWidth;
     HI_U32  u32ZME1LHeight;
-#endif
 } VPSS_PORT_S;
 
 typedef struct hiVPSS_STREAM_ORIGINFO_S

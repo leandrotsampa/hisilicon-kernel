@@ -54,11 +54,9 @@ typedef struct hiVPSS_TASK_S
 
     VPSS_HAL_INFO_S stVpssHalInfo;
     VPSS_FB_NODE_S *pstFrmNode[DEF_HI_DRV_VPSS_PORT_MAX_NUMBER * 2];
-#ifdef ZME_2L_TEST
     VPSS_FB_NODE_S *pstFrmNodeRoBuf[DEF_HI_DRV_VPSS_PORT_MAX_NUMBER];
     VPSS_FB_NODE_S *pstFrmNodeZME1L;
     HI_BOOL	   bZME2lTaskNeed[DEF_HI_DRV_VPSS_PORT_MAX_NUMBER];
-#endif
     HI_U32 u32SucRate;
     HI_U32 u32LastTotal;
     HI_U32 u32SuccessTotal;
@@ -95,11 +93,8 @@ typedef struct hiVPSS_CTRL_S
     volatile HI_U32	     u32ThreadSleep;
     VPSS_THREAD	    hThread;
     volatile HI_U32	     s32ThreadPos;
-#ifndef ZME_2L_TEST
     VPSS_BUFFER_S stRoBuf[DEF_HI_DRV_VPSS_PORT_MAX_NUMBER];
-#endif
     VPSS_INST_CTRL_S  stInstCtrlInfo;
-
 } VPSS_CTRL_S;
 
 irqreturn_t VPSS0_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id);
