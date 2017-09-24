@@ -40,7 +40,6 @@ VPSS_HAL_CTX_S	stHalCtx[VPSS_IP_BUTT] =
 };
 #endif
 
-#ifdef VPSS_SUPPORT_PROC_V2
 HI_VOID VPSS_Hal_PrintHalInfo(struct seq_file *p, S_VPSS_REGS_TYPE *pstNodeReg)
 {
     PROC_PRINT(p,
@@ -137,8 +136,6 @@ HI_S32 VPSS_HAL_GetNodeAddr(VPSS_IP_E enIP, HI_U32 u32NodeId, HI_U8 **pstRegAddr
     *pstRegAddr = pstHalCtx->apu8AppVir[u32NodeId];
     return HI_SUCCESS;
 }
-#endif
-
 
 
 HI_S32 VPSS_HAL_H265RefListDeInit(VPSS_HAL_RefList_S *pstRefList)
@@ -1130,7 +1127,6 @@ HI_S32 VPSS_HAL_SetPortCfg(VPSS_IP_E enIP, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,
 	    {
 		VPSS_REG_SetVhd0Dither(pu32AppVir, REG_DITHER_MODE_DITHER, HI_TRUE);
 	    }
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
 	    if (pstHalPort->bOutLowDelay)
 	    {
 		VPSS_REG_SetTunlEn(pu32AppVir, enPort, HI_TRUE);
@@ -1140,7 +1136,6 @@ HI_S32 VPSS_HAL_SetPortCfg(VPSS_IP_E enIP, HI_U32 *pu32AppVir, HI_U32 u32AppPhy,
 				     pstHalCtx->stLowDelayBuf_MMU.u32StartSmmuAddr);
 	    }
 	    else
-#endif
 	    {
 		VPSS_REG_SetTunlEn(pu32AppVir, enPort, HI_FALSE);
 	    }
@@ -2399,7 +2394,6 @@ HI_S32 VPSS_HAL_ConfigDeTileFrame(  VPSS_HAL_FRAME_S *pstDeTileFrame,
 
     return HI_SUCCESS;
 }
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
 HI_S32 VPSS_HAL_TunnelOut_GetBufAddr(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo, HI_U32 u32PortID)
 {
     VPSS_HAL_CTX_S  *pstHalCtx;
@@ -2417,7 +2411,6 @@ HI_S32 VPSS_HAL_TunnelOut_GetBufAddr(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo
 
     return u32WriteAddr;
 }
-#endif
 
 HI_S32 VPSS_HAL_AllocDetileBuffer(VPSS_IP_E enIP, HI_BOOL bSecure)
 {
@@ -3883,7 +3876,6 @@ HI_S32 VPSS_HAL_Init(VPSS_IP_E enIP)
 
     memset(&(pstHalCtx->stDeTileMMUBuf), 0, sizeof(SMMU_BUFFER_S));
 
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     s32Ret = HI_DRV_SMMU_AllocAndMap("VPSS_LowDelay_mmu",
 				     4096, 0, &pstHalCtx->stLowDelayBuf_MMU);
 
@@ -3896,7 +3888,6 @@ HI_S32 VPSS_HAL_Init(VPSS_IP_E enIP)
 	HI_DRV_MMZ_UnmapAndRelease(&pstHalCtx->stRegBuf);
 	return HI_FAILURE;
     }
-#endif
 
     pstHalCtx->bInit = HI_TRUE;
 
@@ -3931,10 +3922,8 @@ HI_S32 VPSS_HAL_DelInit(VPSS_IP_E enIP)
     HI_DRV_MMZ_UnmapAndRelease(&pstHalCtx->stRegBuf);
     memset(&pstHalCtx->stRegBuf, 0, sizeof(MMZ_BUFFER_S));
 
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     HI_DRV_SMMU_UnmapAndRelease(&pstHalCtx->stLowDelayBuf_MMU);
     memset(&(pstHalCtx->stLowDelayBuf_MMU), 0x0, sizeof(pstHalCtx->stLowDelayBuf_MMU));
-#endif
 
     VPSS_HAL_FreeDetileBuffer(enIP);
 

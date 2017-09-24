@@ -902,7 +902,6 @@ HI_S32 VPSS_INST_Reset(VPSS_INSTANCE_S *pstInstance)
     pstInstance->u32BufSucRate = 0;
     pstInstance->u32BufCnt = 0;
     pstInstance->u32BufSucCnt = 0;
-#ifdef VPSS_SUPPORT_PROC_V2
     pstInstance->u32BufLastSucCnt = 0;
     pstInstance->u32LastBufCnt = 0;
     pstInstance->u32BufLastSucCnt = 0;
@@ -917,7 +916,6 @@ HI_S32 VPSS_INST_Reset(VPSS_INSTANCE_S *pstInstance)
 	pstInstance->aulLogicEndTime[u32Count] = 0;
 	pstInstance->aulFinishTime[u32Count] = 0;
     }
-#endif
     pstInstance->u32ScenceChgCnt = 0;
     VPSS_CTRL_Resume(pstInstance->ID);
 

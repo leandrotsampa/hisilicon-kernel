@@ -157,7 +157,6 @@ HI_U8 *g_pOutBitWidthString[] =
     "10BIT_CTS"
     "BUTT",
 };
-#ifdef VPSS_SUPPORT_PROC_V2
 #define NUM_2_STRING(num) (#num)
 HI_U8 *g_pcPixelFormatString[] =
 {
@@ -376,7 +375,6 @@ HI_U8 *g_pcHalNodeString[] =
     NUM_2_STRING(2D_H265_STEP2_DEI),
 };
 #endif
-#endif
 
 HI_S32 VPSS_DBG_DbgInit(VPSS_DBG_S *pstDbg)
 {
@@ -388,9 +386,7 @@ HI_S32 VPSS_DBG_DbgInit(VPSS_DBG_S *pstDbg)
     pstDbg->stInstDbg.u32LastM = 0;
     pstDbg->stInstDbg.u32LastS = 0;
     pstDbg->stInstDbg.bResetPerFrame = HI_TRUE;
-#ifdef VPSS_SUPPORT_PROC_V2
     pstDbg->stInstDbg.eProcPrintLevel = PROC_PRINT_LEVEL_ORI;
-#endif
     /*TEST*/
     //pstDbg->stInstDbg.unInfo.bits.imginfo = 1;
 
@@ -1294,7 +1290,6 @@ HI_VOID VPSS_DBG_PrintFrameInfo(HI_DRV_VIDEO_FRAME_S *pstFrame, HI_BOOL bSrcFram
 
 
 
-#ifdef VPSS_SUPPORT_PROC_V2
 HI_VOID VPSS_CTRL_ProcPrintWBCList(struct seq_file *p, VPSS_IN_ENTITY_S *pstInEntity)
 {
     PROC_PRINT(p, VPSS_PROC_LEVEL2 "ALG WBC List : ");
@@ -1727,7 +1722,7 @@ READFREE:
     }
     return HI_SUCCESS;
 }
-#endif
+
 HI_S32 VPSS_CTRL_ProcPrint_V1(struct seq_file *p, HI_VOID *v)
 {
     VPSS_INSTANCE_S *pstInstance;
@@ -2003,7 +1998,6 @@ READFREE:
 
 HI_S32 VPSS_CTRL_ProcRead(struct seq_file *p, HI_VOID *v)
 {
-#ifdef VPSS_SUPPORT_PROC_V2
     VPSS_INSTANCE_S *pstInstance;
     DRV_PROC_ITEM_S *pProcItem;
     pProcItem = p->private;
@@ -2021,9 +2015,6 @@ HI_S32 VPSS_CTRL_ProcRead(struct seq_file *p, HI_VOID *v)
     {
 	return VPSS_CTRL_ProcPrint_V2(p, v);
     }
-#else
-    return VPSS_CTRL_ProcPrint_V1(p, v);
-#endif
 }
 
 HI_S32 VPSS_CTRL_ProcWrite(struct file *file,
@@ -2166,7 +2157,6 @@ HI_S32 VPSS_CTRL_ProcWrite(struct file *file,
 
 	    return count;
 	}
-#ifdef VPSS_SUPPORT_PROC_V2
 	else if (!HI_OSAL_Strncmp(chArg1, DEF_DBG_CMD_SETPROCLEVEL, DEF_FILE_NAMELENGTH))
 	{
 	    pstInstDbg->eProcPrintLevel = PROC_PRINT_LEVEL_ORI;
@@ -2180,7 +2170,6 @@ HI_S32 VPSS_CTRL_ProcWrite(struct file *file,
 	    }
 	    return count;
 	}
-#endif
 	else
 	{
 	    VPSS_FATAL("Cmd Can't Support\n");
@@ -2286,9 +2275,7 @@ PROC_EXIT:
 			   " set rotation		    setrota	port0/port1/port2	0/90/180/270/disable\n"
 			   " set src image w h		    setsrcwh	port0/port1/port2/src	width  heigth\n"
 			   " reset logic afer frame process reset	on/off\n"
-#ifdef VPSS_SUPPORT_PROC_V2
 			   " set proc level		    proc	0/1/2/3\n"
-#endif
 			   " save yuv in file with index    saveyuvidx	src/port0/port1/port2	index  count\n"
 			   " save yuv in one file	    saveyuvfile src/port0/port1/port2	index  count\n"
 

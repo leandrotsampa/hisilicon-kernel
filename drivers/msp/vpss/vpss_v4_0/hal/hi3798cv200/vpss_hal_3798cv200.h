@@ -127,11 +127,7 @@ typedef struct hiVPSS_HAL_CTX_S
     MMZ_BUFFER_S stRegBuf;
     SMMU_BUFFER_S     stDeTileMMUBuf;	   //��tileʹ�õ���ʱbuffer
     SMMU_BUFFER_S     stDeTileTEEBuf;
-
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     SMMU_BUFFER_S   stLowDelayBuf_MMU;
-#endif
-
 } VPSS_HAL_CTX_S;
 
 
@@ -178,11 +174,8 @@ typedef struct hiVPSS_HAL_PORT_INFO_S
     HI_BOOL bNeedMirror;
     HI_BOOL bCmpLoss;
     HI_BOOL bConfig;
-
     VPSS_HAL_FRAME_S stOutInfo; /* PORT�����Ϣ */
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     HI_BOOL	bOutLowDelay;
-#endif
 } VPSS_HAL_PORT_INFO_S;
 
 typedef struct hiVPSS_HAL_RefList
@@ -322,9 +315,7 @@ HI_S32 VPSS_HAL_SetNode_H265_Step2_Dei(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalIn
 HI_S32 VPSS_HAL_SetNode_H265_Step2_Dei(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo,
 				       HI_U32 *pu32AppVir, HI_U32 u32AppPhy);
 
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
 HI_S32 VPSS_HAL_TunnelOut_GetBufAddr(VPSS_IP_E enIP, VPSS_HAL_INFO_S *pstHalInfo, HI_U32 u32PortID);
-#endif
 HI_VOID VPSS_Hal_PrintHalInfo(struct seq_file *p, S_VPSS_REGS_TYPE *pstNodeReg);
 
 HI_S32 VPSS_HAL_GetNodeAddr(VPSS_IP_E enIP, HI_U32 u32NodeId, HI_U8 **pstRegAddr);

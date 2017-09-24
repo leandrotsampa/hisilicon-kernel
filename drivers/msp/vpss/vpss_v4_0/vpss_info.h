@@ -184,9 +184,7 @@ typedef struct hiVPSS_DBG_INST_S
     HI_BOOL bReviseSrcWH;
     HI_BOOL bResetPerFrame;
     HI_U32 u32SrcWH;
-#ifdef VPSS_SUPPORT_PROC_V2
     VPSS_PROC_PRINT_LEVEL_E eProcPrintLevel;
-#endif
 } VPSS_DBG_INST_S;
 
 typedef struct hiVPSS_DBG_S

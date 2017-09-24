@@ -251,12 +251,7 @@ typedef union
 #define VPSS_HDR_TYPE_NEED_TRANS_METADATA(type) ( \
 	(HI_DRV_VIDEO_FRAME_TYPE_DOLBY_EL == (type)) \
 						)
-#define VPSS_SUPPORT_PROC_V2
-#define VPSS_SUPPORT_OUT_TUNNEL
-
-#ifdef VPSS_SUPPORT_PROC_V2
 #define VPSS_PROC_TIMESTAMP_MAXCNT 3
-#endif
 
 #define VPSS_NOT_SUPPORT_MCNR_FMT(fmt) (VPSS_IS_TILE_FMT(fmt))
 
@@ -287,7 +282,6 @@ typedef union
 #define VPSS_UHD_HIGH_H		2160
 #endif
 
-#ifdef VPSS_SUPPORT_PROC_V2
 #define COLOR_NORMAL		"\033[0m"
 #define COLOR_BLACK		"\033[30m"
 #define COLOR_GRAY		"\033[1;30m"
@@ -308,7 +302,5 @@ typedef union
 #define VPSS_PROC_PRINT_ENUM(val, max, valstr) (HI_CHAR*)(((val) < (max)) ? valstr[(val)] : (HI_U8*)"Invalid")
 #define VPSS_PROC_PRINT_YN(cdt) ((HI_TRUE == (cdt)) ? "Y" : "N")
 #define VPSS_PROC_PRINT_YN_COL(cdt) ((HI_TRUE == (cdt)) ? COLOR_RED"Y"COLOR_NORMAL : "N")
-#endif
-
 
 #endif

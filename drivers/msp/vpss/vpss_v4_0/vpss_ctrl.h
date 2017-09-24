@@ -65,9 +65,7 @@ typedef struct hiVPSS_TASK_S
     HI_U32 u32Create;
     HI_U32 u32Fail;
     HI_U32 u32TimeOut;
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     HI_BOOL bOutLowDelay;
-#endif
 
 } VPSS_TASK_S;
 
@@ -85,9 +83,7 @@ typedef struct hiVPSS_CTRL_S
 
     OSAL_EVENT	    stTaskNext;
     OSAL_EVENT	    stNewTask;
-#ifdef VPSS_SUPPORT_OUT_TUNNEL
     OSAL_EVENT	    stTaskLowDelay;
-#endif
     VPSS_TASK_S	    stTask;
     HI_BOOL	    bSuspend;
 

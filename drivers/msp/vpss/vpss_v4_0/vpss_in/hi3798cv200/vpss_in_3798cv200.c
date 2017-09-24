@@ -536,7 +536,6 @@ HI_S32 VPSS_IN_UpdateStreamInfo(VPSS_IN_ENTITY_S *pstEntity, HI_DRV_VIDEO_FRAME_
     pstStreamInfo->u32Pts = pstSrcImage->u32Pts;
     pstStreamInfo->eStreamType = pstSrcImage->enSrcFrameType;
 
-#ifdef VPSS_SUPPORT_PROC_V2
     pstStreamInfo->enFieldMode = pstSrcImage->enFieldMode;
     pstStreamInfo->enBufValidMode = pstSrcImage->enBufValidMode;
     pstStreamInfo->bTopFieldFirst = pstSrcImage->bTopFieldFirst;
@@ -545,7 +544,6 @@ HI_S32 VPSS_IN_UpdateStreamInfo(VPSS_IN_ENTITY_S *pstEntity, HI_DRV_VIDEO_FRAME_
     pstStreamInfo->eFrmType = pstSrcImage->eFrmType;
     pstStreamInfo->u32StreamAspW = pstSrcImage->u32AspectWidth;
     pstStreamInfo->u32StreamAspH = pstSrcImage->u32AspectHeight;
-#endif
 
 
     if (pstSrcImage->bProgressive != HI_TRUE

@@ -231,7 +231,6 @@ typedef struct hiVPSS_INSTANCE_S
     HI_U32 u32BufCnt;
     HI_U32 u32BufSucCnt;
 
-#ifdef VPSS_SUPPORT_PROC_V2
     HI_U32 u32BufLastSucCnt;
     HI_U32 u32LastBufCnt;
     HI_U32 u32LogicTimeoutCnt;
@@ -241,7 +240,7 @@ typedef struct hiVPSS_INSTANCE_S
     HI_ULONG aulLogicEndTime[VPSS_PROC_TIMESTAMP_MAXCNT];
     HI_ULONG aulFinishTime[VPSS_PROC_TIMESTAMP_MAXCNT];
     HI_U32   u32TimeStampIndex;
-#endif
+
     HI_U32 u32ScenceChgCnt;
     VPSS_HAL_RefList_S stH265RefList; //tem buffer list for H265 I frame's interlace
 } VPSS_INSTANCE_S;

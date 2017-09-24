@@ -46,7 +46,6 @@ typedef struct hiVPSS_IN_STREAM_INFO_S
     HI_BOOL		    bStreamByPass;
     HI_DRV_VIDEO_FRAME_TYPE_E  eStreamType;
     HI_BOOL		    bH265Interlace; // h265 interlacing type, TOP and BOTTOM are in different frame.
-#ifdef VPSS_SUPPORT_PROC_V2
     HI_DRV_FIELD_MODE_E	 enFieldMode;
     HI_DRV_FIELD_MODE_E	 enBufValidMode;
     HI_BOOL bTopFieldFirst;
@@ -55,7 +54,6 @@ typedef struct hiVPSS_IN_STREAM_INFO_S
     HI_U32 u32StreamAspW;
     HI_DRV_VIDEO_FRAME_TYPE_E	enSrcFrameType;
     HI_DRV_FRAME_TYPE_E		eFrmType;
-#endif
 } VPSS_IN_STREAM_INFO_S;
 
 
