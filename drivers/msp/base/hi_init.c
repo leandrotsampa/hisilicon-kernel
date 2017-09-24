@@ -88,7 +88,6 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     I2C_DRV_ModInit();
     DMX_DRV_ModInit();
 
-#if !defined(HI_LOADER_APPLOADER)
     PVR_DRV_ModInit();
 
     SYNC_DRV_ModInit();
@@ -110,7 +109,6 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     VPSS_DRV_ModInit();
 
     MCE_DRV_ModInit();
-#endif
 
     KEYLED_DRV_ModInit();
     SCI_DRV_ModInit();
