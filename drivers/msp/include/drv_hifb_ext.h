@@ -51,11 +51,6 @@ typedef HI_VOID (*FN_HIFB_ModeExit)(HI_VOID);
 typedef HI_VOID (*FN_HIFB_SetLogoLayerEnable)(HI_BOOL);
 typedef HI_S32	(*FN_HIFB_UpdatePqData)(HI_U32 u32UpdateType,PQ_PARAM_S * pstPqParam);
 
-
-
-#define hifb_init_module_k	 DRV_HIFB_ModInit_K
-#define hifb_cleanup_module_k	 DRV_HIFB_ModExit_K
-
 /*************************** Structure Definition ****************************/
 typedef struct
 {
