@@ -252,14 +252,6 @@ typedef struct tagVFMW_CONFIGURED_BUFFER_NUM_S
     UINT32  u32PmvNum;/*�Ѿ����ø�vfmw��pmv����*/
 } VFMW_CONFIGURED_BUFFER_NUM_S;
 
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
-typedef struct tagVDEC_SPECIAL_PROC_S
-{
-    HI_U32  u32SpecialFrmNum;
-    VDEC_BUFFER_S frmBufRec[VFMW_MAX_RESERVE_NUM];
-} VDEC_SPECIAL_FRM_PROC_S;
-#endif
-
 typedef struct tagVDEC_CHANNEL_S
 {
     /* For configurate */
@@ -470,11 +462,6 @@ HI_S32 VDEC_DRV_Open(struct inode* inode,  struct file*	 filp);
 HI_S32 VDEC_DRV_Release(struct inode* inode,  struct file*  filp);
 HI_S32 VDEC_Ioctl(struct inode* inode,	struct file*  filp,  unsigned int  cmd,	 void* arg);
 HI_S32 VDEC_FindVpssHandleByVdecHandle(HI_HANDLE hVdec, HI_HANDLE* phVpss);
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
-HI_S32 VDEC_DRV_GetSpecialFrmInfo(VDEC_SPECIAL_FRM_PROC_S* pstSpecialFrmInfo);
-HI_VOID VDEC_DRV_SpecialFrmListInit(HI_VOID);
-HI_VOID VDEC_DRV_SpecialFrmListDeinit(HI_VOID);
-#endif
 HI_S32 VDEC_DRV_CreateTask(HI_VOID);
 HI_VOID VDEC_DRV_DestoryTask(HI_VOID);
 

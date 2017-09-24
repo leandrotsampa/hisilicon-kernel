@@ -197,10 +197,7 @@ typedef struct
     FN_VDEC_Watermark	    pfnWatermark;   /* Watermark function */
     VDEC_EXPORT_FUNC_S	    stExtFunc;	    /* VDEC extenal functions */
     struct task_struct*	    pVdecTask; //l00273086
-#ifdef VFMW_VPSS_BYPASS_EN
-    VDEC_List_S		    stRemainFrmList;
-#endif
-	OMX_EXPORT_FUNC_S*	pOmxFunc;
+    OMX_EXPORT_FUNC_S*	    pOmxFunc;
 } VDEC_GLOBAL_PARAM_S;
 
 /***************************** Global Definition *****************************/
@@ -310,44 +307,6 @@ static HI_S32 VDEC_ReleaseMemForDecoder(HI_HANDLE hHandle);
 
 HI_S32 VDEC_Frame_in_List(VDEC_List_S *pList, VDEC_SPECIAL_FRM_INFO_S *pSpecialFrmRec);
 
-#ifdef VFMW_VPSS_BYPASS_EN
-#define D_VDEC_CHECK_PTR_RET(ptr) \
-    do {\
-	if (HI_NULL == ptr)\
-	{ \
-	    HI_ERR_VDEC("PTR '%s' is NULL.\n", # ptr); \
-	    return HI_ERR_VDEC_NULL_PTR;	   \
-	}  \
-    } while (0)
-
-#define D_VDEC_CHECK_PTR(ptr) \
-    do {\
-	if (HI_NULL == ptr)\
-	{ \
-	    HI_ERR_VDEC("PTR '%s' is NULL.\n", # ptr); \
-	    return;	      \
-	}  \
-    } while (0)
-
-
-static HI_VOID BUFMNG_VDEC_List_Init(VDEC_List_S* pList);
-static HI_VOID BUFMNG_VDEC_List_Deinit(VDEC_List_S* pList);
-static HI_S32 BUFMNG_VDEC_List_Add(VDEC_List_S* pList, VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec);
-static HI_S32 BUFMNG_VDEC_List_Del(VDEC_List_S* pList, HI_U32 u32Index);
-static HI_S32 BUFMNG_VDEC_List_FindNodeIndex(VDEC_List_S* pList, HI_U32 u32TargetPhyAddr, HI_U32* pIndex);
-static HI_S32 BUFMNG_VDEC_List_FindNodeIndexCanRls(VDEC_List_S* pList, HI_U32* pIndex);
-
-HI_S32 HI_DRV_VDEC_GlobalRelFrm(HI_DRV_VIDEO_FRAME_S* pstFrame);
-HI_S32 decoder_global_release_frame(HI_DRV_VIDEO_FRAME_S* pstFrame);
-HI_S32 HI_DRV_VDEC_GetVideoBypassInfo(HI_HANDLE hHandle, HI_BOOL* pbVideoBypass);
-
-static HI_BOOL VDEC_IsSpecialFrm(VDEC_BUFFER_S* pstInputFrmRec);
-static HI_S32 VDEC_MarkSpecialFrmCanRls(HI_DRV_VIDEO_FRAME_S* pstFrame);
-
-HI_S32 VDEC_DRV_GlobalRelFrmInter(HI_U32 u32Index);
-
-#endif
-
 static VDEC_GLOBAL_PARAM_S s_stVdecDrv =
 {
     .atmOpenCnt = ATOMIC_INIT(0),
@@ -376,11 +335,6 @@ static VDEC_GLOBAL_PARAM_S s_stVdecDrv =
 	.pfnVDEC_ReportEsRels = (HI_VOID*)HI_DRV_VDEC_ReportEsRels
     },
     .pVdecTask = HI_NULL, //l00273086
-
-#ifdef VFMW_VPSS_BYPASS_EN
-    .stRemainFrmList.bInit	= 0,
-    .stRemainFrmList.s32Num	= 0,
-#endif
     .pOmxFunc = HI_NULL,
 };
 
@@ -576,32 +530,6 @@ HI_S32 VDEC_FrmBufRecSpinUnLockIRQ(CHAN_FRAME_BUF_RECORD_LOCK_S* pIntrMutex)
 
     return HI_SUCCESS;
 }
-
-
-#ifdef VFMW_VPSS_BYPASS_EN
-static HI_S32 VDEC_FindSpecialFrmToNormalIndex(VDEC_CHANNEL_S* pstChan, HI_U32 u32Phyaddr, HI_U32* pIndex)
-{
-    HI_U32 index;
-    D_VDEC_CHECK_PTR_RET(pstChan);
-
-    if ((u32Phyaddr == 0) || (u32Phyaddr == 0xffffffff))
-    {
-	return HI_FAILURE;
-    }
-
-    for (index = 0; index < VDEC_MAX_BUFFER_RECORD; index++)
-    {
-	if (pstChan->stFrameBufferRecord[index].stFrameBuffer.u32StartPhyAddr == u32Phyaddr)
-	{
-	    *pIndex = index;
-	    return HI_SUCCESS;
-	}
-    }
-    HI_ERR_VDEC("find normal frame buffer index error!Phyaddr = 0x%x\n", u32Phyaddr);
-    return HI_FAILURE;
-}
-#endif
-
 
 HI_S32 VDEC_InitChanControlStateLock(CHAN_CONTROL_STATE_LOCK_S* pIntrMutex)
 {
@@ -950,15 +878,6 @@ static HI_S32 BUFMNG_VPSS_CheckAvaibleBuffer(HI_HANDLE hVpss, HI_HANDLE hPort)
     }
     else
     {
-#ifdef VFMW_VPSS_BYPASS_EN
-	/*first check the buffer state*/
-	if (VDEC_EXTBUFFER_STATE_START != pstVpssChan->stPort[0].stBufVpssInst.enExtBufferState)
-	{
-	    VDEC_CHAN_USE_UP(&s_stVdecDrv.astChanEntity[i]);
-	    return HI_FAILURE;
-	}
-#endif
-
 	BUFMNG_SpinLockIRQ(&pstVpssChan->stPort[j].stBufVpssInst.stUnAvailableListLock);
 
 	if (list_empty(&pstVpssChan->stPort[j].stBufVpssInst.stVpssBufAvailableList))
@@ -1091,12 +1010,6 @@ static HI_S32 BUFMNG_VPSS_RelBuffer(HI_HANDLE hVpss, HI_HANDLE hPort, HI_DRV_VID
     struct list_head* pos, *n;
     BUFMNG_VPSS_NODE_S* pstTarget;
     VDEC_VPSSCHANNEL_S* pstVpssChan = HI_NULL;
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_BOOL need_release_frm = HI_FALSE;
-    HI_DRV_VIDEO_FRAME_S stPrivFrmInfo = {0};
-    HI_DRV_VIDEO_FRAME_S* pstPrivFrame = HI_NULL;
-    memset(&stPrivFrmInfo, 0, sizeof(HI_DRV_VIDEO_FRAME_S));
-#endif
 
     if (HI_INVALID_HANDLE == hPort || HI_INVALID_HANDLE == hVpss)
     {
@@ -1156,27 +1069,6 @@ static HI_S32 BUFMNG_VPSS_RelBuffer(HI_HANDLE hVpss, HI_HANDLE hPort, HI_DRV_VID
 	    if (pstImage->stBufAddr[0].u32PhyAddr_Y == pstTarget->VDECBuf_frm.u32StartPhyAddr) //C00277632
 	    {
 		//pstImage->stBufAddr[0].u32PhyAddr_Y,pstTarget->stMMZBuf.u32StartPhyAddr);
-#ifdef VFMW_VPSS_BYPASS_EN
-		if (pstVpssChan->enVideoBypass == VDEC_VPSS_BYPASSMODE_ENABLE)
-		{
-		    //�����VPSS bypass ͨ·�ҵ�metadata��Ӧ������֡���ַ�����л�֡
-		    //pstPrivFrame = (HI_DRV_VIDEO_FRAME_S *)phys_to_virt(pstTarget->VDECBuf_meta.u32StartPhyAddr);
-		    pstPrivFrame = (HI_DRV_VIDEO_FRAME_S*)pstTarget->VDECBuf_meta.pu8StartVirAddr;
-		    if (pstPrivFrame)
-		    {
-			/*��ʱ�洢metadata�е�����VFMW������֡��Ϣ�ṹ�壬�Ա����滹֮֡�ã��˴���������������ֱ���ڴ˻�֡*/
-			memcpy(&stPrivFrmInfo, pstPrivFrame, sizeof(HI_DRV_VIDEO_FRAME_S));
-
-			/*��ʱ���metadata�����֡��Ϣ�������ⲿ���ж�*/
-			memset(pstPrivFrame, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
-			need_release_frm = HI_TRUE;
-		    }
-		    else
-		    {
-			HI_ERR_VDEC("convert the metadata FrmInfo error!\n");
-		    }
-		}
-#endif
 		pstTarget->bBufUsed = HI_FALSE;
 		pstTarget->enFrameBufferState = HI_DRV_VDEC_BUF_STATE_IN_VDEC_EMPTY;
 
@@ -1197,18 +1089,6 @@ static HI_S32 BUFMNG_VPSS_RelBuffer(HI_HANDLE hVpss, HI_HANDLE hPort, HI_DRV_VID
 
     VDEC_CHAN_USE_UP(&s_stVdecDrv.astChanEntity[i]);
 
-#ifdef VFMW_VPSS_BYPASS_EN
-     if (pstVpssChan->enVideoBypass == VDEC_VPSS_BYPASSMODE_ENABLE && need_release_frm)
-    {
-	/*�˴���VFMW��֡ add by l00228308*/
-	s32Ret = VDEC_Chan_VpssRlsFrmBuf(hVpss, &stPrivFrmInfo);
-	if (HI_SUCCESS != s32Ret)
-	{
-	    HI_ERR_VDEC("VDEC_Chan_VpssRlsFrmBuf failed!return 0x%x,PhyAddr = 0x%x \n", s32Ret, stPrivFrmInfo.stBufAddr[0].u32PhyAddr_Y);
-	    return s32Ret;
-	}
-    }
-#endif
     return HI_SUCCESS;
 }
 static VOID HI_DRV_VDEC_REPORT_TO_OMX(HI_S32 chan_id, HI_U32 EventID, HI_S32 result, HI_VOID* PrivData)
@@ -2014,9 +1894,6 @@ static HI_S32 VDEC_Event_ArrangeFrameBuf(VDEC_CHANNEL_S* pstChan, HI_HANDLE hHan
 {
     HI_S32 s32Ret = HI_SUCCESS;
     VDEC_SPECIAL_FRM_S stReportFrmRec;
-#ifdef VFMW_VPSS_BYPASS_EN
-    VDEC_VPSSCHANNEL_S* pstVpssChan = HI_NULL;
-#endif
 
     VDEC_ASSERT_RETURN(pstChan != HI_NULL, HI_FAILURE);
     memset(&stReportFrmRec, 0, sizeof(VDEC_SPECIAL_FRM_S));
@@ -2085,12 +1962,6 @@ static HI_S32 VDEC_Event_ArrangeFrameBuf(VDEC_CHANNEL_S* pstChan, HI_HANDLE hHan
     pstChan->stVFMWConfiguredBufferNum.u32ImageNum	 = 0;
     pstChan->stVFMWConfiguredBufferNum.u32PmvNum	 = 0;
     VDEC_ChanControlStateSpinUnlockIRQ(&(pstChan->stAllocMemLock));
-
-#ifdef VFMW_VPSS_BYPASS_EN
-    pstVpssChan = &(s_stVdecDrv.astChanEntity[hHandle].stVpssChan);
-    pstVpssChan->u32InputWidth	= (((HI_U32*)pArgs)[5]);
-    pstVpssChan->u32InputHeight = (((HI_U32*)pArgs)[6]);
-#endif
 
     if (NULL != s_stVdecDrv.pVdecTask)
     {
@@ -4114,14 +3985,8 @@ static HI_S32 VDEC_Chan_VOAcqFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVps
     }
 
     /*����vpss�Ļ�ȡ֡�溯��,Ҫȷ��vpss�ͷź����ɹ����ص���HI_SUCCESS*/
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
     s32Ret = (s_stVdecDrv.pVpssFunc->pfnVpssGetPortFrame)(hPort, pstVpssFrame);
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
     return s32Ret;
 }
 
@@ -4149,9 +4014,6 @@ static HI_S32 VDEC_Chan_VORlsFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVps
     HI_DRV_VPSS_PORT_CFG_S stVpssPortCfg;
     HI_HANDLE hVdec = HI_INVALID_HANDLE;
     VDEC_CHANNEL_S* pstChan;
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_S32 s32RetSpecialRls = HI_FAILURE;
-#endif
 
     s32Ret = VDEC_FindVdecHandleByPortHandle(hPort, &hVdec);
 
@@ -4212,37 +4074,7 @@ static HI_S32 VDEC_Chan_VORlsFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVps
     }
 
 error:
-#ifdef VFMW_VPSS_BYPASS_EN
-    if (pstVpssFrame != NULL)
-    {
-	BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-	if (s_stVdecDrv.stRemainFrmList.s32Num != 0)
-	{
-
-	    HI_S32 s32Ret = HI_FAILURE;
-	    HI_U32 u32Index = 0;
-
-	    s32Ret = BUFMNG_VDEC_List_FindNodeIndex(&s_stVdecDrv.stRemainFrmList, pstVpssFrame->stBufAddr[0].u32PhyAddr_YHead, &u32Index);
-	    if ( HI_SUCCESS != s32Ret )
-	    {
-		HI_ERR_VDEC("Can't find the remain Frm node (Phy = 0x%x,bSecureMem = %d), Remain num = %d\n",
-			     pstVpssFrame->stBufAddr[0].u32PhyAddr_Y, pstVpssFrame->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	    }
-	    else
-	    {
-		/*this frame will be release in the thread*/
-		s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index].bCanRls = HI_TRUE;
-		s32RetSpecialRls = HI_SUCCESS;
-		HI_INFO_VDEC("set the remain Frm node (Phy = 0x%x,bSecureMem = %d) can be release, Remain num = %d\n",
-			     pstVpssFrame->stBufAddr[0].u32PhyAddr_Y, pstVpssFrame->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	    }
-	}
-	BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-    }
-    return s32RetSpecialRls;
-#else
     return HI_FAILURE;
-#endif
 }
 HI_S32 HI_VDEC_Chan_VORlsFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVpssFrame)
 {
@@ -5283,9 +5115,6 @@ static HI_S32 VDEC_Chan_SetExtBuffer(HI_HANDLE hVpss, VDEC_BUFFER_ATTR_PRI_S* ps
     struct list_head* pos, *n;
     HI_S32 s32Ret = HI_SUCCESS;
     VDEC_ION_BUF_S stVdecMetaPriv = {0};
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_DRV_VPSS_PORT_CFG_S stVpssPortCfg;
-#endif
 
     if ((HI_INVALID_HANDLE == hVpss) || (HI_NULL == pstBufferAttr))
     {
@@ -5309,25 +5138,6 @@ static HI_S32 VDEC_Chan_SetExtBuffer(HI_HANDLE hVpss, VDEC_BUFFER_ATTR_PRI_S* ps
 
     pstVpssChan = &(s_stVdecDrv.astChanEntity[i].stVpssChan);
     pstBufVpssInst = &(pstVpssChan->stPort[0].stBufVpssInst);
-
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_INFO_VDEC("set bypass = %d\n", pstBufferAttr->bVideoBypass);
-
-    s32Ret = (s_stVdecDrv.pVpssFunc->pfnVpssGetPortCfg)(pstVpssChan->stPort[0].hPort, &stVpssPortCfg);
-    if (s32Ret == HI_SUCCESS)
-    {
-	stVpssPortCfg.bPassThrough = pstBufferAttr->bVideoBypass;
-	pstVpssChan->enVideoBypass = (pstBufferAttr->bVideoBypass == HI_FALSE) ? VDEC_VPSS_BYPASSMODE_DISABLE : VDEC_VPSS_BYPASSMODE_ENABLE;
-	if (HI_SUCCESS != (s_stVdecDrv.pVpssFunc->pfnVpssSetPortCfg)(pstVpssChan->stPort[0].hPort, &stVpssPortCfg))
-	{
-	    HI_ERR_VDEC("pfnVpssSetPortCfg set vpssbypass = %d failed!\n", stVpssPortCfg.bPassThrough);
-	}
-    }
-    else
-    {
-	HI_ERR_VDEC("ERROR: pfnVpssGetPortCfg return %d\n", s32Ret);
-    }
-#endif
 
     /*���粥�ų�����bufferType == HI_DRV_VPSS_BUF_USER_ALLOC_MANAGE ʱ,start vpss ��ʱ����Ҫ������������bypass����֮�� add by l00228308 */
     s32Ret = (s_stVdecDrv.pVpssFunc->pfnVpssSendCommand)(pstVpssChan->hVpss, HI_DRV_VPSS_USER_COMMAND_START, NULL);
@@ -7632,72 +7442,6 @@ HI_S32 VDEC_Chan_ReleasePreMem(VDEC_BUFFER_S* pstMemBuffer)
 
     return s32Ret;
 }
-#ifdef VFMW_VPSS_BYPASS_EN     //specialFrameExist->specialFrameNum
-
-static HI_S32 VDEC_MarkSpecialFrmCanRls(HI_DRV_VIDEO_FRAME_S* pstFrame)
-{
-    HI_S32 s32Ret = HI_FAILURE;
-    HI_U32 u32Index = 0;
-
-    D_VDEC_CHECK_PTR_RET(pstFrame);
-
-    //BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-    if (s_stVdecDrv.stRemainFrmList.s32Num != 0)
-    {
-	s32Ret = BUFMNG_VDEC_List_FindNodeIndex(&s_stVdecDrv.stRemainFrmList, pstFrame->stBufAddr[0].u32PhyAddr_YHead, &u32Index);
-	if ( HI_SUCCESS != s32Ret )
-	{
-	    HI_ERR_VDEC("Can't find the remain Frm node (Phy = 0x%x,bSecureMem = %d), Remain num = %d\n",
-			 pstFrame->stBufAddr[0].u32PhyAddr_Y, pstFrame->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	}
-	else
-	{
-	    /*this frame will be release in the thread*/
-	    s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index].bCanRls = HI_TRUE;
-	    HI_INFO_VDEC("set the remain Frm node (Phy = 0x%x,bSecureMem = %d) can be release, Remain num = %d\n",
-			 pstFrame->stBufAddr[0].u32PhyAddr_Y, pstFrame->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	}
-    }
-    //BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-    return s32Ret;
-}
-
-static HI_BOOL VDEC_IsSpecialFrm(VDEC_BUFFER_S* pstInputFrmRec)
-{
-    HI_U32 specialFrameIndex;
-    HI_BOOL bSpecialFrm = HI_FALSE;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmInfo;
-
-    if (!pstInputFrmRec)
-    {
-	HI_ERR_VDEC("Error:input param is null!\n");
-	return HI_FALSE;
-	}
-
-    if ((pstInputFrmRec->u32StartPhyAddr == 0) || (pstInputFrmRec->u32StartPhyAddr == 0xffffffff))
-    {
-	return HI_FALSE;
-    }
-
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-    for (specialFrameIndex = 0; specialFrameIndex < VDEC_MAX_REMAIN_FRM_NUM; specialFrameIndex++)
-    {
-	pSpecialFrmInfo = &s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[specialFrameIndex];
-	if (pSpecialFrmInfo->frmBufRec.u32StartPhyAddr ==  pstInputFrmRec->u32StartPhyAddr)
-	{
-	    bSpecialFrm = HI_TRUE;
-	    break;
-	}
-    }
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-    return bSpecialFrm;
-}
-
-
-#else
 static HI_S32 VDEC_RlsSpecialFrame(VDEC_CHANNEL_S* pstChan)
 {
     HI_S32 s32Ret;
@@ -7758,14 +7502,9 @@ static HI_S32 VDEC_RlsSpecialFrame(VDEC_CHANNEL_S* pstChan)
     return HI_SUCCESS;
 }
 
-#endif
-
 static HI_S32 VDEC_RlsFrm(VDEC_CHANNEL_S* pstChan, HI_DRV_VIDEO_FRAME_S* pstFrame)
 {
     HI_S32 s32Ret;
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_S32 s32Ret2 = HI_FAILURE;
-#endif
     IMAGE stImage;
     IMAGE_INTF_S *pstImgInft = &pstChan->stImageIntf;
     VDEC_CHAN_STATINFO_S *pstStatInfo = &pstChan->stStatInfo;
@@ -7806,15 +7545,6 @@ static HI_S32 VDEC_RlsFrm(VDEC_CHANNEL_S* pstChan, HI_DRV_VIDEO_FRAME_S* pstFram
 
     if (VDEC_OK != s32Ret)
     {
-#ifdef VFMW_VPSS_BYPASS_EN
-	s32Ret2 = VDEC_MarkSpecialFrmCanRls(pstFrame);
-	if (HI_SUCCESS == s32Ret2)
-	{
-	    pstStatInfo->u32VdecRlsFrameOK++;
-	    return HI_SUCCESS;
-	}
-	else
-#endif
 	{
 	    pstStatInfo->u32VdecRlsFrameFail++;
 	    return HI_FAILURE;
@@ -8160,9 +7890,6 @@ static HI_S32 VDEC_RecvFrm(HI_HANDLE hHandle, VDEC_CHANNEL_S* pstChan, HI_DRV_VI
     }
 
     /*VDEC Receive frame from VFMW */
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
     pstStatInfo->u32VdecRcvFrameTry++;
     stImage.pOutFrame = (HI_U64)(HI_SIZE_T)pstFrame;
 
@@ -8182,9 +7909,6 @@ static HI_S32 VDEC_RecvFrm(HI_HANDLE hHandle, VDEC_CHANNEL_S* pstChan, HI_DRV_VI
 	s32Ret = pstImgInft->read_image(pstImgInft->image_provider_inst_id, &stImage);
     }
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
     if (s32Ret != VDEC_OK)
     {
 	return RecvFrm_ReadFailProcess(pstChan, pstPrivInfo, pstLastFrmPrivInfo, pstVideoPriv, pstFrame);
@@ -8658,13 +8382,7 @@ HI_S32 HI_DRV_VDEC_RlsFrmBuf(HI_HANDLE hHandle, HI_DRV_VIDEO_FRAME_S*  pstFrm)
 
     pstChan->stStatInfo.u32UserRlsFrameTry++;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
     s32Ret = VDEC_RlsFrm(pstChan, pstFrm);
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
 
     if (HI_SUCCESS != s32Ret)
     {
@@ -8719,48 +8437,6 @@ static HI_S32 VDEC_Chan_VpssRlsFrmBuf(VPSS_HANDLE hVpss, HI_DRV_VIDEO_FRAME_S*	p
 	HI_INFO_VDEC("VPSS release Fake frame! index = 0x%x\n", pstFrm->u32FrameIndex);
 	return HI_SUCCESS;
     }
-
-#ifdef VFMW_VPSS_BYPASS_EN
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-    if (s_stVdecDrv.stRemainFrmList.s32Num != 0)
-    {
-	HI_S32 s32Ret = HI_FAILURE;
-	HI_U32 u32Index = 0;
-
-	s32Ret = BUFMNG_VDEC_List_FindNodeIndex(&s_stVdecDrv.stRemainFrmList, pstFrm->stBufAddr[0].u32PhyAddr_YHead, &u32Index);
-	if ( HI_SUCCESS != s32Ret )
-	{
-	    HI_INFO_VDEC("VPSS::Can't find the remain Frm node (Phy = 0x%x,bSecureMem = %d), Remain num = %d\n",
-			 pstFrm->stBufAddr[0].u32PhyAddr_Y, pstFrm->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	}
-	else
-	{
-	    /*this frame will be release in the thread*/
-	    s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index].bCanRls = HI_TRUE;
-	    HI_INFO_VDEC("vpss::set the remain Frm node (Phy = 0x%x,bSecureMem = %d) can be release, Remain num = %d\n",
-			 pstFrm->stBufAddr[0].u32PhyAddr_Y, pstFrm->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-	    /*updata the proc info*/
-	    s32Ret = VDEC_FindVdecHandleByVpssHandle(hVpss, &hVdec);
-
-	    if ((HI_SUCCESS != s32Ret))
-	    {
-		return HI_SUCCESS;  //��ʱ�п���ͨ���Ѿ����ͷ�
-	    }
-
-	    {
-		VDEC_CHANNEL_S* pstChan = s_stVdecDrv.astChanEntity[hVdec].pstChan;
-		pstChan->stStatInfo.u32VdecRlsFrameTry++;
-		pstChan->stStatInfo.u32VdecRlsFrameOK++;
-	    }
-
-	    return s32Ret;
-	}
-    }
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
 
     s32Ret = VDEC_FindVdecHandleByVpssHandle(hVpss, &hVdec);
 
@@ -10166,231 +9842,6 @@ err1:
     return HI_FAILURE;
 }
 
-#ifdef VFMW_VPSS_BYPASS_EN
-
-static HI_S32 VDEC_RlsFrm_bypass(VDEC_CHANNEL_S *pstChan, HI_DRV_VIDEO_FRAME_S *pstFrame)
-{
-    HI_S32 s32Ret;
-    IMAGE stImage;
-    IMAGE_INTF_S *pstImgInft = &pstChan->stImageIntf;
-    VDEC_CHAN_STATINFO_S *pstStatInfo = &(pstChan->stStatInfo);
-    HI_VDEC_PRIV_FRAMEINFO_S *pstPrivInfo = (HI_VDEC_PRIV_FRAMEINFO_S *)(((HI_DRV_VIDEO_PRIVATE_S *)(pstFrame->u32Priv))->u32Reserve);
-
-    memset(&stImage, 0, sizeof(stImage));
-    stImage.image_stride = pstFrame->stBufAddr[0].u32Stride_Y;
-
-    stImage.image_height = pstFrame->u32Height;
-    stImage.image_width	  = pstFrame->u32Width;
-    stImage.luma_phy_addr = pstFrame->stBufAddr[0].u32PhyAddr_Y;
-    stImage.top_luma_phy_addr = pstFrame->stBufAddr[0].u32PhyAddr_Y;
-
-    stImage.image_id		 = pstPrivInfo->image_id;
-    stImage.image_id_1		 = pstPrivInfo->image_id_1;
-    stImage.BTLInfo.btl_imageid	 = pstPrivInfo->stBTLInfo.u32BTLImageID;
-    stImage.BTLInfo.u32Is1D	 = pstPrivInfo->stBTLInfo.u32Is1D;
-
-    pstStatInfo->u32VdecRlsFrameTry++;
-
-    s32Ret = pstImgInft->release_image(pstImgInft->image_provider_inst_id, &stImage);
-    if (VDEC_OK != s32Ret)
-    {
-	pstStatInfo->u32VdecRlsFrameFail++;
-	return HI_FAILURE;
-    }
-    else
-    {
-	pstStatInfo->u32VdecRlsFrameOK++;
-	return HI_SUCCESS;
-    }
-
-    return HI_SUCCESS;
-}
-
-//�黹��VDEC�����е�֡��
-static HI_S32 VDEC_Rls_Frm_Occupied_by_Vdec(HI_HANDLE hHandle)
-{
-    HI_S32 s32Ret = HI_SUCCESS;
-    VDEC_CHANNEL_S *pstChan = HI_NULL;
-    VDEC_VPSSCHANNEL_S* pstVpssChan = HI_NULL;
-
-    struct list_head* pos, *n;
-    BUFMNG_VPSS_NODE_S* pstTarget;
-
-    HI_DRV_VIDEO_FRAME_S stPrivFrmInfo = {0};
-    HI_DRV_VIDEO_FRAME_S* pstPrivFrame = HI_NULL;
-    memset(&stPrivFrmInfo, 0, sizeof(HI_DRV_VIDEO_FRAME_S));
-
-    /* Check and get pstChan pointer */
-    if (HI_NULL == s_stVdecDrv.astChanEntity[hHandle].pstChan)
-    {
-	HI_ERR_VDEC("Chan %d not init!\n", hHandle);
-	return HI_FAILURE;
-    }
-
-    pstVpssChan = &(s_stVdecDrv.astChanEntity[hHandle].stVpssChan);
-    pstChan = s_stVdecDrv.astChanEntity[hHandle].pstChan;
-
-
-
-    /*�ͷ�֡��*/
-    //pos��stVpssBufUnAvailableList��next��ʼ
-    BUFMNG_SpinLockIRQ(&pstVpssChan->stPort[0].stBufVpssInst.stUnAvailableListLock);
-
-    if (list_empty(&pstVpssChan->stPort[0].stBufVpssInst.stVpssBufUnAvailableList)
-      || pstVpssChan->stPort[0].stBufVpssInst.stVpssBufUnAvailableList.next == HI_NULL)
-    {
-	BUFMNG_SpinUnLockIRQ(&pstVpssChan->stPort[0].stBufVpssInst.stUnAvailableListLock);
-	return HI_FAILURE;
-    }
-
-    list_for_each_safe(pos, n, &(pstVpssChan->stPort[0].stBufVpssInst.stVpssBufUnAvailableList))
-    {
-	pstTarget = list_entry(pos, BUFMNG_VPSS_NODE_S, node);
-
-	//�����buf��VDEC���У��������֡�棬seekʱ��Ҫ�ͷ�
-	if (pstTarget->enFrameBufferState == HI_DRV_VDEC_BUF_STATE_IN_VDEC_FULL
-	    && pstVpssChan->enVideoBypass == VDEC_VPSS_BYPASSMODE_ENABLE)
-	{
-	    //�����VPSS bypass ͨ·�ҵ�metadata��Ӧ������֡���ַ�����л�֡
-	    pstPrivFrame = (HI_DRV_VIDEO_FRAME_S*)pstTarget->VDECBuf_meta.pu8StartVirAddr;
-	    if (pstPrivFrame)
-	    {
-		memcpy(&stPrivFrmInfo,pstPrivFrame,sizeof(HI_DRV_VIDEO_FRAME_S));
-		memset(pstPrivFrame, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
-
-		s32Ret |= VDEC_RlsFrm_bypass(pstChan, &stPrivFrmInfo);
-
-		if (HI_SUCCESS != s32Ret)
-		{
-		    HI_ERR_VDEC("VDEC_RlsFrm err!\n");
-
-		    continue;
-		}
-	    }
-	    else
-	    {
-		HI_ERR_VDEC("convert the metadata FrmInfo error!\n");
-	    }
-
-	    pstTarget->bBufUsed = HI_FALSE;
-	    pstTarget->enFrameBufferState = HI_DRV_VDEC_BUF_STATE_IN_VDEC_EMPTY;
-
-	    /*ɾ��stVpssBufUnAvailableList�ϵ�pos�ڵ�*/
-	    if (pstVpssChan->stPort[0].stBufVpssInst.pstUnAvailableListPos == pos)
-	    {
-		pstVpssChan->stPort[0].stBufVpssInst.pstUnAvailableListPos = pos->prev;
-	    }
-
-	    list_del_init(pos);
-	    /*��pos�ڵ����ӵ�stVpssBufAvailableList��ȥ*/
-	    list_add_tail(&(pstTarget->node), &(pstVpssChan->stPort[0].stBufVpssInst.stVpssBufAvailableList));
-	}
-    }
-    BUFMNG_SpinUnLockIRQ(&pstVpssChan->stPort[0].stBufVpssInst.stUnAvailableListLock);
-
-    return s32Ret;
-}
-
-HI_S32 VDEC_Frame_in_List(VDEC_List_S *pList, VDEC_SPECIAL_FRM_INFO_S *pSpecialFrmRec)
-{
-    HI_U32 index;
-    VDEC_SPECIAL_FRM_INFO_S *pListRec;
-
-    for (index = 0; index < VDEC_MAX_REMAIN_FRM_NUM; index++)
-    {
-	pListRec = &pList->stSpecialFrmRec[index];
-	if (pListRec->frmBufRec.u32StartPhyAddr == pSpecialFrmRec->frmBufRec.u32StartPhyAddr)
-	{
-	    break;
-	}
-    }
-
-    if (index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	HI_INFO_VDEC("frame is NOT in list phy:%x\n", pSpecialFrmRec->frmBufRec.u32StartPhyAddr);
-
-	return HI_FAILURE;
-    }
-    else
-    {
-	HI_INFO_VDEC("frame is in list phy:%x\n", pSpecialFrmRec->frmBufRec.u32StartPhyAddr);
-
-	return HI_SUCCESS;
-    }
-}
-
-HI_S32 VDEC_RecordOccupiedFrame(VDEC_CHANNEL_S* pstChan, HI_HANDLE hHandle)
-{
-    HI_S32 s32Ret;
-    VDEC_SPECIAL_FRM_S stReportFrmRec;
-    SINT32 s32ImgOutputEn;
-
-    s32ImgOutputEn = 0;
-    VDEC_Rls_Frm_Occupied_by_Vdec(hHandle);
-    BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-    memset(&stReportFrmRec, 0, sizeof(VDEC_SPECIAL_FRM_S));
-
-    s32Ret = (s_stVdecDrv.pVfmwFunc->pfnVfmwControl)( pstChan->hChan, VDEC_CID_SET_IMG_OUTPUT_INFO, &s32ImgOutputEn, sizeof(s32ImgOutputEn));
-
-    if (VDEC_OK != s32Ret)
-    {
-	HI_INFO_VDEC("Chan %d VDEC_CID_SET_IMG_OUTPUT_INFO (enable = %d) err!\n", hHandle, s32ImgOutputEn);
-    }
-
-    s32Ret = (s_stVdecDrv.pVfmwFunc->pfnVfmwControl)( pstChan->hChan, VDEC_CID_REPORT_OCCUQIED_FRM, &stReportFrmRec, sizeof(stReportFrmRec));
-
-    if (VDEC_OK != s32Ret)
-    {
-	HI_WARN_VDEC("Chan %d VDEC_CID_REPORT_OCCUQIED_FRM err!\n", hHandle);
-    }
-    else
-    {
-	HI_INFO_VDEC("Chan %d VDEC_CID_REPORT_OCCUQIED_FRM occupied frame = %d!\n", hHandle, stReportFrmRec.specialFrameNum);
-	{
-	    HI_U32 i;
-	    HI_U32 index = 0;
-	    VDEC_SPECIAL_FRM_INFO_S stSpecialFrmInfo;
-
-	    for (i = 0; i < stReportFrmRec.specialFrameNum ; i++)
-	    {
-		if (HI_SUCCESS == VDEC_FindSpecialFrmToNormalIndex(pstChan, stReportFrmRec.specialFrmRec[i].PhyAddr, &index))
-		{
-		    stSpecialFrmInfo.bCanRls		     = HI_FALSE;
-		    stSpecialFrmInfo.frmBufRec.u32StartPhyAddr = pstChan->stFrameBufferRecord[index].stFrameBuffer.u32StartPhyAddr;
-		    stSpecialFrmInfo.frmBufRec.pu8StartVirAddr = pstChan->stFrameBufferRecord[index].stFrameBuffer.pu8StartVirAddr;
-		    stSpecialFrmInfo.frmBufRec.u32Size	       = pstChan->stFrameBufferRecord[index].stFrameBuffer.u32Size;
-		    stSpecialFrmInfo.enbufferNodeStatus	     = pstChan->stFrameBufferRecord[index].enFrameBufferNodeStatus;
-		    stSpecialFrmInfo.hdrBufRec.u32StartPhyAddr = pstChan->stFrameBufferRecord[index].stHdrBuffer.u32StartPhyAddr;
-		    stSpecialFrmInfo.hdrBufRec.pu8StartVirAddr = pstChan->stFrameBufferRecord[index].stHdrBuffer.pu8StartVirAddr;
-		    stSpecialFrmInfo.hdrBufRec.u32Size	       = pstChan->stFrameBufferRecord[index].stHdrBuffer.u32Size;
-		    stSpecialFrmInfo.enhdrNodeStatus	       = pstChan->stFrameBufferRecord[index].enHdrBufferNodeStatus;
-
-		    if (VDEC_Frame_in_List(&s_stVdecDrv.stRemainFrmList, &stSpecialFrmInfo) == HI_SUCCESS)
-		    {
-			continue;
-		    }
-
-		    pstChan->stFrameBufferRecord[index].enFrameBufferNodeStatus = DRV_VDEC_BUFFER_STATUS_BUTT;
-		    pstChan->stFrameBufferRecord[index].enHdrBufferNodeStatus	= DRV_VDEC_BUFFER_STATUS_BUTT;
-		    HI_INFO_VDEC("add list  pstChan->specialFrmRec[%d],u32StartPhyAddr= 0x%x,u32StartVirAddr = 0x%x,u32Size = %d\n",
-				 i, stSpecialFrmInfo.frmBufRec.u32StartPhyAddr , stSpecialFrmInfo.frmBufRec.pu8StartVirAddr, stSpecialFrmInfo.frmBufRec.u32Size);
-		    s32Ret = BUFMNG_VDEC_List_Add(&s_stVdecDrv.stRemainFrmList, &stSpecialFrmInfo);
-		}
-		else
-		{
-		    HI_ERR_VDEC("special Frame 0x%x,can't find match single buffer node\n", stReportFrmRec.specialFrmRec[i].PhyAddr);
-		    stSpecialFrmInfo.enbufferNodeStatus	      = DRV_VDEC_BUFFER_STATUS_BUTT;
-		}
-	    }
-	}
-    }
-
-    BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-    return s32Ret;
-}
-#endif
-
 static HI_S32 VDEC_Chan_Destroy(HI_HANDLE hHandle)
 {
     HI_S32 s32Ret;
@@ -10415,70 +9866,6 @@ static HI_S32 VDEC_Chan_Destroy(HI_HANDLE hHandle)
     /* Destroy VFMW decode channel */
     if (HI_INVALID_HANDLE != pstChan->hChan)
     {
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
-	VDEC_SPECIAL_FRM_S stReportFrmRec;
-	SINT32 s32ImgOutputEn;
-
-
-	s32ImgOutputEn = 0;
-	VDEC_Rls_Frm_Occupied_by_Vdec(hHandle);
-	BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-	memset(&stReportFrmRec, 0, sizeof(VDEC_SPECIAL_FRM_S));
-
-	s32Ret = (s_stVdecDrv.pVfmwFunc->pfnVfmwControl)( pstChan->hChan, VDEC_CID_SET_IMG_OUTPUT_INFO, &s32ImgOutputEn, sizeof(s32ImgOutputEn));
-	if (VDEC_OK != s32Ret)
-	{
-	    HI_INFO_VDEC("Chan %d VDEC_CID_SET_IMG_OUTPUT_INFO (enable = %d) err!\n", hHandle, s32ImgOutputEn);
-	}
-	s32Ret = (s_stVdecDrv.pVfmwFunc->pfnVfmwControl)( pstChan->hChan, VDEC_CID_REPORT_OCCUQIED_FRM, &stReportFrmRec, sizeof(stReportFrmRec));
-	if (VDEC_OK != s32Ret)
-	{
-	    HI_WARN_VDEC("Chan %d VDEC_CID_REPORT_OCCUQIED_FRM err!\n", hHandle);
-	}
-	else
-	{
-	    HI_INFO_VDEC("Chan %d VDEC_CID_REPORT_OCCUQIED_FRM occupied frame = %d!\n", hHandle, stReportFrmRec.specialFrameNum);
-	    {
-		HI_U32 i;
-		HI_U32 index = 0;
-		VDEC_SPECIAL_FRM_INFO_S stSpecialFrmInfo;
-
-
-		for (i = 0; i < stReportFrmRec.specialFrameNum ; i++)
-		{
-		    if (HI_SUCCESS == VDEC_FindSpecialFrmToNormalIndex(pstChan, stReportFrmRec.specialFrmRec[i].PhyAddr, &index))
-		    {
-			stSpecialFrmInfo.bCanRls		 = HI_FALSE;
-			stSpecialFrmInfo.frmBufRec.u32StartPhyAddr = pstChan->stFrameBufferRecord[index].stFrameBuffer.u32StartPhyAddr;
-			stSpecialFrmInfo.frmBufRec.pu8StartVirAddr = pstChan->stFrameBufferRecord[index].stFrameBuffer.pu8StartVirAddr;
-			stSpecialFrmInfo.frmBufRec.u32Size	   = pstChan->stFrameBufferRecord[index].stFrameBuffer.u32Size;
-			stSpecialFrmInfo.enbufferNodeStatus	 = pstChan->stFrameBufferRecord[index].enFrameBufferNodeStatus;
-			stSpecialFrmInfo.hdrBufRec.u32StartPhyAddr = pstChan->stFrameBufferRecord[index].stHdrBuffer.u32StartPhyAddr;
-			stSpecialFrmInfo.hdrBufRec.pu8StartVirAddr = pstChan->stFrameBufferRecord[index].stHdrBuffer.pu8StartVirAddr;
-			stSpecialFrmInfo.hdrBufRec.u32Size	   = pstChan->stFrameBufferRecord[index].stHdrBuffer.u32Size;
-			stSpecialFrmInfo.enhdrNodeStatus	   = pstChan->stFrameBufferRecord[index].enHdrBufferNodeStatus;
-			pstChan->stFrameBufferRecord[index].enFrameBufferNodeStatus = DRV_VDEC_BUFFER_STATUS_BUTT;
-			pstChan->stFrameBufferRecord[index].enHdrBufferNodeStatus   = DRV_VDEC_BUFFER_STATUS_BUTT;
-			HI_INFO_VDEC("add list	pstChan->specialFrmRec[%d],u32StartPhyAddr= 0x%x,u32StartVirAddr = 0x%x,u32Size = %d\n",
-				     i, stSpecialFrmInfo.frmBufRec.u32StartPhyAddr , stSpecialFrmInfo.frmBufRec.pu8StartVirAddr, stSpecialFrmInfo.frmBufRec.u32Size);
-			s32Ret = BUFMNG_VDEC_List_Add(&s_stVdecDrv.stRemainFrmList, &stSpecialFrmInfo);
-			if (s32Ret != HI_SUCCESS)
-			{
-			    HI_ERR_VDEC("[%s %d], s32Ret=%d\n", __func__, __LINE__, s32Ret);
-			}
-		    }
-		    else
-		    {
-			//HI_ERR_VDEC("special Frame 0x%x,can't find match single buffer node\n", stSpecialFrmInfo.frmBufRec.u32StartPhyAddr);
-			HI_ERR_VDEC("special Frame 0x%x,can't find match single buffer node\n", stReportFrmRec.specialFrmRec[i].PhyAddr);
-			stSpecialFrmInfo.enbufferNodeStatus	  = DRV_VDEC_BUFFER_STATUS_BUTT;
-		    }
-		}
-	    }
-	}
-
-	BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-#endif
 	s32Ret = (s_stVdecDrv.pVfmwFunc->pfnVfmwControl)(pstChan->hChan, VDEC_CID_DESTROY_CHAN, HI_NULL, 0);
 	if (VDEC_OK != s32Ret)
 	{
@@ -14307,54 +13694,6 @@ static HI_S32 VDEC_Ioctl_GetLeftStreamFrm(struct file*	filp, unsigned int cmd, v
     return s32Ret;
 }
 
-#ifdef VFMW_VPSS_BYPASS_EN
-static HI_S32 VDEC_Ioctl_GolbaRelease(struct file*  filp, unsigned int cmd, void* arg)
-{
-    HI_S32 s32Ret = HI_SUCCESS;
-
-    if (arg == HI_NULL)
-    {
-	HI_ERR_VDEC("CMD %d Bad arg!\n", cmd);
-	return HI_ERR_VDEC_INVALID_PARA;
-    }
-
-    s32Ret = HI_DRV_VDEC_GlobalRelFrm(&((VDEC_CMD_GLOBAL_REL_FRM_S*)arg)->FrmInfo);
-    if (s32Ret != HI_SUCCESS)
-    {
-#ifdef ANDROID
-	s32Ret = decoder_global_release_frame(&((VDEC_CMD_GLOBAL_REL_FRM_S*)arg)->FrmInfo);
-
-	if (s32Ret != HI_SUCCESS)
-#endif
-	{
-	    HI_ERR_VDEC("HI_DRV_VDEC_GlobalRelFrm err!:%d\n", s32Ret);
-	}
-    }
-
-    return s32Ret;
-}
-
-static HI_S32 VDEC_Ioctl_GetVidoByPass(struct file*  filp, unsigned int cmd, void* arg)
-{
-    HI_S32 s32Ret = HI_SUCCESS;
-    HI_HANDLE hHandle = HI_INVALID_HANDLE;
-
-    if (VDEC_Ioctl_GetAndCheckHandle(cmd, arg, &hHandle) != HI_SUCCESS)
-    {
-	return HI_ERR_VDEC_INVALID_PARA;
-    }
-
-    s32Ret = HI_DRV_VDEC_GetVideoBypassInfo(hHandle, &((VDEC_CMD_GET_VIDEO_BYPASS_S*)arg)->bVideoBypass);
-    if (s32Ret != HI_SUCCESS)
-    {
-	HI_ERR_VDEC("VDEC_Chan_GetVideoBypassInfo err!:%d\n", s32Ret);
-    }
-
-    return s32Ret;
-}
-
-#endif
-
 static const IOCTL_COMMAND_NODE g_IOCTL_CommandTable[] =
 {
     {UMAPC_VDEC_CHAN_USRDATA,		    VDEC_Ioctl_GetUsrData},
@@ -14430,10 +13769,6 @@ static const IOCTL_COMMAND_NODE g_IOCTL_CommandTable[] =
     {UMAPC_VDEC_CHAN_SETEXTBUFFERSTATE,	    VDEC_Ioctl_SetExtBufferState},
     {UMAPC_VDEC_CHAN_SETRESOLUTION,	    VDEC_Ioctl_SetResolution},
 {UMAPC_VDEC_CHAN_GETLEFTSTREAMFRAME,	    VDEC_Ioctl_GetLeftStreamFrm},
-#ifdef VFMW_VPSS_BYPASS_EN
-    {UMAPC_VDEC_CHAN_GLOBALREL,		    VDEC_Ioctl_GolbaRelease},
-    {UMAPC_VDEC_CHAN_GETVIDEOBYPASS,	    VDEC_Ioctl_GetVidoByPass},
-#endif
     {UMAPC_VDEC_CHAN_SCENE_MODE,	    VDEC_Ioctl_SetSceneMode},
 
     {0,	       HI_NULL}, //terminal element
@@ -14634,11 +13969,7 @@ static HI_S32 VDEC_ReleaseMemForDecoder(HI_HANDLE hHandle)
     for (i = 0; i < VDEC_MAX_BUFFER_RECORD; i++)
     {
 	//�ڵ��¼��֡��û�б���ռ�ã�ֱ���ͷ�
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum    bSpecialFrameCanRls
-	if (!((s_stVdecDrv.stRemainFrmList.s32Num != 0) && (VDEC_IsSpecialFrm(&pstChan->stFrameBufferRecord[i].stFrameBuffer))))
-#else
 	if (!((pstChan->specialFrameExist == 1) && (pstChan->specialFramePhyAddr == pstChan->stFrameBufferRecord[i].stFrameBuffer.u32StartPhyAddr)))
-#endif
 	{
 	    //1:�ͷ�֡��ڵ�
 	    if (DRV_VDEC_BUFFER_STATUS_PREALLOC == pstChan->stFrameBufferRecord[i].enFrameBufferNodeStatus)
@@ -15258,40 +14589,6 @@ static SINT32 VdecTaskFunc(VOID* param)	  //l00273086
 		//To do
 	    }
 	}
-
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum    bSpecialFrameCanRls
-	//BUFMNG_LOCK(s_stVdecDrv.stRemainFrmList.stSem);
-	if (s_stVdecDrv.stRemainFrmList.s32Num != 0)
-	{
-	    HI_U32 u32Index = 0;
-	    HI_U32 j = 0;
-	    HI_U32 num = 0;
-
-	    num = s_stVdecDrv.stRemainFrmList.s32Num;
-	    for (j = 0; j<num && num>0; j++)
-	    {
-	       BUFMNG_SpinLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-	       s32Ret = BUFMNG_VDEC_List_FindNodeIndexCanRls(&s_stVdecDrv.stRemainFrmList, &u32Index);
-	       BUFMNG_SpinUnLockIRQ(&s_stVdecDrv.stRemainFrmList.stIrq);
-
-	       if ( HI_SUCCESS == s32Ret )
-	       {
-		   /*find the node which can be release now! release the frameBuffer and del the Note */
-		   HI_U32 u32StartPhyAddr = s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index].frmBufRec.u32StartPhyAddr;
-
-		   if (HI_SUCCESS != VDEC_DRV_GlobalRelFrmInter(u32Index))
-		   {
-		       HI_ERR_VDEC("release the special frameBuffer and del Note failed!\n");
-		   }
-		   else
-		   {
-			HI_INFO_VDEC("release the special frameBuffer success! Phyaddr = 0x%x\n", u32StartPhyAddr);
-		   }
-	       }
-	    }
-	}
-	//BUFMNG_UNLOCK(s_stVdecDrv.stRemainFrmList.stSem);
-#endif
 	up(&s_stVdecDrv.stSem);
 
 	if (i >= HI_VDEC_MAX_INSTANCE_NEW)
@@ -15921,11 +15218,6 @@ HI_S32 VDEC_DRV_Init(HI_VOID)
 	return ret;
     }
 
-    /*MCE���̣��������ʼ��bypass��ر���*/
-#ifdef VFMW_VPSS_BYPASS_EN
-    VDEC_DRV_SpecialFrmListInit();
-#endif
-
     ret = VDEC_DRV_CreateTask();
     if (ret != HI_SUCCESS)
     {
@@ -16257,399 +15549,6 @@ HI_S32 HI_DRV_VDEC_RegisterDmxHdlCallback(HI_U32  hHandle, GetDmxHdlCallBack fCa
     s_stVdecDrv.astChanEntity[hHnd].DmxHdlCallBack = fCallback;
     return HI_SUCCESS;
 }
-
-#ifdef VFMW_VPSS_BYPASS_EN
-static HI_VOID BUFMNG_VDEC_List_Init(VDEC_List_S* pList)
-{
-    HI_S32 i = 0;
-    D_VDEC_CHECK_PTR(pList);
-
-    if (HI_FALSE == pList->bInit)
-    {
-	HI_S32 s32Ret;
-
-	memset(&pList->stSpecialFrmRec[0], 0, sizeof(VDEC_SPECIAL_FRM_INFO_S)*VDEC_MAX_REMAIN_FRM_NUM);
-	for (i = 0; i < VDEC_MAX_REMAIN_FRM_NUM; i++)
-	{
-	    pList->stSpecialFrmRec[i].enbufferNodeStatus = DRV_VDEC_BUFFER_STATUS_BUTT;
-	    pList->stSpecialFrmRec[i].enhdrNodeStatus	 = DRV_VDEC_BUFFER_STATUS_BUTT;
-	}
-	s32Ret =  BUFMNG_InitSpinLock(&pList->stIrq);
-	if (HI_SUCCESS != s32Ret)
-	{
-	    HI_ERR_VDEC("Error!!!!BUFMNG_InitSpinLock return failed!\n");
-	}
-	pList->bInit = HI_TRUE;
-	pList->s32Num = 0;
-    }
-    return;
-}
-
-static HI_VOID BUFMNG_VDEC_List_Deinit(VDEC_List_S* pList)
-{
-    HI_U32 i = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec;
-
-    D_VDEC_CHECK_PTR(pList);
-
-    for (i = 0; i < VDEC_MAX_REMAIN_FRM_NUM; i++)
-    {
-	pSpecialFrmRec = &pList->stSpecialFrmRec[i];
-	if ((DRV_VDEC_BUFFER_STATUS_SYSALLOC == pSpecialFrmRec->enbufferNodeStatus)
-	    && (pSpecialFrmRec->frmBufRec.u32StartPhyAddr != 0)
-	    && (pSpecialFrmRec->frmBufRec.u32StartPhyAddr != 0xffffffff))
-	{
-	    HI_DRV_VDEC_ReleaseMem(&pSpecialFrmRec->frmBufRec, HI_FALSE, g_bMapFrmEnable);
-	}
-	//��ոýڵ����ݣ���Ϊ���нڵ�
-	memset(pSpecialFrmRec, 0, sizeof(VDEC_SPECIAL_FRM_INFO_S));
-	pSpecialFrmRec->enbufferNodeStatus = DRV_VDEC_BUFFER_STATUS_BUTT;
-	pSpecialFrmRec->enhdrNodeStatus	  = DRV_VDEC_BUFFER_STATUS_BUTT;
-
-    }
-    pList->s32Num = 0;
-    pList->bInit = HI_FALSE;
-    return ;
-}
-
-HI_S32 BUFMNG_VDEC_List_FindNodeIndex(VDEC_List_S* pList, HI_U32 u32TargetPhyAddr, HI_U32* pIndex)
-{
-    HI_U32 index = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec;
-
-    D_VDEC_CHECK_PTR_RET(pList);
-    D_VDEC_CHECK_PTR_RET(pIndex);
-
-    for (index = 0; index < VDEC_MAX_REMAIN_FRM_NUM; index++)
-    {
-	pSpecialFrmRec = &pList->stSpecialFrmRec[index];
-       if ( pSpecialFrmRec->frmBufRec.u32StartPhyAddr == u32TargetPhyAddr && u32TargetPhyAddr != 0 && u32TargetPhyAddr != 0xffffffff)
-	{
-	    *pIndex = index;
-	    break;
-	}
-    }
-
-    if (index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	return HI_FAILURE;
-    }
-    else
-    {
-	return HI_SUCCESS;
-    }
-}
-
-HI_S32 BUFMNG_VDEC_List_FindNodeIndexCanRls(VDEC_List_S* pList, HI_U32* pIndex)
-{
-    HI_U32 index = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec;
-
-    D_VDEC_CHECK_PTR_RET(pList);
-
-    for (index = 0; index < VDEC_MAX_REMAIN_FRM_NUM; index++)
-    {
-	pSpecialFrmRec = &pList->stSpecialFrmRec[index];
-	if ( pSpecialFrmRec->bCanRls == HI_TRUE )
-	{
-	    *pIndex = index;
-	    break;
-	}
-    }
-
-    if (index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	return HI_FAILURE;
-    }
-    else
-    {
-	return HI_SUCCESS;
-    }
-}
-
-static HI_S32 BUFMNG_VDEC_List_Add(VDEC_List_S* pList, VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec)
-{
-
-    HI_U32 index;
-    VDEC_SPECIAL_FRM_INFO_S* pListRec;
-    D_VDEC_CHECK_PTR_RET(pList);
-    D_VDEC_CHECK_PTR_RET(pSpecialFrmRec);
-
-    //BUFMNG_SpinLockIRQ(&pList->stIrq); move to outside
-    for (index = 0; index < VDEC_MAX_REMAIN_FRM_NUM; index++)
-    {
-	pListRec = &pList->stSpecialFrmRec[index];
-	if (pListRec->frmBufRec.u32StartPhyAddr == 0)
-	{
-	    memcpy(pListRec, pSpecialFrmRec, sizeof(VDEC_SPECIAL_FRM_INFO_S));
-	    pList->s32Num++;
-	    if (pList->s32Num > VDEC_MAX_REMAIN_FRM_NUM)
-	    {
-		HI_ERR_VDEC("Remain Frame num = %d larger than Max(%d),force to be %d\n", pList->s32Num, VDEC_MAX_REMAIN_FRM_NUM, VDEC_MAX_REMAIN_FRM_NUM);
-		pList->s32Num = VDEC_MAX_REMAIN_FRM_NUM;
-	    }
-	    break;
-	}
-    }
-    //BUFMNG_SpinUnLockIRQ(&pList->stIrq);
-
-    if (index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	HI_ERR_VDEC("can't find the idle node of the global frame list! Remain Frame num = %d\n", pList->s32Num);
-    }
-    return HI_SUCCESS;
-}
-
-static HI_S32 BUFMNG_VDEC_List_Del(VDEC_List_S* pList, HI_U32 u32Index)
-{
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec;
-
-    D_VDEC_CHECK_PTR_RET(pList);
-
-    if (u32Index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	HI_ERR_VDEC("want to delete index(%d) >= %d(max), error!!!\n", u32Index, VDEC_MAX_REMAIN_FRM_NUM);
-	return HI_FAILURE;
-    }
-
-    BUFMNG_SpinLockIRQ(&pList->stIrq);
-    pSpecialFrmRec = &pList->stSpecialFrmRec[u32Index];
-
-    //��ոýڵ����ݣ���Ϊ���нڵ�
-    memset(pSpecialFrmRec, 0, sizeof(VDEC_SPECIAL_FRM_INFO_S));
-    pSpecialFrmRec->enbufferNodeStatus = DRV_VDEC_BUFFER_STATUS_BUTT;
-    pSpecialFrmRec->enhdrNodeStatus    = DRV_VDEC_BUFFER_STATUS_BUTT;
-    pList->s32Num--;
-    if (pList->s32Num < 0)
-    {
-	HI_ERR_VDEC("the vdec global remain frame < 0 ??!  force to be 0!\n");
-	pList->s32Num = 0;
-    }
-    BUFMNG_SpinUnLockIRQ(&pList->stIrq);
-    return HI_SUCCESS;
-}
-
-/******************************************************/
-/***	     �ڲ�ȫ�ֻ�֡�ӿ�			    ***/
-/** �ú������ڲ�vdec�̵߳���			    ***/
-/******************************************************/
-HI_S32 VDEC_DRV_GlobalRelFrmInter(HI_U32 u32Index)
-{
-    HI_S32 s32Ret = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmRec;
-
-    if (u32Index >= VDEC_MAX_REMAIN_FRM_NUM)
-    {
-	HI_ERR_VDEC("want to release index(%d) >= %d(max), error!!!\n", u32Index, VDEC_MAX_REMAIN_FRM_NUM);
-	return HI_FAILURE;
-    }
-
-    /* should del lock before release the memory*/
-    pSpecialFrmRec = &s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index];
-
-    if (pSpecialFrmRec->frmBufRec.u32StartPhyAddr == 0 || pSpecialFrmRec->frmBufRec.u32StartPhyAddr == 0xffffffff)
-    {
-	HI_INFO_VDEC("phy is invalid!\n");
-	return HI_FAILURE;
-    }
-
-    if (DRV_VDEC_BUFFER_STATUS_SYSALLOC == pSpecialFrmRec->enbufferNodeStatus)   /*��̬����*/
-    {
-	HI_DRV_VDEC_ReleaseMem(&pSpecialFrmRec->frmBufRec, HI_FALSE, g_bMapFrmEnable);
-    }
-    else
-    {
-	/*Ԥ����*/
-	VDEC_Chan_ReleasePreMem(&pSpecialFrmRec->frmBufRec);
-    }
-
-    if (DRV_VDEC_BUFFER_STATUS_SYSALLOC == pSpecialFrmRec->enhdrNodeStatus)  /*��̬����*/
-    {
-	HI_DRV_VDEC_UnmapAndRelease(&pSpecialFrmRec->hdrBufRec);
-    }
-    else if (DRV_VDEC_BUFFER_STATUS_PREALLOC == pSpecialFrmRec->enhdrNodeStatus)
-    {
-	VDEC_Chan_ReleasePreMem(&pSpecialFrmRec->hdrBufRec);
-    }
-
-    s32Ret = BUFMNG_VDEC_List_Del(&s_stVdecDrv.stRemainFrmList, u32Index);
-    return s32Ret;
-}
-
-/******************************************************/
-/***		 ȫ�ֻ�֡�ӿ�			    ***/
-/** �˴������ pstFrame Ӧ��Ӧmetadataǿת�е���Ϣ  ***/
-/******************************************************/
-HI_S32 HI_DRV_VDEC_GlobalRelFrm(HI_DRV_VIDEO_FRAME_S* pstFrame)
-{
-    HI_S32 s32Ret = HI_FAILURE;
-    HI_U32 u32Index = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmInfo;
-    D_VDEC_CHECK_PTR_RET(pstFrame);
-
-    if (s_stVdecDrv.stRemainFrmList.s32Num == 0)
-    {
-	return HI_FAILURE;
-    }
-
-    s32Ret = BUFMNG_VDEC_List_FindNodeIndex(&s_stVdecDrv.stRemainFrmList, pstFrame->stBufAddr[0].u32PhyAddr_YHead, &u32Index);
-    if ( HI_SUCCESS != s32Ret )
-    {
-	HI_ERR_VDEC("Can't find the remain Frm node (Phy = 0x%x,bSecureMem = %d), Remain num = %d\n",
-		     pstFrame->stBufAddr[0].u32PhyAddr_Y, pstFrame->bSecure, s_stVdecDrv.stRemainFrmList.s32Num);
-	return HI_FAILURE;
-    }
-
-    pSpecialFrmInfo = &s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index];
-    if (DRV_VDEC_BUFFER_STATUS_SYSALLOC == pSpecialFrmInfo->enbufferNodeStatus)   /*��̬����*/
-    {
-	HI_DRV_VDEC_ReleaseMem(&pSpecialFrmInfo->frmBufRec, HI_FALSE, g_bMapFrmEnable);
-    }
-    else
-    {
-	/*Ԥ����*/
-	VDEC_Chan_ReleasePreMem(&pSpecialFrmInfo->frmBufRec);
-    }
-
-    if (DRV_VDEC_BUFFER_STATUS_SYSALLOC == pSpecialFrmInfo->enhdrNodeStatus)	 /*��̬����*/
-    {
-	HI_DRV_VDEC_UnmapAndRelease(&pSpecialFrmInfo->hdrBufRec);
-    }
-    else if (DRV_VDEC_BUFFER_STATUS_PREALLOC == pSpecialFrmInfo->enhdrNodeStatus)
-    {
-	/*Ԥ����*/
-	VDEC_Chan_ReleasePreMem(&pSpecialFrmInfo->hdrBufRec);
-    }
-
-    s32Ret = BUFMNG_VDEC_List_Del(&s_stVdecDrv.stRemainFrmList, u32Index);
-
-    return s32Ret;
-}
-
-
-
-/******************************************************/
-/***		��ѯ�Ƿ�bypass			    ***/
-/**						    ***/
-/******************************************************/
-HI_S32 HI_DRV_VDEC_GetVideoBypassInfo(HI_HANDLE hHandle, HI_BOOL* pbVideoBypass)
-{
-    HI_DRV_VPSS_BYPASSATTR_S stVpssBypassInfo;
-    HI_S32 s32Ret = HI_FAILURE;
-    VDEC_CHANNEL_S* pstChan = HI_NULL;
-    VDEC_VPSSCHANNEL_S* pstVpssChan = HI_NULL;
-
-    if (HI_INVALID_HANDLE == hHandle)
-    {
-	HI_ERR_VDEC("Bad param!\n");
-	return HI_FAILURE;
-    }
-
-    D_VDEC_CHECK_PTR_RET(pbVideoBypass);
-
-    /* Check and get pstChan pointer */
-    if (HI_NULL == s_stVdecDrv.astChanEntity[hHandle].pstChan)
-    {
-	HI_WARN_VDEC("Chan %d not init!\n", hHandle);
-	return HI_FAILURE;
-    }
-
-    pstChan = s_stVdecDrv.astChanEntity[hHandle].pstChan;
-    if (HI_UNF_VCODEC_TYPE_VC1 == pstChan->stCurCfg.enType)
-    {
-	// if is vc1, no bypass
-	*pbVideoBypass = 0;
-    }
-    else
-    {
-	pstVpssChan = &(s_stVdecDrv.astChanEntity[hHandle].stVpssChan);
-
-	memset(&stVpssBypassInfo, 0 , sizeof(HI_DRV_VPSS_BYPASSATTR_S));
-
-	stVpssBypassInfo.u32InputWidth	= pstVpssChan->u32InputWidth;
-	stVpssBypassInfo.u32InputHeight = pstVpssChan->u32InputHeight;
-	stVpssBypassInfo.u32InputFrameRate = 0;
-	stVpssBypassInfo.enInputPixFormat  = 0;
-
-	if (s_stVdecDrv.pVpssFunc->pfnVpssSendCommand)
-	{
-	    s32Ret = s_stVdecDrv.pVpssFunc->pfnVpssSendCommand(pstVpssChan->hVpss,
-		     HI_DRV_VPSS_USER_COMMAND_CHECKBYPASS, &(stVpssBypassInfo));
-	    if (HI_SUCCESS != s32Ret)
-	    {
-		HI_ERR_VDEC("VPSS Check bypass failed!return 0x%x\n", s32Ret);
-		return HI_FAILURE;
-	    }
-
-	    *pbVideoBypass = stVpssBypassInfo.bVpssBypass;
-	}
-	else
-	{
-	    HI_ERR_VDEC("pVpssFunc->pfnVpssSendCommand= NULL!\n");
-	}
-    }
-
-    return s32Ret;
-}
-
-
-/******************************************************/
-/***		��ȡspecial֡��Ϣ		    ***/
-/** �ṩ�� vdec_ctrl �鿴proc��Ϣ�ĺ���		    ***/
-/******************************************************/
-HI_S32 VDEC_DRV_GetSpecialFrmInfo(VDEC_SPECIAL_FRM_PROC_S* pstSpecialFrmInfo)
-{
-    HI_U32 u32Index = 0;
-    HI_U32 SpecialFrmCnt = 0;
-    VDEC_SPECIAL_FRM_INFO_S* pSpecialFrmInfo;
-
-    D_VDEC_CHECK_PTR_RET(pstSpecialFrmInfo);
-
-    pstSpecialFrmInfo->u32SpecialFrmNum = s_stVdecDrv.stRemainFrmList.s32Num;
-
-    if (pstSpecialFrmInfo->u32SpecialFrmNum != 0)
-    {
-	for (u32Index = 0; u32Index < VDEC_MAX_REMAIN_FRM_NUM; u32Index++)
-	{
-	    pSpecialFrmInfo = &s_stVdecDrv.stRemainFrmList.stSpecialFrmRec[u32Index];
-	    if (pSpecialFrmInfo->frmBufRec.u32StartPhyAddr != 0)
-	    {
-		memcpy(&pstSpecialFrmInfo->frmBufRec[SpecialFrmCnt], &pSpecialFrmInfo->frmBufRec, sizeof(VDEC_BUFFER_S));
-		SpecialFrmCnt++;
-	    }
-	}
-    }
-
-    if (SpecialFrmCnt != pstSpecialFrmInfo->u32SpecialFrmNum)
-    {
-	HI_ERR_VDEC("the SpecialFrmCnt not the same! list record = %d, real record = %d\n", pstSpecialFrmInfo->u32SpecialFrmNum , SpecialFrmCnt);
-    }
-    return HI_SUCCESS;
-}
-
-/******************************************************/
-/***		��ʼ��specialFrame ����		    ***/
-/** ��ko��ʱ���ʼ��				    ***/
-/******************************************************/
-HI_VOID VDEC_DRV_SpecialFrmListInit(HI_VOID)
-{
-    /* Init the remain buffer list*/
-    BUFMNG_VDEC_List_Init(&s_stVdecDrv.stRemainFrmList);
-
-    return ;
-}
-
-/******************************************************/
-/***	      ȥ��ʼ��specialFrame ����		    ***/
-/** ж��ko��ʱ��ȥ��ʼ��			    ***/
-/******************************************************/
-HI_VOID VDEC_DRV_SpecialFrmListDeinit(HI_VOID)
-{
-    /* deinit the remain buffer list*/
-    BUFMNG_VDEC_List_Deinit(&s_stVdecDrv.stRemainFrmList);
-    return ;
-}
-#endif
 
 HI_VOID HI_DRV_VDEC_ReportEsRels(HI_HANDLE hDmxVidChn)
 {

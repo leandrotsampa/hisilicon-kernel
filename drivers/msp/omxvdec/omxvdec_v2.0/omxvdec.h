@@ -26,10 +26,6 @@
 #include "drv_vdec_ext.h"
 #include "hi_drv_module.h"  // HI_DRV_MODULE_GetFunction ����
 
-#ifdef VFMW_VPSS_BYPASS_EN
-#include "hi_kernel_adapt.h"	// add by l00228308
-#endif
-
 #define MAX_OPEN_COUNT			  (32)
 #define MAX_CHANNEL_NUM			  (MAX_OPEN_COUNT)
 
@@ -86,26 +82,6 @@ do {								\
     }								\
 }while(0)
 
-#ifdef VFMW_VPSS_BYPASS_EN
-#define D_OMXVDEC_CHECK_PTR_RET(ptr) \
-    do {\
-	if (HI_NULL == ptr)\
-	{ \
-	    OmxPrint(OMX_ERR, "PTR '%s' is NULL.\n", # ptr); \
-	    return HI_FAILURE;		 \
-	}  \
-    } while (0)
-
-#define D_OMXVDEC_CHECK_PTR(ptr) \
-    do {\
-	if (HI_NULL == ptr)\
-	{ \
-	    OmxPrint(OMX_ERR, "PTR '%s' is NULL.\n", # ptr); \
-	    return;	      \
-	}  \
-    } while (0)
-#endif
-
 /*
    g_TraceOption ����ֵ
 
@@ -158,41 +134,6 @@ typedef enum {
     SAVE_FLIE_IMG,
 }eSAVE_FLIE;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-/* vdec remain frame List */
-//add by l00225186
-/* vdec remain frame List */
-#define OMXVDEC_MAX_REMAIN_FRM_NUM (32)
-typedef struct BUFMNG_VPSS_LOCK_S
-{
-    spinlock_t	   irq_lock;
-    unsigned long  irq_lockflags;
-    int		   isInit;
-} OMXVDEC_IRQ_LOCK_S;
-
-typedef struct tagVDEC_SPECIAL_INFO_S
-{
-    MMZ_BUFFER_S	frmBufRec;
-    eMEM_ALLOC		enbufferNodeStatus;
-    HI_BOOL		bCanRls;
-}OMXVDEC_FRM_INFO_S;
-
-typedef struct tagVDEC_LIST_S
-{
-    HI_BOOL		 bInit;
-    HI_S32		 s32Num;
-    spinlock_t		 bypass_lock;
-    OMXVDEC_FRM_INFO_S	 stSpecialFrmRec[OMXVDEC_MAX_REMAIN_FRM_NUM];
-}OMXVDEC_List_S;
-
-typedef struct
-{
-    HI_U32  occoupy_frame_num;
-    MMZ_BUFFER_S frmBufRec[VFMW_MAX_RESERVE_NUM];
-} OMXVDEC_PROC_OCCOUPY_FRAME_INFO;
-
-#endif
-
 typedef struct {
     HI_U32		open_count;
     HI_U32		total_chan_num;
@@ -203,9 +144,6 @@ typedef struct {
     spinlock_t		channel_lock;
     struct cdev		cdev;
     struct device      *device;
-#ifdef VFMW_VPSS_BYPASS_EN
-    OMXVDEC_List_S	stRemainFrmList;
-#endif
 }OMXVDEC_ENTRY;
 
 typedef struct {
@@ -229,14 +167,5 @@ typedef struct
 HI_VOID omxvdec_release_mem(HI_VOID *pMMZ_Buf, eMEM_ALLOC eMemAlloc);
 
 UINT32 OMX_GetTimeInMs(VOID);
-
-#ifdef VFMW_VPSS_BYPASS_EN
-
-HI_S32 OMXVDEC_List_FindNode(OMXVDEC_List_S *pList,HI_U32 u32TargetPhyAddr,HI_U32 *pIndex);
-//HI_S32 OMXVDEC_List_FindNodeCanRls(OMXVDEC_List_S *pList, HI_U32 *pIndex);
-HI_S32 OMXVDEC_List_Add(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec);
-HI_S32 OMXVDEC_List_Del(OMXVDEC_List_S *pList,HI_U32 u32Index);
-HI_S32 OMXVDEC_Frame_in_List(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec);
-#endif
 
 #endif

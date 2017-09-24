@@ -56,7 +56,6 @@ typedef enum {
 
 
 /*============== INTERNAL FUNCTION =============*/
-#ifdef VFMW_VPSS_BYPASS_EN
 HI_S32 decoder_find_special2Normal_Index(OMXVDEC_CHAN_CTX *pchan,HI_U32 u32Phyaddr, HI_U32 *pIndex)
 {
     HI_U32 index;
@@ -235,8 +234,6 @@ HI_S32 decoder_global_release_frame(HI_DRV_VIDEO_FRAME_S* pstFrame)
 }
 
 EXPORT_SYMBOL(decoder_global_release_frame);
-
-#endif
 
 static HI_S32 decoder_event_new_image(OMXVDEC_CHAN_CTX	*pchan, HI_VOID *pargs)
 {
@@ -1320,38 +1317,6 @@ HI_S32 decoder_release_inst(OMXVDEC_CHAN_CTX *pchan)
     omxvdec_release_mem(&pchan->decoder_scd_buf, pchan->eSCDMemAlloc);
     omxvdec_release_mem(&pchan->decoder_vdh_buf, pchan->eVDHMemAlloc);
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    for (i=0; i < MAX_DFS_BUF_NUM; i++)
-    {
-	pBufSlot = &(pchan->dfs.single_buf[i]);
-
-	/*VP9��ֱ���ʱ�������һ����λ��pmv����û��֡�棬�������Ҳ��Ҫ�ͷ�*/
-	if ((pBufSlot->frm_buf.u32StartPhyAddr == 0 || pBufSlot->frm_buf.u32Size == 0)
-	 && (pBufSlot->pmv_buf.u32StartPhyAddr == 0 || pBufSlot->pmv_buf.u32Size == 0))
-	{
-	    continue;
-	}
-
-	if (pBufSlot->pmv_buf.u32StartPhyAddr != 0 && pBufSlot->pmv_buf.u32Size != 0)
-	{
-	    omxvdec_release_mem(&pBufSlot->pmv_buf, pBufSlot->pmv_buf_type);
-	    pBufSlot->pmv_buf_type = ALLOC_INVALID;
-	}
-
-	if (pBufSlot->frm_buf.u32StartPhyAddr != 0 && pBufSlot->frm_buf.u32Size != 0)
-	{
-	    if(pBufSlot->own_by_decoder)
-	    {
-		omxvdec_release_mem(&pBufSlot->frm_buf, pBufSlot->frm_buf_type);
-	    }
-	    /*special frame already record in global list,so clear the channel record here, change by l00228308*/
-	    pBufSlot->frm_buf_type = ALLOC_INVALID;
-	    pBufSlot->is_available  = HI_FALSE;
-	    pBufSlot->is_configured = HI_FALSE;
-	    /*change end*/
-	}
-    }
-#else
     for (i=0; i < MAX_DFS_BUF_NUM; i++)
     {
 	pBufSlot = &(pchan->dfs.single_buf[i]);
@@ -1364,7 +1329,6 @@ HI_S32 decoder_release_inst(OMXVDEC_CHAN_CTX *pchan)
 	    omxvdec_release_mem(&pBufSlot->frm_buf, pBufSlot->frm_buf_type);
 	}
     }
-#endif
 
     OmxPrint(OMX_TRACE, "%s exit normally!\n", __func__);
 

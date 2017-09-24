@@ -163,29 +163,6 @@ typedef struct BUFMNG_VPSS_LOCK_S
     int		   isInit;
 } BUFMNG_VPSS_IRQ_LOCK_S;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-//add by l00225186
-/* vdec remain frame List */
-#define VDEC_MAX_REMAIN_FRM_NUM (30)
-
-typedef struct tagVDEC_SPECIAL_INFO_S
-{
-    VDEC_BUFFER_S	 frmBufRec;
-    BUFFER_NODE_STATUS	 enbufferNodeStatus;
-    VDEC_BUFFER_S	 hdrBufRec;
-    BUFFER_NODE_STATUS	 enhdrNodeStatus;
-    HI_BOOL		 bCanRls;
-} VDEC_SPECIAL_FRM_INFO_S;
-
-typedef struct tagVDEC_LIST_S
-{
-    HI_BOOL	     bInit;
-    HI_S32		      s32Num;
-    VDEC_SPECIAL_FRM_INFO_S   stSpecialFrmRec[VDEC_MAX_REMAIN_FRM_NUM];
-    BUFMNG_VPSS_IRQ_LOCK_S    stIrq;
-} VDEC_List_S;
-#endif
-
 /******************************* API Declaration *****************************/
 
 HI_VOID BUFMNG_Init(HI_VOID);

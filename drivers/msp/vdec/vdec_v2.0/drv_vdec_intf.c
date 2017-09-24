@@ -190,13 +190,6 @@ static __inline__ int str2val(char *str, unsigned int *data)
 
 static HI_S32 VDEC_DRV_CtrlReadProc(struct seq_file *p, HI_VOID *v)
 {
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
-    HI_U32 i;
-    VDEC_SPECIAL_FRM_PROC_S stSpecialFrmProc;
-    memset(&stSpecialFrmProc, 0, sizeof(VDEC_SPECIAL_FRM_PROC_S));
-    VDEC_DRV_GetSpecialFrmInfo(&stSpecialFrmProc);
-#endif
-
     PROC_PRINT(p, "\n");
     PROC_PRINT(p, "%-35s:%d\n", "VDEC VERSION",	  VDEC_VERSION);
     PROC_PRINT(p, "%-35s:%d\n", "MaskCtrlWord",	  MaskCtrlWord);
@@ -204,21 +197,6 @@ static HI_S32 VDEC_DRV_CtrlReadProc(struct seq_file *p, HI_VOID *v)
     PROC_PRINT(p, "%-35s:%s\n", "VdecSavePath",	  VdecSavePath);
     PROC_PRINT(p, "%-35s:%d\n", "VdecRawChanNum", VdecRawChanNum);
     PROC_PRINT(p, "%-35s:%d\n", "VdecYuvChanNum", VdecYuvChanNum);
-#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
-    PROC_PRINT(p, "%-35s:%d\n", "SpeclalFrmNum",  stSpecialFrmProc.u32SpecialFrmNum);
-
-    if (stSpecialFrmProc.u32SpecialFrmNum != 0)
-    {
-	for (i = 0; i < stSpecialFrmProc.u32SpecialFrmNum; i++)
-	{
-	    PROC_PRINT(p, "%-35s:0x%x/%p/%d\n", "PhyAddr/VirAddr/Size",
-			  stSpecialFrmProc.frmBufRec[i].u32StartPhyAddr,
-			  stSpecialFrmProc.frmBufRec[i].pu8StartVirAddr,
-			  stSpecialFrmProc.frmBufRec[i].u32Size);
-	}
-    }
-
-#endif
     PROC_PRINT(p, "\n");
     PROC_PRINT(p, "================== param in () is not necessary ==================\n");
     PROC_PRINT(p, "echo	 dat0	     dat1      dat2   > /proc/msp/vdec_ctrl\n");
@@ -1413,10 +1391,6 @@ HI_S32 VDEC_DRV_ModInit(HI_VOID)
 	return HI_FAILURE;
     }
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    VDEC_DRV_SpecialFrmListInit();
-#endif
-
 #ifdef MODULE
     HI_PRINT("Load hi_vdec.ko success.\t(%s)\n", VERSION_STRING);
 #endif
@@ -1426,9 +1400,6 @@ HI_S32 VDEC_DRV_ModInit(HI_VOID)
 
 HI_VOID VDEC_DRV_ModExit(HI_VOID)
 {
-#ifdef VFMW_VPSS_BYPASS_EN
-    VDEC_DRV_SpecialFrmListDeinit();
-#endif
     VDEC_DRV_UnregisterProc();
     HI_DRV_DEV_UnRegister(&VdecDev);
 

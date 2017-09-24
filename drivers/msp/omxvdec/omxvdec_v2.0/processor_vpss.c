@@ -1278,9 +1278,6 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
 {
     HI_S32 ret = HI_FAILURE;
     IMAGE stImage;
-#ifdef VFMW_VPSS_BYPASS_EN
-    unsigned long   flags;
-#endif
 
     pchan->omx_chan_statinfo.GetImageTry++;
 
@@ -1298,9 +1295,6 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
 
     /* read ready image struct from vfmw. */
     //memset(&stImage, 0, sizeof(IMAGE));
-#ifdef VFMW_VPSS_BYPASS_EN
-    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
-#endif
 
     stImage.pOutFrame = (HI_U64)(HI_SIZE_T)pstFrame;
 
@@ -1311,9 +1305,6 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
 	ret = HI_FAILURE;
     }
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
-#endif
     if (ret != HI_SUCCESS)
     {
 	if (pchan->last_frame_info[0] == DECODER_REPORT_LAST_FRAME)
@@ -1365,9 +1356,6 @@ HI_S32 processor_release_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S *ps
     HI_DRV_VIDEO_PRIVATE_S* pstPrivInfo = HI_NULL;
     HI_VDEC_PRIV_FRAMEINFO_S* pstVdecPrivInfo = HI_NULL;
     unsigned long   flags;
-#ifdef VFMW_VPSS_BYPASS_EN
-    HI_U32 OccupiedFrmIndex = 0;
-#endif
 
     pchan->omx_chan_statinfo.ReleaseImageTry++;
 
@@ -1400,48 +1388,11 @@ HI_S32 processor_release_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S *ps
     stImage.BTLInfo.btl_imageid	 = pstVdecPrivInfo->stBTLInfo.u32BTLImageID;
     stImage.BTLInfo.u32Is1D	 = pstVdecPrivInfo->stBTLInfo.u32Is1D;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
-#endif
-
     ret = pchan->image_ops.release_image(pchan->decoder_id, &stImage);
-
-#ifdef VFMW_VPSS_BYPASS_EN
-    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
-#endif
 
     if (ret != HI_SUCCESS)
     {
 	OmxPrint(OMX_ERR, "%s call release_image failed!\n", __func__);
-
-    #ifdef VFMW_VPSS_BYPASS_EN
-	if ((0 != g_OmxVdec->stRemainFrmList.s32Num) && (channel_IsOccupiedFrm(pstFrame->stBufAddr[0].u32PhyAddr_YHead, &OccupiedFrmIndex)))
-	{
-	    /*this channel have special frame*/
-	    if (OccupiedFrmIndex >= VFMW_MAX_RESERVE_NUM)
-	    {
-	       OmxPrint(OMX_FATAL, "%s release_occupied_frame[id = %d] failed!\n", __func__,OccupiedFrmIndex);
-
-	       return HI_FAILURE;
-	    }
-
-	    OmxPrint(OMX_INFO, "processor_release_image PhyAddr= 0x%x\n",pstFrame->stBufAddr[0].u32PhyAddr_YHead);
-
-	    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock,flags);
-	    g_OmxVdec->stRemainFrmList.stSpecialFrmRec[OccupiedFrmIndex].bCanRls = HI_TRUE;
-	    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock,flags);
-
-	    g_OmxVdec->task.task_state = TASK_STATE_ONCALL;
-	    wake_up(&g_OmxVdec->task.task_wait);
-
-	    pchan->omx_chan_statinfo.ReleaseImageOK++;
-
-	    OmxPrint(OMX_VPSS, "VPSS release image success! Phyaddr = 0x%x,id = %d\n",pstFrame->stBufAddr[0].u32PhyAddr_YHead, pstFrame->u32FrameIndex);
-
-	    return HI_SUCCESS;
-	}
-    #endif
-
 	return HI_FAILURE;
     }
 
@@ -1821,76 +1772,3 @@ HI_S32 processor_reset_inst(OMXVDEC_CHAN_CTX *pchan)
 
     return HI_SUCCESS;
 }
-
-#ifdef VFMW_VPSS_BYPASS_EN
-
-HI_S32 processor_set_bypass(OMXVDEC_CHAN_CTX *pchan)
-{
-    HI_S32 ret;
-    HI_DRV_VPSS_PORT_CFG_S stVpssPortCfg;
-
-    memset(&stVpssPortCfg, 0, sizeof(HI_DRV_VPSS_PORT_CFG_S));
-
-    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
-
-    if (HI_NULL == pchan)
-    {
-	OmxPrint(OMX_FATAL, "%s pchan = NULL!\n", __func__);
-	return HI_FAILURE;
-    }
-
-    OmxPrint(OMX_INFO, "%s output_view:%d\n", __func__, pchan->output_view);
-
-    ret = (pVpssFunc->pfnVpssGetPortCfg)(pchan->port_id, &stVpssPortCfg);
-    if (ret == HI_SUCCESS)
-    {
-	stVpssPortCfg.bPassThrough = pchan->output_view; //1: view  0: texture
-	ret = (pVpssFunc->pfnVpssSetPortCfg)(pchan->port_id, &stVpssPortCfg);
-    }
-    else
-    {
-	 OmxPrint(OMX_FATAL, "%s call pfnVpssGetPortCfg failed, ret = %d\n", __func__, ret);
-    }
-    OmxPrint(OMX_TRACE, "%s exit normally!return = %x\n", __func__,ret);
-    return ret;
-}
-
-HI_S32 processor_get_bypass(OMXVDEC_CHAN_CTX *pchan,PROCESSOR_BYPASSATTR_S *pBypasaAttr)
-{
-   //�˴��ϱ��Ƿ�bypass
-   HI_DRV_VPSS_BYPASSATTR_S stVpssBypassInfo;
-   HI_S32 s32Ret = HI_FAILURE;
-
-   memset(&stVpssBypassInfo, 0, sizeof(HI_DRV_VPSS_BYPASSATTR_S));
-
-   if ((HI_NULL == pBypasaAttr) || (HI_NULL == pchan))
-   {
-       OmxPrint(OMX_FATAL, "%s pchan = NULL!\n", __func__);
-       return HI_FAILURE;
-   }
-
-   stVpssBypassInfo.u32InputWidth  = pBypasaAttr->u32InputWidth;
-   stVpssBypassInfo.u32InputHeight = pBypasaAttr->u32InputHeight;
-   stVpssBypassInfo.u32InputFrameRate = pBypasaAttr->u32InputFrameRate;
-   stVpssBypassInfo.enInputPixFormat  = pBypasaAttr->enInputPixFormat;
-
-   if (pVpssFunc->pfnVpssSendCommand)
-   {
-      s32Ret = (pVpssFunc->pfnVpssSendCommand)(pchan->processor_id, HI_DRV_VPSS_USER_COMMAND_CHECKBYPASS, &(stVpssBypassInfo));
-
-      if (HI_SUCCESS != s32Ret)
-      {
-	  OmxPrint(OMX_ALWS,"%s,VPSS Check bypass failed!return 0x%x,pchan->processor_id = %d\n",__func__,s32Ret,pchan->processor_id);
-	  pchan->bVpssBypass = HI_FALSE;
-      }
-      else
-      {
-	  pchan->bVpssBypass = stVpssBypassInfo.bVpssBypass;
-      }
-   }
-
-   OmxPrint(OMX_INFO, "%s bVpssBypass:%d\n", __func__, pchan->bVpssBypass);
-
-   return s32Ret;
-}
-#endif

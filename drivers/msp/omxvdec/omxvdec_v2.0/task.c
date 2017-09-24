@@ -22,9 +22,6 @@
 extern HI_U32	g_DispNum;
 extern HI_BOOL	g_MapFrmEnable;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-extern OMXVDEC_ENTRY  *g_OmxVdec;
-#endif
 /*============== INTERNAL DEFINE ===============*/
 typedef enum
 {

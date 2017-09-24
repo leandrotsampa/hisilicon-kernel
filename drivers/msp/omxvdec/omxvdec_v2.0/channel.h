@@ -281,17 +281,6 @@ typedef struct tagVDEC_PREMMZ_NODE_S
     HI_U32  u32NodeState;/*0:have MMZ not used,1:have MMZ but used 2:invalid*/
 }VDEC_PREMMZ_NODE_S;
 
-#ifdef VFMW_VPSS_BYPASS_EN
-typedef struct
-{
-    HI_U32 u32InputWidth;
-    HI_U32 u32InputHeight;
-    HI_DRV_PIX_FORMAT_E enInputPixFormat;
-    HI_U32 u32InputFrameRate;
-    HI_BOOL bVpssBypass;		  //�������
-}PROCESSOR_BYPASSATTR_S;
-#endif
-
 HI_S32 channel_init(HI_VOID);
 
 HI_VOID channel_exit(HI_VOID);
@@ -340,15 +329,6 @@ HI_S32 channel_alloc_buf(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
 
 HI_S32 channel_release_buf(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
 
-#ifdef VFMW_VPSS_BYPASS_EN
-HI_S32 channel_record_occupied_frame(OMXVDEC_CHAN_CTX *pchan);
-HI_S32 channel_release_frame(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
-HI_BOOL channel_IsOccupiedFrm(HI_U32 TargetPhyAddr, HI_U32 *pIndex);
-HI_S32 channel_find_nodeId_can_release(OMXVDEC_List_S* pList, HI_U32* pIndex);
-
-HI_S32 channel_set_processor_bypass(OMXVDEC_CHAN_CTX *pchan);
-HI_S32 channel_get_processor_bypass(OMXVDEC_CHAN_CTX *pchan,OMXVDEC_DRV_CFG *chan_cfg);
-#endif
 HI_S32 channel_Vdec_Report(HI_S32 chan_id, HI_U32 EventID, HI_S32 result, HI_VOID* PrivData);
 
 #endif

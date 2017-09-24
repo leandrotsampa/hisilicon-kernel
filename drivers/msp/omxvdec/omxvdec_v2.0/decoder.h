@@ -54,10 +54,4 @@ HI_S32 decoder_command_handler(OMXVDEC_CHAN_CTX *pchan, DECODER_CMD_E eCmd, HI_V
 
 HI_S32 decoder_get_stream_ex(HI_S32 chan_id, HI_VOID* stream_data);
 HI_S32 decoder_release_stream_ex(HI_S32 chan_id, HI_VOID* stream_data);
-#ifdef VFMW_VPSS_BYPASS_EN
-HI_S32 decoder_find_special2Normal_Index(OMXVDEC_CHAN_CTX *pchan,HI_U32 u32Phyaddr, HI_U32 *pIndex);
-HI_S32 decoder_record_occoupied_frame(OMXVDEC_CHAN_CTX *pchan);
-HI_S32 decoder_global_release_frame_inter(HI_U32 u32Index);
-HI_S32 decoder_global_release_frame(HI_DRV_VIDEO_FRAME_S* pstFrame);
-#endif
 #endif
