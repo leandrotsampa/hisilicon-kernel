@@ -16,12 +16,6 @@ History	      :
 #ifndef __DRV_DISP_IOCTL_H__
 #define __DRV_DISP_IOCTL_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_drv_video.h"
 #include "hi_drv_disp.h"
@@ -410,10 +404,5 @@ typedef enum
 #define CMD_DISP_GET_OUTPUT_TYPE      _IOWR(HI_ID_DISP, IOC_DISP_GET_OUTPUT_TYPE, DISP_GET_OUTPUT_S)
 #define CMD_DISP_SET_BT2020_ENABLE	_IOW(HI_ID_DISP, IOC_DISP_SET_BT2020_ENABLE, DISP_BT2020_ENABLE_S)
 #define CMD_DISP_GET_BT2020_ENABLE	_IOWR(HI_ID_DISP, IOC_DISP_GET_BT2020_ENABLE, DISP_BT2020_ENABLE_S)
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __DRV_DISP_IOCTL_H__ */

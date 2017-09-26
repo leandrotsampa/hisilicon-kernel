@@ -29,12 +29,6 @@
 #include "drv_hdmi_ext.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 //switcher composer mode define
 #define DISABLE_EL_FLAG_OFF  0
 #define DISABLE_EL_FLAG_ON   1
@@ -325,11 +319,6 @@ HI_BOOL DISP_OutputTypeAndFormatMatch(HI_DRV_DISP_OUT_TYPE_E enOutputType, HI_DR
 #define DISP_OutputTypeAndFormatMatch(a,b) HI_TRUE
 #endif
 
-#endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif

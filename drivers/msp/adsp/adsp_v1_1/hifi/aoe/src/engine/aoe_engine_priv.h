@@ -10,11 +10,6 @@
 #include "hi_dsp_common.h"
 #include "aoe_engine.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MIX_MC_CHN_NUM	    8	 /* 8chn for mc out frame */
 
 typedef enum
@@ -115,9 +110,5 @@ typedef struct
     HI_DSP_AUDFRAME_S stMixAssocDelayFrm;
     HI_DSP_AUDFRAME_S stMixAefFrm;
 } ENGINE_STATE_S;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

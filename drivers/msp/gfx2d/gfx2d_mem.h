@@ -16,12 +16,6 @@
 
 #include "gfx2d_config.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 HI_S32 GFX2D_MEM_Init(const HI_U32 u32Size);
 
 HI_S32 GFX2D_MEM_Deinit(HI_VOID);
@@ -70,11 +64,5 @@ HI_VOID GFX2D_MEM_ReadProc(struct seq_file *p, HI_VOID *v);
 *******************************************************************************/
 HI_S32 GFX2D_MEM_WriteProc(struct file *file, const char __user *buf, \
 			   size_t count, loff_t *ppos);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_MEM_H_*/

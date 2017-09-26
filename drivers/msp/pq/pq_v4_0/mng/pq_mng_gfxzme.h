@@ -23,24 +23,7 @@
 
 #include "drv_pq_comm.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
-
 HI_S32 PQ_MNG_RegisterGfxZme(HI_VOID);
 HI_S32 PQ_MNG_UnRegisterGfxZme(HI_VOID);
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

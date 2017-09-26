@@ -23,25 +23,10 @@ Date			   Author		    Modification
 #ifndef __OPTM_ALG_GSHARP_H__
 #define __OPTM_ALG_GSHARP_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
 /***************************** Macro Definition ******************************/
-
 
 #define OPTM_ALG_MIN2(x, y) (((x) < (y)) ? (x) : (y))
 #define OPTM_ALG_MAX2(x, y) (((x) > (y)) ? (x) : (y))
@@ -83,22 +68,9 @@ typedef struct
     HI_U8   u8CTIMixingRatio;
 }OPTM_ALG_GDTI_RTL_PARA_S;
 
-
-/********************** Global Variable declaration **************************/
-
-
-
 /******************************* API declaration *****************************/
 
 HI_VOID OPTM_ALG_GDtiInit(OPTM_ALG_GDTI_DRV_PARA_S *pstDtiDrvPara, OPTM_ALG_GDTI_RTL_PARA_S *pstDtiRtlPara);
 HI_VOID OPTM_ALG_GDtiSet(OPTM_ALG_GDTI_DRV_PARA_S *pstDtiDrvPara, OPTM_ALG_GDTI_RTL_PARA_S *pstDtiRtlPara);
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_GSHARP_H__ */

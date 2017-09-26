@@ -28,11 +28,6 @@
 #include "hi_mpi_vdec.h"
 #include "hi_debug.h"
 #include "hi_drv_vdec.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 typedef HI_DRV_VDEC_STREAM_BUF_S VDEC_CMD_CREATEBUF_S;
 
@@ -452,11 +447,5 @@ typedef struct hiVDEC_CMD_GETLEFTSTREAMFRAME_S
 #define UMAPC_VDEC_CHAN_GETVIDEOBYPASS	   _IOWR(HI_ID_VDEC, 0xd8, VDEC_CMD_GET_VIDEO_BYPASS_S)
 #define UMAPC_VDEC_CHAN_GETLEFTSTREAMFRAME _IOWR(HI_ID_VDEC, 0xd6, VDEC_CMD_GETLEFTSTREAMFRAME_S)
 #define UMAPC_VDEC_CHAN_SCENE_MODE	_IOW (HI_ID_VDEC, 0xd9, VDEC_CMD_SET_SCENE_MODE_S)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __DRV_VDEC_IOCTL_H__ */

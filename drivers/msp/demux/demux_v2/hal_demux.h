@@ -16,10 +16,6 @@
 
 #include "drv_demux_define.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum
 {
     DMX_CHAN_DATA_TYPE_SEC = 0,
@@ -375,10 +371,6 @@ HI_U32 DmxHalGetRemuxPortOverflowCount(Dmx_Set_S * DmxSet, HI_U32 RmxPortId);
 HI_VOID DmxHalSetRemuxPidTab(Dmx_Set_S * DmxSet, HI_U32 PumpId, HI_U32 RmxPortId, HI_U32 Pid);
 HI_VOID DmxHalSetRemuxRemapPidTab(Dmx_Set_S * DmxSet, HI_U32 PumpId, HI_U32 RmxPortId, HI_U32 Pid, HI_U32 NewPid);
 HI_VOID DmxHalUnSetRemuxPidTab(Dmx_Set_S * DmxSet, HI_U32 PumpId);
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

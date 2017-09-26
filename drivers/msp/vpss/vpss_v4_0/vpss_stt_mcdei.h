@@ -10,13 +10,6 @@
 #include "hi_drv_vpss.h"
 #include <linux/list.h>
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define VPSS_RGME_MAX_NODE  3
 typedef struct hiVPSS_MC_ATTR_S
 {

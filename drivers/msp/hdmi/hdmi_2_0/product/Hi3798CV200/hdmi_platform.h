@@ -26,11 +26,6 @@
 #include "hi_drv_mem.h"
 #include <asm/io.h>
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
 
 /******************************************************************************/
 /* Chip type								      */
@@ -173,12 +168,5 @@ static UMAP_DEVICE_S s_stHdmiDev = \
     .drvops	= &s_stHdmiDrvOps \
 };
 #endif
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

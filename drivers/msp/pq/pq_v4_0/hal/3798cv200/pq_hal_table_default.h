@@ -20,13 +20,6 @@
 #ifndef __PQ_HAL_PQ_TABLE_DEFAULT_H__
 #define __PQ_HAL_PQ_TABLE_DEFAULT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /*soft table pq bin define*/
 /* Fmd */
 #define PQ_SOFT_IP_DETECT		 0xfffe0001

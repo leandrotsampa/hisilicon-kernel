@@ -24,10 +24,6 @@
 #include "hi_unf_cipher.h"
 #include "hi_unf_hdcp.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-
 #define CIPHER_SOFT_CHAN_NUM	   CIPHER_CHAN_NUM
 #define CIPHER_INVALID_CHN	  (0xffffffff)
 #define CIPHER_MAX_NODE_BUF_SIZE  (0xFFFF0)   //1M-16
@@ -379,10 +375,5 @@ HI_VOID HI_DRV_CIPHER_SetHdmiReadClk(HI_DRV_HDCPKEY_TYPE_E enHDCPKeyType);
 HI_S32 HI_DRV_CIPHER_SetIV(HI_HANDLE hCIHandle,	 HI_U8 *pu8IV, HI_U32 u32IVLen);
 HI_S32 DRV_CIPHER_EncryptHDCPKey(CIPHER_HDCP_KEY_TRANSFER_S *pstHdcpKeyTransfer);
 HI_S32 DRV_CIPHER_LoadHdcpKey(HI_DRV_CIPHER_FLASH_ENCRYPT_HDCPKEY_S *pstFlashHdcpKey);
-
-
-#ifdef __cplusplus
-}
-#endif	/* __cplusplus */
 
 #endif	/* End of #ifndef __HI_DRV_CIPHER_H__*/

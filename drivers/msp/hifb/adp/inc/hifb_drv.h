@@ -23,7 +23,6 @@ Date			   Author		    Modification
 #ifndef __HIFB_DRV_H__
 #define __HIFB_DRV_H__
 
-
 /*********************************add include here******************************/
 #include <linux/fb.h>
 
@@ -31,23 +30,6 @@ Date			   Author		    Modification
 #include "hifb.h"
 #include "drv_hifb_common.h"
 #include "drv_hifb_hal.h"
-
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
-/***************************** Macro Definition ******************************/
-
-
 
 /*************************** Structure Definition ****************************/
 /*mask bit*/
@@ -254,22 +236,7 @@ typedef struct
     HI_BOOL (*DRV_HIFB_GetIsGfxWorkAtWbc) (HI_VOID);
 }HIFB_DRV_OPS_S;
 
-
-
-
-/********************** Global Variable declaration **************************/
-
-
-
 /******************************* API declaration *****************************/
 HI_VOID DRV_HIFB_GetAdpCallBackFunction(HIFB_DRV_OPS_S *Ops);
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HIFB_DRV_H__ */

@@ -18,10 +18,6 @@
 #include "hi_drv_cipher.h"
 #include "drv_cipher_ioctl.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef HI_VOID (*funcCipherCallback)(HI_U32);
 
 typedef HI_S32 (*FN_CIPHER_CreateHandle)(CIPHER_HANDLE_S * pstCIHandle, HI_VOID *file);
@@ -67,7 +63,4 @@ typedef struct
     FN_CIPHER_SetIV		pfnCipherSetIV;
 }CIPHER_EXPORT_FUNC_S;
 
-#ifdef __cplusplus
-}
-#endif
 #endif /* __DRV_CIPHER_EXT_H__ */

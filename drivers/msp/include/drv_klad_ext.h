@@ -19,15 +19,7 @@ History	      :
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 HI_S32	KLAD_ModInit(HI_VOID);
 HI_VOID KLAD_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif	 /* __DRV_KLAD_EXT_H_ */

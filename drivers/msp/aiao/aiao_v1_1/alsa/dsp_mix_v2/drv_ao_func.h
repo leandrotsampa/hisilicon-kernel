@@ -21,12 +21,6 @@
 
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 //Playback
 extern HI_S32 HI_DRV_AO_SND_Init(struct file* filp);
 extern HI_S32 HI_DRV_AO_SND_DeInit(struct file* filp);
@@ -48,11 +42,5 @@ int aoe_set_volume(HI_UNF_SND_E enSound, HI_UNF_SND_OUTPUTPORT_E enOutPort, HI_U
 int aoe_set_mute(HI_UNF_SND_E enSound, HI_UNF_SND_OUTPUTPORT_E enOutPort, HI_BOOL bMute);
 int aoe_get_mute(HI_UNF_SND_E enSound, HI_UNF_SND_OUTPUTPORT_E enOutPort, HI_BOOL* bMute);
 int aoe_get_delayms(HI_UNF_SND_E enSound, HI_U32* pu32DelayMs);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

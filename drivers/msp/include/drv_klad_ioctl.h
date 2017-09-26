@@ -21,12 +21,6 @@ History	      :
 #include "hi_unf_klad.h"
 #include "hi_drv_klad.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef struct hiDRV_KLAD_ATTR_S
 {
     HI_UNF_KLAD_ALG_TYPE_E alg;
@@ -157,11 +151,5 @@ typedef struct hiKLAD_CTL_WIDEVINE_DEC_FLAG_S
 #define CMD_KLAD_STBROOTKEY2CIPHER	    _IOW (HI_ID_CA, 0x14, HI_HANDLE)
 
 #define CMD_KLAD_SET_CONTENT_IV		    _IOW (HI_ID_CA, 0x15, KLAD_CTL_CONTENT_IV_S)
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __DRV_KLAD_IOCTL_H__ */

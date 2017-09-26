@@ -25,16 +25,8 @@ Date				Author			   Modification
 #ifndef __DRV_HIFB_PARACHECK_H__
 #define __DRV_HIFB_PARACHECK_H__
 
-
 /*********************************add include here********************************/
 #include "hi_type.h"
-
-/*****************************************************************************/
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /***************************** Macro Definition ***********************************/
 
@@ -107,16 +99,5 @@ Date				Author			   Modification
 				    return;\
 				}\
 			    }while(0)
-/*************************** Structure Definition **********************************/
-
-/********************** Global Variable declaration **********************************/
-
-/******************************* API declaration *********************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif/*__DRV_HIFB_PARACHECK_H__ */

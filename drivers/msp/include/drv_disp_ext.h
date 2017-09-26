@@ -16,17 +16,10 @@ History	      :
 #ifndef __DRV_DISP_EXT_H__
 #define __DRV_DISP_EXT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_drv_video.h"
 #include "hi_drv_disp.h"
 #include "hi_drv_dev.h"
-
 
 typedef HI_S32	(* FN_DISP_Init)(HI_VOID);
 typedef HI_S32	(* FN_DISP_DeInit)(HI_VOID);
@@ -145,11 +138,5 @@ HI_VOID DRV_DISP_UnRegister(HI_VOID);
 
 HI_S32	VDP_DRV_ModInit(HI_VOID);
 HI_VOID VDP_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __DRV_DISP_EXT_H__ */

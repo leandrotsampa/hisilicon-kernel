@@ -20,12 +20,6 @@
 #include "hal_aiao_common.h"
 #include "drv_ai_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define AI_NAME "HI_AI"
 
 #define AI_LATENCYMS_PERFRAME_DF  (20)
@@ -203,11 +197,5 @@ HI_S32 AI_DetachTrack(HI_HANDLE hAI, HI_HANDLE hTrack);
 HI_S32 AI_GetIsrFunc(AIAO_IsrFunc** pFunc);
 HI_S32 AI_GetAiaoPortId(HI_HANDLE hAI, AIAO_PORT_ID_E* enPort);
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

@@ -19,13 +19,6 @@
 #include "hi_drv_pq.h"
 #include "drv_pq_comm.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 typedef struct hiPQ_BIN_MODULE_POS_S
 {
     HI_U32 u32StartPos;
@@ -65,17 +58,5 @@ HI_S32 PQ_TABLE_SetVdpReg(HI_U32 u32Addr, HI_U8 u8Lsb, HI_U8 u8Msb, HI_U32 u32Va
 PQ_PHY_REG_S* PQ_TABLE_GetPhyReg(HI_VOID);
 
 PQ_PHY_REG_S* PQ_TABLE_GetSoftReg(HI_VOID);
-
-
-
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

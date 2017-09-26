@@ -9,12 +9,6 @@
 
 #include "hal_sci.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-       extern "C"{
-#endif
-#endif
-
 #define SCI_DFT_STABLE_TIME	136
 #define SCI_DFT_ACT_TIME	42500
 #define SCI_DFT_DEACT_TIME	200
@@ -233,11 +227,5 @@ HI_S32 SCI_SetTxretry(HI_UNF_SCI_PORT_E enSciPort, HI_U32 TxRetryTimes);
 HI_S32 SCI_Suspend(HI_VOID);
 HI_S32 SCI_Resume(HI_VOID);
 HI_S32 SCI_GetPortAttr(HI_UNF_SCI_PORT_E enSciPort, SCI_PORT_ATTR_S *pstPortAttr);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

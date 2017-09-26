@@ -30,21 +30,6 @@ Date		    Author		  Modification
 #include "hi_type.h"
 #include "drv_pq_define.h"
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /***************************** Macro Definition ******************************/
 typedef HI_S32	(*FN_HIFB_ModInit)(HI_VOID);
 typedef HI_VOID (*FN_HIFB_ModeExit)(HI_VOID);
@@ -76,12 +61,5 @@ HI_VOID HIFB_DRV_ModExit(HI_VOID);
 
 HI_S32	DRV_HIFB_ModInit_K(HI_VOID);
 HI_VOID DRV_HIFB_ModExit_K(HI_VOID);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

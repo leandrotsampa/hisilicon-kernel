@@ -18,14 +18,7 @@ History	      :
 #define __DRV_DISP_BUFCORE_H__
 
 #include "hi_type.h"
-
-
 #include "hi_drv_disp.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
 
 /*In CTS test scene, we should give a larger buffer size to contain more frame as a result of frc.
  * this is a temporary solution.*/
@@ -141,10 +134,5 @@ HI_S32 DispBuf_GetFullNodeNumber(DISP_BUF_S *pstBuffer, HI_U32 *pu32Num);
 HI_S32 DispBuf_PrintFullState(DISP_BUF_S *pstBuffer);
 
 HI_BOOL DispBuf_FullListHasSameNode(DISP_BUF_S *pstBuffer, DISP_BUF_NODE_S *pstNode);
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_BUFCORE_H__  */

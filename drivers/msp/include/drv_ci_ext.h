@@ -5,13 +5,6 @@
 #ifndef __DRV_CI_H__
 #define __DRV_CI_H__
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif
-
 #include "hi_unf_ci.h"
 
 #define DEF_CIMAX_SMI_BITWIDTH (8)	    /* CIMAX SMI bit width */
@@ -81,12 +74,6 @@ HI_S32 CI_GetAttr(HI_UNF_CI_PORT_E enCIPort, HI_UNF_CI_ATTR_S *pstCIAttr);
 #ifndef MODULE
 HI_S32 CI_DRV_ModInit(HI_VOID);
 HI_VOID CI_DRV_ModExit(HI_VOID);
-#endif
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
 #endif
 
 #endif

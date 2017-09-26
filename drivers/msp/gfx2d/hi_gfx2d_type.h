@@ -16,12 +16,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 /******************************** Macro Definition ******************************/
 #define HI_GFX_SURFACE_ADDR_CNT 3
 #define HI_GFX_SURFACE_STRIDE_CNT 3
@@ -357,11 +351,5 @@ typedef struct hiGFX2D_COMPOSE_LIST_S
 } HI_GFX2D_COMPOSE_LIST_S;
 
 /** @} */  /*! <!-- Structure Definition end */
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_HI_GFX_TYPE_H_*/

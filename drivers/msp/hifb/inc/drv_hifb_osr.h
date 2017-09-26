@@ -36,21 +36,7 @@ Date		    Author		  Modification
 #include "drv_hifb_blit.h"
 #include "drv_hifb_proc.h"
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
-
 
 /**
  ** support 32 layers most, the limit is from linux fb
@@ -339,12 +325,5 @@ HI_S32	DRV_HIFB_BlitFinishCallBack(HI_VOID *pParaml, HI_VOID *pParamr);
 HI_VOID DRV_HIFB_SetDecmpLayerInfo(HI_U32 LayerId);
 HI_VOID DRV_HIFB_Lock(spinlock_t *pLock, HI_ULONG *pLockParFlag);
 HI_VOID DRV_HIFB_UnLock(spinlock_t *pLock, HI_ULONG *pLockParFlag);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

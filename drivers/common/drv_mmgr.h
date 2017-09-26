@@ -18,17 +18,8 @@ History	      :
 #ifndef __KMODULE_MEM_MGR_H__
 #define __KMODULE_MEM_MGR_H__
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 HI_S32 KModule_MemMgr_Init(HI_U32 u32ModuleCount, HI_U32 u32ModuleMemCount);
 HI_VOID KModule_MemMgr_Exit(HI_VOID);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 /** @} */

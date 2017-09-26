@@ -19,12 +19,6 @@
 #ifndef	 __MKP_SIO_H__
 #define	 __MKP_SIO_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 //#include "mkp_ioctl.h"
 
 #include "hi_debug.h"
@@ -233,12 +227,5 @@ HI_S32 MPI_AI_EnableReSmp(HI_U32 u32ChnId, AUDIO_RESAMPLE_ATTR_S *pstAttr);
 HI_S32 MPI_AI_DisableReSmp(HI_U32 u32ChnId);
 
 #endif
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif/* End of #ifndef __MPI_AUDIO_H__*/

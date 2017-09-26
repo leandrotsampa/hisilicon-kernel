@@ -22,13 +22,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C"
-{
- #endif
-#endif
-
 #ifndef MAX_32
  #define MAX_32 (HI_S32)0x7fffffffL
 #endif

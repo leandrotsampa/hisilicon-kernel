@@ -29,20 +29,6 @@ Date		    Author		  Modification
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define DRV_HIFB_ERR_BASE   (0x80000000L + 0x10000000L)
@@ -62,16 +48,5 @@ typedef enum
     DRV_HIFB_ERR_DECOMPRESS,
     DRV_HIFB_ERR_BUTT
 }DRV_HIFB_ERR_E;
-
-/********************** Global Variable declaration **************************/
-
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

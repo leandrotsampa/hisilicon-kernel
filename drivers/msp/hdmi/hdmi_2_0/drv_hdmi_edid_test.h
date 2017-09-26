@@ -22,12 +22,6 @@
 #include "hi_type.h"
 #include "drv_hdmi_edid.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define HDMI_EDID_RAW_TEST				1
 
 #if HDMI_EDID_RAW_TEST
@@ -45,12 +39,5 @@ HI_S32 DRV_HDMI_EdidTestRawRead(HDMI_EDID_UPDATE_MODE_E enMode,
 											HI_U32 u32Len);
 
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
-
 
 #endif	/* __DRV_HDMI_EDID_TEST_H__ */

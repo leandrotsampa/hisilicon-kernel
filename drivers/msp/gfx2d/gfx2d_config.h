@@ -18,12 +18,6 @@
 #ifndef _GFX2D_CONFIG_H_
 #define _GFX2D_CONFIG_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 typedef HI_VOID (*GFX2D_FUNC_CB)(HI_VOID *param);
 
 HI_S32 GFX2D_CONFIG_SetMemSize(HI_U32 u32MemSize);
@@ -38,11 +32,5 @@ HI_U32 GFX2D_CONFIG_EndTime(HI_VOID);
 
 HI_S32 GFX2D_CONFIG_WriteProc(struct file *file, const char __user *buf,
 			      size_t count, loff_t *ppos);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif

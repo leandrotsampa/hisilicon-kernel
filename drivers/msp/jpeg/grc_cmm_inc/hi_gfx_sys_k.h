@@ -24,31 +24,8 @@ Date		    Author		  Modification
 #ifndef	 _HI_GFX_SYS_K_H_
 #define	 _HI_GFX_SYS_K_H_
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
-
-/*********************************add include here******************************/
-
 /***************************** Macro Definition ********************************/
 #define HI_GFX_Memcpy(dst,src,size)			     memcpy(dst, src, size);
 #define HI_GFX_Memset(dst,value,size)			     memset(dst, value, size);
 
-/*************************** Enum Definition ***********************************/
-
-/*************************** Structure Definition ******************************/
-
-
-/********************** Global Variable declaration ****************************/
-
-
-/******************************* API declaration *******************************/
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 #endif /*_HI_GFX_SYS_K_H_ */

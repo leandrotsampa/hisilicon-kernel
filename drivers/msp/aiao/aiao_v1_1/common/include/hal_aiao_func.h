@@ -22,12 +22,6 @@ History	      :
 #include "hal_aiao_common.h"
 #include "hal_aiao_priv.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 /* global function */
@@ -110,11 +104,5 @@ HI_S32			iHAL_AIAO_T_GetStatus(AIAO_TIMER_S pstPort, AIAO_TIMER_Status_S* pstSta
 HI_VOID			iHAL_AIAO_T_TIMERProcess(AIAO_TIMER_S pstPort);
 HI_VOID			iHAL_TIMER_ClearTimer(AIAO_TIMER_ID_E enTimerID);
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_AIAO_FUNC_H__

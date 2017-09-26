@@ -5,13 +5,6 @@
 #ifndef __PQ_MNG_ZME_COEF_H__
 #define __PQ_MNG_ZME_COEF_H__
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 /*------------------------ 8 TAP ZME COEF START ----------------------------*/
 /* Explain:
    There are 32 group number in all, 32 = 2 + 16*2;
@@ -284,12 +277,5 @@ const HI_S16* g_pVDtiZmeCoef[PQ_HAL_ZME_COEF_RATIO_BUTT][VDTI_COEF_TYPE_BUTT] =
     { &s16ZmeCoef_8T32P_Cubic[0][0],  &s16ZmeCoef_2T32P_Gus2_6M_a0_5[0][0], &s16ZmeCoef_4T32P_Cubic[0][0], &s16ZmeCoef_2T32P_4M_0_1[0][0]}, /* >=0.25 */
     { &s16ZmeCoef_8T32P_Cubic[0][0],  &s16ZmeCoef_2T32P_Gus2_6M_a0_5[0][0], &s16ZmeCoef_4T32P_Cubic[0][0], &s16ZmeCoef_2T32P_4M_0_1[0][0]}  /* else   */
 };
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

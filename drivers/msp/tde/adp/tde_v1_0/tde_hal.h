@@ -27,13 +27,6 @@ Date			    Author		    Modification
 #include "tde_adp.h"
 #include "tde_define.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
-
-
 /****************************************************************************/
 /*			       TDE hal types define			    */
 /****************************************************************************/
@@ -1084,11 +1077,5 @@ HI_VOID TdeHalSetClock(HI_BOOL bEnable);
 HI_VOID TdeHalFreeTmpBuf(TDE_HWNode_S* pstHWNode);
 #endif
 HI_VOID TdeHalNodePrintInfo(struct seq_file *p,HI_U32 *pu32CurNode);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif	/* _TDE_HAL_H_ */

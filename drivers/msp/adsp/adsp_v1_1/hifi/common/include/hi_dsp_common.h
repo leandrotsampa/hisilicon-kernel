@@ -7,12 +7,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #ifndef MAX_32
 #define MAX_32 (HI_S32)0x7fffffffL
 #endif
@@ -111,11 +105,5 @@ typedef struct hiHI_DSP_AUDFRAME_S
 } HI_DSP_AUDFRAME_S;
 
 #define DSP_ASSERT(x)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

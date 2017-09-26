@@ -9,13 +9,6 @@
 #include "hi_drv_sync.h"
 #include "hi_error_mpi.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
-
 #define	 SYNC_MAX_NUM			16
 
 #define	 SYS_TIME_MAX			0xFFFFFFFFU
@@ -407,12 +400,5 @@ typedef enum hiIOC_SYNC_E
 #define CMD_SYNC_PAUSE_SYNC	       _IOW(HI_ID_SYNC, IOC_SYNC_PAUSE_SYNC, HI_U32)
 #define CMD_SYNC_RESUME_SYNC	       _IOW(HI_ID_SYNC, IOC_SYNC_RESUME_SYNC, HI_U32)
 #define CMD_SYNC_GET_TIME	       _IOWR(HI_ID_SYNC, IOC_SYNC_GET_TIME, SYNC_GET_TIME_S)
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

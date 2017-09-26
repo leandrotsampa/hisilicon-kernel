@@ -26,10 +26,6 @@
 #include "hi_dsp_ringbuf.h"
 #include "aoe_aip.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define AIP_MAX_SAMPLE_INPUT_LEFT 4
 #define AIP_MAX_SAMPLE_OUTPUT_LEFT_PERFRAME (192000 / 8000)
 #define AIP_MAX_BYTES_LEFT (AIP_MAX_SAMPLE_INPUT_LEFT * AOE_CHNUM_2 * sizeof(HI_U32) * AIP_MAX_SAMPLE_OUTPUT_LEFT_PERFRAME)
@@ -116,9 +112,5 @@ typedef struct
     S_AIP_REGS_TYPE* hwAipReg[AOE_MAX_AIP_NUM];
     HI_VOID*	     hAip[AOE_MAX_AIP_NUM];
 } AIP_GLOBAL_SOURCE_S;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

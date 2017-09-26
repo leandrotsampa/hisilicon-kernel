@@ -33,15 +33,6 @@ Date		    Author		  Modification
 #ifndef	 _HI_GFX_SMMU_H_
 #define	 _HI_GFX_SMMU_H_
 
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
 /***************************** SDK Version Macro Definition *********************/
 
 /** \addtogroup	    GFX COMM */
@@ -402,11 +393,5 @@ static inline HI_S32 HI_GFX_SmmuIsr(HI_CHAR* pErrType)
 
 
 /** @} */  /*! <!-- API declaration end */
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif /**_HI_GFX_SMMU_H_	  *\*/

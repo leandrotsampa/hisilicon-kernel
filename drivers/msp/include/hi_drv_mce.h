@@ -14,10 +14,6 @@
 #include "hi_debug.h"
 #include "hi_drv_pdm.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define HI_FATAL_MCE(format...)	   HI_FATAL_PRINT(HI_ID_FASTPLAY, format)
 #define HI_ERR_MCE(format...)	   HI_ERR_PRINT(HI_ID_FASTPLAY, format)
 #define HI_WARN_MCE(format...)	   HI_WARN_PRINT(HI_ID_FASTPLAY, format)
@@ -71,9 +67,5 @@ HI_S32 HI_DRV_MCE_Exit(HI_UNF_MCE_EXITPARAM_S *pstExitParam);
 
 #define MCE_ACTIVE_MAIN_AND_SLAVE_WIN_SUPPORT
 #define MCE_FRAME_RATE_ADJUST_SUPPORT
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -38,13 +38,6 @@ Date		    Author		  Modification
 #endif
 /*****************************************************************************/
 
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
     /***************************** Macro Definition ******************************/
 
     /** \addtogroup	 JPEG CFG */
@@ -181,28 +174,5 @@ Date		    Author		  Modification
 	    #endif
 
     /** @} */  /*! <!-- Macro Definition end */
-
-    /*************************** Structure Definition ****************************/
-
-    /***************************  The enum of Jpeg image format	 ******************/
-
-
-    /********************** Global Variable declaration **************************/
-
-
-    /******************************* API declaration *****************************/
-
-
-    #ifdef __cplusplus
-
-	#if __cplusplus
-
-
-
-}
-
-	#endif
-
-   #endif /* __cplusplus */
 
 #endif /* __HI_JPEG_CONFIG_H__*/

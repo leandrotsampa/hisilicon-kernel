@@ -10,13 +10,6 @@
 #include "hi_drv_vpss.h"
 #include <linux/list.h>
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define VPSS_RGME_WBC_MAX_NODE 4
 
 typedef struct hiVPSS_WBC_MCDEI_DATA_S
@@ -127,15 +120,5 @@ HI_S32 VPSS_BLEND_GetWbcInfo(VPSS_BLEND_S *pstBlend, HI_DRV_VIDEO_FRAME_S **pstD
 //���û�д������ת
 HI_S32 VPSS_BLEND_CompleteImage(VPSS_BLEND_S *pstBlend);
 HI_S32 VPSS_BLEND_Reset(VPSS_BLEND_S *pstBlend);
-
-///////////////////////////////////////////////////////////////////
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__VPSS_WBC_MCDEI_H__*/

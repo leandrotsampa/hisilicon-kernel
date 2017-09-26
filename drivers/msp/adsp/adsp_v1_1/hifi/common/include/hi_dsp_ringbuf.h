@@ -9,13 +9,6 @@
 #include "hi_dsp_common.h"
 #include "hi_audsp_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 typedef struct
 {
     HI_BOOL	     bExtMem;	 /* True : Rbf instace is malloc by  external module */
@@ -79,11 +72,5 @@ HI_U32	RBUF_CopyData(HI_VOID* hSrc, HI_VOID* hDes, HI_U32 u32Size, ADSP_MEMCPY_D
 HI_VOID RBUF_GetCompressInfo(HI_VOID* hRBUF, HI_U32* pu32ValidBytes, HI_U32* pu32ZeroBytes);
 
 HI_VOID RBUF_UpdateAttr(HI_VOID* hRBUF, RBUF_ATTR_S* pstAttr);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

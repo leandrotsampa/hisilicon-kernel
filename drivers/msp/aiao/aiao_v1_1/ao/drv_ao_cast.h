@@ -21,12 +21,6 @@ History	      :
 #include "hi_unf_sound.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 #define AO_CAST_DEFATTR_FRAMEMAXNUM  8
 #define AO_CAST_DEFATTR_SAMPLESPERFRAME	 1024
@@ -94,11 +88,5 @@ HI_S32 CAST_GetMute(SND_CARD_STATE_S *pCard, HI_U32 u32CastID, HI_BOOL *pbMute);
 HI_S32 Cast_SetAefBypass(SND_CARD_STATE_S *pCard, HI_U32 u32CastID, HI_BOOL bBypass);
 
 HI_VOID CAST_ReadProc(struct seq_file* p, SND_CARD_STATE_S *pCard);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif	// __HI_AO_TRACK_H__

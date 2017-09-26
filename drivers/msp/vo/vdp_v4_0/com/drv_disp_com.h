@@ -24,13 +24,6 @@ History	      :
 #include "drv_disp_osal.h"
 #include "hi_reg_common.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /*the mode of isogeny output*/
 typedef enum tagISOGENY_MODE
 {
@@ -40,13 +33,5 @@ typedef enum tagISOGENY_MODE
 	ISOGENY_WBC_MODE,
     ISOGENY_BUTT
 }ISOGENY_MODE_E;
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_COMMON_H__  */

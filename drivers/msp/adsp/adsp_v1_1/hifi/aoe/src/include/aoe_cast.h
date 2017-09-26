@@ -8,10 +8,6 @@
 #include "hi_type.h"
 #include "hi_dsp_ringbuf.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct
 {
     HI_U32 uBufWriteOkCnt;
@@ -48,9 +44,5 @@ HI_VOID	  CAST_Init(HI_VOID* pAopRegBase);
 HI_VOID	  CAST_DeInit(HI_U32 Id);
 HI_VOID	  CAST_FiFoFreeCnt(HI_U32 uAopId);
 HI_VOID	  CAST_FiFoTryCnt(HI_U32 uAopId);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

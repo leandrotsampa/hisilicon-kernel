@@ -18,18 +18,6 @@
 #include "hi_unf_demux.h"
 #include "drv_demux_define.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-/***************************** Macro Definition ******************************/
-
-/*************************** Structure Definition ****************************/
-
-/********************** Global Variable declaration **************************/
-
 /******************************* API declaration *****************************/
 
 #ifdef HI_DEMUX_PROC_SUPPORT
@@ -52,12 +40,6 @@ typedef enum
 
 HI_S32	DMX_OsrDebugCtrl(HI_U32 cmd,DMX_DEBUG_CMD_CTRl cmdctrl,HI_U32 param);
 
-#endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif	// __DRV_DEMUX_H__

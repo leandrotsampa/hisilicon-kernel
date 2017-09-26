@@ -9,12 +9,6 @@
 #include "hi_drv_ai.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef HI_S32 (*FN_AI_DrvResume)(PM_BASEDEV_S*);
 typedef HI_S32 (*FN_AI_DrvSuspend)(PM_BASEDEV_S*, pm_message_t);
 
@@ -40,11 +34,5 @@ HI_S32 HI_DRV_AI_GetAttr(HI_HANDLE hAi, HI_UNF_AI_ATTR_S* pstAttr);
 HI_S32 HI_DRV_AI_GetAttr(HI_HANDLE hAi, HI_UNF_AI_ATTR_S* pstAttr);
 HI_S32 HI_DRV_AI_AcquireFrame(HI_HANDLE hAi, AO_FRAMEINFO_S* pstFrame);
 HI_S32 HI_DRV_AI_ReleaseFrame(HI_HANDLE hAi);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif//__DRV_AI_EXT_H__

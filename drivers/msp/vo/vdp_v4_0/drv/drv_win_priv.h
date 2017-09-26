@@ -26,12 +26,6 @@ History	      :
 #include "drv_sync.h"
 #include "drv_pq_ext.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /* window state */
 #define WIN_DEVICE_STATE_CLOSE	 0
 #define WIN_DEVICE_STATE_OPEN	 1
@@ -459,11 +453,5 @@ HI_VOID WinWbc_Deinitialize(HI_VOID);
 struct task_struct  **WinWbc_GetKthreadPtr(HI_VOID);
 HI_S32 WinBufferGetULSFrame(WIN_BUFFER_S *pstBuffer, HI_DRV_VIDEO_FRAME_S *pstFrame);
 HI_S32 WinBufferPutULSFrame(WIN_BUFFER_S *pstBuffer, HI_DRV_VIDEO_FRAME_S *pstFrame);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_VO_PRIV_H__  */

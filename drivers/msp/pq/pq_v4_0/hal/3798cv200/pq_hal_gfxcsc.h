@@ -30,15 +30,6 @@
 #define CscPre		      1 << 10
 #define CscScalePre	      1 << (G_Rgb2YuvScale2p - 10)  /* precision calc by G_Rgb2YuvScale2p */
 
-
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 /* GRAPH CSC LAYER */
 typedef enum hiHAL_GFX_LAYER_E
 {
@@ -148,13 +139,5 @@ HI_VOID PQ_HAL_HDR_SetGDmImapRgb2lmsOutDc(HI_S32 g_imap_rgb2lms_out_dc[3]);
 HI_VOID PQ_HAL_HDR_SetCvmSel(HI_U32 cvm_sel);
 
 HI_VOID PQ_HAL_HDR_SetRegUp(HI_VOID);
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

@@ -34,12 +34,6 @@
 #include "drv_amp_ext.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define AO_MAX_TOTAL_SND_NUM (HI_UNF_SND_BUTT)
 
 #define AO_SND_FILE_NOUSE_FLAG	0xFFFFFFFF
@@ -447,11 +441,5 @@ HI_VOID	 AO_DRV_UnregisterProc(HI_VOID);
 
 HI_S32	 AO_DRV_Suspend(PM_BASEDEV_S* pdev, pm_message_t state);
 HI_S32	 AO_DRV_Resume(PM_BASEDEV_S* pdev);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

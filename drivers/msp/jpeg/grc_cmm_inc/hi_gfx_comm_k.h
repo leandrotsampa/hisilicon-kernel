@@ -24,14 +24,6 @@ Date		    Author		  Modification
 #ifndef	 _HI_GFX_COMM_K_H_
 #define	 _HI_GFX_COMM_K_H_
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
-
-
 /***************************** SDK Version Macro Definition *********************/
 
 /** \addtogroup	    GFX COMM */
@@ -924,9 +916,4 @@ static inline HI_VOID HI_GFX_SYS_GetChipVersion(HIGFX_CHIP_TYPE_E *penChipType)
 
 /** @} */  /*! <!-- API declaration end */
 
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 #endif /*_HI_GFX_COMM_K_H_ */

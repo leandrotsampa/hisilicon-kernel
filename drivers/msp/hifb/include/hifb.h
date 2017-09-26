@@ -10,20 +10,10 @@
 #ifndef __HIFB_H__
 #define __HIFB_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
-
-
 #include <linux/fb.h>
 
 #include "hi_type.h"
 #include "hi_common.h"
-
-
 
 /*************************** Macro Definition ****************************/
 /** \addtogroup		  HIFB	 */
@@ -507,13 +497,5 @@ typedef struct
 }HIFB_HWC_LAYERINFO_S;
 
 /** @} */  /** <!-- ==== Structure Definition end ==== */
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 
 #endif /* __HIFB_H__ */

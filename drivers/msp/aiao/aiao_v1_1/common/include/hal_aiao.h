@@ -21,12 +21,6 @@ History	      :
 #include "hi_type.h"
 #include "hal_aiao_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define PERIOND_NUM 4
 
 /***************************** Macro Definition ******************************/
@@ -132,11 +126,5 @@ HI_S32			HAL_AIAO_T_SetTimerEnable(AIAO_TIMER_ID_E enTimerID, HI_BOOL bEnalbe);
 HI_S32			HAL_AIAO_T_GetStatus(AIAO_TIMER_ID_E enTimerID, AIAO_TIMER_Status_S* Param);
 HI_VOID			HAL_AIAO_T_TIMERProcess(AIAO_TIMER_ID_E enTimerID, HI_VOID* pst);
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_HAL_AIAO_H__

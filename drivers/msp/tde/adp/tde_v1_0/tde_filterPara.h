@@ -23,14 +23,6 @@ Date			    Author		    Modification
 #ifndef	 __TDE_FILTERPARA_H__
 #define	 __TDE_FILTERPARA_H__
 
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
-
 #define TDE_PARA_TABLE_SIZE 32
 #define TDE_PARA_TABLE_ORG_SIZE 40
 #define TDE_PARA_TABLE_NUM  12
@@ -366,9 +358,4 @@ HI_U32 Tde8x32Coef[TDE_PARA_HTABLE_ORG_SIZE / 4 * TDE_PARA_HTABLE_NUM] =
 
 };
 
-#ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__TDE_FILTERPARA_H__ */

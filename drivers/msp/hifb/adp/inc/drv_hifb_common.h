@@ -28,19 +28,6 @@
 #include "hifb.h"
 #include "drv_hifb_mem.h"
 
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
 /***************************** Macro Definition ******************************/
 
 #define HIFB_HWC_REFRESH_WORK_QUEUE    "HIFB_HWC_REFRESH_WorkQueque"
@@ -260,19 +247,5 @@ typedef struct
     HIFB_SCAN_MODE_E eScanMode;
     HIFB_LAYER_ID_E  enLayerID;
 }HIFB_SLVLAYER_DATA_S;
-
-/********************** Global Variable declaration **************************/
-
-
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __DRV_HIFB_COMMON_H__ */

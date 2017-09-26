@@ -19,13 +19,6 @@
 #include "hi_unf_demux.h"
 #include "hi_mpi_demux.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 HI_S32	DMX_OsiInit(HI_VOID);
 HI_S32	DMX_OsiDeInit(HI_VOID);
 HI_S32	DMX_OsiGetPoolBufAddr(DMX_MMZ_BUF_S *PoolBuf);
@@ -322,12 +315,6 @@ static inline HI_VOID RmxEnFqBPIp(Dmx_Set_S *DmxSet, HI_U32 RmxId, HI_U32 FqId){
 static inline HI_VOID RmxDisFqBPIp(Dmx_Set_S *DmxSet, HI_U32 RmxId, HI_U32 FqId){};
 static inline HI_VOID RmxChkFqBpIp(Dmx_Set_S *DmxSet, HI_U32 RmxId, HI_U32 FqId){};
 static inline HI_VOID RemuxOverflowMonitor(Dmx_Set_S *DmxSet){};
-#endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif	// __DRV_DEMUX_FUNC_H__

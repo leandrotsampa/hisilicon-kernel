@@ -24,12 +24,6 @@ Date		    Author		Modification
 #ifndef __PNG_OSIRES_H__
 #define __PNG_OSIRES_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 #include <linux/semaphore.h>
 #include "hi_png_type.h"
 
@@ -164,11 +158,5 @@ HI_VOID PngOsiResReleaseBuf(HI_U32 u32Phyaddr);
 #endif
 
 HI_VOID PngOsiShowInstanceState(struct seq_file *p);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif	/* __PNG_OSIRES_H__ */

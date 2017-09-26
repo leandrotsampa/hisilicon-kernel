@@ -16,21 +16,9 @@
 #define adsp_iounmap iounmap
 /******************************************************************************/
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 extern HI_VOID* g_pDspShareSRam;
 
 HI_VOID HAL_ADSP_DeInit(HI_VOID);
 HI_S32	HAL_ADSP_Init(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

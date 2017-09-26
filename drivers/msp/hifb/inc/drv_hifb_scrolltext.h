@@ -30,18 +30,6 @@ Date		    Author		  Modification
 #include "hi_type.h"
 #include <linux/fb.h>
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /***************************** Macro Definition ******************************/
 
 /** \addtogroup	     H_3_5 */
@@ -267,14 +255,6 @@ HI_S32 hifb_destroy_scrolltext(HI_U32 u32LayerID, HI_U32 u32ScrollTextID);
 HI_S32 hifb_scrolltext_blit(HI_U32 u32LayerId);
 
 /** @}*/  /** <!-- ==== API Declaration End ====*/
-#endif
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif

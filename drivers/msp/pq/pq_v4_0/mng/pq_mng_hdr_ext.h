@@ -23,12 +23,6 @@
 
 #include "hi_drv_video.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define PQ_DEGMM_SEG_SIZE		8
 #define PQ_TMAP_SEG_SIZE		8
 #define PQ_SMAP_SEG_SIZE		8
@@ -135,12 +129,5 @@ typedef struct HiPQ_HDR_CFG
 {
     HI_PQ_HDR_TM stPQHdrTm;
 } HI_PQ_HDR_CFG;
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

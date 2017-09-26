@@ -16,12 +16,6 @@
 #include "hi_debug.h"
 #include "hi_unf_vi.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif
-
 typedef enum hi_SIG_STATUS_E
 {
     HI_SIG_SUPPORT = 0,
@@ -130,12 +124,6 @@ typedef enum hiIOC_HDMIRX_E
 #define CMD_HDMIRX_GET_STATUS _IOWR(HI_ID_SIL9293, IOC_HDMIRX_GET_STATUS, HI_SIG_STATUS_E)
 #define CMD_HDMIRX_GET_ATTR _IOWR(HI_ID_SIL9293, IOC_HDMIRX_GET_ATTR, HI_HDMIRX_TIMING_INFO_S)
 
-#endif
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
 #endif
 
 #endif //__DRV_HDMIRX_IOCTL_H__

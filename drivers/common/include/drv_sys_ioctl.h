@@ -20,10 +20,6 @@
 #ifndef	 __DRV_SYS_IOCTL_H__
 #define	 __DRV_SYS_IOCTL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* End of #ifdef __cplusplus */
-
 #include "hi_debug.h"
 #include "hi_drv_sys.h"
 
@@ -64,9 +60,5 @@ typedef enum hiIOC_NR_SYS_E
 #define SYS_GET_64DIEID		    _IOR(HI_ID_SYS, IOC_NR_SYS_GET64DIEID, HI_U64)
 #define SYS_GET_32DIEID		    _IOR(HI_ID_SYS, IOC_NR_SYS_GET32DIEID, HI_U32)
 #define SYS_GET_CHIPPACKAGETYPE	    _IOR(HI_ID_SYS, IOC_NR_SYS_GETCHIPPACKAGETYPE, HI_U32)
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* __DRV_SYS_IOCTL_H__ */

@@ -31,21 +31,6 @@ Date		    Author		  Modification
 #include "drv_hifb_config.h"
 #include <linux/kthread.h>
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
 #ifdef CFG_HIFB_LOGO_SUPPORT
 
 /***************************** Macro Definition ******************************/
@@ -98,14 +83,6 @@ HI_VOID DRV_HIFB_LogoToApp	   (HI_U32 u32LayerId);
 HI_VOID DRV_HIFB_CloseLogo	   (HI_U32 u32LayerId);
 HI_VOID DRV_HIFB_CloseLogoByMask   (HI_U32 u32LayerId);
 
-#endif
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif

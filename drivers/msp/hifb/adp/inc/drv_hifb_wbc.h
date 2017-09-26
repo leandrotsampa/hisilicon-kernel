@@ -25,7 +25,6 @@ Date		    Author		  Modification
 #ifndef __DRV_HIFB_WBC_H__
 #define __DRV_HIFB_WBC_H__
 
-
 /*********************************add include here******************************/
 #include "drv_hifb_hal.h"
 #include "drv_hifb_adp.h"
@@ -36,23 +35,7 @@ Date		    Author		  Modification
 #include "hi_drv_disp.h"
 #include "hi_gfx_comm_k.h"
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /***************************** Macro Definition ******************************/
-
 
 /**
  **ʹ�õĻ�дbuffer����LOGOֻ��Ҫһ��Ϳ����ˣ���Ϊֻ��дһ��
@@ -62,8 +45,6 @@ Date		    Author		  Modification
 /*************************** Structure Definition ****************************/
 
 /***************************  The enum of Jpeg image format  ******************/
-
-
 
 typedef enum tagOPTM_WBC_MODE_E{
     OPTM_WBC_MODE_MONO	    = 0x0,
@@ -200,13 +181,5 @@ HI_VOID HIFB_WBC2_Recovery(OPTM_GFX_GP_E enGPId);
 * others:	: NA
 ***************************************************************************************/
 HI_VOID HIFB_WBC2_Reset(HI_BOOL bWbcRegUp);
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HIFB_WBC_H__ */

@@ -7,10 +7,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define HI_DB_CHECK_LEN	    4
 #define HI_DB_MAX_SIZE	    (8*1024)
 #define HI_DB_MAX_NAME_LEN  32
@@ -53,9 +49,5 @@ HI_S32 HI_DB_InsertKey(HI_DB_TABLE_S *pstTable, HI_DB_KEY_S *pstKey);
 HI_S32 HI_DB_DeleteKey(HI_DB_TABLE_S *pstTable, HI_CHAR KeyName[]);
 
 HI_S32 HI_DB_GetKeyByName(HI_DB_TABLE_S *pstTable, HI_CHAR KeyName[], HI_DB_KEY_S *pstKey);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

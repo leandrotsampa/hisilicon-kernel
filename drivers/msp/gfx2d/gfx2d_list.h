@@ -16,12 +16,6 @@
 
 #include "gfx2d_config.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 /*******************************************************************************
 * Function:	 GFX2D_LIST_Init
 * Description:
@@ -147,11 +141,5 @@ HI_S32 GFX2D_LIST_WriteProc(struct file *file, const char __user *buf, \
 			    size_t count, loff_t *ppos);
 
 HI_S32 GFX2D_LIST_Resume(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_LIST_H_*/

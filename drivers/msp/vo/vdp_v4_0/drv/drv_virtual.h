@@ -12,12 +12,6 @@
 #include "drv_disp_osal.h"
 #include "drv_window.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define DEF_VIR_BUFFER_LENGTH 10
 
 #define WinCheckVirWindow(hWin, pstWin) \
@@ -122,11 +116,5 @@ HI_S32 WIN_VIR_AttachSink(VIRTUAL_S *pstVirWin,HI_HANDLE hSink);
 HI_S32 WIN_VIR_DetachSink(VIRTUAL_S *pstVirWin,HI_HANDLE hSink);
 
 HI_BOOL WinCheckVirtual(HI_U32 u32WinIndex);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_WINDOW_H__  */

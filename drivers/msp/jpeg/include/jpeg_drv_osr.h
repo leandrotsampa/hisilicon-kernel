@@ -36,15 +36,6 @@ Date		    Author		  Modification
 
 /*****************************************************************************/
 
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
      /***************************** Macro Definition ******************************/
 
      #define CONFIG_JPEG_FIND_SYSTEM_ABNORMAL_TIMES   50
@@ -110,15 +101,5 @@ Date		    Author		  Modification
     /** @} */  /** <!-- ==== API Declaration End ==== */
 
     /****************************************************************************/
-
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __JPEG_DRV_OSR_H__*/

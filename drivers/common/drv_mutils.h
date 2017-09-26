@@ -18,10 +18,6 @@ History	      :
 #ifndef __KMEM_UTILS_H__
 #define __KMEM_UTILS_H__
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #include "hi_type.h"
 
 typedef enum {
@@ -90,10 +86,6 @@ HI_VOID* KMem_Utils_MALLOC(HI_VOID *pUtils);
 N/A
 */
 HI_VOID KMem_Utils_FREE(HI_VOID *pUtils, HI_VOID* pAddr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 

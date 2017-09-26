@@ -53,14 +53,7 @@
 #include "pq_mng_ifmd.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define PQ_NAME		   "HI_PQ"
-
 
 /*�û�PQ ���ݽṹ*/
 typedef struct	hiDRV_PQ_PARAM_S
@@ -182,11 +175,5 @@ HI_S32 DRV_PQ_GetImageMode(HI_PQ_IMAGE_MODE_E *penImageMode);
 HI_S32 DRV_PQ_Suspend(PM_BASEDEV_S *pdev, pm_message_t state);
 
 HI_S32 DRV_PQ_Resume(PM_BASEDEV_S *pdev);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* End of #ifndef __DRV_PQ_H__ */

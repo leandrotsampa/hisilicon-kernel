@@ -29,12 +29,6 @@
 #include "hi_type.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #define SIMPLE_CB_GAP 32
 
 typedef struct hiCIRC_BUF_S
@@ -808,9 +802,5 @@ static inline HI_U32 CIRC_BUF_ALSA_QueryReadPos(CIRC_BUF_S *pstCb)
 }
 
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
+
 #endif /* End of #ifndef __SIMPLE_CB_H__*/

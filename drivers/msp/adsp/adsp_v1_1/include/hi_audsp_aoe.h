@@ -8,12 +8,6 @@
 #include "hi_type.h"
 #include "hi_audsp_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define AOE_RUNNING_FLAG 0xa5a5a5a5
@@ -900,10 +894,5 @@ typedef struct
     HI_U32  u32SampleRate; /**<I/O, sampling rate*/
     HI_BOOL bFlush;
 } AOE_AEF_FRAME_INFO_S;
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

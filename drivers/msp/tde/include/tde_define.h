@@ -23,13 +23,6 @@ Date			    Author		    Modification
 #ifndef	 __TDE_DEFINE_H__
 #define	 __TDE_DEFINE_H__
 
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
 #include <asm/uaccess.h>
 #include <linux/time.h>
 #include <linux/mm.h>
@@ -134,10 +127,4 @@ HI_VOID TDE_FREE(HI_VOID* ptr);
 typedef struct timeval TDE_timeval_s;
 #define TDE_gettimeofday do_gettimeofday
 
-
-#ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__TDE_DEFINE_H__ */

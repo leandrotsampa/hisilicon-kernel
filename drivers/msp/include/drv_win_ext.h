@@ -16,12 +16,6 @@ History	      :
 #ifndef __DRV_WIN_EXT_H__
 #define __DRV_WIN_EXT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 #include "hi_type.h"
 #include "hi_drv_video.h"
 #include "hi_drv_disp.h"
@@ -132,11 +126,5 @@ typedef struct
 
 HI_S32	DRV_WIN_Register(HI_VOID);
 HI_VOID DRV_WIN_UnRegister(HI_VOID);
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 
 #endif	/* __VO_EXT_H__ */

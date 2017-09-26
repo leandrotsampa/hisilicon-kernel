@@ -8,12 +8,6 @@
 #include "drv_sci_ioctl.h"
 #include "drv_sci_reg.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-       extern "C"{
-#endif
-#endif
-
 #define IRQ_SCI0    (36 + 32)
 #define IRQ_SCI1    (37 + 32)
 
@@ -126,11 +120,5 @@ HI_VOID SCI_HAL_DisableInt(HI_UNF_SCI_PORT_E enSciPort, SCI_INT_E SciIntType);
 HI_U32	SCI_HAL_GetIntState(HI_UNF_SCI_PORT_E enSciPort);
 HI_VOID SCI_HAL_ClearAllInt(HI_UNF_SCI_PORT_E enSciPort);
 HI_VOID SCI_HAL_ClearInt(HI_UNF_SCI_PORT_E enSciPort, SCI_INT_E SciIntType);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

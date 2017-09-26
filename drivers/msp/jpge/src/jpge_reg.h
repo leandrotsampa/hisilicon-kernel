@@ -26,26 +26,6 @@ Date		      Author		    Modification
 #define __JPGE_REG_H__
 
 
-/*********************************add include here******************************/
-
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ******************************/
-
-
-/*************************** Structure Definition ****************************/
-
-
 /***************************  The enum of Jpeg image format  ******************/
 
 // Define the union U_JPGE_INTSTAT
@@ -582,16 +562,5 @@ typedef struct
     volatile unsigned int	    RESERVED8_1[651];
     volatile U_JPGE_QPT		    JPGE_QPT[48];
 } S_JPGE_REGS_TYPE;
-
-
-/********************** Global Variable declaration **************************/
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__JPGE_REG_H__ */

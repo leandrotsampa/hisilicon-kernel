@@ -20,13 +20,6 @@ History	      :
 #include "hi_type.h"
 #include "drv_disp_com.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define WIN_BUFFER_MAX_NUMBER 16
 #define WIN_BUFFER_MIN_NUMBER 1
 #define WIN_BUFFER_DEFAULT_NUMBER 8
@@ -215,14 +208,5 @@ HI_S32 BP_GetBufState(BUF_POOL_S *pstBP, BUF_STT_S *pstBufState);
 HI_S32 BP_CreateBlackFrame(HI_VOID);
 HI_S32 BP_DestroyBlackFrame(HI_VOID);
 HI_DRV_VIDEO_FRAME_S *BP_GetBlackFrameInfo(HI_VOID);
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_VO_BUFFER_H__	*/

@@ -47,17 +47,6 @@ Date		    Author		  Modification
 #include "hi_drv_jpeg.h"
 #include "jpeg_drv_dec.h"
 
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
 	 /***************************** Macro Definition ******************************/
 	 /** \addtogroup      JPEG */
 	 /** @{ */    /** <!--[JPEG]*/
@@ -183,16 +172,6 @@ Date		    Author		  Modification
 	HI_VOID DRV_JPEG_GetImgInfo(HI_DRV_JPEG_INMSG_S *pstInMsg,IMAG_INFO_S *pstImgInfo);
 
 	/****************************************************************************/
-
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-    }
-#endif
-#endif /* __cplusplus */
 
 #endif
 

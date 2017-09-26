@@ -10,12 +10,6 @@
 #include "hi_drv_vpss.h"
 #include <linux/list.h>
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define VPSS_WBC_MAX_NODE 5
 
 typedef struct hiVPSS_WBC_DATA_S
@@ -87,11 +81,5 @@ HI_S32 VPSS_WBC_GetCurInfo(VPSS_WBC_S *pstWbc, HI_DRV_VIDEO_FRAME_S **ppstCurIma
 HI_S32 VPSS_WBC_InitFrame(HI_DRV_VIDEO_FRAME_S *pstWbcFrame, VPSS_WBC_ATTR_S *pstAttr, HI_U32 u32PhyAddr, HI_U8* pu8VirAddr);
 HI_S32 VPSS_WBC_CalBufSize(HI_U32 *pSize, HI_U32 *pStride,
 			   VPSS_WBC_ATTR_S *pstAttr);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__VPSS_WBC_H__*/

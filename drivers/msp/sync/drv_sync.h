@@ -23,12 +23,6 @@
 #include "hi_drv_sync.h"
 #include "drv_sync_ioctl.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 HI_BOOL SYNC_VerifyHandle(HI_HANDLE hSync);
 HI_S32 SYNC_StartSync(HI_HANDLE hSync);
 HI_VOID SYNC_VidProc(HI_HANDLE hSync, SYNC_VID_INFO_S *pVidInfo, SYNC_VID_OPT_S *pVidOpt);
@@ -38,12 +32,5 @@ HI_S32 SYNC_PauseSync(HI_U32 SyncId);
 HI_S32 SYNC_ResumeSync(HI_U32 SyncId);
 HI_S32 SYNC_GetTime(HI_U32 SyncId, HI_U32 *pLocalTime, HI_U32 *pPlayTime);
 HI_U32 SYNC_GetLocalTime(SYNC_S *pSync, SYNC_CHAN_E enChn);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

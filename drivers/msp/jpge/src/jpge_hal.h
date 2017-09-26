@@ -25,22 +25,10 @@ Date		      Author		    Modification
 #ifndef __JPGE_HAL_H__
 #define __JPGE_HAL_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
 #include "drv_jpge_ext.h"
 #include "jpge_osal.h"
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 #define JPGE_MAX_HDR_LEN	 698
@@ -150,12 +138,5 @@ HI_VOID JPEG_ENC_CloseClock (HI_VOID);
  ** ctrl + c will call this function in release function
  **/
 HI_VOID JPEG_ENC_Reset	    (HI_VOID);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__JPGE_HAL_H__ */

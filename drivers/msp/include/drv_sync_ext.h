@@ -6,12 +6,6 @@
 #ifndef _SYNC_EXT_H_
 #define _SYNC_EXT_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_drv_sync.h"
 
@@ -26,11 +20,5 @@ typedef struct
 
 HI_S32	SYNC_DRV_ModInit(HI_VOID);
 HI_VOID SYNC_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

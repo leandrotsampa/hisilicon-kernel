@@ -26,11 +26,6 @@
 #ifndef _UMP_COMMON_H_
 #define _UMP_COMMON_H_
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #ifdef __KERNEL__
 #include <linux/types.h>
 #else
@@ -242,11 +237,5 @@ typedef enum
 } ump_alloc_constraints;
 
 /* @} */
-
-
-#ifdef __cplusplus
-}
-#endif
-
 
 #endif /* _UMP_COMMON_H_ */

@@ -21,13 +21,6 @@ History	      :
 #include "hi_drv_win.h"
 #include "drv_disp_bufcore.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 #define WIN_BUF_MEM_SRC_SUPPLY	0
 #define WIN_BUF_MEM_FB_SUPPLY	1
 #define WIN_BUF_MEM_USER_SUPPLY 2
@@ -170,11 +163,5 @@ typedef struct tagWB_STATE_S
 }WB_STATE_S;
 
 HI_S32 WinBuf_GetStateInfo(WB_POOL_S *pstWinBP, WB_STATE_S *pstWinBufState);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_wIN_BUFFER_H__	 */

@@ -33,14 +33,7 @@ History	      :
 #ifdef HI_SND_AMP_SUPPORT
 #include "drv_amp_ext.h"
 #endif
-
 #include "drv_ao_ioctl.h"
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 #define AO_SNDOP_PERIODBUFSIZE	4096
@@ -256,11 +249,5 @@ HI_S32 SND_WriteOpProc(SND_CARD_STATE_S* pCard, HI_CHAR* pcBuf);
 HI_VOID SND_GetXRunCount(SND_CARD_STATE_S* pCard, HI_U32* pu32Count);
 HI_S32 SND_SetDelayCompensation(SND_CARD_STATE_S* pCard, HI_UNF_SND_OUTPUTPORT_E enOutPort, HI_U32 u32DelayMs);
 HI_S32 SND_GetDelayCompensation(SND_CARD_STATE_S* pCard, HI_UNF_SND_OUTPUTPORT_E enOutPort, HI_U32* pu32DelayMs);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_AO_OP_FUNC_H__

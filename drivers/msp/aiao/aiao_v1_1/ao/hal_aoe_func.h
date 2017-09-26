@@ -26,12 +26,6 @@ History	      :
 #include "hi_unf_ai.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 /* global function */
@@ -124,11 +118,5 @@ HI_S32			iHAL_AOE_ENGINE_SetAefInbuf(AOE_ENGINE_ID_E enEngine, AOE_ENGINE_AEFBUF
 HI_S32			iHAL_AOE_ENGINE_SetAefOutbuf(AOE_ENGINE_ID_E enEngine, AOE_ENGINE_AEFBUF_ATTR_S* pstAefBuf);
 HI_VOID			iHAL_AOE_ENGINE_GetAefDelayFrame(AOE_ENGINE_ID_E enEngine, HI_U32* u32DelayFrame);
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_AIAO_FUNC_H__

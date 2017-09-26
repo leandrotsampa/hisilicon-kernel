@@ -36,12 +36,6 @@
 
 #include <linux/scatterlist.h>
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /** @addtogroup H_MMZ */
 /** @{ */
 

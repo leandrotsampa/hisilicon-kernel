@@ -23,25 +23,9 @@ Date			   Author		    Modification
 #ifndef __OPTM_ALG_CSC_H__
 #define __OPTM_ALG_CSC_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
 #include "drv_hifb_adp.h"
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
-/***************************** Macro Definition ******************************/
-
 
 /*************************** Structure Definition ****************************/
 typedef enum
@@ -132,21 +116,8 @@ typedef struct
 } OPTM_ALG_CSC_RTL_PARA_S;
 
 
-/********************** Global Variable declaration **************************/
-
-
-
 /******************************* API declaration *****************************/
 
 HI_VOID OPTM_ALG_CscCoefSet(OPTM_ALG_CSC_DRV_PARA_S *pstCscDrvPara, OPTM_ALG_CSC_RTL_PARA_S *pstCscRtlPara);
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_CSC_H__ */

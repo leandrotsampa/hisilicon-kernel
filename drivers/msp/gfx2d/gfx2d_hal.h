@@ -19,12 +19,6 @@
 #ifndef _GFX2D_HAL_H_
 #define _GFX2D_HAL_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 typedef enum tagGFX2D_HAL_DEV_TYPE_E
 {
     GFX2D_HAL_DEV_TYPE_HWC = 0x0,
@@ -179,11 +173,5 @@ HI_U32 GFX2D_HAL_GetIsrNum(const HI_GFX2D_DEV_ID_E enDevId,
 
 HI_U32 GFX2D_HAL_GetBaseAddr(const HI_GFX2D_DEV_ID_E enDevId,
 			     const GFX2D_HAL_DEV_TYPE_E enDevType);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_HAL_H_*/

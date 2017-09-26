@@ -10,10 +10,6 @@
 #include "hi_dsp_common.h"
 #include "hi_dsp_aoe.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /******************************* API Declaration *****************************/
 HI_S32	AOE_REG_ReadBitDepth(HI_U32 *pu32BitPerSample, HI_U32 precision);
 HI_S32	AOE_REG_ReadChannel(HI_U32 *pu32Channels, HI_U32 ch);
@@ -24,9 +20,5 @@ HI_S32	AOE_REG_ReadBufDelayMs(HI_U32 *pu32DelayMs, HI_U32 delay);
 HI_S32	AOE_REG_ReadPcmType(AOE_AIP_TYPE_PCM_E *pEnPcmType, HI_U32 pcmType);
 
 /** @}*/  /** <!-- ==== API Declaration End ====*/
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

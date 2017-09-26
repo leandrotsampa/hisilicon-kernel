@@ -25,13 +25,6 @@ Date			    Author		    Modification
 
 #include "tde_define.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
-
 STATIC HI_U32 s_u32TDEPhyBuff = 0;
 STATIC HI_U32 s_u32TDEBuffRef = 0;
 static spinlock_t s_TDEBuffLock;
@@ -103,11 +96,5 @@ STATIC HI_VOID TDE_FreePhysicBuff(HI_VOID)
     }
     TDE_UNLOCK(&s_TDEBuffLock, s_TDEBuffLockFlags);
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* __HI_HANDLE_MGR_H__ */

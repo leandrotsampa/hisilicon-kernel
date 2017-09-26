@@ -24,12 +24,6 @@ History	      :
 #include "hi_type.h"
 #include "hi_module.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 
 /*************************** Structure Definition ****************************/
 /** \addtogroup	     H_2_1_2 */

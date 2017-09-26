@@ -20,10 +20,6 @@
 #ifndef __DRV_LOG_IOCTL_H__
 #define __DRV_LOG_IOCTL_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* End of #ifdef __cplusplus */
-
 #include "hi_type.h"
 #include "hi_debug.h"
 #include "hi_drv_log.h"
@@ -108,10 +104,5 @@ typedef struct hiLOG_Compat_BUF_WRITE_S
 #define UMAP_CMPI_LOG_Compat_SET_PATH		_IOW  (HI_ID_LOG, 4, LOG_Compat_PATH_S)
 #define UMAP_CMPI_LOG_SET_STORE_PATH		_IOW  (HI_ID_LOG, 5, STORE_PATH_S)
 #define UMAP_CMPI_LOG_Compat_SET_STORE_PATH	_IOW  (HI_ID_LOG, 5, STORE_Compat_PATH_S)
-
-#ifdef __cplusplus
-}
-#endif /* End of #ifdef __cplusplus */
-
 
 #endif /* End of #ifndef __DRV_LOG_IOCTL_H__ */

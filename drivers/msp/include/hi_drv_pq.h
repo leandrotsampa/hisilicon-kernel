@@ -22,10 +22,4 @@
 
 #include "../pq/pq_v4_0/include/hi_drv_pq.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 #endif	/* __HI_DRV_PQ_H__ */

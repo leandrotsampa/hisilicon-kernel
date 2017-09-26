@@ -25,14 +25,8 @@
 #include "hi_type.h"
 #include "hi_error_mpi.h"
 #include "hi_drv_video.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /****************************** Macro Definition *****************************/
-
 
 #define BUFMNG_DEBUG			(0)
 #define BUFMNG_64BITS_PTS_SUPPORT	(0)
@@ -203,10 +197,5 @@ HI_VOID HI_DRV_VDEC_Release(VDEC_BUFFER_S* psMBuf);
 #if (BUFMNG_DEBUG==1)
 HI_S32 BUFMNG_Debug(HI_HANDLE hBuf);
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HI_VDEC_BUFFER_MNG_H__ */

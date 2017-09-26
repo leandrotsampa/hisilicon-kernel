@@ -23,12 +23,6 @@ Date			    Author		    Modification
 #ifndef _TDE_ADP_H_
 #define _TDE_ADP_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #if defined(CONFIG_GFX_STB_SDK)
 #include "hi_drv_mmz.h"
 #include "hi_drv_dev.h"
@@ -112,11 +106,5 @@ extern "C"{
 * Others:	 none
 *******************************************************************************/
 HI_S32 TdeHalGetCapability(HI_U32 *pstCapability);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_TDE_ADP_H_*/

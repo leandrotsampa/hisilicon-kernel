@@ -15,12 +15,6 @@
 #include "hi_unf_vi.h"
 #include "hi_drv_vpss.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif
-
 /**********************************************************
 vi handle defination:
 1) real vi
@@ -142,11 +136,5 @@ typedef enum hiIOC_VI_E
 
 #define CMD_VI_ACQUIRE_FRAME _IOWR(HI_ID_VI, IOC_VI_ACQUIRE_FRAME, VI_FRAME_S)
 #define CMD_VI_RELEASE_FRAME _IOWR(HI_ID_VI, IOC_VI_RELEASE_FRAME, VI_FRAME_S)
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif
 
 #endif //__DRV_VI_IOCTL_H__

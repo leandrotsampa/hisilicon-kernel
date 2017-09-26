@@ -18,12 +18,6 @@ History	      :
 #ifndef __DRV_AO_IOCTL_H__
 #define __DRV_AO_IOCTL_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_unf_sound.h"
 #include "hi_drv_ao.h"
@@ -835,11 +829,5 @@ AO command code definition
 #define CMD_AO_CAST_GETABSGAIN			   _IOWR (HI_ID_AO, CMD_ID_AO_CAST_GETABSGAIN, AO_Cast_AbsGain_Param_S)
 #define CMD_AO_CAST_SETMUTE			   _IOW	 (HI_ID_AO, CMD_ID_AO_CAST_SETMUTE, AO_Cast_Mute_Param_S)
 #define CMD_AO_CAST_GETMUTE			   _IOWR (HI_ID_AO, CMD_ID_AO_CAST_GETMUTE, AO_Cast_Mute_Param_S)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

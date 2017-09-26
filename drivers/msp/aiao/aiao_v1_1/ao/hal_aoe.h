@@ -27,12 +27,6 @@ History	      :
 #include "hi_unf_ai.h"
 #endif
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 #define AOE_AIP_BUFF_LATENCYMS_MIN 10
 #define AOE_AIP_FIFO_LATENCYMS_MIN 10
@@ -172,11 +166,5 @@ HI_U32 HAL_AOE_AIP_FlushBuf(AOE_AIP_ID_E enAIP);
 HI_U32 HAL_AOE_AIP_GetReadPos(AOE_AIP_ID_E enAIP, HI_U32* pu32ReadPos);
 HI_S32 HAL_AOE_AOP_GetDelay(AOE_AOP_ID_E enAOP, HI_U32* pu32RealDelayMs);
 HI_S32 HAL_AOE_AOP_SetDelay(AOE_AOP_ID_E enAOP, HI_U32 u32RealDelayMs);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_HAL_AOE_H__

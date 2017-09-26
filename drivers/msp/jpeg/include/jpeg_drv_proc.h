@@ -39,13 +39,6 @@ Date		    Author		  Modification
 
 /*****************************************************************************/
 
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
    /***************************** Macro Definition ******************************/
 
    #define PROC_JPEG_ENTRY_NAME		   "jpeg"
@@ -86,14 +79,6 @@ Date		    Author		  Modification
 
 
     /****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif/**CONFIG_JPEG_PROC_ENABLE**/
 

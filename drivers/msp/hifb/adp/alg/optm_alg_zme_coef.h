@@ -23,29 +23,10 @@ Date			   Author		    Modification
 #ifndef __OPTM_ALG_ZME_COEF_H__
 #define __OPTM_ALG_ZME_COEF_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
-/***************************** Macro Definition ******************************/
-
-
-/*************************** Structure Definition ****************************/
-
 /********************** Global Variable declaration **************************/
-
 
 extern HI_S16 OPTM_s16ZmeCoef_8T32P_Cubic[18][8];
 extern HI_S16 OPTM_s16ZmeCoef_8T32P_Lanc3[18][8];
@@ -92,16 +73,5 @@ extern HI_S16 OPTM_s16TinyZmeCoef_2T16P_Gus2_6_75M_a0_5[16][4];
 extern HI_S16 OPTM_s16TinyZmeCoef_2T16P_Gus2_6M_a0_5[16][4];
 extern HI_S16 OPTM_s16TinyZmeCoef_2T16P_4M_0_1[16][4];
 /**================================== end ====================================**/
-
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_ZME_COEF_H__ */

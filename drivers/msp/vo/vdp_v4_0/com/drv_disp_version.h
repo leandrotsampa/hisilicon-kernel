@@ -19,13 +19,6 @@ History	      :
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 #define DISP_DRVIER_VERSION 0x20130417UL
 #define DISP_PLAT_FPGA
 
@@ -92,11 +85,5 @@ BIT[  3-2] = reserved	      <=
 BIT[	1] = vdac_bg_cken     <= 0,dis; 1,en
 BIT[	0] = vdac_rct_cken    <= 0,dis; 1,en
 =============================================================================*/
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_VERSION_H__  */

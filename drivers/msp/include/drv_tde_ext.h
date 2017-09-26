@@ -23,15 +23,6 @@ Date			    Author		    Modification
 #ifndef	 __DRV_TDE_EXT_H__
 #define	 __DRV_TDE_EXT_H__
 
-
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
-
 #include "hi_type.h"
 #include "hi_tde_type.h"
 #include "hi_drv_dev.h"
@@ -107,10 +98,4 @@ HI_VOID	 TDE_DRV_ModExit(HI_VOID);
 HI_S32 tde_init_module_k(HI_VOID);
 HI_VOID tde_cleanup_module_k(HI_VOID);
 
-
- #ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__DRV_TDE_EXT_H__ */

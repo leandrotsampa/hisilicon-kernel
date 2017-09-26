@@ -21,12 +21,6 @@ History	      :
 #include "drv_disp_com.h"
 #include "vdp_define.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define DEF_VIDEO_LAYER_MAX_NUMBER VDP_LAYER_VID_BUTT
 #define DEF_VIDEO_LAYER_INVALID_ID 0xff
 
@@ -219,13 +213,5 @@ HI_S32 VideoLayer_DeInit(HI_VOID);
 HI_S32 VideoLayer_GetFunction(VIDEO_LAYER_FUNCTIONG_S *pstFunc);
 
 VIDEO_LAYER_FUNCTIONG_S *VideoLayer_GetFunctionPtr(HI_VOID);
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_VO_HAL_H__  */

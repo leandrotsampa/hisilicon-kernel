@@ -7,12 +7,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 /*************** HIFI DSP subsystem SOC Definition ******************/
 
 #ifdef HI_FPGA
@@ -427,11 +421,5 @@ typedef union
 } HI_DRV_ADSP_STATUS_REG_S;
 
 //==============================================================================
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

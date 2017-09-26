@@ -5,10 +5,6 @@
 #ifndef __HI_DRV_FILE_H__
 #define __HI_DRV_FILE_H__
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #include <linux/fs.h>
 #include "hi_type.h"
 
@@ -27,9 +23,5 @@ HI_S32 HI_DRV_FILE_GetStorePath(HI_S8* ps8Buf, HI_U32 u32Len);
 
 
 /** @} */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __HI_DRV_FILE_H__ */

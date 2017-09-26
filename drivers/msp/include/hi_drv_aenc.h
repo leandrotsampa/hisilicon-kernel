@@ -10,10 +10,6 @@
 #include "hi_module.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /***************************** Macro Definition ******************************/
 #define AENC_INSTANCE_MAXNUM (3)     /* max encoder instance */
 
@@ -111,9 +107,5 @@ HI_S32 AENC_GetAttachSrc(HI_HANDLE hAenc, HI_HANDLE* hSrc);
 HI_S32 AENC_DetachInput(HI_HANDLE hAenc);
 HI_S32 AENC_SetAttr(HI_HANDLE hAenc, const HI_UNF_AENC_ATTR_S* pstAencAttr);
 HI_S32 AENC_GetAttr(HI_HANDLE hAenc, HI_UNF_AENC_ATTR_S* pstAencAttr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __MPI_PRIV_AENC_H__ */

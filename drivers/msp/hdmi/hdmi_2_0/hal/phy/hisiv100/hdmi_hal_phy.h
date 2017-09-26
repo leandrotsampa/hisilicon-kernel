@@ -20,12 +20,6 @@
 #ifndef __HDMI_HAL_PHY_H__
 #define __HDMI_HAL_PHY_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #include "hdmi_hal_intf.h"
 
 typedef enum
@@ -158,11 +152,5 @@ HI_S32 HAL_HDMI_PhyInfoGet(HDMI_PHY_INFO_S *pstPhyStatus);
 
 HI_S32 HAL_HDMI_PhySscSet(HDMI_PHY_SSC_CFG_S * pstHdmiSscCfg);
 HI_S32 HAL_HDMI_PhySscGet(HI_BOOL * pbEnable);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif	/* __HDMI_HAL_PHY_H__ */

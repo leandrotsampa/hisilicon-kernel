@@ -24,10 +24,6 @@
 #ifndef _PVR_BITSTREAM_HEAD_
 #define	_PVR_BITSTREAM_HEAD_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "hi_type.h"
 
 typedef struct _PVR_BITSTREAM{
@@ -56,10 +52,5 @@ HI_S32	PvrBsLongSkip(PVR_BS *pBS, HI_S32 nBits);
 HI_S32	PvrBsSkipWithoutCount( PVR_BS *pBS, HI_S32 nBits );
 HI_U8*	PvrBsGetNextBytePtr( PVR_BS *pBS );
 HI_U32	PvrZerosMS_32(HI_U32 data);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

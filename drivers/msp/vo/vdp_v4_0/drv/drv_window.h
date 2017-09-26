@@ -29,12 +29,6 @@ History	      :
 #include "drv_sync.h"
 #endif
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /******************************************************************************
     local function and macro
 ******************************************************************************/
@@ -377,11 +371,5 @@ HI_S32 WinDebugCmdProcess(WIN_DEBUG_CMD_AND_ARGS_S *pstDebugCmd);
 HI_S32 WinParamAlignUp(HI_S32 s32X, HI_U32 u32Align);
 HI_S32 WinParamAlignDown(HI_S32 s32X, HI_U32 u32Align);
 HI_U32 WinGetHDWinNum(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_WINDOW_H__  */

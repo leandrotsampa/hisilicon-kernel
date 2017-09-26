@@ -9,10 +9,6 @@
 #include "hi_type.h"
 #include "drv_pdm_ext.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define PDM_MAX_BUF_NUM	    16
 
 typedef struct tagPDM_BUF_INFO_S
@@ -39,9 +35,5 @@ HI_S32 DRV_PDM_GetMceData(HI_U32 u32Size, HI_U8 **pAddr);
 HI_S32 DRV_PDM_ReleaseReserveMem(const HI_CHAR *BufName);
 HI_S32 DRV_PDM_GetData(const HI_CHAR *BufName, HI_U8 **pDataAddr, HI_U32 *pu32DataLen);
 HI_S32 DRV_PDM_GetSoundParam(HI_UNF_SND_E enSound, HI_UNF_PDM_SOUND_PARAM_S *pstSoundParam);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -24,14 +24,6 @@ Date		    Author		Modification
 #ifndef __PNG_OSI_H__
 #define __PNG_OSI_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
-#include "hi_png_type.h"
-
 /*****************************************************************
 * func: open PNG device
 * in:	none
@@ -151,11 +143,5 @@ HI_S32 PngOsiDecode(HI_PNG_HANDLE s32Handle, HI_PNG_DECINFO_S *pstDecInfo);
 * others:
 *****************************************************************/
 HI_S32 PngOsiGetResult(HI_PNG_HANDLE s32Handle, HI_BOOL bBlock, HI_PNG_STATE_E *peDecResult);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif	/* __PNG_OSI_H__ */

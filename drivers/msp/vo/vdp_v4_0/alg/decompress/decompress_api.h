@@ -5,12 +5,6 @@
 #ifndef __DECOMPRESS_API_H__
 #define __DECOMPRESS_API_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #include "hi_type.h"
 #include "hi_drv_video.h"
 #include "hi_drv_mmz.h"
@@ -42,11 +36,5 @@ typedef struct hiOriDataInfo
 }HI_ORI_DATA_INFO_S;
 
 HI_S32 VO_ALG_Decompress(HI_DRV_VIDEO_FRAME_S *pstFrame,HI_U8 *pDstBufAddr,HI_U32 u32DstBufSize);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

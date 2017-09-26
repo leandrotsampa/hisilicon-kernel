@@ -26,15 +26,8 @@ Date		    Author		Modification
 #ifndef __PNG_HAL_H__
 #define __PNG_HAL_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 #include "hi_png_type.h"
 #include "hi_png_config.h"
-
 
 /*Base address of PNG register*/
 /*CNcomment:PNG�Ĵ�������ַ*/
@@ -571,11 +564,5 @@ HI_VOID PngHalSetClock(HI_BOOL bEnable);
 HI_S32 PngHalOpen(HI_VOID);
 
 HI_U32 PngHalGetIrqNum(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cpulsplus */
 
 #endif	/* __PNG_HAL_H__ */

@@ -28,12 +28,6 @@ Date			    Author		    Modification
 
 #include "hi_png_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 /* support 16 decoder at most */
 #define PNG_MAX_HANDLE 16
 
@@ -104,12 +98,5 @@ typedef struct tag_PNG_BUF_HEAD_S
     HI_U32 u32StreamLen;	    /* stream length */
 
 } PNG_BUF_HEAD_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 
 #endif	/* __HI_TDE_IOCTL_H__ */

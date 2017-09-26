@@ -27,16 +27,8 @@
 #include "drv_pq_comm.h"
 #include "pq_hal_zme.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 #define ALG_V_HZME_PRECISION 1048576
 #define ALG_V_VZME_PRECISION 4096
-
 
 typedef struct
 {
@@ -81,14 +73,5 @@ typedef struct
 HI_S32 PQ_MNG_RegisterZme(PQ_REG_TYPE_E	 enType);
 
 HI_S32 PQ_MNG_UnRegisterZme(HI_VOID);
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

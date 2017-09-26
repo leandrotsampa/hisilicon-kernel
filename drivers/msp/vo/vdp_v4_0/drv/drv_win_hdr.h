@@ -23,12 +23,6 @@
 #include "hi_drv_video.h"
 #include "drv_win_buffer.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 #ifdef VDP_DOLBY_HDR_SUPPORT
 HI_S32 WinQueueDolbyFrame(HI_HANDLE		   hWin,
 			  HI_DRV_VIDEO_FRAME_S	  *pBLFrmInfo,
@@ -105,11 +99,6 @@ HI_VOID WIN_JudgeHdrFrame(HI_DRV_VIDEO_FRAME_TYPE_E  enFrameType,HI_BOOL *pbIsHd
 #define WIN_ShowDolbyLibInfo()
 #define WIN_Hdr10ProcessPolicy(a,b,c,d)
 #define WIN_JudgeHdrFrame(a,b)
-#endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif

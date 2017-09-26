@@ -17,10 +17,6 @@
 #include "hi_unf_demux.h"
 #include "hi_mpi_demux.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef enum
 {
     DMX_PORT_MODE_TUNER = 0,
@@ -208,9 +204,5 @@ HI_S32 HI_DRV_RMX_DelPump(HI_HANDLE PumpHandle);
 HI_S32 HI_DRV_RMX_GetPumpDefaultAttr(HI_MPI_RMX_PUMP_ATTR_S *Attr);
 HI_S32 HI_DRV_RMX_GetPumpAttr(HI_HANDLE PumpHandle, HI_MPI_RMX_PUMP_ATTR_S *Attr);
 HI_S32 HI_DRV_RMX_SetPumpAttr(HI_HANDLE PumpHandle, HI_MPI_RMX_PUMP_ATTR_S *Attr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	// __HI_DRV_DEMUX_H__

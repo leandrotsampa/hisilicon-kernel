@@ -17,18 +17,6 @@
 
 #include "drv_sync_ioctl.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 HI_VOID SYNC_StcAdjust(SYNC_S *pSync, HI_U64 PCRValue ,HI_U64 STCValue);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

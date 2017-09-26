@@ -32,12 +32,6 @@ History	      :
 #include "vdp_drv_hihdr.h"
 #endif
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define DISP_VDAC_MAX_NUMBER 6
 #define DISP_VENC_SIGNAL_MAX_NUMBER 6
 #define VDAC_STATE_INT 0xf000
@@ -529,10 +523,5 @@ HI_U32 FP_GetChnBottomFlag(HI_DRV_DISPLAY_E enDisp, HI_BOOL *pbBtm, HI_U32 *pu32
 extern HI_U32 Disp_SetFastbootupFlag(HI_U32 u32Value);
 
 HI_VOID DISP_Hal_Isr_DebugSmmuProcess(HI_VOID);
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_CMP_H__  */

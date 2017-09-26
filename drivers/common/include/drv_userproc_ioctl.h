@@ -29,12 +29,6 @@
 #endif
 #include "hi_drv_userproc.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define HI_UPROC_READ_CMD "__read"
@@ -122,11 +116,5 @@ typedef char HI_PROC_DIR_NAME_S[MAX_PROC_NAME_LEN+1];
 #define UMPIOC_Compat_WAKE_READ_TASK	_IOW(HI_ID_PROC, 6, HI_PROC_Compat_SHOW_BUFFER_S)
 #define UMPIOC_WAKE_WRITE_TASK		_IOW(HI_ID_PROC, 7, HI_PROC_SHOW_BUFFER_S)
 #define UMPIOC_Compat_WAKE_WRITE_TASK	_IOW(HI_ID_PROC, 7, HI_PROC_Compat_SHOW_BUFFER_S)
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __DRV_USERPROC_IOCTL_H__ */

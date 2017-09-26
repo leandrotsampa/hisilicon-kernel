@@ -26,11 +26,6 @@ History	      :
 #endif
 
 #include "drv_disp_hdr.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
 
 #define DISP_DEVICE_STATE_CLOSE	  0
 #define DISP_DEVICE_STATE_OPEN	  1
@@ -216,11 +211,5 @@ typedef struct tagDISP_COMMON_CONTROL_S
     HI_BOOL bBootArgsCloseCvbs;
     HI_BOOL bBootArgsCloseYpbpr;
 }DISP_COMMON_CONTROL_S;
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_PRIV_H__	*/

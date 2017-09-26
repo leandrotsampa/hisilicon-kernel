@@ -23,16 +23,9 @@ Date			    Author		    Modification
 #ifndef	 __TDE_OSILIST_H__
 #define	 __TDE_OSILIST_H__
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
-
 #include <linux/list.h>
 #include "tde_define.h"
 #include "hi_tde_type.h"
-
 
 /****************************************************************************/
 /*			  TDE osi list types define			    */
@@ -225,12 +218,5 @@ HI_S32 TdeOsiListUnlockWorkingFlag(HI_SIZE_T *lock);
 HI_S32 TdeOsiListGetWorkingFlag(HI_BOOL *bFlag);
 
 HI_S32 TdeOsiListSetWorkingFlag(HI_BOOL bFlag);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif	/* _TDE_OSILIST_H_ */

@@ -8,12 +8,9 @@
  *******************************************************************/
 #ifndef _TTV_MODE_H_
 #define _TTV_MODE_H_
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
+
 #include "drv_disp_osal.h"
+
 //--------------TEST PRINTF--------//
 #define SUM_TEST_PRINTF	 0
 #define FRM_TEST_PRINTF	 1
@@ -195,12 +192,5 @@ uint32 BitStreamReadBits (int n_bits);
 uint32 BitStreamReadHeadBits (int n_bits);
 int BitPlaneDecoding (TTV_COMP_T * ttv_dec_ptr,int sample);
 int DecoderOneFrame (OTT_CFG * ott_cfg, int sample,uint8 * bs_buf_ptr, uint16 * bs_head_ptr,uint16 * frame0, uint16* frame1);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

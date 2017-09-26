@@ -23,14 +23,6 @@ History	      :
 #include "hal_aoe.h"
 #include "drv_ao_private.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ******************************/
-
 /***************************** Struct Definition ******************************/
 /*audio effect proc attr*/
 typedef struct
@@ -52,11 +44,5 @@ HI_S32 AEF_WriteProc(HI_UNF_SND_E enSound, SND_CARD_STATE_S* pCard, HI_CHAR* pcB
 HI_S32 AEF_GetBufAttr(SND_CARD_STATE_S* pCard, AO_AEF_BUF_ATTR_S* pstAefBuf);
 HI_S32 AEF_GetDebugAddr(SND_CARD_STATE_S* pCard, AEF_DEBUG_ATTR_S *pstDebugAd);
 HI_VOID AEF_DestroyDebugAddr(SND_CARD_STATE_S* pCard);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif	// __DRV_AO_AEF_H__

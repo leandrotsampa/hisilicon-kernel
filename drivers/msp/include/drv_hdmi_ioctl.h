@@ -13,13 +13,6 @@
 #include "drv_hdmi_common.h"
 #include "hi_drv_hdmi.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-	extern "C"{
-#endif
-#endif
-
-
 /*
 ** HDMI IOCTL Data Structure
 */
@@ -286,12 +279,5 @@ enum hiIOCTL_HDMI_E
 #define CMD_HDMI_GET_VIDEO_CAPABILITY _IOWR(HI_ID_HDMI, IOCTL_HDMI_GET_VIDEO_CAPABILITY, DRV_HDMI_VIDEO_CAPABILITY_S)
 #define CMD_HDMI_SET_RESUME_STAT	_IOWR(HI_ID_HDMI, IOCTL_HDMI_SET_RESUME_STAT, DRV_HDMI_RESUME_STAT_S)
 #define CMD_HDMI_GET_RESUME_STAT	_IOWR(HI_ID_HDMI, IOCTL_HDMI_GET_RESUME_STAT, DRV_HDMI_RESUME_STAT_S)
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

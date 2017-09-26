@@ -23,14 +23,6 @@ Date			    Author		    Modification
 #ifndef	 __TDE_PROC_H__
 #define	 __TDE_PROC_H__
 
-
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
 #include "tde_hal.h"
 
 #define TDE_MAX_PROC_NUM 8
@@ -49,9 +41,4 @@ int tde_read_proc(struct seq_file *p, HI_VOID *v);
 int tde_write_proc(struct file * file,
     const char __user * buf, size_t count, loff_t *ppos);
 
-#ifdef __cplusplus
-	#if __cplusplus
-	}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__TDE_PROC_H__ */

@@ -21,12 +21,6 @@ History	      :
 #include "hi_unf_sound.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 #define AO_TRACK_LATENCYMS_DEFAULT 256
 
@@ -303,11 +297,5 @@ HI_S32	TRACK_SetSource(SND_CARD_STATE_S* pCard, HI_U32 u32TrackID, HI_UNF_SND_SO
 
 HI_S32 Track_ForceAllToPcm(SND_CARD_STATE_S* pCard);
 HI_S32 TRACK_SetUsedByKernel(SND_CARD_STATE_S* pCard, HI_U32 u32TrackID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif	// __HI_AO_TRACK_H__

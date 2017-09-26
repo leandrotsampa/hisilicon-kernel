@@ -5,11 +5,6 @@
 #ifndef __DRV_VI_EXT_H__
 #define __DRV_VI_EXT_H__
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif
 //add by l00214567
 HI_S32 HI_VI_Chan_VOAcqFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVpssFrame);
 HI_S32 HI_VI_Chan_VORlsFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S* pstVpssFrame);
@@ -33,11 +28,5 @@ typedef struct
 
 HI_S32	VI_DRV_ModInit(HI_VOID);
 HI_VOID VI_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif
 
 #endif //__DRV_VI_EXT_H__

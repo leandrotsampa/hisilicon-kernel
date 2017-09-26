@@ -22,13 +22,6 @@
 
 #include "hi_drv_disp.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
-
 #define HI_FATAL_WIN(fmt...) \
 	    HI_FATAL_PRINT(HI_ID_VO, fmt)
 
@@ -256,11 +249,5 @@ HI_S32 HI_DRV_WIN_GetFlip(HI_HANDLE hWin, HI_BOOL *pbHoriFlip, HI_BOOL *pbVertFl
 HI_S32 HI_DRV_WIN_SendFrame(HI_HANDLE hWin, HI_DRV_VIDEO_FRAME_S *pFrameinfo);
 HI_S32 HI_DRV_WIN_Init(HI_VOID);
 HI_S32 HI_DRV_WIN_DeInit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __HI_DRV_WIN_H__ */

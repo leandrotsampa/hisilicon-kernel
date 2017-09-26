@@ -32,15 +32,6 @@ Date		    Author		  Modification
 
 /*****************************************************************************/
 
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
     /***************************** Macro Definition ******************************/
     #define JPGD_IRQ_NUM			  (97 + 32)
     #define JPGD_REG_BASEADDR		   (0xf8c40000)
@@ -269,13 +260,5 @@ Date		    Author		  Modification
     * retval	      : none
     *****************************************************************************/
     HI_VOID jpeg_reg_writebuf(const HI_VOID *pInMem,HI_S32 s32PhyOff,HI_U32 u32Bytes);
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HI_JPEG_REG_H__ */

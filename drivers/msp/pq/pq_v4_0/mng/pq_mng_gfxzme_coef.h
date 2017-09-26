@@ -25,22 +25,6 @@
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
-/***************************** Macro Definition ******************************/
-
-
-/*************************** Structure Definition ****************************/
-
 /********************** Global Variable declaration **************************/
 extern HI_S16 PQ_s16GZmeCoef_8T8P_Cubic[8][8];
 extern HI_S16 PQ_s16GZmeCoef_4T16P_Cubic[16][4];
@@ -50,22 +34,10 @@ extern HI_S16 PQ_s16GZmeCoef_2T8P_4M_0_1[8][2];
 extern HI_S16 PQ_s16GZmeCoef_2T16P_Gus2_6M_a0_5[16][2];
 extern HI_S16 PQ_s16GZmeCoef_2T16P_4M_0_1[16][2];
 
-/**================================= begin ==================================**/
 /**
  **and from HiFoneB2 4K TinyZME, 2T16P align with 0 by d00241380
  **/
 extern HI_S16 PQ_s16TinyZmeCoef_2T16P_Gus2_6M_a0_5[16][4];
 extern HI_S16 PQ_s16TinyZmeCoef_2T16P_4M_0_1[16][4];
-/**================================== end ====================================**/
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_ZME_COEF_H__ */

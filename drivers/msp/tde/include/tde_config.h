@@ -23,17 +23,4 @@ Date			    Author		    Modification
 #ifndef	 __TDE_CONFIG_H__
 #define	 __TDE_CONFIG_H__
 
-
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
-#ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__TDE_CONFIG_H__ */

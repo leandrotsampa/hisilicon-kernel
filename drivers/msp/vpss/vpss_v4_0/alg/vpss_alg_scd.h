@@ -6,12 +6,6 @@
 #define __VPSS_ALG_SCD_H__
 #include "hi_type.h"
 #include "hi_math.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 
 typedef struct hiSCDRls
 {
@@ -68,11 +62,5 @@ Others		:NA
 *--------------------------------------------------------------------------------*/
 
 HI_S32	SCDDetection(SCDInput *pSCDInput, SCDRls *pSCDRls);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif //end of __VPSS_ALG_SCD_H__

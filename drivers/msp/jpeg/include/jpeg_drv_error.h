@@ -45,14 +45,6 @@ Date		    Author		  Modification
 /*****************************************************************************/
 
 
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
 	 /***************************** Macro Definition ******************************/
 	 /** \addtogroup      JPEG */
 	 /** @{ */    /** <!--[JPEG]*/
@@ -128,15 +120,5 @@ Date		    Author		  Modification
 	/** @} */  /** <!-- ==== API Declaration End ==== */
 
 	/****************************************************************************/
-
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-    }
-#endif
-#endif /* __cplusplus */
 
 #endif /* __JPEG_DRV_ERROR_H__*/

@@ -85,13 +85,6 @@ History	      :
 
 #endif
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 #if defined(__DISP_PLATFORM_SDK__)
 /******************* SDK **********************/
 #define DISP_PRINT(fmt...) \
@@ -290,13 +283,5 @@ HI_S32	DISP_OS_SECSMMU_Alloc(const char *bufname, HI_U32 size, int align, DISP_M
 HI_VOID DISP_OS_SECSMMU_Release(DISP_MMZ_BUF_S *pstMBuf);
 
 HI_VOID DISP_OS_DIV64(HI_U64 numerator, HI_U32 denominator, HI_U64 *pu64Result);
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_OSAL_H__	*/

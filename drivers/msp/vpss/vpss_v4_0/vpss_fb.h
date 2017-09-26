@@ -12,15 +12,8 @@
 #include "vpss_osal.h"
 #include "vpss_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define DEF_VPSS_2D_BUFFER_DEPEND_NUM 1
 #define DEF_VPSS_3D_BUFFER_DEPEND_NUM 2
-
 
 typedef struct hiVPSS_BUFFER_S
 {
@@ -125,12 +118,5 @@ HI_S32 VPSS_FB_Reset(VPSS_FB_INFO_S *pstFrameList);
 HI_S32 VPSS_FB_AllocExtBuffer(VPSS_FB_INFO_S *pstFrameList, HI_U32 u32ExtNumb);
 HI_S32 VPSS_FB_RlsExtBuffer(VPSS_FB_INFO_S *pstFrameList);
 HI_S32 VPSS_FB_CheckFulListAvailable(VPSS_FB_INFO_S *pstFrameList, HI_BOOL *pbAvailable);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 
 #endif	/* __VO_EXT_H__ */

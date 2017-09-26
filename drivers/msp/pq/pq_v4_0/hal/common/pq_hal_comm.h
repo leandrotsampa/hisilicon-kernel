@@ -26,13 +26,6 @@
 #include "hi_reg_common.h"
 #include "hi_drv_pq.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define VPSS_REGS_ADDR	  0xf8cb0000UL
 #define VDP_REGS_ADDR	  0xf8cc0000UL
 #define SPECIAL_REGS_ADDR 0xfffe0000UL

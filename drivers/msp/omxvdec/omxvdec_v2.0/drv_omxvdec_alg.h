@@ -5,12 +5,6 @@
 #ifndef __OMXVDEC_OPTM_ALG_H__
 #define __OMXVDEC_OPTM_ALG_H__
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 
 #define OPTM_FRD_IN_PTS_SEQUENCE_LENGTH		100
@@ -48,12 +42,5 @@ HI_VOID OMX_OPTM_ALG_FrdInfo_Reset(OPTM_ALG_FRD_S *pPtsInfo, HI_U32 ptsNum);
 HI_U32 OMX_OPTM_ALG_FrameRateDetect(OPTM_ALG_FRD_S *pPtsInfo,HI_U32 Pts);
 HI_U32 OMX_OPTM_ALG_InPTSSqn_CalNowRate(OPTM_ALG_FRD_S *pPtsInfo, HI_U32 env);
 HI_VOID OMX_OPTM_ALG_InPTSSqn_ChangeInFrameRate(OPTM_ALG_FRD_S *pPtsInfo, HI_U32 nowRate);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_H__ */

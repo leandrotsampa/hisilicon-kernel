@@ -16,10 +16,6 @@ History	      :
 #ifndef __DRV_MODULE_IOCTL_H__
 #define __DRV_MODULE_IOCTL_H__
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #include "hi_type.h"
 
 #define MAX_MODULE_NAME (16)
@@ -102,10 +98,5 @@ typedef enum
 #define CMD_MEM_ADD_INFO	    _IOW(HI_ID_MODULE, IOC_MODULE_CMD_MEM_ADD, MODULE_MEM_INFO_S)
 #define CMD_MEM_DEL_INFO	    _IOW(HI_ID_MODULE, IOC_MODULE_CMD_MEM_DEL, MODULE_MEM_INFO_S)
 #define CMD_ALLOC_MODULE_ID	    _IOWR(HI_ID_MODULE, IOC_MODULE_CMD_ALLOC_ID, MODULE_ALLOC_S)
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

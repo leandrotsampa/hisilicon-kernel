@@ -24,10 +24,6 @@
 #include "hi_drv_cipher.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 typedef struct
 {
     HI_U32    u32Resv;
@@ -91,9 +87,5 @@ typedef struct
 #define	   CMD_CIPHER_COMPAT_ENCRYPTMULTI    _IOW(HI_ID_CIPHER,	 0x7, CIPHER_COMPAT_PKG_S)
 #define	   CMD_CIPHER_COMPAT_CALCRSA	     _IOWR(HI_ID_CIPHER, 0x10, CIPHER_COMPAT_RSA_DATA_S)
 #endif
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* End of #ifndef __DRV_CIPHER_IOCTL_H__*/

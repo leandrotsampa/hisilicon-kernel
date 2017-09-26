@@ -23,16 +23,7 @@ Date				Author			Modification
 #ifndef	 _HI_VDP_SMMU_H_
 #define	 _HI_VDP_SMMU_H_
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
-
-
 #include "hi_type.h"
-
 
 /***************************** Macro Definition ******************************/
 
@@ -52,11 +43,5 @@ HI_VOID ISR_VDP_SmmuDebug(HI_VOID);
 
 
 /** @} */  /*! <!-- API declaration end */
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif /**_HI_VDP_SMMU_H_	  *\*/

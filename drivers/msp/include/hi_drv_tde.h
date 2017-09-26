@@ -23,23 +23,8 @@ Date			    Author		    Modification
 #ifndef	 __HI_DRV_TDE_H__
 #define	 __HI_DRV_TDE_H__
 
-
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
-
-
 #include <linux/ioctl.h>
 #include "hi_tde_type.h"
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 /* Use 't' as magic number */
 #define TDE_IOC_MAGIC 't'
@@ -229,10 +214,4 @@ typedef struct hiTDE_PATTERN_FILL_CMD_S
 #define TDE_PATTERN_FILL _IOW(TDE_IOC_MAGIC, 23, TDE_PATTERN_FILL_CMD_S)
 #define TDE_ENABLE_REGIONDEFLICKER _IOW(TDE_IOC_MAGIC, 24, HI_BOOL)
 
-
- #ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__HI_DRV_TDE_H__ */

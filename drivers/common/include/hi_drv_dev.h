@@ -26,11 +26,6 @@
 #include "hi_debug.h"
 #include "hi_drv_struct.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif /* End of #ifdef __cplusplus */
-
 /** @addtogroup H_DEV */
 /** @{ */
 
@@ -122,10 +117,5 @@ extern HI_S32 HI_DRV_UserCopy(struct inode *inode, struct file *file,
 	    HI_TRACE(HI_LOG_LEVEL_WARNING, HI_ID_LOG, fmt)
 #define HI_INFO_DEV(fmt...) \
 	    HI_TRACE(HI_LOG_LEVEL_INFO, HI_ID_LOG, fmt)
-
-#ifdef __cplusplus
-}
-#endif /* End of #ifdef __cplusplus */
-
 
 #endif /* __HI_DRV_DEV_H__ */

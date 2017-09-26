@@ -19,10 +19,6 @@
 #ifndef __DRV_HDMI_EVENT__
 #define __DRV_HDMI_EVENT__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <linux/list.h>
 #include "hi_type.h"
 #include "drv_hdmi_common.h"
@@ -176,11 +172,5 @@ HI_S32	DRV_HDMI_EventPoolStatusGet(HDMI_DEVICE_ID_E enHdmiId,
 */
 HI_S32	DRV_HDMI_EventPoolTotalGet(HDMI_DEVICE_ID_E enHdmiId,
 								   HI_U32	 *pu32Total);
-
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //__DRV_HDMI_EVENT__

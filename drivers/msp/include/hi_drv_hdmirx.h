@@ -26,13 +26,6 @@
 #include "hi_debug.h"
 #include "drv_hdmirx_ioctl.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif
-
-
 #ifdef HI_HDMI_RX_INSIDE
 #define HI_FATAL_HDMIRX(fmt...) HI_FATAL_PRINT(HI_ID_HDMIRX, fmt)
 #define HI_ERR_HDMIRX(fmt...)	HI_ERR_PRINT(HI_ID_HDMIRX, fmt)
@@ -52,12 +45,6 @@ HI_S32	HI_DRV_SIL9293_SetGpioPin(HI_HDMIRX_SET_GPIO_PIN_S *pstGpioPin);
 HI_S32	HI_DRV_SIL9293_GetStatus(HI_SIG_STATUS_E *pstSigStatus);
 HI_S32	HI_DRV_SIL9293_GetTiming(HI_HDMIRX_TIMING_INFO_S *pstTiming);
 
-#endif
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
 #endif
 
 #endif

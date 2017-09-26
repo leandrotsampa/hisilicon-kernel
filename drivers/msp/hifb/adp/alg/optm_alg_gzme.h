@@ -23,24 +23,12 @@ Date			   Author		    Modification
 #ifndef __OPTM_ALG_GZME_H__
 #define __OPTM_ALG_GZME_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
 #include "hi_drv_mmz.h"
 
 #include "hi_gfx_comm_k.h"
 #include "drv_hifb_config.h"
-
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 
@@ -295,24 +283,11 @@ typedef struct
     OPTM_ZME_COEF_BIT_S	 stBit[12];
 } OPTM_ZME_COEF_BITARRAY_S;
 
-
-
-/********************** Global Variable declaration **************************/
-
-
 /******************************* API declaration *****************************/
 
 HI_S32 OPTM_ALG_GZmeVdpComnInit(OPTM_ALG_GZME_MEM_S *pstGZmeCoefMem);
 HI_VOID OPTM_ALG_GZmeVdpComnDeInit(OPTM_ALG_GZME_MEM_S *pstGZmeCoefMem);
 HI_VOID OPTM_ALG_GZmeHDSet(OPTM_ALG_GZME_MEM_S *pstMem, OPTM_ALG_GZME_DRV_PARA_S *pstZmeDrvPara, OPTM_ALG_GZME_RTL_PARA_S *pstZmeRtlPara);
 HI_VOID OPTM_ALG_GZmeSDSet(OPTM_ALG_GZME_MEM_S *pstMem, OPTM_ALG_GZME_DRV_PARA_S *pstZmeDrvPara, OPTM_ALG_GZME_RTL_PARA_S *pstZmeRtlPara);
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_ALG_GZME_H__ */

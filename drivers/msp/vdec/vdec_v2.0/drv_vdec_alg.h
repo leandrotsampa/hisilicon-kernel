@@ -54,11 +54,4 @@ HI_U32 OPTM_ALG_FrameRateDetect(OPTM_ALG_FRD_S* pPtsInfo, HI_U32 Pts);
 HI_U32 OPTM_ALG_InPTSSqn_CalNowRate(OPTM_ALG_FRD_S* pPtsInfo, HI_U32 env);
 HI_VOID OPTM_ALG_InPTSSqn_ChangeInFrameRate(OPTM_ALG_FRD_S* pPtsInfo, HI_U32 nowRate);
 
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 #endif /* __OPTM_ALG_H__ */

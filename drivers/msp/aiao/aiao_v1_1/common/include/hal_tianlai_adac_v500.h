@@ -14,13 +14,6 @@
 #ifndef __AUD_TIANLAI_ADAC_HAL_H__
 #define __AUD_TIANLAI_ADAC_HAL_H__
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_unf_sound.h"
 
@@ -113,11 +106,5 @@ HI_VOID ADAC_FastPowerEnable(HI_BOOL bEnable);
 HI_VOID ADAC_TIANLAI_Init(HI_U32 uSampelRate, HI_BOOL bResume);
 HI_VOID ADAC_TIANLAI_DeInit(HI_BOOL bSuspend);
 HI_VOID ADAC_TIANLAI_Enable(HI_UNF_SAMPLE_RATE_E enSR, HI_BOOL bEnable);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __AUD_TIANLAI_ADAC_HAL_H__ */

@@ -17,12 +17,6 @@
 
 #include "hi_unf_descrambler.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 typedef enum
 {
     DMX_KEY_TYPE_EVEN	= 0,
@@ -44,11 +38,5 @@ HI_S32	HI_DRV_DMX_GetFreeDescramblerKeyCount(HI_U32 DmxId, HI_U32 *FreeCount);
 
 HI_S32	HI_DRV_DMX_SetDescramblerKey(HI_HANDLE KeyHandle, DMX_KEY_TYPE_E enKeyType, HI_U8 *pu8Key, HI_U32 u32KeyLen);
 HI_S32	HI_DRV_DMX_SetDescramblerIV(HI_HANDLE KeyHandle,DMX_KEY_TYPE_E enKeyType, HI_U8 *pu8IV, HI_U32 u32IVLen);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif	/* __HI_DRV_DESCRAMBLER_H__ */

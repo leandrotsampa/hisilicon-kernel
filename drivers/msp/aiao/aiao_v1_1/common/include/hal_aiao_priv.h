@@ -26,12 +26,6 @@ History	      :
 #include "hal_aiao_common.h"
 #include "circ_buf.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define HW_CHN_PTR_BUG
@@ -1606,11 +1600,5 @@ HI_VOID	 AIAO_TIMER_SetEnable(AIAO_TIMER_ID_E enTimerID, HI_S32 bEn);
 HI_VOID	 AIAO_TIMER_SetAttr(AIAO_TIMER_ID_E enTimerID, const AIAO_IfTimerAttr_S* pstIfAttr, HI_U32 u32Config);
 HI_VOID	 AIAO_TIMER_ClearTimer(AIAO_TIMER_ID_E enTimerID);
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_HAL_AIAO_PRIV_H__

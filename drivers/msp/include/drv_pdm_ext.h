@@ -8,10 +8,6 @@
 #include "hi_type.h"
 #include "hi_drv_pdm.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef HI_S32 (*FN_PDM_GetDispParam)(HI_UNF_DISP_E enDisp, HI_DISP_PARAM_S *pstDispParam);
 typedef HI_S32 (*FN_PDM_GetMceParam)(HI_MCE_PARAM_S *pMceParam);
 typedef HI_S32 (*FN_PDM_GetMceData)(HI_U32 u32Size, HI_U8 **pAddr);
@@ -33,10 +29,5 @@ typedef struct tagPDM_EXPORT_FUNC_S
 
 HI_S32 PDM_DRV_ModInit(HI_VOID);
 HI_VOID PDM_DRV_ModExit(HI_VOID);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

@@ -11,10 +11,6 @@
 #include "hi_dsp_ringbuf.h"
 #include "hi_dsp_aoe.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define AOP_PROCESS_PERIONDMS_DEFAULT 5
 #define AOP_PROCESS_PERIONDMS_MAX 10
 #define AOP_PROCESS_PERIONDMS_MIN 2
@@ -68,9 +64,5 @@ HI_VOID* AOP_GetRingOut(HI_U32 Id);
 HI_VOID AOP_ProcDelayCompensation(HI_U32 Aop);
 
 /** @}*/  /** <!-- ==== API Declaration End ====*/
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

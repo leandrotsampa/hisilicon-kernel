@@ -6,12 +6,6 @@
 #ifndef __S5_AUD_TIANLAI_HAL_H
 #define __S5_AUD_TIANLAI_HAL_H
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 
 #define TIANLAI_BASE_ADDR_V100B 0xFF280000
@@ -805,11 +799,5 @@ HI_U32 HAL_TIANLAI_V510_SetLineInSuorce(S5_TIANLAI_LINEIN_SEL_E enLineInSel, HI_
 HI_U32 HAL_TIANLAI_V510_SetLineOutSel(S5_TIANLAI_LINEOUT_E enLineOut, S5_TIANLAI_LINOUT_LINEIN_E enLineIn);
 HI_U32 HAL_TIANLAI_V510_Init(S5_TIANLAI_SAMPLERATE_E enSampleRate);
 HI_U32 HAL_TIANLAI_V510_DeInit(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __AUD_TIANLAI_ADAC_HAL_H__ */

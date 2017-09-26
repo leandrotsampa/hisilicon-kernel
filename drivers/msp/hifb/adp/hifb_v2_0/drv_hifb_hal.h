@@ -30,21 +30,7 @@ Date		      Author		    Modification
 
 #include <linux/kernel.h>
 
-
 #include "optm_define.h"
-
-
-/*****************************************************************************/
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-/***************************** Macro Definition ******************************/
-
-
 
 /*************************** Structure Definition ****************************/
 typedef struct tagDrvHiFBDeCmpS
@@ -226,15 +212,5 @@ HI_VOID	 OPTM_VDP_WBC_SetCMPOutSize	    (OPTM_VDP_LAYER_WBC_E enLayer, HI_U32 u3
 HI_VOID	 OPTM_MDDRC_SetZoneAddr		    (HI_U32 u32Section, HI_U32 u32StartAddr, HI_U32 u32EndAddr);
 HI_VOID	 OPTM_MDDRC_GetStatus		    (HI_U32 *u32Status);
 OPTM_VDP_DISP_MODE_E OPTM_DISP_GetDispMode  (HI_U32 u32Data);
-
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

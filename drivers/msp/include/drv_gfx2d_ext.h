@@ -26,18 +26,6 @@ Date			    Author		    Modification
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 
@@ -68,12 +56,5 @@ typedef struct
 
 HI_S32 GFX2D_OS_ModInit(HI_VOID);
 HI_VOID GFX2D_OS_ModExit(HI_VOID);
-
-
-#ifdef __cplusplus
-#if __cplusplus
- }
-#endif
-#endif /* __cplusplus */
 
 #endif /*__DRV_GFX2D_EXT_H__ */

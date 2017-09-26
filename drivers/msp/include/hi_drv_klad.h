@@ -20,12 +20,6 @@ History	      :
 #include "hi_type.h"
 #include "hi_unf_klad.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #define HI_KLAD_MAX_SESSION  32 /*5bit*/
 /*|-------------------------handle----------------------------|
   |module:16bit | ca_type:6bit | klad_type:5bit | session:5bit|
@@ -45,11 +39,5 @@ extern "C" {
 #define HI_ERR_KLAD(fmt...)	       HI_ERR_PRINT(HI_ID_CA, fmt)
 #define HI_WARN_KLAD(fmt...)	       HI_WARN_PRINT(HI_ID_CA, fmt)
 #define HI_INFO_KLAD(fmt...)	       HI_INFO_PRINT(HI_ID_CA, fmt)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __HI_DRV_KLAD_H__ */

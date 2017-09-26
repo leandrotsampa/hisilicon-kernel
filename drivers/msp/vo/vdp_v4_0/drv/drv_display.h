@@ -38,13 +38,6 @@ History	      :
 #define	 DISPLAY0_BUS_UNDERFLOW_INT 0x00000080UL
 #define	 DISPLAY1_BUS_UNDERFLOW_INT 0x00000008UL
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 HI_S32 DISP_Init(HI_VOID);
 HI_S32 DISP_DeInit(HI_VOID);
 
@@ -294,18 +287,7 @@ typedef struct tagDISP_PROC_INFO_S
     HI_BOOL  bBootArgsShutdownYpbpr;
 }DISP_PROC_INFO_S;
 
-
-
-
-
 HI_S32 DISP_GetProcInto(HI_DRV_DISPLAY_E enDisp, DISP_PROC_INFO_S *pstInfo);
 #endif
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISPLAY_H__  */

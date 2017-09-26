@@ -5,12 +5,6 @@
 #ifndef __HI_DRV_AO_EXT_H__
 #define __HI_DRV_AO_EXT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #include "hi_drv_dev.h"
 #include "hi_drv_ao.h"
 
@@ -43,11 +37,5 @@ typedef struct
 
 HI_S32 AIAO_DRV_ModInit(HI_VOID);
 HI_VOID AIAO_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif//__HI_DRV_AO_EXT_H__

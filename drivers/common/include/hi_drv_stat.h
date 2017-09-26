@@ -22,12 +22,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define HI_FATAL_STAT(fmt...) HI_FATAL_PRINT(HI_ID_STAT, fmt)
 #define HI_ERR_STAT(fmt...) HI_ERR_PRINT(HI_ID_STAT, fmt)
 #define HI_WARN_STAT(fmt...) HI_WARN_PRINT(HI_ID_STAT, fmt)
@@ -184,11 +178,5 @@ static const HI_CHAR * g_event_name[MAX_EVENT_TYPE_NR] __attribute__((unused)) =
 HI_S32	HI_DRV_LD_Start_Statistics(HI_LD_Scenes_E scenes_id, HI_HANDLE filter);
 HI_VOID HI_DRV_LD_Stop_Statistics(HI_VOID);
 HI_VOID HI_DRV_LD_Notify_Event(HI_LD_Event_S * evt);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_STAT_H__ */

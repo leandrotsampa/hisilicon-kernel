@@ -14,10 +14,6 @@
 #ifndef __DRV_MEDIA_MEM_H__
 #define __DRV_MEDIA_MEM_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <linux/ion.h>
 #include <linux/scatterlist.h>
 #include <asm/cacheflush.h>
@@ -181,9 +177,5 @@ void flush_outer_cache_range(mmb_addr_t phyaddr, mmb_addr_t len,
 void flush_inner_cache(void *viraddr, HI_U32 len);
 int HI_DRV_MMZ_Init(void);
 void HI_DRV_MMZ_Exit(void);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

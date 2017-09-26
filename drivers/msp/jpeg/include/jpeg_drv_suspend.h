@@ -35,24 +35,6 @@ Date			       Author			 Modification
 
 /*****************************************************************************/
 
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
-    /***************************** Macro Definition ******************************/
-
-     /*************************** Enum Definition ****************************/
-
-    /*************************** Structure Definition ****************************/
-
-    /********************** Global Variable declaration **************************/
-
-    /******************************* API declaration *****************************/
-
     /***************************************************************************************
        * func		: JPGE_DRV_Suspend
        * description : get the suspend signale.
@@ -101,15 +83,5 @@ Date			       Author			 Modification
     #endif/** CONFIG_JPEG_SUSPEND **/
 
     /****************************************************************************/
-
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

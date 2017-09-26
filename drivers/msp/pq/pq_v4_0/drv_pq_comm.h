@@ -20,12 +20,6 @@
 #include "drv_pq_ext.h"
 #include "hi_drv_pq.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define NUM2LEVEL(Num)	 (((Num) * 100 + 127) / 255)
 #define LEVEL2NUM(Level) (((Level) * 255 + 50) / 100)
 
@@ -328,14 +322,5 @@ PQ_OUTPUT_MODE_E PQ_COMM_GetOutputMode(HI_VOID);
 HI_VOID PQ_COMM_SetSourceMode(PQ_SOURCE_MODE_E enMode);
 
 HI_VOID PQ_COMM_SetOutputMode(PQ_OUTPUT_MODE_E enMode);
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

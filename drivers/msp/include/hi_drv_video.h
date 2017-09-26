@@ -20,12 +20,6 @@ History	      :
 #include "hi_type.h"
 #include "hi_common.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 typedef enum hiDRV_COLOR_SYS_E
 {
     HI_DRV_COLOR_SYS_AUTO = 0,
@@ -850,12 +844,5 @@ typedef enum hiDISP_STEREO_E
     DISP_STEREO_L_DEPT_G_DEPT,
     DISP_STEREO_BUTT
 } HI_DRV_DISP_STEREO_E;
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_VIDEO_H__ */

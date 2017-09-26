@@ -15,14 +15,6 @@
 //#include "hi_unf_avplay.h"
 #include "vfmw.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ******************************/
-
 /*************************** Enum Definition ****************************/
 /**Defines the source of frame rate.*/
 /**CNcomment: ����֡����Դ���͵�ö�� */
@@ -66,12 +58,5 @@ HI_S32 OMX_PTSREC_SetFrmRate(HI_HANDLE hHandle, HI_FRMRATE_PARAM_S *pstFrmRate);
 HI_S32 OMX_PTSREC_GetFrmRate(HI_HANDLE hHandle, HI_FRMRATE_PARAM_S *pstFrmRate);
 HI_U32 OMX_PTSREC_CalcStamp(HI_HANDLE hHandle, IMAGE *pstImage);
 HI_U32 OMX_PTSREC_GetInterPtsDelta(HI_HANDLE hHandle);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __PTS_RECV_H__ */

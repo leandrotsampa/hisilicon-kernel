@@ -1,10 +1,6 @@
 #ifndef __MALI_GPU_PROC_H__
 #define __MALI_GPU_PROC_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 int kbase_proc_create(void);
 int kbase_proc_destroy(void);
 
@@ -19,7 +15,4 @@ int kbase_opp_update(int freq, int voltage);
 int kbase_get_utilisation(void);
 int kbase_power_status(void);
 
-#ifdef __cplusplus
-}
-#endif
 #endif

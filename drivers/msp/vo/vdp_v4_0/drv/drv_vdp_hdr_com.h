@@ -23,14 +23,6 @@
 #include "hi_drv_video.h"
 #include "hi_drv_win.h"
 
-
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /****************************************************************************
 Structures
 *****************************************************************************/
@@ -85,12 +77,5 @@ HI_VOID GetWinDoviRefInfo(WINDOW_DOLBY_REFERENCE_INFO_S *pstWinDoviRefInfo);
 #define SetWinDoviRefInfo(a,b,c,d)
 #define GetWinDoviRefInfo(a)
 #endif
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_VDP_HDR_COM_H__  */

@@ -7,10 +7,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Max input sample number per-channel */
 #define MAXFRAMESIZE 2048
 
@@ -192,9 +188,5 @@ HI_S32	   ResamplerProcessFrame(HI_VOID*     pInst,
 				     HI_S32	    InRate,
 				     HI_S32	    OutRate,
 				     HI_S32	    bInterleaved);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __HI_DSP_RESAMPLERS_H_ */

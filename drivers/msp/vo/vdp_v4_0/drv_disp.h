@@ -22,13 +22,6 @@
 
 #include "hi_drv_proc.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 typedef struct hiDISP_PROC_FN_S
 {
     DRV_PROC_READ_FN  rdproc;
@@ -55,11 +48,5 @@ typedef struct hiDRV_DISP_GLOBAL_STATE_S
 {
     HI_U32 DispOpenNum[HI_DRV_DISPLAY_BUTT];
 }DRV_DISP_GLOBAL_STATE_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_H__  */

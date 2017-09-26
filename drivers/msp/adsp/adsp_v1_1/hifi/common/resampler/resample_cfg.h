@@ -16,10 +16,6 @@
 #ifndef _RESAMPLERS_CONFIG_H_
 #define _RESAMPLERS_CONFIG_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 //#define ENA_QUALITY_LOW
 #define ENA_QUALITY_MEDIUM
 #define ENA_QUALITY_GOOD

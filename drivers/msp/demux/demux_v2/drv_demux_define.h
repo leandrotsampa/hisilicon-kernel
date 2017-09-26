@@ -14,12 +14,6 @@
 #ifndef __DRV_DEMUX_DEFINE_H__
 #define __DRV_DEMUX_DEFINE_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #include <linux/list.h>
 #include <linux/wait.h>
 
@@ -1086,12 +1080,5 @@ static inline Dmx_Set_S *GetDmxSetByRmxidHelper(HI_U32 RmxId)
     for (pos = list_entry((head)->next, typeof(*pos), list);	\
 	 prefetch(pos->list.next), &pos->list != (head);    \
 	 pos = list_entry(pos->list.next, typeof(*pos), list))
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif	// __DRV_DEMUX_DEFINE_H__

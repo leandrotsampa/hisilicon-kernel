@@ -23,14 +23,6 @@
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
-
 /* CSC Tuning Or No Tuning */
 typedef enum hiHAL_CSC_TYPE_E
 {
@@ -177,13 +169,5 @@ typedef enum  hiWBC_POINT_SEL_E
 
 
 HI_U32 PQ_HAL_GetWbcPointSel(HI_VOID);
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

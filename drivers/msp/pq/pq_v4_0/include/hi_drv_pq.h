@@ -27,12 +27,6 @@
 #include "hi_debug.h"
 #include "drv_pq_define.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define HI_FATAL_PQ(fmt...) HI_TRACE(HI_LOG_LEVEL_FATAL, HI_ID_PQ, fmt)
 #define HI_ERR_PQ(fmt...)   HI_TRACE(HI_LOG_LEVEL_ERROR, HI_ID_PQ, fmt)
 #define HI_WARN_PQ(fmt...)  HI_TRACE(HI_LOG_LEVEL_WARNING, HI_ID_PQ, fmt)
@@ -520,11 +514,5 @@ typedef enum hiPQ_IMAGE_MODE_E
 
 #define HIIOC_PQ_S_ACC_LUT		_IOW(HI_ID_PQ, 136, PQ_ACC_LUT_S)	      /* set ACC Lut*/
 #define HIIOC_PQ_G_ACC_LUT		_IOR(HI_ID_PQ, 137, PQ_ACC_LUT_S)	      /* get ACC Lut*/
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	/* __HI_DRV_PQ_H__ */

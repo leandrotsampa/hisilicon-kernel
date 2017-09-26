@@ -27,12 +27,6 @@
 
 #include "hal_aiao_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define VOLUME_6dB (0x7f)
 #define VOLUME_0dB (0x79)
 #define VOLUME_infdB (0x28)
@@ -130,11 +124,5 @@ HI_U32		       AUTIL_GetPassthFormat(HI_U32 u32Format);
 HI_BOOL		       AUTIL_IsLbrFormat(HI_U32 u32LbrFormat);
 HI_BOOL		       AUTIL_IsHbrFormat(HI_U32 u32HbrFormat);
 HI_BOOL		       AUTIL_IsArcSupportHbr(HI_U32 u32HbrFormat);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

@@ -28,12 +28,6 @@
 #include "hi_debug.h"
 #include "hi_drv_struct.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define MAX_PROC_NAME_LEN	127
@@ -54,11 +48,5 @@ extern "C" {
 /******************************* API declaration *****************************/
 HI_S32 USRPROC_DRV_ModInit(HI_VOID);
 HI_VOID USRPROC_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_USERPROC_H__ */

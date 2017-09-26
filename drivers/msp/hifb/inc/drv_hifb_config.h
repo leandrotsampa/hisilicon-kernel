@@ -23,22 +23,9 @@ Date			   Author		    Modification
 #ifndef __HIFB_CONFIG_H__
 #define __HIFB_CONFIG_H__
 
-
 /*********************************add include here******************************/
 
 #include "hi_type.h"
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
 
 /***************************** Macro Definition ******************************/
 #define CONFIG_HIFB_LAYER_0BUFFER    0
@@ -201,21 +188,5 @@ Date			   Author		    Modification
 #define	 CONFIG_HIFB_CALCSTRIDE_WITH_ONEPOINTTHREE
 
 //#define CONFIG_HIFB_TRANSIT_LOGO_BY_MASK
-
-/*************************** Structure Definition ****************************/
-
-/********************** Global Variable declaration **************************/
-
-
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HIFB_CONFIG_H__ */

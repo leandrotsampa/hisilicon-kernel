@@ -9,10 +9,6 @@
 #include "hi_audsp_aoe.h"
 #include "aoe_aop.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct
 {
     UTIL_GAIN_ATTR_S   stCurrentGain;  //the current gain, inner gain
@@ -37,9 +33,5 @@ typedef struct
     S_AOP_REGS_TYPE* hwAopReg[AOE_MAX_AOP_NUM];
     HI_VOID*	     hAop[AOE_MAX_AOP_NUM];
 } AOP_GLOBAL_SOURCE_S;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

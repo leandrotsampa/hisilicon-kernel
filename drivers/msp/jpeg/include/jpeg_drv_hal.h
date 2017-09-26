@@ -29,33 +29,6 @@ Date		    Author		  Modification
 /*********************************add include here******************************/
 #include "hi_type.h"
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-    /***************************** Macro Definition ******************************/
-
-
-    /*************************** Structure Definition ****************************/
-
-    /***************************  The enum of Jpeg image format	 ******************/
-
-    /********************** Global Variable declaration **************************/
-
-
-    /******************************* API declaration *****************************/
-
-
-
     /*****************************************************************************
     * func		: JPEG_HAL_Init
     * description      : initial the jpeg device
@@ -84,12 +57,5 @@ Date		    Author		  Modification
     HI_VOID DRV_JPEG_ClearIntStatus(HI_U32 IntStatus);
 
     HI_VOID DRV_JPEG_SetIntMask(HI_U32 IntMask);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

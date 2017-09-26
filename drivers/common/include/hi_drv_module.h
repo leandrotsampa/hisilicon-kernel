@@ -18,12 +18,6 @@ History	      :
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #define HI_KMODULE_MAX_COUNT	  (256)
 #define HI_KMODULE_MEM_MAX_COUNT  (256*256)
 
@@ -43,11 +37,5 @@ HI_S32 HI_DRV_MODULE_GetFunction(HI_U32 u32ModuleID, HI_VOID** ppFunc);
 
 HI_S32	MMNGR_DRV_ModInit(HI_U32 u32ModuleCount, HI_U32 u32ModuleMemCount);
 HI_VOID MMNGR_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_MODULE_H__ */

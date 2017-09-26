@@ -19,12 +19,6 @@
 #ifndef __DRV_HDMI_DEBUG_H__
 #define __DRV_HDMI_DEBUG_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #include "hi_type.h"
 #include "drv_hdmi_platform.h"
 #include "drv_hdmi_edid.h"
@@ -37,12 +31,5 @@ HI_S32 DRV_HDMI_DebugSourceWrite(struct file * file,
 HI_S32 DRV_HDMI_DebugEdidRawRead(HDMI_EDID_UPDATE_MODE_E enMode,
 											HI_U8 *pau8Data,
 											HI_U32 u32Len);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
-
 
 #endif	/* __DRV_HDMI_DEBUG_H__ */

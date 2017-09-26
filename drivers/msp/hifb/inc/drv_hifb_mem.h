@@ -35,16 +35,6 @@ Date		    Author		  Modification
 #include "hi_gfx_sys_k.h"
 #include "drv_hifb_config.h"
 
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /***************************** Macro Definition ******************************/
 
 /* define debug level */
@@ -252,12 +242,5 @@ static inline HI_U32 HI_HIFB_GetMemSize(HI_U32 u32Stride,HI_U32 u32Height)
     HI_U32 TotalSize = u32Stride *  u32Height;
     return ((TotalSize + PAGE_SIZE - 1) & (~(PAGE_SIZE - 1)));
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

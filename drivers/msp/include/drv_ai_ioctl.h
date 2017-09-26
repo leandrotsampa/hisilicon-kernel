@@ -9,12 +9,6 @@
 #include "hi_unf_ai.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 typedef struct hiAI_GetDfAttr_Param_S
 {
     HI_UNF_AI_E		 enAiPort;
@@ -103,11 +97,5 @@ typedef struct hiAI_NR_Param_S
 
 #define CMD_AI_PROCINIT _IOWR  (HI_ID_AI, 0x10, AI_ProcInit_Param_S)
 #define CMD_AI_PROCDEINIT _IOW	(HI_ID_AI, 0x11, HI_HANDLE)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

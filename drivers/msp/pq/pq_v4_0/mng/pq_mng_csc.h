@@ -20,11 +20,6 @@
 #include "pq_hal_csc.h"
 #include "drv_pq_comm.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /* �������� */
 typedef enum hiCSC_WINDOW_E
@@ -74,12 +69,5 @@ typedef struct hiCSC_COLOR_TEMP
 HI_S32 PQ_MNG_RegisterCSC(PQ_REG_TYPE_E	 enType);
 
 HI_S32 PQ_MNG_UnRegisterCSC(HI_VOID);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

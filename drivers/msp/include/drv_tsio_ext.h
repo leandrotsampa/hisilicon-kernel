@@ -14,12 +14,6 @@
 #ifndef __DRV_TSIO_EXT_H__
 #define __DRV_TSIO_EXT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 /*
  * export to demux modules.
  */
@@ -29,11 +23,5 @@ typedef struct
 {
     FN_TSIO_DmxFqBpTsioPort pfnDmxFqBpTsioPort;
 } TSIO_EXPORT_FUNC_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif	// __DRV_TSIO_EXT_H__

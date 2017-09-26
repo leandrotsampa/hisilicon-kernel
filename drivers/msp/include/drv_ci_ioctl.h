@@ -5,14 +5,9 @@
 #ifndef __DRV_CI_IOCTL_H__
 #define __DRV_CI_IOCTL_H__
 
-#ifdef __cplusplus
-extern "C"{
-#endif /* __cplusplus */
-
 #include "hi_unf_ci.h"
 #include "hi_drv_ci.h"
 #include "hi_drv_struct.h"
-
 
 typedef enum hiCI_PCCD_VOLT_E
 {
@@ -236,9 +231,5 @@ typedef struct hiCI_COMPAT_PCCD_CIS_S
 #define CMD_CI_COMPAT_PCCD_TSCTRL	   _IOWR(HI_ID_CI, 0x34, CI_COMPAT_PCCD_TSCTRL_S)
 #define CMD_CI_COMPAT_PCCD_GETCIS	   _IOWR(HI_ID_CI, 0x35, CI_COMPAT_PCCD_CIS_S)
 #endif
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif /* End of #ifndef __DRV_CI_IOCTL_H__*/

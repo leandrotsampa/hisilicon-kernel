@@ -63,28 +63,4 @@ typedef struct hiWIN_RROC_FOR_DEVELOPER_S
 
 }HI_WIN_RROC_FOR_DEVELOPER_S;
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
-
-
-
-
-
-
-
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
-
 #endif /*  __DRV_DISP_X_H__  */

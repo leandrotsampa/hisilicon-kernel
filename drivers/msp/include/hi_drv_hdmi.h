@@ -27,12 +27,6 @@
 #include "hi_drv_video.h"
 #include "hi_drv_edid.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-	extern "C"{
-#endif
-#endif
-
 /*
 **HDMI Debug
 */
@@ -240,11 +234,5 @@ HI_S32 HI_DRV_HDMI_GetVideoCapability(HI_UNF_HDMI_ID_E enHdmi, HI_DRV_HDMI_VIDEO
 HI_S32 HI_DRV_HDMI_PreFormat(HI_UNF_HDMI_ID_E enHdmi);
 HI_S32 HI_DRV_HDMI_SetFormat(HI_UNF_HDMI_ID_E enHdmi, HDMI_VIDEO_ATTR_S *pstVideoAttr);
 HI_S32 HI_DRV_HDMI_Attach(HI_UNF_HDMI_ID_E enHdmi, HDMI_VIDEO_ATTR_S *pstVideoAttr);
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif
-/*--------------------------END-------------------------------*/

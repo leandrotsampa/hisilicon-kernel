@@ -21,12 +21,6 @@
 #define __DRV_HDMI_LOG_H__
 #include "hdmi_osal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 /******************************************************************************/
 /* Constants								      */
 /******************************************************************************/
@@ -126,11 +120,5 @@ HI_VOID DRV_HDMI_LogRecord(LOG_LEVEL_E eLevel, LOG_TYPE_FUNC_E eFuncType, const 
 HI_S32 DRV_HDMI_LogCat(LOG_PRINT_MODE_E eMode, HI_CHAR *pFilePath);
 HI_S32 DRV_HDMI_LogSetLevel(LOG_LEVEL_E eLevel);
 HI_S32 DRV_HDMI_LogSetMask(LOG_TYPE_FUNC_E eFuncType);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

@@ -24,12 +24,6 @@ Date		    Author		  Modification
 #ifndef __PNG_DEFINE_H__
 #define __PNG_DEFINE_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	  /* __cplusplus */
-#endif	  /* __cplusplus */
-
 #include <linux/semaphore.h>
 #include <linux/sched.h>
 #include <linux/hardirq.h>
@@ -84,11 +78,5 @@ extern "C" {
 #define PNG_WAIT_EVENT_INTERRUPTIBLE(queue_head, condition) wait_event_interruptible(queue_head, (condition))
 #define PNG_WAKE_UP_INTERRUPTIBLE(queue_head_p) wake_up_interruptible(queue_head_p)
 #define PNG_WAIT_EVENT_INTERRUPTIBLE_TIMEOUT(queue_head, condition, timeout) wait_event_interruptible_timeout(queue_head, (condition), timeout)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	  /* __cplusplus */
-#endif	  /* __cplusplus */
 
 #endif

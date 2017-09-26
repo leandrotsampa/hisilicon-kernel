@@ -54,11 +54,6 @@ typedef void * ump_dd_handle;
 #include <ump/src/library/common/ump_user.h>
 #endif
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 /**
  * Value to indicate an invalid UMP memory handle.
  */
@@ -468,11 +463,6 @@ UMP_KERNEL_API_EXPORT void ump_dd_reference_add(ump_dd_handle mem);
 UMP_KERNEL_API_EXPORT void ump_dd_reference_release(ump_dd_handle mem);
 
 /* @} */
-
-#ifdef __cplusplus
-}
-#endif
-
 
 /** @} */ /* end group ump_kernel_space_api */
 

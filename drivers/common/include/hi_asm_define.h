@@ -5,11 +5,6 @@
 #ifndef __HI_ASM_DEFINE_H__
 #define __HI_ASM_DEFINE_H__
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
-
 #ifdef CONFIG_ARM_UNWIND
 	#define UNWIND(code...) code
 #else
@@ -17,9 +12,5 @@ extern "C"{
 #endif
 
 #define ASCII(code...) code
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __HI_ASM_DEFINE_H__ */

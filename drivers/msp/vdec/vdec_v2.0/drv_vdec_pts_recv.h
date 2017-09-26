@@ -21,18 +21,6 @@
 #include "vfmw.h"
 #include "drv_vdec_private.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ******************************/
-
-/*************************** Structure Definition ****************************/
-
-/********************** Global Variable declaration **************************/
-
 /******************************* API declaration *****************************/
 HI_S32 PTSREC_Init(HI_VOID);
 HI_S32 PTSREC_DeInit(HI_VOID);
@@ -45,12 +33,5 @@ HI_S32 PTSREC_SetFrmRate(HI_HANDLE hHandle, HI_UNF_AVPLAY_FRMRATE_PARAM_S* pstFr
 HI_S32 PTSREC_GetFrmRate(HI_HANDLE hHandle, HI_UNF_AVPLAY_FRMRATE_PARAM_S* pstFrmRate);
 HI_U32 PTSREC_CalcStamp(HI_HANDLE hHandle, VDEC_CHANNEL_S* pstChan, IMAGE* pstImage);
 HI_U32 PTSREC_GetInterPtsDelta(HI_HANDLE hHandle);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __PTS_RECV_H__ */

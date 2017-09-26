@@ -29,28 +29,9 @@ Date					 Author			Modification
 /*********************************add include here******************************/
 #include <linux/ioctl.h>
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define JPGE_IOC_MAGIC		  'j'
-
-/*************************** Structure Definition ****************************/
-
-
-/***************************  The enum of Jpeg image format  ******************/
-
-/********************** Global Variable declaration **************************/
-
 
 /******************************* API declaration *****************************/
 #define JPGE_CREATE_CMD		   _IOWR(JPGE_IOC_MAGIC, 100, Jpge_EncCfg_S)
@@ -61,11 +42,5 @@ extern "C" {
 #define JPGE_DESTROY_CMD	   _IOW(JPGE_IOC_MAGIC,	 102, JPGE_HANDLE)
 
 #define JPGE_CREATEHANDLE_CMD	   _IO(JPGE_IOC_MAGIC,	 103)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__DRV_JPGE_IOCTL_H__ */

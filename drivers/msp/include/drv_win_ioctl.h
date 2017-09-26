@@ -16,17 +16,10 @@ History	      :
 #ifndef __DRV_WIN_IOCTL_H__
 #define __DRV_WIN_IOCTL_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 #include "hi_type.h"
 #include "hi_drv_video.h"
 #include "hi_drv_disp.h"
 #include "hi_drv_win.h"
-
 
 typedef struct hiWIN_CREATE_S
 {
@@ -394,13 +387,5 @@ typedef enum hiIOC_VO_E
 #define CMD_WIN_GET_FROST_MODE _IOWR(HI_ID_VO,IOC_WIN_GET_FROST_MODE, WIN_FROST_MODE_S)
 
 #define CMD_WIN_SET_ALPHA _IOWR(HI_ID_VO,IOC_WIN_SET_ALPHA, WIN_ALPHA_S)
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
-
 
 #endif	/* __DRV_WIN_IOCTL_H__ */

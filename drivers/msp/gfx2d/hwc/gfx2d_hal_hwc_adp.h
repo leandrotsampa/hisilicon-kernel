@@ -18,12 +18,6 @@
 #ifndef _GFX2D_HAL_HWC_ADP_H_
 #define _GFX2D_HWC_HWC_ADP_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define HWC_MAX_LAYERS 7
 
 typedef struct tagHWC_CAPABILITY_S
@@ -66,11 +60,5 @@ typedef struct tagHWC_CAPABILITY_S
 * Others:	 in_para1 should be none-zero
 *******************************************************************************/
 HI_S32 HWC_ADP_GetCapability(HWC_CAPABILITY_S *pstCapability);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_HWC_HWC_ADP_H_*/

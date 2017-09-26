@@ -23,21 +23,8 @@ Date			   Author		    Modification
 #ifndef __OPTM_DEFINE_H__
 #define __OPTM_DEFINE_H__
 
-
 /*********************************add include here******************************/
 #include "hi_type.h"
-
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
 
 /***************************** Macro Definition ******************************/
 // test switch
@@ -555,19 +542,5 @@ typedef struct tagVDP_GFX_MASK_S
     HI_U32 u32Mask_b;
 
 } OPTM_VDP_GFX_MASK_S;
-
-
-
-/********************** Global Variable declaration **************************/
-
-/******************************* API declaration *****************************/
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __OPTM_DEFINE_H__ */

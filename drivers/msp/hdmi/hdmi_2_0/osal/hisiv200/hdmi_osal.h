@@ -27,12 +27,6 @@
 #include "drv_hdmi_platform.h"
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 /******************************************************************************/
 /* define type for hdmi							      */
 /******************************************************************************/
@@ -126,11 +120,5 @@ HI_U32 HDMI_OSAL_GetTimeInMs(HI_VOID);
 /** get system time in Us
 **/
 HI_U32 HDMI_OSAL_GetTimeInUs(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

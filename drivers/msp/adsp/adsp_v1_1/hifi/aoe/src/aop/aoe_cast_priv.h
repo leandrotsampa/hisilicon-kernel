@@ -9,10 +9,6 @@
 #include "hi_audsp_aoe.h"
 #include "aoe_cast.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef struct
 {
     HI_BOOL bLinearMode; /*< gain tpye of volume*/
@@ -40,9 +36,5 @@ typedef struct
 
     CAST_ATTR_S	      stCastAttr;
 } CAST_SOURCE_S;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

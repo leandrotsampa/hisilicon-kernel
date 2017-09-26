@@ -19,10 +19,6 @@
 #define __HI_DRV_CI_H__
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define HI_FATAL_CI(fmt...) \
     HI_FATAL_PRINT(HI_ID_CI, fmt)
 
@@ -77,7 +73,4 @@ extern "C" {
 #define CI_PCCD_MAX_BUFFERSIZE (1024)
 
 
-#ifdef __cplusplus
-}
-#endif
 #endif

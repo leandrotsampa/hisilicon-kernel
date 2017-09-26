@@ -22,11 +22,6 @@
 #include <linux/seq_file.h>
 #include "hi_type.h"
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 /** @addtogroup H_PROC */
 /** @{ */
 
@@ -81,11 +76,6 @@ ssize_t HI_DRV_PROC_ModuleWrite(struct file * file,
 DRV_PROC_ITEM_S* HI_DRV_PROC_AddModule(HI_CHAR *,DRV_PROC_EX_S*, HI_VOID *);
 HI_VOID HI_DRV_PROC_RemoveModule(HI_CHAR *);
 
-
 /** @} */
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __HI_DRV_PROC_H__ */

@@ -7,12 +7,6 @@
 
 #include "hi_drv_video.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 /* source information.
    venc will get / release frame or send private info to sourec by function pointer */
 typedef HI_S32	(*FN_VENC_GET_FRAME)(HI_HANDLE handle, HI_DRV_VIDEO_FRAME_S* pstImage);
@@ -60,11 +54,5 @@ typedef struct
 
 HI_S32 VENC_DRV_ModInit(HI_VOID);
 HI_VOID VENC_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif //__DRV_VENC_EXT_H__

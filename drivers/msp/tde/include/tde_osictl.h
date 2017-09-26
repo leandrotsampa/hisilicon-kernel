@@ -25,11 +25,6 @@ Date			    Author		    Modification
 
 #include "hi_tde_type.h"
 #include "tde_adp.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 /****************************************************************************/
 /*			       TDE osi ctl functions define		    */
@@ -386,10 +381,5 @@ HI_S32 TdeOsiQuickCopyEx(TDE_HANDLE s32Handle,	 TDE2_SURFACE_S* pstSrc, TDE2_REC
 HI_S32 TdeOsiSingleBlitEx(TDE_HANDLE s32Handle,	  TDE2_SURFACE_S* pstSrc, TDE2_RECT_S  *pstSrcRect,
 			 TDE2_SURFACE_S* pstDst, TDE2_RECT_S *pstDstRect, TDE2_OPT_S* pstOpt,HI_BOOL bMMZForSrc,HI_BOOL bMMZForDst);
 #endif
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif	/* _TDE_OSICTL_H_ */

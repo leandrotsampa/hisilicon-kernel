@@ -32,14 +32,6 @@ Date		    Author		  Modification
 
 /*****************************************************************************/
 
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
     /***************************** Macro Definition ********************************/
     #define VID_CMD_MAGIC     'j'
 
@@ -292,14 +284,5 @@ Date		    Author		  Modification
     HI_VOID HI_DRV_JPEG_GetLuPixSum(HI_U32 DecHandle,HI_U64* pu64LuPixValue);
 
     /****************************************************************************/
-
-
-#ifdef __cplusplus
-
-#if __cplusplus
-
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_JPEG_H__*/

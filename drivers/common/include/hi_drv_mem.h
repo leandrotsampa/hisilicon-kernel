@@ -24,12 +24,6 @@
 #include "hi_module.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /*Define Debug Level For MEM */
 #define HI_FATAL_MEM(fmt...)	HI_FATAL_PRINT(HI_ID_MEM, fmt)
 #define HI_ERR_MEM(fmt...)	HI_ERR_PRINT(HI_ID_MEM, fmt)
@@ -61,11 +55,5 @@ HI_VOID	    hi_kfree(HI_U32 module_id, HI_VOID *ptr);
 HI_VOID*    hi_vmalloc(HI_U32 module_id, HI_U32 size);
 HI_VOID	    hi_vfree(HI_U32 module_id, HI_VOID *ptr);
 #endif
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* End of #ifndef __HI_DRV_MEM_H__ */

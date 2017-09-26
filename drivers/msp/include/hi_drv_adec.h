@@ -25,12 +25,6 @@
 #include "hi_mpi_adec.h"
 #include "hi_module.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #define ADEC_INSTANCE_MAXNUM	8
 
 #define ADEC_MAX_INPUT_BLOCK_SIZE 0x10000   /* max input data size of decoder */
@@ -387,11 +381,5 @@ typedef struct hiADEC_PROC_ITEM_S
 
 #define HI_INFO_ADEC(fmt...) \
     HI_INFO_PRINT(HI_ID_ADEC, fmt)
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __MPI_PRIV_ADEC_H__ */

@@ -24,12 +24,6 @@
 #include "hi_error_mpi.h"
 #include "hi_drv_video.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-	extern "C"{
-#endif
-#endif
-
 #define HI_FATAL_SYNC(fmt...) \
 	    HI_FATAL_PRINT(HI_ID_SYNC, fmt)
 
@@ -178,12 +172,5 @@ HI_S32 HI_DRV_SYNC_VidJudge(HI_HANDLE hSync, SYNC_VID_INFO_S *pVidInfo, SYNC_VID
 HI_S32 HI_DRV_SYNC_GetAttr(HI_HANDLE hSync, HI_UNF_SYNC_ATTR_S *pstSyncAttr);
 HI_S32 HI_DRV_SYNC_SetAttr(HI_HANDLE hSync, HI_UNF_SYNC_ATTR_S *pSyncAttr);
 //#endif
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

@@ -23,10 +23,6 @@
 #include "hi_type.h"
 #include "hi_module.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 extern char* StorePath;
 
 #define STORE_PATH StorePath
@@ -82,10 +78,6 @@ HI_S32 HI_DRV_LOG_SetPath(HI_CHAR *pszPath, HI_U32 u32PathLen);
 HI_S32 HI_DRV_LOG_GetPath(HI_S8* ps8Buf, HI_U32 u32Len);
 HI_S32 HI_DRV_LOG_SetStorePath(HI_CHAR *pszPath, HI_U32 u32PathLen);
 HI_S32 HI_DRV_LOG_GetStorePath(HI_S8* ps8Buf, HI_U32 u32Len);
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif /* End of #ifndef __HI_DRV_LOG_H__ */

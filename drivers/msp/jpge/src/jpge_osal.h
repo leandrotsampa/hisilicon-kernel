@@ -32,28 +32,12 @@ Date		      Author		    Modification
 
 #include <linux/semaphore.h>
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define JPGE_REG_BASE_ADDR 0xF8C90000
 #define JPGE_IRQ_ID	   (102+32)
 
 typedef unsigned long  JPGE_LOCK_FLAG;
-
-/*************************** Structure Definition ****************************/
-
-
-/***************************  The enum of Jpeg image format  ******************/
 
 /********************** Global Variable declaration **************************/
 
@@ -75,11 +59,5 @@ HI_S32	   JpgeOsal_MutexUnlock	      ( JPGE_SEM_S *pMutex );
 
 HI_VOID*   JpgeOsal_MapRegisterAddr   ( HI_U32	phyAddr, HI_U32 len );
 HI_VOID	   JpgeOsal_UnmapRegisterAddr ( HI_VOID *pVir );
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__JPGE_OSAL_H__ */

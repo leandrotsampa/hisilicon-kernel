@@ -27,12 +27,6 @@
 #include "hi_drv_dev.h"
 #include "../mng/pq_mng_hdr_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 typedef S_CAS_REGS_TYPE	   PQ_VPSS_CFG_REG_S;
 typedef S_VPSSWB_REGS_TYPE PQ_VPSS_WBC_REG_S;
 
@@ -1070,11 +1064,5 @@ HI_S32 DRV_PQ_SetDefaultParam(HI_BOOL bDefault);
 HI_S32 DRV_PQ_InitGfxZme(HI_VOID);
 HI_S32 DRV_PQ_SetGfxZme(HI_PQ_GFX_LAYER_E enGfxZmeLayer, HI_PQ_GFX_ZME_PARA_S *pstGfxZmePara);
 HI_S32 DRV_PQ_SetGfxCscCoef(HI_PQ_GFX_LAYER_E enGfxCscLayer, HI_PQ_GFX_CSC_PARA_S *pstGfxCscPara);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* End of #ifndef __DRV_PQ_EXT_H__ */

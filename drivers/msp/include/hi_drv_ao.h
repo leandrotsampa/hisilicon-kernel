@@ -18,12 +18,6 @@ History	      :
 #ifndef __HI_DRV_AO_H__
 #define __HI_DRV_AO_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "hi_debug.h"
 #include "hi_unf_sound.h"
@@ -684,11 +678,5 @@ typedef struct
     HI_PHYS_ADDR_T tPhyRptr;
     HI_U32 u32Size;
 } SND_PORT_KERNEL_ATTR_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

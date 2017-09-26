@@ -25,12 +25,6 @@
 
 #include "hi_unf_pwm.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-    extern "C"{
-#endif
-#endif
-
 typedef struct tagPWM_REG_S
 {
     HI_U32	u32Cfg;
@@ -64,13 +58,5 @@ typedef enum hiIOC_PWM_E
 #define CMD_PWM_GETATTR		     _IOWR(HI_ID_PWM, IOC_PWM_GETATTR, PWM_ATTR_CMD_PARA_S)
 #define CMD_PWM_SETATTR		     _IOWR(HI_ID_PWM, IOC_PWM_SETATTR, PWM_ATTR_CMD_PARA_S)
 #define CMD_PWM_SENDSIGNAL	     _IOWR(HI_ID_PWM, IOC_PWM_SENDSIGNAL, PWM_SIGNAL_CMD_PARA_S)
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

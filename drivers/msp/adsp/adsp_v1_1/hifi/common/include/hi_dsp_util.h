@@ -9,12 +9,6 @@
 #include "hi_dsp_common.h"
 #include "hi_audsp_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define AOE_VOL_MAX_VALUE 18
 #define AOE_VOL_MIN_VALUE (-81)
 #define AOE_VOLCOEF_NUM 100
@@ -112,11 +106,5 @@ HI_VOID FADE_OutProcess(HI_VOID* hFade, HI_VOID *pInBuf, HI_U32 samples);
 HI_VOID FADE_Flush(HI_VOID* hFade, HI_U32 inRate, HI_U32 BitPerSample,HI_S32 Channels);
 HI_VOID UTIL_DRE_16BIT_Process(HI_DSP_AUDFRAME_S *pstFrame, UTIL_DRE_FILTER_STATE *pstDreState);
 HI_VOID UTIL_DRE_Mute_16BIT_Process(HI_DSP_AUDFRAME_S *pstFrame, UTIL_DRE_FILTER_STATE *pstDreState);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

@@ -14,12 +14,6 @@
 #ifndef _HI_GFX2D_ERRCODE_H_
 #define _HI_GFX2D_ERRCODE_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define HI_ERR_GFX2D_BASE 0x80000001
 
 enum
@@ -46,11 +40,5 @@ enum
     HI_ERR_GFX2D_INTERRUPT,		  /*sync task interrupted by system*/
     HI_ERR_GFX2D_SYS,
 };
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif /*_HI_GFX2D_ERRCODE_H_*/

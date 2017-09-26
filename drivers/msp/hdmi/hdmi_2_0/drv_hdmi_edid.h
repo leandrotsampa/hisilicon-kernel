@@ -19,13 +19,6 @@
 #ifndef __DRV_HDMI_EDID_H__
 #define __DRV_HDMI_EDID_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 #include "hi_type.h"
 #include "drv_hdmi_infoframe.h"
 #include "drv_hdmi_common.h"
@@ -557,13 +550,5 @@ HI_S32 DRV_HDMI_EdidStatusGet(HDMI_EDID_INFO_S *pstEdidInfo,\
 											HDMI_EDID_STATUS_S *pstStat);
 
 HI_S32 DRV_HDMI_EdidReset(HDMI_EDID_INFO_S *pstEdidInfo);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
-
 
 #endif	/* __DRV_HDMI_EDID_H__ */

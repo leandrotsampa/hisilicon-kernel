@@ -23,12 +23,6 @@
 #include "hi_unf_venc.h"
 #include "hi_drv_file.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #define VENC_MAX_CHN_NUM 8
 
 #define HI_FATAL_VENC(fmt...) HI_FATAL_PRINT(HI_ID_VENC, fmt)
@@ -222,11 +216,5 @@ HI_S32 HI_DRV_VENC_GetAttr(HI_HANDLE hVenc, HI_UNF_VENC_CHN_ATTR_S* pstAttr);
 HI_S32 HI_DRV_VENC_RequestIFrame(HI_HANDLE hVenc);
 HI_S32 HI_DRV_VENC_QueueFrame(HI_HANDLE hVenc, HI_UNF_VIDEO_FRAME_INFO_S* pstFrameinfo);
 HI_S32 HI_DRV_VENC_DequeueFrame(HI_HANDLE hVenc, HI_UNF_VIDEO_FRAME_INFO_S* pstFrameinfo);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif //__HI_DRV_VENC_H__

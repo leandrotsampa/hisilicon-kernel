@@ -25,22 +25,10 @@
 #include "hi_mpi_adec.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 HI_S32		HI_DRV_ADEC_Init(HI_VOID);
 HI_VOID		HI_DRV_ADEC_DeInit(HI_VOID);
 
 HI_S32		ADEC_DRV_ModInit(HI_VOID);
 HI_VOID		ADEC_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif //__HI_DRV_ADEC_H__

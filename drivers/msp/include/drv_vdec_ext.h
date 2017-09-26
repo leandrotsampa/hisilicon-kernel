@@ -5,12 +5,6 @@
 #ifndef __DRV_VDEC_EXT_H__
 #define __DRV_VDEC_EXT_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 #include "hi_type.h"
 #include "drv_vdec_ioctl.h"
 #include "hi_drv_vdec.h"
@@ -111,11 +105,5 @@ typedef struct tagVDEC_EXPORT_FUNC_S
 
 HI_S32 VDEC_DRV_ModInit(HI_VOID);
 HI_VOID VDEC_DRV_ModExit(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __DRV_VDEC_EXT_H__ */

@@ -25,34 +25,12 @@ Date		    Author		  Modification
 #ifndef __DRV_HIFB_BLIT_H__
 #define __DRV_HIFB_BLIT_H__
 
-
 /*********************************add include here******************************/
 #include <linux/fb.h>
 
 #include "hi_tde_type.h"
 #include "hifb.h"
 #include "drv_hifb_common.h"
-
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
-
-
-
-/***************************** Macro Definition ******************************/
-
 
 /*************************** Structure Definition ****************************/
 typedef struct
@@ -112,19 +90,7 @@ typedef struct
     HI_S32  (*HIFB_DRV_TdeClose)       (HI_VOID);
 }HIFB_DRV_TDEOPS_S;
 
-
-/********************** Global Variable declaration **************************/
-
-
-
 /******************************* API declaration *****************************/
 HI_VOID DRV_HIFB_GetGfx2dCallBackFunction(HIFB_DRV_TDEOPS_S *Gfx2dCallBackFunction);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

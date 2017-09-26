@@ -12,10 +12,6 @@
 #include "hi_unf_mce.h"
 #include "hi_unf_pdm.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define MCE_DEF_BASEPARAM_SIZE	    (8 * 1024)
 #define MCE_DEF_LOGOPARAM_SIZE	    (8 * 1024)
 #define MCE_DEF_PLAYPARAM_SIZE	    (8 * 1024)
@@ -230,10 +226,5 @@ HI_S32 HI_DRV_PDM_GetData(const HI_CHAR *BufName, HI_U8 **pDataAddr, HI_U32 *pu3
 
 /************** reserve mem ***************/
 //void pdm_reserve_mem(void);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

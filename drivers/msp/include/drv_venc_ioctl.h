@@ -26,13 +26,6 @@
 
 #include "drv_venc_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 typedef struct hiVENC_BUF_OFFSET_S
 {
     HI_U32 u32StrmBufOffset[2];
@@ -171,10 +164,5 @@ typedef struct hiVENC_INFO_FLUSH_PORT_S
 
 #define CMD_VENC_FLUSH_PORT _IOWR(IOC_TYPE_VENC, 0x13,VENC_INFO_FLUSH_PORT_S)
 /////////////////////////////////////////////////////////////////////////////// end
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif //__HI_DRV_VENC_H__

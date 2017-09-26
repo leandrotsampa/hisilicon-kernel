@@ -9,12 +9,6 @@
 #include "hi_drv_disp.h"
 #include "hi_drv_dev.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 HI_S32 HDMI_DRV_ModInit(HI_VOID);
 HI_VOID HDMI_DRV_ModExit(HI_VOID);
 
@@ -70,14 +64,5 @@ typedef struct
     FN_HDMI_SetHdrMode		pfnHdmiSetHdrMode;
 
 }HDMI_EXPORT_FUNC_S;
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __DISP_EXT_H__ */

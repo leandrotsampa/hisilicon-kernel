@@ -22,12 +22,6 @@ History	      :
 #include "hi_debug.h"
 #include "hi_unf_ai.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define AI_MAX_TOTAL_NUM    (4)
 #define AI_MAX_HANDLE_ID    ((HI_ID_AI << 16) | AI_MAX_TOTAL_NUM)
 #define AI_MIN_HANDLE_ID    (HI_ID_AI << 16)
@@ -234,11 +228,5 @@ typedef struct
     HI_UNF_AI_HDMI_DATA_TYPE_E enDataType;
 #endif
 } AI_PROC_INFO_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif

@@ -27,11 +27,7 @@
 #include "drv_pq_define.h"
 //#include "drv_pq_ext.h"
 #include "hi_drv_edid.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
+
 #define HI_FATAL_DISP(fmt...) \
 	    HI_FATAL_PRINT(HI_ID_DISP, fmt)
 
@@ -666,11 +662,5 @@ HI_S32 HI_DRV_DISP_UnRegCallback(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_CALLBACK_T
 
 HI_S32 HI_DRV_DISP_FreeLogoMem(HI_VOID);
 HI_S32 HI_DRV_DISP_GetLogoInfor(HI_DRV_DISP_VideoLogoInfo *pstLogoInfor);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

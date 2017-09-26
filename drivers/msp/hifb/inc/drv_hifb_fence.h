@@ -25,28 +25,14 @@ Date		    Author		  Modification
 #ifndef __DRV_HIFB_FENCE_H__
 #define __DRV_HIFB_FENCE_H__
 
-
 /*********************************add include here******************************/
 #include <sw_sync.h>
 
 #include "drv_hifb_osr.h"
 
-/*****************************************************************************/
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C"
-{
-#endif
-#endif /* __cplusplus */
-
-
-
 /***************************** Macro Definition ******************************/
 
 #define HIFB_FENCE_NAME		   "hifb_fence"
-
 
 /*************************** Structure Definition ****************************/
 typedef struct
@@ -75,12 +61,5 @@ HI_S32	DRV_HIFB_FENCE_Create(HI_VOID);
 HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable);
 HI_VOID DRV_HIFB_WaiteRefreshEnd(HI_BOOL ShouldWaite);
 HI_S32	DRV_HIFB_FENCE_Waite(struct sync_fence *fence, long timeout);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

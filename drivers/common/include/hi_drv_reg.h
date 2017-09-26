@@ -16,13 +16,6 @@ History	      :
 #ifndef __HI_DRV_REG_H__
 #define __HI_DRV_REG_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /*************** !!! important !!! ***************/
 /*
 never write reg like this:
@@ -67,11 +60,5 @@ always write reg like this:
 #ifndef HI_REG_WRITE
 #define HI_REG_WRITE HI_REG_WRITE32
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HI_REG_H__ */

@@ -7,13 +7,6 @@
 
 #include "hi_type.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 typedef union
 {
 	struct
@@ -562,11 +555,5 @@ typedef struct
     SCI_SYNCTX_REG	  SciSyncTx;
     SCI_SYNCRX_REG	      SciSyncRx;
 }SCI_REG_S;
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

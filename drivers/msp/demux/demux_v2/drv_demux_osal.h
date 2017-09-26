@@ -55,10 +55,6 @@
  *  Interface definitions of the OS abstraction layer.
  */
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif /* __cplusplus */
 /**********************************************************************
 * INTERRUPT
 **********************************************************************/
@@ -113,9 +109,5 @@ HI_VOID		      UNF_OSAL_Sleep(HI_U32 mSec);
 
 
 HI_VOID DMX_AcrtUsSleep(HI_U32 us);
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif

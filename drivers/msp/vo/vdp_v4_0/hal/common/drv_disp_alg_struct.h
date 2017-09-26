@@ -19,13 +19,6 @@ History	      :
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 typedef struct tagDISP_ALG_VERSION_S
 {
     HI_U32 u32VersionPartL;
@@ -74,16 +67,5 @@ typedef struct tagDISP_ALG_RGB_S
     HI_U8 u8G;
     HI_U8 u8B;
 }DISP_ALG_RGB_S;
-
-
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_ALG_STRUCT_H__  */

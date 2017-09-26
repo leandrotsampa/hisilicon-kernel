@@ -7,13 +7,6 @@
 
 #include "hi_type.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 typedef struct hiHDMI_DOLBY_CAPS_VER_0_S
 {
     HI_U8	u8DMmajorVersion;	/* the major version of display management implemented. only support when u8VSVDBVersion = 0.*/
@@ -106,12 +99,5 @@ typedef struct
 {
     HI_DRV_HDMI_BASE_DISP_PARA_S  stBasicDispPara;
 }HI_DRV_HDMI_SINK_CAPABILITY_S;
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

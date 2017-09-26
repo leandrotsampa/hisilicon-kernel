@@ -13,12 +13,6 @@
 
 #ifndef _HWC_FILTERPARA_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 #define HWC_FILTER_LEVELS 7 /*�˲��ȼ�,��Ϊ7��*/
 #define HWC_FILTER_PHASE 17 /*��λ,32��λ,��Ҫ17��ϵ��*/
 #define HWC_FILTER_HORIZON_LUM_TAP  8	/*ˮƽ�����˲�����*/
@@ -711,11 +705,5 @@ static HI_S32 gs_as32CVerticalCoefOfTap4[HWC_FILTER_LEVELS * HWC_FILTER_PHASE * 
     31, 235, 224, 22,
     26, 230, 230, 26,
 };
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
 
 #endif /* _HWC_FILTERPARA_H_*/

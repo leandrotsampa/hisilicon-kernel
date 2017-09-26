@@ -17,12 +17,6 @@
 #ifndef _GFX2D_HAL_HWC_H_
 #define _GFX2D_HAL_HWC_H_
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 /*******************************************************************************
 * Function:	 GFX2D_HAL_HWC_Init
 * Description:
@@ -138,11 +132,5 @@ HI_U32 GFX2D_HAL_HWC_GetIntStatus(HI_VOID);
 HI_U32 GFX2D_HAL_HWC_GetIsrNum(HI_VOID);
 
 HI_U32 GFX2D_HAL_HWC_GetBaseAddr(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_HAL_HWC_H_*/

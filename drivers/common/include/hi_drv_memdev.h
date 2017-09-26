@@ -28,12 +28,6 @@
 #include "hi_debug.h"
 #include "hi_drv_struct.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define UMAP_DEVNAME_MEMDEV	      UMAP_NAME HI_MOD_MEM
@@ -52,12 +46,5 @@ extern "C" {
 
 HI_S32 MEMDEV_DRV_ModInit(HI_VOID);
 HI_S32 MEMDEV_DRV_ModExit(HI_VOID);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /* __HI_DRV_MEMDEV_H__ */

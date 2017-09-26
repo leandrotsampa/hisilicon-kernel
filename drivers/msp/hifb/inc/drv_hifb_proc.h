@@ -30,15 +30,6 @@ Date		      Author		    Modification
 
 #include "drv_hifb_config.h"
 
-
-/*****************************************************************************/
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 #ifdef CFG_HIFB_PROC_SUPPORT
 
 /***************************** Macro Definition ******************************/
@@ -92,13 +83,6 @@ HI_VOID HIFB_PROC_CountVoCallBackScanLineAbnormalTimes(HI_U32 LayerID);
 HI_VOID HIFB_PROC_SetStartAndUpScanLine(HI_U32 StartScanLine, HI_U32 UpScanLine);
 HI_VOID HIFB_PROC_SetVoCallBackInOutScanLine(HI_U32 LayerId, HI_U32 ScanLine, HI_BOOL bInScanLine);
 HI_VOID HIFB_PROC_CheckScanLineAbnormal(HI_U32 LayerID, HI_BOOL *pAbnormal);
-#endif
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif
 
 #endif

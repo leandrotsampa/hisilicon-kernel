@@ -21,13 +21,6 @@ History	      :
 #include "drv_disp_hal.h"
 
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 #define DEF_DISP_ISR_LIST_LENGTH 20
 
 typedef enum tagISRFUNC_CTRL_FLAG_E {
@@ -83,12 +76,5 @@ HI_S32 DISP_ISR_SetEvent(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_CALLBACK_EVENT_E e
 HI_S32 DISP_ISR_SetDispInfo(HI_DRV_DISPLAY_E enDisp, HI_DISP_DISPLAY_INFO_S *pstDispInfo);
 
 HI_S32 DISP_ISR_Main(HI_S32 irq, HI_VOID *dev_id);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_ISR_H__  */

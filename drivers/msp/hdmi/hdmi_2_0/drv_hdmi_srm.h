@@ -19,10 +19,6 @@
 #ifndef __DRV_HDMI_SRM_H__
 #define __DRV_HDMI_SRM_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define SRM_ID_SIGNIFIES			0x9
 #define SRM_HDCP2X_INDICATOR		0x1
 #define SRM_SIZE_DEV_ID				5
@@ -133,11 +129,5 @@ HI_S32	DRV_HDMI_SrmSet(HI_U8 *pu8Data,HI_U32 u32Len,HI_BOOL bFromUser);
 HI_S32	DRV_HDMI_SrmCheck(HI_U8 *pu8DevIdList,HI_U32 u32DevIdNum);
 
 HI_S32	DRV_HDMI_SrmGet(SRM_INFO_S **ppstSrmInfo);
-
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif	/* __DRV_HDMI_SRM_H__ */

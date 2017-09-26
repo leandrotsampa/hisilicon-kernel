@@ -19,14 +19,6 @@
 #ifndef __HDMI_PRODUCT_DEFINE_H__
 #define __HDMI_PRODUCT_DEFINE_H__
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
-
 #include "hi_type.h"
 
 #ifdef HDMI_BUILD_IN_BOOT
@@ -97,11 +89,5 @@ HI_U32	HDMIRegReadU32 (HI_U32 u32RegAddr);
 
 
 HI_VOID DRV_HDMI_ProdIoTrimSet(HI_VOID);
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
-
 
 #endif	/* __HDMI_PRODUCT_DEFINE_H__ */

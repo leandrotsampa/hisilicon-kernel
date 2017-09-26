@@ -26,13 +26,6 @@ History	      :
 #include "drv_disp_alg_gamma.h"
 #include "hi_drv_mmz.h"
 #endif
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 
 typedef struct tagDISP_DA_FUNCTION_S
 {
@@ -49,12 +42,5 @@ HI_S32 DISP_DA_Init(HI_DRV_DISP_VERSION_S *pstVersion);
 HI_S32 DISP_DA_DeInit(HI_VOID);
 
 DISP_DA_FUNCTION_S *DISP_DA_GetFunction(HI_VOID);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_X_H__  */

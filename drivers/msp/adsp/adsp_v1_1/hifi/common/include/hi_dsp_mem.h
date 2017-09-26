@@ -5,10 +5,6 @@
 #ifndef __HI_DSP_MEM_H__
 #define __HI_DSP_MEM_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "hi_type.h"
 #include "hi_dsp_common.h"
 
@@ -86,10 +82,6 @@ HI_VOID* HI_ADSP_VMALLOC_Aligned(HI_U32 u32ModuleID, HI_U32 u32Size, HI_U32 iAli
 N/A
 */
 HI_VOID HI_ADSP_VFREE_Aligned(HI_U32 u32ModuleID, HI_VOID* pMemAddr);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif
 /** @} */

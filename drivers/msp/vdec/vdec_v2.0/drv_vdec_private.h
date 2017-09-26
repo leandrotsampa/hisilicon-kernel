@@ -19,12 +19,6 @@
 #include "hi_drv_video.h"
 #include "hi_drv_vdec.h"
 #include "vfmw_ext.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 
 /* VDEC VERSION */
 #define VDEC_VERSION		    (2017031000)
@@ -464,11 +458,5 @@ HI_S32 VDEC_Ioctl(struct inode* inode,	struct file*  filp,  unsigned int  cmd,	 
 HI_S32 VDEC_FindVpssHandleByVdecHandle(HI_HANDLE hVdec, HI_HANDLE* phVpss);
 HI_S32 VDEC_DRV_CreateTask(HI_VOID);
 HI_VOID VDEC_DRV_DestoryTask(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /* __HI_VDEC_KER_TEST_H__ */

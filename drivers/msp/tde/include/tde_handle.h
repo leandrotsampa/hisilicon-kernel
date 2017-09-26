@@ -23,22 +23,10 @@ Date			    Author		    Modification
 #ifndef	 __TDE_HANDLE_H__
 #define	 __TDE_HANDLE_H__
 
-#ifdef __cplusplus
-      #if __cplusplus
-extern "C"
-{
-      #endif
-#endif /* __cplusplus */
 #include <linux/list.h>
 #include <linux/mm.h>
 #include "tde_define.h"
 #include "tde_osilist.h"
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
 
 typedef struct hiHandleMgr
 {
@@ -91,9 +79,4 @@ HI_VOID destroy_handle(HI_VOID);
 *****************************************************************************/
 HI_VOID TdeFreePendingJob(HI_VOID);
 
-#ifdef __cplusplus
-	#if __cplusplus
-}
-	#endif
-   #endif /* __cplusplus */
 #endif /*__TDE_HANDLE_H__ */

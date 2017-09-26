@@ -20,12 +20,6 @@ History	      :
 
 #include "hi_type.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define AIAO_CAST_BUFSIZE_MIN 2048
 /***************************** Macro Definition ******************************/
 typedef enum
@@ -88,11 +82,5 @@ HI_U32			HAL_CAST_ReadData(AIAO_CAST_ID_E enCAST, HI_U32* pu32DataOffset, HI_U32
 HI_U32			HAL_CAST_ReleaseData(AIAO_CAST_ID_E enCAST, HI_U32 u32DestSize);
 HI_U32			HAL_CAST_QueryBufData(AIAO_CAST_ID_E enCast);
 HI_U32			HAL_CAST_QueryBufFree(AIAO_CAST_ID_E enCast);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif	// __HI_HAL_CAST_H__

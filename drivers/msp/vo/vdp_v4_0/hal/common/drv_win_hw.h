@@ -16,21 +16,6 @@ History	      :
 #ifndef __DRV_WIN_HW_H__
 #define __DRV_WIN_HW_H__
 
-
 #include "drv_disp_com.h"
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_WIN_HW_H__  */

@@ -28,25 +28,7 @@ Date		    Author		  Modification
 /***************************** add include here*********************************/
 
 #include "hi_drv_dev.h"
-/*****************************************************************************/
-
 #include "hi_drv_jpeg.h"
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ********************************/
-
-/***************************** Structure Definition ****************************/
-
-/***************************** Global Variable declaration *********************/
-
-/***************************** API forward declarations ************************/
 
 /***************************** API realization *********************************/
 typedef HI_S32	 (*FN_JPGE_ModInit)(HI_VOID);
@@ -81,11 +63,5 @@ typedef struct
 HI_VOID JPEG_DRV_ModExit   (HI_VOID);
 HI_S32 JPEG_DRV_ModInit	   (HI_VOID);
 HI_S32 JPEG_DRV_K_ModInit  (HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__DRV_JPEG_EXT_H__ */

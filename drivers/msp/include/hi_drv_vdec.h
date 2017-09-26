@@ -28,12 +28,6 @@
 #include "hi_drv_video.h"
 #include "drv_omxvdec_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #define HI_MALLOC_VDEC(size)	HI_MALLOC(HI_ID_VDEC, size)
 #define HI_FREE_VDEC(addr)	HI_FREE(HI_ID_VDEC, addr)
 
@@ -260,11 +254,5 @@ HI_S32 HI_VDEC_Chan_VORlsFrame(HI_HANDLE hPort, HI_DRV_VIDEO_FRAME_S *pstVpssFra
 HI_S32 HI_VDEC_Chan_VOChangeWinInfo(HI_HANDLE hPort,HI_DRV_WIN_PRIV_INFO_S* pstWinInfo);
 HI_VOID HI_DRV_VDEC_SetOmxCallBacks(OMX_EXPORT_FUNC_S* OmxCallbacks);
 HI_VOID HI_DRV_VDEC_ReportEsRels(HI_HANDLE hHandle);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 #endif /* End of #ifndef __HI_DRV_VDEC_H__ */

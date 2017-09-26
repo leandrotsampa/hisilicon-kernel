@@ -30,29 +30,6 @@ Date					Author			Modification
 #include "hi_drv_dev.h"
 #include "hi_jpge_type.h"
 
-
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-/***************************** Macro Definition ******************************/
-
-
-/*************************** Structure Definition ****************************/
-
-
-/***************************  The enum of Jpeg image format  ******************/
-
-/********************** Global Variable declaration **************************/
-
-
 /******************************* API declaration *****************************/
 typedef HI_S32	 (*FN_JPGE_ModInit)(HI_VOID);
 typedef HI_VOID	 (*FN_JPGE_ModeExit)(HI_VOID);
@@ -79,12 +56,5 @@ typedef struct
 
 HI_S32	JPGE_DRV_ModInit(HI_VOID);
 HI_VOID JPGE_DRV_ModExit(HI_VOID);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__DRV_JPGE_EXT_H__ */

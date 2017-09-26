@@ -9,14 +9,6 @@
 #include "vpss_wbc_mcdei.h"
 #include "vpss_hal_3798cv200.h"
 
-
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 typedef struct hiVPSS_MCDEI_INFO_S
 {
     VPSS_RGME_S		 stRgmeWbcInfo;//rgme��д����
@@ -35,11 +27,5 @@ HI_S32 VPSS_INST_McDeiComplete(VPSS_MCDEI_INFO_S *pstMcdeiInfo);
 HI_S32 VPSS_INST_McDeiReset(VPSS_MCDEI_INFO_S *pstMcdeiInfo);
 HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_S *pstHalInfo,
 				 HI_DRV_BUF_ADDR_E enLR, HI_DRV_VIDEO_FRAME_S *pstSrcImage);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */
 
 #endif /*__VPSS_STT_MCDEI_H__*/

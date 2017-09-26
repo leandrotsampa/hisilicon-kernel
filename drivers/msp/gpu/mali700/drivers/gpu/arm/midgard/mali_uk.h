@@ -26,10 +26,6 @@
 #ifndef _UK_H_
 #define _UK_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif				/* __cplusplus */
-
 /**
  * @addtogroup base_api
  * @{
@@ -135,7 +131,4 @@ struct uku_version_check_args {
 
 /** @} *//* end group base_api */
 
-#ifdef __cplusplus
-}
-#endif				/* __cplusplus */
 #endif				/* _UK_H_ */

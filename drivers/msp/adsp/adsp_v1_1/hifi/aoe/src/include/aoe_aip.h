@@ -27,10 +27,6 @@
 #include "hi_dsp_aoe.h"
 #include "hi_audsp_aoe.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define AIP_PROCESS_PERIONDMS_DEFAULT 5
 #define AIP_PROCESS_PERIONDMS_MAX 10
 #define AIP_PROCESS_PERIONDMS_MIN 2
@@ -74,9 +70,5 @@ HI_VOID* AIP_GetRingIn(HI_U32 Id);
 HI_VOID	 AIP_GetCompressInfo(HI_U32 Id, HI_U32* pu32ValidBytes, HI_U32* pu32ZeroBytes);
 
 /** @}*/  /** <!-- ==== API Declaration End ====*/
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

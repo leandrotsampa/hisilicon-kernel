@@ -16,9 +16,6 @@
 #ifndef _RESAMPLERS_ROM_H_
  #define _RESAMPLERS_ROM_H_
 
- #ifdef __cplusplus
-extern "C" {
- #endif
 #include "hi_dsp_resampler.h"
 #include "resample_cfg.h"
 #include "resample_statname.h"
@@ -138,9 +135,5 @@ extern const signed int res_12_44_good_nextphasetab[];
   #endif
 
  #endif/* CONFIG_RES_GENERATE_TRIGTABS_FLOAT */
-
- #ifdef __cplusplus
-}
- #endif
 
 #endif /* _RESAMPLERS_ROM_H_ */

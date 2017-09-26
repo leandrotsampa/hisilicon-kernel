@@ -16,11 +16,6 @@
 #include <linux/list.h>
 #include <linux/io.h>
 #include <linux/delay.h>
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 #define HI_WARN_FRC(fmt...)    HI_WARN_PRINT(HI_ID_VO, fmt)
 #define HI_INFO_FRC(fmt...)    HI_INFO_PRINT(HI_ID_VO, fmt)
@@ -82,11 +77,5 @@ HI_VOID DRV_WIN_GetFramePlayCounts(HI_BOOL bQuickOutMode,
 						HI_U32 u32FrameInRate,
 						HI_U32 u32OutRate,
 						HI_U32 *pNeedPlayCnt);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

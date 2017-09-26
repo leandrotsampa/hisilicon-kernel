@@ -41,20 +41,6 @@ Date		    Author		  Modification
 #include "drv_pq_ext.h"
 #endif
 
-/*****************************************************************************/
-
-
-/*****************************************************************************/
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-   extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 /***************************** Macro Definition ******************************/
 
 #define OPTM_ENABLE			 1
@@ -665,12 +651,5 @@ HI_S32 OPTM_GfxSetGpRect(OPTM_GFX_GP_E enGpId, const HIFB_RECT * pstInputRect);
 * others:	: NA
 ***************************************************************************************/
 HI_S32 OPTM_GfxCloseLayer(HIFB_LAYER_ID_E enLayerId);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif
 
 #endif

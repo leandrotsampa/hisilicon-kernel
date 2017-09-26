@@ -17,11 +17,6 @@
 
 #include <linux/types.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * The values below are specified in the hardware specification.
  * So, they should not be changed until the hardware specification changes.
@@ -110,10 +105,5 @@ u32 DIMCB_IoRead(u32 *ptr32);
 void DIMCB_IoWrite(u32 *ptr32, u32 value);
 
 void DIMCB_OnError(u8 error_id, const char *error_message);
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* _DIM2_HAL_H */

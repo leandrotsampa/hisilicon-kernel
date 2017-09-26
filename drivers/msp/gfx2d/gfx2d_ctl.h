@@ -16,12 +16,6 @@
 
 #include "gfx2d_config.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 /*******************************************************************************
 * Function:	 GFX2D_CTL_Init
 * Description:	 ctl���ʼ��
@@ -153,11 +147,5 @@ HI_S32 GFX2D_CTL_WriteProc(struct file *file, const char __user *buf, \
 HI_S32 GFX2D_CTL_Resume(HI_VOID);
 
 HI_BOOL GFX2D_CTL_CheckOpen(HI_VOID);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
 
 #endif	/*_GFX2D_CTL_H_*/

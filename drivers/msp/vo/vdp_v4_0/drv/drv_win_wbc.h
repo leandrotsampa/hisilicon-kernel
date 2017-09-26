@@ -13,15 +13,6 @@
 #include "drv_disp_osal.h"
 #include "drv_win_buffer.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
-
 #define ISOGBNY_BUF_MULTIPLE_NUM       3
 #define ISOGBNY_BUF_SINGL_NUM	       1
 
@@ -233,12 +224,5 @@ HI_S32 ISOGBNY_Init(HI_VOID);
 HI_S32 ISOGBNY_DeInit(HI_VOID);
 
 HI_VOID WIN_GetIsogenyPocInfor(ISOGBNY_PROC_INFO_S *pstIsogenyProcInfo);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif

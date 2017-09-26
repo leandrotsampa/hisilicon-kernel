@@ -22,13 +22,6 @@ History	      :
 #include "drv_disp_buffer.h"
 #include "drv_disp_isr.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 #define DISP_CAST_MIN_W 320
 #define DISP_CAST_MAX_W 1920
 #define DISP_CAST_MIN_H 240
@@ -201,10 +194,5 @@ HI_VOID DISP_CastCBWork(HI_HANDLE hCast, const HI_DRV_DISP_CALLBACK_INFO_S *pstI
 HI_VOID DISP_CastCB_GenarateFrame(HI_VOID *cast_ptr, const HI_DRV_DISP_CALLBACK_INFO_S *pstInfo);
 HI_VOID DISP_CastPushFrame(HI_VOID *cast_ptr, const HI_DRV_DISP_CALLBACK_INFO_S *pstInfo);
 HI_VOID DISP_CastGetDlyStatus(HI_HANDLE cast_ptr, HI_BOOL *pbLowDly);
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_X_H__  */

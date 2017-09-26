@@ -20,14 +20,6 @@ History	      :
 #include "hi_type.h"
 #include "drv_disp_com.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 int vdp_str2val(char *str, unsigned int *data);
 
 struct file *vdp_k_fopen(const char *filename, int flags, int mode);
@@ -50,11 +42,5 @@ int vdp_k_fwrite(char *buf, int len, struct file *filp);
 
 HI_S32 vdp_k_SaveYUVImg(struct file *pfYUV, HI_DRV_VIDEO_FRAME_S *pstFrame, HI_S32 num);
 HI_S32 vdp_DebugSaveYUVImg(HI_DRV_VIDEO_FRAME_S *pstCurFrame, HI_CHAR *buffer, HI_U32 count);
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */
 
 #endif /*  __DRV_DISP_ERROR_H__	 */
