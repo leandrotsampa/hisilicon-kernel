@@ -29,6 +29,9 @@ handle = VI_ID(16bits) + PORT(8bits) + CHAN(8bits, fix to 0)
 handle = VI_ID(16bits) + PORT(8bits) + CHAN(8bits, max is 2)
  ***********************************************************/
 
+#define MAX_VI_CHN 2
+#define MAX_VI_PORT 2
+
 #define VI_MAX_VPSS_PORT 2
 
 typedef struct hiUNF_VI_CREATE_S
