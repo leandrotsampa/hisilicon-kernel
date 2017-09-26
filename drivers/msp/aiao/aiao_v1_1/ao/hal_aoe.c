@@ -21,12 +21,6 @@
 #include "circ_buf.h"
 #include "audio_util.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef struct
 {
     HI_VOID* pAip[AOE_AIP_BUTT];
@@ -1706,9 +1700,3 @@ HI_S32 HAL_AOE_ENGINE_GetAefDelayMs(AOE_ENGINE_ID_E enENGINE, HI_U32* u32AefDela
     return HI_SUCCESS;
 }
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

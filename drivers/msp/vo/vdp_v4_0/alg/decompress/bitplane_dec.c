@@ -2,15 +2,8 @@
  * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
  * SPDX-License-Identifier: GPL-2.0
  */
-//-----------
 
 #include "ttv_mode.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 
 int BitPlaneVld ( TTV_COMP_T * ttv_comp_ptr,  uint16 * bit_plane_ptr)
 {
@@ -316,9 +309,3 @@ int BitPlaneDecoding (TTV_COMP_T * ttv_dec_ptr,int sample)
 	return 1;
 
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

@@ -15,12 +15,6 @@
 
 #include "drv_ai_func.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 int hi_ai_alsa_update_readptr(int handle, unsigned int* write_pos)
 {
     AIAO_PORT_ID_E enPort = AIAO_PORT_BUTT;
@@ -108,9 +102,3 @@ int hi_ai_alsa_close(int handle, struct file* file)
 
     return ret;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

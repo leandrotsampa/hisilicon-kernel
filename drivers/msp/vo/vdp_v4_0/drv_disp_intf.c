@@ -61,13 +61,6 @@
 #include "drv_disp_osal.h"
 #include "hi_osal.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 extern HI_S32  DISP_FileOpen(struct inode *finode, struct file	*ffile);
 extern HI_S32  DISP_FileClose(struct inode *finode, struct file	 *ffile);
 extern HI_S32  DRV_DISP_Ioctl(struct inode *inode, struct file *file, unsigned int cmd, HI_VOID *arg);
@@ -211,9 +204,3 @@ EXPORT_SYMBOL(VDP_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

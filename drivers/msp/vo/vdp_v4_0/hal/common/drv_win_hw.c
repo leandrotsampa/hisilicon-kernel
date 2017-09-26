@@ -15,20 +15,3 @@ History	      :
 /* SPDX-License-Identifier: GPL-2.0 */
 
 #include "drv_win_hw.h"
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

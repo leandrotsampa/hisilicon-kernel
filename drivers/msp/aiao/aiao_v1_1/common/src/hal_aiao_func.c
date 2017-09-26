@@ -29,13 +29,6 @@
 #include "hal_aiao_priv.h"
 #include "hal_aoe.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 static HI_VOID AIAOMmzName(AIAO_PORT_ID_E enPortID, HI_CHAR *pszMmzName, HI_U32 u32NameSize)
 {
     HI_U32 ChnId = PORT2CHID(enPortID);
@@ -1141,8 +1134,3 @@ HI_U32 iHAL_AIAO_P_ALSA_FLASH(AIAO_PORT_S* pstPort)
     return HI_SUCCESS;
 }
 #endif
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

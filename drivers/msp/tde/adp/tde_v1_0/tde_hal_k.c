@@ -36,12 +36,6 @@ Date				Author			Modification
 #include "tde_adp.h"
 #include "hi_gfx_sys_k.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
 /****************************************************************************/
 /*		     TDE hal inner macro definition			    */
 /****************************************************************************/
@@ -3312,9 +3306,3 @@ HI_VOID TdeHalNodePrintInfo(struct seq_file *p,HI_U32 *pu32CurNode)
 
     return;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */

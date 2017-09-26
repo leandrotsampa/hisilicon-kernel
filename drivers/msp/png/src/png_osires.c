@@ -21,12 +21,6 @@ Date		    Author		Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 //#include <linux/kcom.h>
 //#include <kcom/mmz.h>
 #include "hi_drv_mmz.h"
@@ -301,9 +295,3 @@ HI_VOID PngOsiShowInstanceState(struct seq_file *p)
     PROC_PRINT(p, "***********png state end******************\n");
 
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */

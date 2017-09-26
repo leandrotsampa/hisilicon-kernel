@@ -35,11 +35,6 @@ Date				Author			Modification
 #include "hi_gfx_sys_k.h"
 
 #include "tde_adp.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif	 /* __cplusplus */
-#endif	/* __cplusplus */
 
 /****************************************************************************/
 /*			       TDE osi ctl macro definition					*/
@@ -8158,10 +8153,3 @@ HI_S32 TdeOsiSingleBlitEx(TDE_HANDLE s32Handle, TDE2_SURFACE_S* pstSrc, TDE2_REC
 EXPORT_SYMBOL(TdeOsiPatternFill);
 EXPORT_SYMBOL(TdeOsiEnableRegionDeflicker);
 EXPORT_SYMBOL(TdeCalScaleRect);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */

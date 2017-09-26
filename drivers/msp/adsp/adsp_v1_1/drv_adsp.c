@@ -34,12 +34,6 @@
 
 #include "drv_adsp_hal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 typedef struct
 {
     ADSP_EXPORT_FUNC_S	    stExtFunc;	    /* ADSP extenal functions */
@@ -202,9 +196,3 @@ HI_VOID HI_DRV_ADSP_DeInit(HI_VOID)
 {
     ADSP_DRV_Exit();
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

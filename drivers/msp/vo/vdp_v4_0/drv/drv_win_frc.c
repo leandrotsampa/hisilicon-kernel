@@ -4,12 +4,6 @@
  */
 #include "drv_win_frc.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #if 1
 static FRC_S		g_FrcCtx[FRC_MAX_NUM] = {{0, 0, 0}};
 static FRC_INFO_S	g_Frc[FRC_MAX_NUM] = {{HI_NULL}};
@@ -290,10 +284,3 @@ HI_VOID DRV_WIN_GetFramePlayCounts(HI_BOOL bQuickOutMode,
 
     return;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

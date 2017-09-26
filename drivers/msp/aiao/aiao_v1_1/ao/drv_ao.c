@@ -82,12 +82,6 @@ extern struct platform_device* hisi_snd_device;
 #include "drv_timer_private.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 struct file  g_filp;
 
 #if defined(HI_AIAO_VERIFICATION_SUPPORT)
@@ -7915,9 +7909,3 @@ HI_VOID AO_DRV_Exit(HI_VOID)
     up(&g_AoMutex);
     return;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

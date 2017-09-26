@@ -8,12 +8,6 @@
 
 //#define OPTM_ALG_ACMCHECKPRINT 0
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 static HI_VOID OPTM_CalAvrgFrameRate(OPTM_ALG_FRD_S *pPtsInfo)
 {
     HI_U32 nowRate;
@@ -323,9 +317,3 @@ HI_VOID OPTM_ALG_FrdInfo_Reset(OPTM_ALG_FRD_S *pPtsInfo, HI_U32 ptsNum)
     }
 
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

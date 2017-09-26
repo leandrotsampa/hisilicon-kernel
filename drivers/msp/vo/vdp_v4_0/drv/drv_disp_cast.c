@@ -21,14 +21,8 @@ History	      :
 #include "drv_disp_priv.h"
 #include "drv_display.h"
 #include "hi_drv_stat.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
 
 CAST_RELEASE_PTR_S g_stReleasePtrArray[DISP_CAST_BUFFER_MAX_NUMBER];
-
 
 static HI_S32 CastCheckCfg(HI_DRV_DISP_CAST_CFG_S * pstCfg, HI_DISP_DISPLAY_INFO_S *pstInfo)
 {
@@ -1400,11 +1394,3 @@ HI_S32 DISP_SnapshotDestroy(HI_VOID* snapshot_ptr)
 
     return HI_SUCCESS;
 }
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif

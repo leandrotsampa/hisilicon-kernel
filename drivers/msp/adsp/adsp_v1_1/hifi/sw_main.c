@@ -10,12 +10,6 @@
 
 #include "adsp_osal_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 ADSP_OSAL_FUNC_S g_AdspOsalFunc;
 
 extern HI_VOID ASDP_OSAL_InterfaceInit(ADSP_OSAL_FUNC_S *pstOsalFunc);
@@ -105,9 +99,3 @@ HI_S32 AOE_SwEngineDestory(HI_VOID)
 
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

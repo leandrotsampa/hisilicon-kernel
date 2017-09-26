@@ -6,11 +6,6 @@
 
 #define ABS(x) (((x) < 0) ? -(x) : (x))
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 /*notes:
 *1.y must be 16X
 *2.top/bottom pixel is same
@@ -647,10 +642,3 @@ HI_S32 ALG_DeInitRwzbInfo(DET_INFO_S *pDetInfo)
 
     return HI_SUCCESS;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

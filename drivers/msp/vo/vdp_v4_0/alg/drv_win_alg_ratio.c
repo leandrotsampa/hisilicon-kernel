@@ -6,11 +6,6 @@
 
 #include "drv_win_alg_ratio.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
 HI_VOID VDP_ALG_RATIO_CorrectAspectRatioW_H(HI_U32 *pw, HI_U32 *ph)
 {
     HI_U32 w, h;
@@ -259,8 +254,3 @@ HI_S32 VDP_ALG_GetAspCfg(VDP_ALG_RATIO_DRV_PARA_S *pstAspDrvPara,
 
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

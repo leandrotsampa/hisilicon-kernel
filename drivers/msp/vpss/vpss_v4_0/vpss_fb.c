@@ -5,12 +5,6 @@
 #include "vpss_fb.h"
 #include "hi_drv_stat.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 HI_S32 VPSS_FB_Init(VPSS_FB_INFO_S *pstFrameList,
 		    HI_DRV_VPSS_BUFLIST_CFG_S *pstBufListCfg)
 {
@@ -1026,8 +1020,3 @@ HI_S32 VPSS_FB_RlsExtBuffer(VPSS_FB_INFO_S *pstFrameList)
     }
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -63,11 +63,6 @@
 #include <linux/dma-buf.h>    // add by l00228308
 
 #include "drv_omxvdec.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 #define VDH_IRQ_NUM (95 + 32)		 /*interrupt vdector*/
@@ -15642,11 +15637,3 @@ EXPORT_SYMBOL(HI_DRV_VDEC_RegisterDmxHdlCallback);
 EXPORT_SYMBOL(VDEC_Chan_FindPreMem);
 EXPORT_SYMBOL(VDEC_Chan_ReleasePreMem);
 EXPORT_SYMBOL(HI_DRV_VDEC_SetOmxCallBacks);
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

@@ -19,18 +19,4 @@
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 #include "hi_dsp_basicop.h"
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

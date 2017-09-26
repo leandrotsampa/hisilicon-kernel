@@ -28,11 +28,6 @@
 #ifdef ALSA_DEBUG_TIME
 #include <linux/time.h>
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
 
 DEFINE_SEMAPHORE(g_HalAiaoMutex);
 
@@ -1866,9 +1861,3 @@ HI_VOID HAL_AIAO_P_DestroyBoardI2SOpenAttr(AIAO_PORT_ID_E enPortID)
 }
 
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

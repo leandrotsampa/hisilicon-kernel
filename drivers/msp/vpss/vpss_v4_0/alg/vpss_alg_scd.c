@@ -4,13 +4,6 @@
  */
 #include "vpss_alg_scd.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
-
 HI_S32 SCDetection_core(SCDInput *pSCDInput,  SCDRls *pSCDRls, int flagTB)
 {
     int i;
@@ -198,11 +191,3 @@ HI_S32	SCDDetection(SCDInput *pSCDInput, SCDRls *pSCDRls)
     }
 
 }
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

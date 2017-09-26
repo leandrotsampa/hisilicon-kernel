@@ -30,14 +30,6 @@ History	      :
 #include "drv_window.h"
 #include "hi_osal.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 int vdp_str2val(char *str, unsigned int *data)
 {
     unsigned int i, d, dat, weight;
@@ -412,9 +404,3 @@ HI_S32 vdp_DebugSaveYUVImg(HI_DRV_VIDEO_FRAME_S *pstCurFrame, HI_CHAR *buffer, H
 
     return nRet;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

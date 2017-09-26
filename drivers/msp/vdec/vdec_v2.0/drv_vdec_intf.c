@@ -27,14 +27,6 @@
 #include "drv_vdec_private.h"
 #include "hi_drv_stat.h"
 
-// add by w00278582
-#define MAX_VID_PROTOCOL_NAME 20
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 extern HI_U32 g_CHAN_FRAME_RATE[HI_VDEC_MAX_INSTANCE_NEW];
 
 static HI_S32	VDEC_DRV_CtrlWriteProc(struct file * file,
@@ -1417,9 +1409,3 @@ module_exit(VDEC_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

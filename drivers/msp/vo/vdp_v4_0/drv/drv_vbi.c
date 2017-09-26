@@ -7,12 +7,6 @@
 /* extern SDATE_VBI_VbiFilterEnable function in hal.*/
 #include "vdp_software_selfdefine.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #ifndef __DISP_PLATFORM_BOOT__
 HI_DISP_VBI_STATUS_S g_stVBI[(HI_HANDLE)HI_DRV_DISP_VBI_TYPE_BUTT];
 
@@ -1336,9 +1330,3 @@ HI_S32 DRV_VBI_DeInit()
 }
 
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

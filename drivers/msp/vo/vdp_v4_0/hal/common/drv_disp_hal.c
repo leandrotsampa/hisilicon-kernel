@@ -34,12 +34,6 @@ History	      :
 #include "vdp_hal_chn.h"
 #include "vdp_hal_vid.h"
 #include "vdp_hal_gfx.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 
 /*==========================================
      VDP / SYS / VDAC phy-address
@@ -4238,9 +4232,3 @@ HI_S32 DISP_HAL_GetVersion(HI_DRV_DISP_VERSION_S *pstVersion)
 	return HI_FAILURE;
     }
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

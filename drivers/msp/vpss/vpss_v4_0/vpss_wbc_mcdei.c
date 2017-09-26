@@ -6,11 +6,6 @@
 #include "vpss_wbc.h"
 #include "vpss_osal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 HI_S32 VPSS_RGME_CalBufSize(HI_U32 *pSize, HI_U32 *pStride, VPSS_RGME_ATTR_S *pstAttr)
 {
     HI_U32 u32Width;
@@ -470,16 +465,3 @@ HI_S32 VPSS_BLEND_Reset(VPSS_BLEND_S *pstBlend)
 
     return HI_SUCCESS;
 }
-
-///////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

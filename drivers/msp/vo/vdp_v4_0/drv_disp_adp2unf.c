@@ -42,13 +42,6 @@
 #endif
 #include "drv_disp_hal.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 HI_S32 DISP_PrintParam(HI_UNF_DISP_E enDisp, HI_DISP_PARAM_S* pP)
 {
     HI_S32 i;
@@ -889,10 +882,3 @@ HI_S32 DispGetInitParam(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_INIT_PARAM_S* pstSe
 
     return HI_SUCCESS;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

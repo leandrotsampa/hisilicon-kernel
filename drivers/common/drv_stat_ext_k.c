@@ -9,10 +9,6 @@
 #include "hi_drv_stat.h"
 #include "drv_stat_ioctl.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* End of #ifdef __cplusplus */
-
 static	STAT_Event_Fun	 stat_event_fun = NULL;
 
 HI_S32 HI_DRV_STAT_EventFunc_Register(HI_VOID* pFunc)
@@ -87,8 +83,3 @@ EXPORT_SYMBOL(HI_DRV_STAT_GetTick);
 EXPORT_SYMBOL(HI_DRV_LD_Start_Statistics);
 EXPORT_SYMBOL(HI_DRV_LD_Stop_Statistics);
 EXPORT_SYMBOL(HI_DRV_LD_Notify_Event);
-
-
-#ifdef __cplusplus
-}
-#endif /* End of #ifdef __cplusplus */

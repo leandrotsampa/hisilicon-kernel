@@ -34,12 +34,6 @@
 /* Local headers */
 #include "drv_vdec_buf_mng.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 extern HI_BOOL bSaveoneyuv;
 extern HI_U32  u32SaveCnt;
 
@@ -2469,10 +2463,3 @@ EXIT:
 
     return len;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

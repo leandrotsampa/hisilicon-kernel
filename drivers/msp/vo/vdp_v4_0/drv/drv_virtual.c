@@ -8,13 +8,7 @@
 #include "drv_venc_ext.h"
 #include "hi_drv_module.h"
 
-#ifdef __cplusplus
-	#if __cplusplus
-	extern "C" {
-	#endif
-#endif /* __cplusplus */
-
-	HI_S32 VIR_BUFFER_Init(VIR_BUFFER_S *pstBuffer)
+HI_S32 VIR_BUFFER_Init(VIR_BUFFER_S *pstBuffer)
 {
     memset(pstBuffer->stBufArray,0,
 		 sizeof(HI_DRV_VIDEO_FRAME_S)*DEF_VIR_BUFFER_LENGTH);
@@ -522,8 +516,3 @@ HI_S32 WIN_VIR_AttachSink(VIRTUAL_S *pstVirWin,HI_HANDLE hSink)
     return s32Ret;
 
 }
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

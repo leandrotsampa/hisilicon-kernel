@@ -42,12 +42,6 @@
 #include "hi_drv_adec.h"
 #include "drv_adec_ext.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 #define ADEC_NAME "HI_ADEC"
 
 HI_S32 HI_DRV_ADEC_Init(HI_VOID)
@@ -76,9 +70,3 @@ HI_VOID	 HI_DRV_ADEC_DeInit(HI_VOID)
     HI_DRV_MODULE_UnRegister(HI_ID_ADEC);
     return;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

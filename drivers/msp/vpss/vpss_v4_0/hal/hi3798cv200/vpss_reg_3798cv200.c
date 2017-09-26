@@ -5,12 +5,6 @@
 #include "vpss_reg_3798cv200.h"
 #include "vpss_hal_3798cv200.h"
 #include "vpss_common.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 
 #define VPSS_WRITE_REG_SAFE(reg, val, errlog) \
     { \
@@ -6008,8 +6002,3 @@ HI_S32 VPSS_REG_SetTransMeta(HI_U32 *pu32AppAddr,
     VPSS_REG_RegWrite((volatile HI_U32 *) & (pstReg->VPSS_TRANS_INFO.u32), VPSS_TRANS_INFO.u32);
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif	/* __cplusplus */

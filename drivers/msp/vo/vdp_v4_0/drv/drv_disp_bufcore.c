@@ -16,12 +16,6 @@ History	      :
 #include "drv_disp_bufcore.h"
 #include "drv_disp_osal.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 //#define DISP_BUF_DEBUG 1
 //#define DISP_BUFFER_DEBUG_PRINT 1
 
@@ -572,11 +566,3 @@ HI_S32 DispBuf_PrintFullState(DISP_BUF_S *pstBuffer)
 
     return HI_SUCCESS;
 }
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

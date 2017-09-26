@@ -15,13 +15,6 @@
 #include "hi_osal.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"
-{
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 /* for some ttyXXX device major number */
 #ifndef SERIAL_MAJOR
 #define SERIAL_MAJOR 204
@@ -175,9 +168,3 @@ EXPORT_SYMBOL(HI_DRV_PROC_UnRegisterParam);
 #endif
 EXPORT_SYMBOL(HI_DRV_PROC_AddModule);
 EXPORT_SYMBOL(HI_DRV_PROC_RemoveModule);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

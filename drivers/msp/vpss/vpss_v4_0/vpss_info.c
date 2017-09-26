@@ -9,12 +9,6 @@
 #include "vpss_ctrl.h"
 #include "vpss_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 typedef struct {
     char* pInputString;
     HI_U32 u32Context;
@@ -2259,10 +2253,3 @@ PROC_EXIT:
 
     return count;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

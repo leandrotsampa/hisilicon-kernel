@@ -3,15 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0
  */
 #include "vpss_his.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 #define HIS_MAD_MAX_WIDTH 1920
 #define HIS_MAD_MAX_HEIGHT 1088
-
 
 HI_S32 VPSS_HIS_FLUSHDATA(VPSS_MEM_S *pstMemBuf, HI_U32 u32Data)
 {
@@ -128,8 +122,3 @@ HI_S32 VPSS_HIS_GetAddr(VPSS_HIS_INFO_S *pstHisInfo, VPSS_HIS_ADDR_S *pstAddr)
 
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif /* __cplusplus */
-#endif /* __cplusplus */

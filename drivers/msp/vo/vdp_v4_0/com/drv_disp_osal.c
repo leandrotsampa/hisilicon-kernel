@@ -16,13 +16,6 @@ History	      :
 
 #include "drv_disp_osal.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 HI_VOID DISP_OS_GetTime(HI_U32 *t_ms)
 {
 #ifdef __DISP_PLATFORM_SDK__
@@ -402,8 +395,3 @@ HI_VOID DISP_OS_DIV64(HI_U64 numerator, HI_U32 denominator, HI_U64 *pu64Result)
     return;
 }
 #endif
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

@@ -7,12 +7,6 @@
 #include "vpss_cbb_alg.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 HI_U32 VPSS_INST_McDeiGetMedsWidth(HI_DRV_VIDEO_FRAME_S *pstSrcImage)
 {
     HI_U32 u32StreamW;
@@ -349,9 +343,3 @@ HI_S32 VPSS_INST_SetHalMcdeiInfo(VPSS_MCDEI_INFO_S *pstMcdeiInfo, VPSS_HAL_INFO_
     }
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

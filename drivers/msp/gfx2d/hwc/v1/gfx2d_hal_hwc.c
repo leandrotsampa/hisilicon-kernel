@@ -25,12 +25,6 @@
 
 #include <asm/barrier.h>
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define HWC_REG_BASE_ADDR 0xf8c20000
 #define HWC_ISRNUM 0x7c
 
@@ -3665,9 +3659,3 @@ HI_S32 GFX2D_HAL_HWC_WriteProc(struct seq_file *p, HI_VOID *v)
 {
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

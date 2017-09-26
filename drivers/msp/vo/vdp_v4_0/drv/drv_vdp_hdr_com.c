@@ -20,14 +20,6 @@
 //common structure and functions for window and display.
 #include "drv_vdp_hdr_com.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
 static WINDOW_DOLBY_REFERENCE_INFO_S stWinDoviRefInfo;
 
 HI_VOID ResetWinDoviRefInfo(HI_VOID)
@@ -122,12 +114,3 @@ HI_VOID GetWinDoviRefInfo(WINDOW_DOLBY_REFERENCE_INFO_S *pstWinDoviRefInfo)
     pstWinDoviRefInfo->bHdrWinStatus = stWinDoviRefInfo.bHdrWinStatus;
     return ;
 }
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

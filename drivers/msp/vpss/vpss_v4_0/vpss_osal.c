@@ -6,12 +6,6 @@
 #include "vpss_osal.h"
 #include <linux/wait.h>
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 /************************************************************************/
 /* file operation							*/
 /************************************************************************/
@@ -2050,10 +2044,3 @@ HI_U32 VPSS_OSAL_SmmuToPhyAddr( HI_U32 u32SmmuAddr)
     //VPSS_FATAL("\n%s,%d,~ PhyAddr = 0x%x\n",__func__,__LINE__,PhyAddr);
     return PhyAddr;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

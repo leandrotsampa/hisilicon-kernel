@@ -5,12 +5,6 @@
 #include "vpss_trans_fb.h"
 #include "vpss_instance.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 HI_BOOL VPSS_TRANS_FB_CheckTileFmt(HI_DRV_VIDEO_FRAME_S *pstFrame)
 {
     if ((HI_DRV_PIX_FMT_NV12_TILE == pstFrame->ePixFormat)
@@ -235,8 +229,3 @@ HI_S32 VPSS_TRANS_FB_Reset(VPSS_TRANS_FB_INFO_S *pstTransFbList)
     }
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

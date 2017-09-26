@@ -2,13 +2,8 @@
  * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
  * SPDX-License-Identifier: GPL-2.0
  */
-#include "vpss_rwzb.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
+#include "vpss_rwzb.h"
 
 HI_S32 VPSS_RWZB_Init(VPSS_RWZB_S *pstRwzb)
 {
@@ -102,8 +97,3 @@ HI_S32 VPSS_RWZB_GetRwzbType(VPSS_RWZB_S *pstRwzb, HI_U32 *pu32Type)
     //printk("---->type %d\n",pstRwzb->u32Rwzb);
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

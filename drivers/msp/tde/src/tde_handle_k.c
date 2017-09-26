@@ -26,12 +26,6 @@ Date				Author			Modification
 #include "tde_define.h"
 #include "tde_handle.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif	 /* __cplusplus */
-#endif	/* __cplusplus */
-
 STATIC HI_HANDLE_MGR *s_pstTdeHandleList = NULL; /* Manager list of global handle */
 
 STATIC HI_S32 s_handle = 1; /* handle=0, reserve */
@@ -182,10 +176,3 @@ HI_VOID TdeFreePendingJob(HI_VOID)
     TDE_UNLOCK(&s_pstTdeHandleList->lock,lockflags);
     return;
 }
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */

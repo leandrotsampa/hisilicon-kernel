@@ -24,13 +24,6 @@
 #include "drv_sync.h"
 #include "drv_sync_stc.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define SYNC_GET_ID(sync)   ((sync) & 0xff)
 
 #define SYNC_CHECK_ID_NOT_RET(id)   \
@@ -3380,10 +3373,3 @@ HI_VOID SYNC_PcrProc(HI_HANDLE hSync, HI_U64 PcrValue, HI_U64 StcValue)
 
     return;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

@@ -17,12 +17,6 @@
 #include "gfx2d_hal.h"
 #include "gfx2d_hal_hwc.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 HI_S32 GFX2D_HAL_Init(HI_VOID)
 {
     return GFX2D_HAL_HWC_Init();
@@ -93,9 +87,3 @@ HI_S32 GFX2D_HAL_WriteProc(struct file *file, const char __user *buf, \
 {
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

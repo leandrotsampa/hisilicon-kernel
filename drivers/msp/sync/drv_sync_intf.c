@@ -34,12 +34,6 @@
 #include "hi_osal.h"
 #include "hi_debug.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 extern HI_S32	    SYNC_DRV_Init(HI_VOID);
 extern HI_VOID	    SYNC_DRV_Exit(HI_VOID);
 
@@ -465,10 +459,3 @@ module_exit(SYNC_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

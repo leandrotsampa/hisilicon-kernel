@@ -20,11 +20,6 @@ History	      :
 #include "drv_window.h"
 
 #include "drv_win_hdr.h"
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
 
 WB_DEBUG_INFO_S * WinBuf_DebugCreate(HI_U32 recordnum)
 {
@@ -1168,10 +1163,3 @@ HI_S32 WinBuf_GetStateInfo(WB_POOL_S *pstWinBP, WB_STATE_S *pstWinBufState)
 
     return HI_SUCCESS;
 }
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

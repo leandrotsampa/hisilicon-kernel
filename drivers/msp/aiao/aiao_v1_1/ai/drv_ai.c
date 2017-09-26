@@ -39,12 +39,6 @@
 
 #include "drv_ao_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 #define HI_AI_DRV_SUSPEND_SUPPORT
 
 DEFINE_SEMAPHORE(g_AIMutex);
@@ -2460,9 +2454,3 @@ HI_S32 HI_DRV_AI_ReleaseFrame(HI_HANDLE hAI)
 {
     return AIReleaseFrame(hAI);
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -9,12 +9,6 @@
 
 #include "hi_drv_proc.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 static struct file_operations s_stDevFileOpts =
 {
     .owner = THIS_MODULE,
@@ -107,9 +101,3 @@ HI_VOID AO_DRV_ModExit(HI_VOID)
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

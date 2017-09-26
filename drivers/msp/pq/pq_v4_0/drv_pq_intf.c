@@ -21,14 +21,6 @@
 #include "hi_drv_dev.h"
 #include "drv_pq_define.h"
 
-
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 DEFINE_SEMAPHORE(g_stPQSemaphore);
 
 extern HI_S32  DRV_PQ_Suspend(PM_BASEDEV_S *pdev, pm_message_t state);
@@ -698,8 +690,3 @@ MODULE_LICENSE("GPL");
 module_init(PQ_DRV_ModInit);
 module_exit(PQ_DRV_ModuleExit);
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

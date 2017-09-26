@@ -22,11 +22,6 @@
 
 #include "hi_audsp_aoe.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
 /* private state */
 
 static volatile S_AIAO_COM_REGS_TYPE*	  g_pAIAOComReg = NULL;
@@ -2771,9 +2766,3 @@ HI_VOID AIAO_SPDIF_HAL_SetSamplerate(AIAO_PORT_ID_E enPortID, AIAO_SAMPLE_RATE_E
     tmp |= (orgsamplerate << 12);
     g_pAIAOSpdiferReg[ChnId]->SPDIF_CH_STATUS5.u32 = tmp;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -57,12 +57,6 @@
 #include "audio_util.h"
 #include "drv_aiao_ioctl_veri.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /* private state */
 typedef struct
 {
@@ -616,9 +610,3 @@ HI_S32 AIAO_VERI_ProcessCmd(struct inode* inode, struct file* file, HI_U32 cmd, 
 
     return Ret;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

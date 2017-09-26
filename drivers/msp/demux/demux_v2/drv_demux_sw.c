@@ -19,13 +19,6 @@
 #include "drv_demux_osal.h"
 #include "hi_drv_file.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #ifdef DMX_USE_ECM
 
 typedef union
@@ -1538,10 +1531,4 @@ HI_S32 HI_DMX_SwPeekDataRequest(HI_U32	       u32ChId,
 
     return HI_FAILURE;
 }
-#endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif

@@ -4,12 +4,6 @@
  */
 #include "vpss_alg_ratio.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define ALG_ASP_CHECK_W_H_ZERO(w, h) do {\
 	if ((0 == (w)) || (0 == (h))) \
 	{ \
@@ -465,9 +459,3 @@ static HI_VOID ALG_ASP_Combined(ALG_RATIO_DRV_PARA_S *pstDrvPara, ALG_RATIO_OUT_
 
     return;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

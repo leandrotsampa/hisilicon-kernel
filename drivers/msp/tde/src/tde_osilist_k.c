@@ -20,11 +20,6 @@ Date				Author			Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif /* __cplusplus */
-#endif	/* __cplusplus */
 #include <linux/spinlock.h>
 #include <linux/sched.h>
 #include <linux/semaphore.h>
@@ -1056,10 +1051,3 @@ HI_S32 TdeOsiListSetWorkingFlag(HI_BOOL bFlag)
     gs_bWorkingFlag = bFlag;
     return HI_SUCCESS;
 }
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

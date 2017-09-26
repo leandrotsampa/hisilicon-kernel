@@ -8,12 +8,6 @@
 #include "vpss_common.h"
 
 #include <asm/barrier.h>
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 
 
 SMMU_BUFFER_S g_stDstMMU;
@@ -4257,8 +4251,3 @@ HI_S32 VPSS_HAL_SetAlgParaAddr(HI_U32 *pu32AppVir, HI_U32 u32AppPhy)
 #endif
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif	/* __cplusplus */

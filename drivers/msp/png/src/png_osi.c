@@ -22,12 +22,6 @@ Date		    Author		Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
-#if __cplusplus
-#extern "C" {
-#endif	   /* __cplusplus */
-#endif	   /* __cplusplus */
-
 #include <linux/interrupt.h>
 
 #include "hi_png_errcode.h"
@@ -1378,10 +1372,3 @@ HI_VOID PngOsiReset(HI_VOID)
 
     return;
 }
-
-
-#ifdef __cplusplus
-#if __cpluscplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */

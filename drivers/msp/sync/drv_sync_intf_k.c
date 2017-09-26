@@ -33,12 +33,6 @@
 #include "hi_kernel_adapt.h"
 #include "hi_osal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 #define SYNC_NAME   "HI_SYNC"
 
 #define DRV_SYNC_TRY_LOCK(pMutex)    \
@@ -1202,11 +1196,3 @@ EXPORT_SYMBOL(HI_DRV_SYNC_Destroy);
 EXPORT_SYMBOL(HI_DRV_SYNC_VidJudge);
 EXPORT_SYMBOL(HI_DRV_SYNC_Play);
 EXPORT_SYMBOL(HI_DRV_SYNC_RegCallback);
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

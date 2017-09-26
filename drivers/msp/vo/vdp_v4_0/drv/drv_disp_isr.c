@@ -19,12 +19,6 @@ History	      :
 #include "hi_drv_sys.h"
 #include "drv_display.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 static HI_S32 s_DispISRMngrInitFlag = -1;
 static HI_U32 g_IsrControlFlag = 0;
 static DISP_ISR_M_S s_DispISRMngr;
@@ -637,9 +631,3 @@ HI_S32 DISP_ISR_Main(HI_S32 irq, HI_VOID *dev_id)
     spin_unlock_irqrestore(&g_IsrListOptLock, irqflag);
     return DEF_DISP_ISR_Main_RETURN_VALUE;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

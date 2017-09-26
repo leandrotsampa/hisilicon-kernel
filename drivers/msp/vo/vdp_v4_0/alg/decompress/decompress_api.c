@@ -2,11 +2,6 @@
  * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
  * SPDX-License-Identifier: GPL-2.0
  */
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 #include "decompress_api.h"
 #include "drv_disp_debug.h"
@@ -865,9 +860,3 @@ HI_S32 VO_ALG_Decompress(HI_DRV_VIDEO_FRAME_S *pstFrame,HI_U8 *pDstBufAddr,HI_U3
     HI_DRV_SMMU_UnmapAndRelease(&stArrangedData);
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

@@ -42,12 +42,6 @@
 #include "hi_kernel_adapt.h"
 #include "hi_drv_file.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef struct hiADEC_KADDR_S
 {
     HI_BOOL	       bUsed;
@@ -894,9 +888,3 @@ module_exit(ADEC_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

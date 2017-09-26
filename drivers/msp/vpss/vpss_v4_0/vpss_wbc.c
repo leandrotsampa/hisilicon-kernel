@@ -5,12 +5,6 @@
 #include "vpss_wbc.h"
 #include "vpss_osal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 HI_U32 VPSS_WBC_GetTotalBufSize(VPSS_WBC_ATTR_S *pstAttr, HI_U32 u32NodeBufSize)
 {
     HI_U32 u32TotalBufSize = 0;
@@ -657,9 +651,3 @@ HI_S32 VPSS_WBC_GetCurInfo(VPSS_WBC_S *pstWbc, HI_DRV_VIDEO_FRAME_S **ppstCurIma
 
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

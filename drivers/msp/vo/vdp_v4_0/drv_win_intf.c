@@ -60,13 +60,6 @@
 #include "drv_win_ext.h"
 #include "hi_osal.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 extern HI_S32 WIN_DRV_Open(struct inode *finode, struct file  *ffile);
 extern HI_S32 WIN_DRV_Close(struct inode *finode, struct file  *ffile);
 extern HI_S32 DRV_WIN_Ioctl(struct inode *inode, struct file  *file, unsigned int cmd, HI_VOID *arg);
@@ -143,10 +136,3 @@ HI_S32 WIN_ModInit(HI_VOID)
 
     return  0;
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

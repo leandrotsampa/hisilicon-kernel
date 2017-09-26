@@ -34,12 +34,6 @@
 #include "hi_debug.h"
 
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 
@@ -146,10 +140,3 @@ EXPORT_SYMBOL(HI_OSAL_Vsnprintf);
 EXPORT_SYMBOL(osal_dma_buf_export);
 EXPORT_SYMBOL(osal_request_irq);
 EXPORT_SYMBOL(osal_free_irq);
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

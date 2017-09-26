@@ -31,12 +31,6 @@
 #include "hal_cast.h"
 #include "audio_util.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef struct
 {
     HI_VOID* pCast[AIAO_CAST_BUTT];
@@ -414,9 +408,3 @@ HI_VOID HAL_CAST_GetBufDelayMs(AIAO_CAST_ID_E enCAST, HI_U32* pDelayms)
     FreeBytes = CIRC_BUF_QueryBusy(&state->stCB);
     *pDelayms = CALC_LATENCY_MS(state->stUserAttr.u32BufSampleRate, state->u32BufFrameSize, FreeBytes);
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

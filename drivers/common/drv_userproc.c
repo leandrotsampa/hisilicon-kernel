@@ -52,12 +52,6 @@
 #include "hi_kernel_adapt.h"
 #include "hi_drv_mem.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define UPROC_K_LOCK(sema) do {down(&sema);}while(0)
@@ -1427,9 +1421,3 @@ HI_VOID USRPROC_DRV_ModExit(HI_VOID)
 
 MODULE_DESCRIPTION("Hisilicon User Mode Proc Driver");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

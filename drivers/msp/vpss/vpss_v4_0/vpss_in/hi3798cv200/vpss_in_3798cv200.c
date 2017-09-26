@@ -4,11 +4,6 @@
  */
 #include "vpss_in_3798cv200.h"
 #include "vpss_info.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 HI_BOOL VPSS_IN_CheckImage_V3(HI_DRV_VIDEO_FRAME_S *pstImage)
 {
@@ -1871,9 +1866,3 @@ HI_S32 VPSS_IN_SetSrcMode(VPSS_IN_ENTITY_S *pstEntity, VPSS_IN_SOURCE_S stMode)
 
     return s32Ret;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif /* __cplusplus */
-#endif /* __cplusplus */

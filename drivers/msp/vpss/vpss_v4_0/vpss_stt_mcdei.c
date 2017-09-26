@@ -5,11 +5,6 @@
 #include "vpss_stt_mcdei.h"
 #include "vpss_osal.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 HI_VOID VPSS_ST_RGME_CalBufSize(HI_U32 *pSize, HI_U32 *pStride, VPSS_MC_ATTR_S *pstAttr)
 {
     HI_U32 u32Stride;
@@ -801,16 +796,3 @@ HI_S32 VPSS_ST_PRJV_Reset(VPSS_ST_PRJV_S *pstStPrjv)
 
 
 }
-
-///////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -22,13 +22,6 @@ History	      :
 #include "vdp_software_selfdefine.h"
 #include "drv_pq_ext.h"
 
-
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 #if 0
 typedef enum tagVDP_CBM_MIX_E
 {
@@ -1101,10 +1094,3 @@ VIDEO_LAYER_FUNCTIONG_S *VideoLayer_GetFunctionPtr(HI_VOID)
 
     return &s_stVieoLayerFunc;
 }
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

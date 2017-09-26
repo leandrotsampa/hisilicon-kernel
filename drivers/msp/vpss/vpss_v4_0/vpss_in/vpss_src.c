@@ -3,11 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0
  */
 #include "vpss_src.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 static inline HI_BOOL VPSS_SRC_IsProgressive(VPSS_SRC_DATA_S *pstData)
 {
@@ -1298,8 +1293,3 @@ HI_BOOL VPSS_SRC_CheckIsEmpty(VPSS_SRC_S *pstSrc)
 {
     return VPSS_SRC_IsEmpty(pstSrc);
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

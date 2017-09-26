@@ -26,12 +26,6 @@
 #include "hi_gfx_sys_k.h"
 #include "drv_gfx2d_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define GFX2D_MODULENAME "hi_gfx2d"
 #define GFX2D_UINT_MULTIPLY_OVERFLOW(a, b) (UINT_MAX / (a) < (b))
 
@@ -294,9 +288,3 @@ MODULE_AUTHOR("Digital Media Team, Hisilicon crop.");
 MODULE_DESCRIPTION("Hisilicon GFX2D Device driver for 3716CV200");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("V1.0.0.0");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

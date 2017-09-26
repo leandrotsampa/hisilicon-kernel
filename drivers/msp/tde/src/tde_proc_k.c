@@ -20,12 +20,6 @@ Date				Author			Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif	 /* __cplusplus */
-#endif	/* __cplusplus */
-
 #include "tde_proc.h"
 #include "tde_config.h"
 #include "hi_gfx_sys_k.h"
@@ -104,9 +98,3 @@ int tde_read_proc(struct seq_file *p, HI_VOID *v)
 
     return 0;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif /* __cplusplus */
-#endif	/* __cplusplus */

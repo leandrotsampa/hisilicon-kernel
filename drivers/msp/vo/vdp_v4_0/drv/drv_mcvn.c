@@ -5,13 +5,6 @@
 #include "drv_mcvn.h"
 #include "vdp_software_selfdefine.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 static HI_U32 g_MacrovisionCoef[6][4][5]=
 {
 #if 0
@@ -215,9 +208,3 @@ HI_S32 DRV_MCVN_GetMacrovision(HI_DRV_DISPLAY_E enDisp,
 
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -18,12 +18,6 @@
 #include "gfx2d_mem.h"
 #include "hi_gfx_sys_k.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 typedef struct
 {
     HI_U32	    nSize;		     /*�ڴ���С*/
@@ -408,9 +402,3 @@ HI_S32 GFX2D_MEM_WriteProc(struct file *file, const char __user *buf, \
 {
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

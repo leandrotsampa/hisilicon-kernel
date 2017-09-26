@@ -16,11 +16,6 @@
 #include "vpss_cbb_reg.h"
 #include "vpss_cbb_common.h"
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 
 static VPSS_CTRL_S g_stVpssCtrl[VPSS_IP_BUTT] =
 {
@@ -3456,12 +3451,4 @@ irqreturn_t VPSS1_CTRL_IntService(HI_S32 irq, HI_VOID *dev_id)
 
     return IRQ_HANDLED;
 }
-
-
 #endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

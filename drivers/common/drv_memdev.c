@@ -39,12 +39,6 @@
 #include "hi_drv_module.h"
 #include "hi_drv_memdev.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 
@@ -142,9 +136,3 @@ HI_S32 MEMDEV_DRV_ModExit(HI_VOID)
 MODULE_AUTHOR("Hisilicon");
 MODULE_DESCRIPTION("Hisilicon Mem Device Driver");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

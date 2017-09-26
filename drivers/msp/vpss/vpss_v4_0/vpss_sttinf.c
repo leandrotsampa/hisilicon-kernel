@@ -4,11 +4,6 @@
  */
 #include "vpss_sttinf.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 /*Die Code*/
 HI_VOID VPSS_STTINFO_CalDieBufSize(HI_U32 *pSize, HI_U32 *pStride, HI_U32 u32Width, HI_U32 u32Heigth)
 {
@@ -606,11 +601,3 @@ HI_S32 VPSS_STTINFO_SttWbcReset(VPSS_STTWBC_S *psttWbc)
     return HI_SUCCESS;
 
 }
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

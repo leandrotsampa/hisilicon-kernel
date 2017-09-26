@@ -27,12 +27,6 @@
 #include "drv_adsp_ext.h"
 #include "drv_adsp_private.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 static struct file_operations s_stDevFileOpts =
 {
     .owner = THIS_MODULE,
@@ -130,9 +124,3 @@ module_exit(ADSP_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

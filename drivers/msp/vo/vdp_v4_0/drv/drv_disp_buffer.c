@@ -17,12 +17,6 @@ History	      :
 #include "drv_disp_buffer.h"
 #include "hi_osal.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /*according to the frame addr, get the tunnel addr.*/
 HI_VOID BP_SetFrameTunnulAddr(HI_U32 *pu32TunnelAddr, DISP_MMZ_BUF_S *pstMem)
 {
@@ -1331,8 +1325,3 @@ HI_S32 BP_GetIDFromFrmInfo(BUF_POOL_S *pstBP, HI_DRV_VIDEO_FRAME_S *pstFrmInfo,H
 
     return nRet;
 }
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

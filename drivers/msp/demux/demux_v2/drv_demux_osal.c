@@ -11,11 +11,6 @@
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /*cplusplus*/
 #include "drv_demux_osal.h"
 #include <linux/hrtimer.h>
 
@@ -27,9 +22,3 @@ HI_VOID DMX_AcrtUsSleep(HI_U32 us)
     set_current_state(TASK_UNINTERRUPTIBLE);
     schedule_hrtimeout(&expires, HRTIMER_MODE_ABS);
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /*cplusplus*/

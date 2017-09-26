@@ -2,14 +2,8 @@
  * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
  * SPDX-License-Identifier: GPL-2.0
  */
-//--------
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-#include "ttv_mode.h"
 
+#include "ttv_mode.h"
 
 uint32 i_mask[33] = {
 					 0x00,
@@ -103,10 +97,3 @@ uint32 BitStreamReadBits (int n_bits)
 
 	return( i_result );
 }
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif

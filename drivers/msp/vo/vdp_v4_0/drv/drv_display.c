@@ -40,12 +40,6 @@ History	      :
 #include "hi_drv_sys.h"
 #endif
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
 /******************************************************************************
     global object
 ******************************************************************************/
@@ -5211,10 +5205,4 @@ HI_S32 DISP_GetDispBT2020Enable(HI_DRV_DISPLAY_E enDisp,  HI_BOOL *pbEnable)
     return HI_SUCCESS;
 
 }
-
 #endif
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

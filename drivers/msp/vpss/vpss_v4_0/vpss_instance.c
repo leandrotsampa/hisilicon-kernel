@@ -9,11 +9,6 @@
 #include "vpss_alg_ratio.h"
 #include "hi_reg_common.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
 #define SAVEYUV 0
 #define IMAGEINFO 0
 
@@ -4100,9 +4095,3 @@ HI_VOID VPSS_INST_ReportCompleteEvent(VPSS_INSTANCE_S *pstInstance)
 
     return;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

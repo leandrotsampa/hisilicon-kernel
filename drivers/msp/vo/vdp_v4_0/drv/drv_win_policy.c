@@ -15,16 +15,6 @@ History	      :
 
 #include "drv_win_policy.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
-
-
-
-
 HI_S32 WinParamAlignUp(HI_S32 s32X, HI_U32 u32A)
 {
     if (!u32A)
@@ -411,9 +401,3 @@ HI_VOID Win_Policy_GetPQDegradingConfigFromTEE(HI_RECT_S *pstInRect,
 
     return;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

@@ -22,12 +22,6 @@
 #include "hi_drv_ai.h"
 #include "hi_drv_ao.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 #ifdef HI_AUDIO_AI_SUPPORT
 extern HI_S32 AI_DRV_ModInit(HI_VOID);
 extern HI_S32 AI_DRV_ModExit(HI_VOID);
@@ -159,9 +153,3 @@ module_exit(AIAO_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

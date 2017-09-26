@@ -14,12 +14,6 @@
 #include "gfx2d_config.h"
 #include "hi_gfx_comm_k.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define GFX2D_CONFIG_NODE_SIZE (1024)
 
 #ifdef CFG_HI_GFX2D_MEM_SIZE
@@ -95,9 +89,3 @@ HI_S32 GFX2D_CONFIG_WriteProc(struct file *file, const char __user *buf,
     UNUSED(ppos);
     return 0;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

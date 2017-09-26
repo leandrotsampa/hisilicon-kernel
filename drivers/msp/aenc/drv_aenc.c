@@ -48,12 +48,6 @@
 #include "hi_drv_file.h"
 #include "hi_drv_module.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 #define AENC_NAME "HI_AENC"
 
 typedef struct hiAENC_KADDR_S
@@ -757,8 +751,3 @@ module_exit(AENC_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

@@ -28,12 +28,6 @@
 
 #include "adsp_osal_ext.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 #define LINEARSRC_FIXPOINT /* fast fix point linear */
 
 typedef struct
@@ -623,10 +617,3 @@ HI_S32	LSRC_ProcessFrame(HI_VOID* hLSRC,
 
     return outsampls;
 }
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* End of #ifdef __cplusplus */

@@ -33,12 +33,6 @@
 #include "drv_vdec_buf_mng.h"
 #include "drv_vdec_usrdata.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define I_FRAME 1
@@ -526,9 +520,3 @@ EXPORT_SYMBOL(USRDATA_Rls);
 EXPORT_SYMBOL(USRDATA_Acq);
 EXPORT_SYMBOL(USRDATA_Alloc);
 EXPORT_SYMBOL(USRDATA_SetUserAddr);
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* End of #ifdef __cplusplus */

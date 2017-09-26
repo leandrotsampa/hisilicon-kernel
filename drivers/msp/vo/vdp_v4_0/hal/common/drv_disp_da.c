@@ -17,12 +17,6 @@ History	      :
 #include "drv_disp_com.h"
 #include "drv_disp_da.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 //static DISP_ALG_VERSION_S s_stAlgCscVersion = {0};
 HI_BOOL g_bDAInitFlag = HI_FALSE;
 DISP_DA_FUNCTION_S g_stDAFuntion;
@@ -190,18 +184,3 @@ DISP_DA_FUNCTION_S * DISP_DA_GetFunction(HI_VOID)
 	return HI_NULL;
     }
 }
-
-
-
-
-
-
-
-
-
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

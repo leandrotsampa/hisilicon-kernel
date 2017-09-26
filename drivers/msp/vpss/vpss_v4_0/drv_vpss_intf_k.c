@@ -14,12 +14,6 @@
 /*for HI_DECLARE_MUTEX*/
 #include "hi_kernel_adapt.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 #define BUF_DBG_OUT 0
 #define BUF_DBG_IN 0
 
@@ -707,10 +701,3 @@ EXPORT_SYMBOL(HI_DRV_VPSS_SetSourceMode);
 EXPORT_SYMBOL(HI_DRV_VPSS_PutImage);
 EXPORT_SYMBOL(HI_DRV_VPSS_GetImage);
 EXPORT_SYMBOL(HI_DRV_VPSS_InvokeDisplayInfo);
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

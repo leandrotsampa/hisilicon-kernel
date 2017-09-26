@@ -33,16 +33,9 @@ History		 :
 
 #include "decompress_api.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 HI_HANDLE g_hSlaveWin = 0;
 
 DEFINE_SPINLOCK(g_threadIsr_Lock);
-
 
 /******************************************************************************
     global object
@@ -7535,9 +7528,3 @@ HI_S32 WinDebugCmdProcess(WIN_DEBUG_CMD_AND_ARGS_S * pstDebugCmd)
 #endif
     return s32Ret;
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

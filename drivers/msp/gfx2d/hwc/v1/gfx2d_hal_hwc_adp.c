@@ -13,12 +13,6 @@
 #include "gfx2d_hal_hwc_adp.h"
 #include "hi_gfx_sys_k.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 static HWC_CAPABILITY_S gs_stCapability =
 {
     HWC_MAX_LAYERS,
@@ -51,8 +45,3 @@ HI_S32 HWC_ADP_GetCapability(HWC_CAPABILITY_S *pstCapability)
 
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

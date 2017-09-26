@@ -68,12 +68,6 @@
 
 #include "drv_win_hdr.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C"{
-#endif
-#endif
-
 static atomic_t	   g_VoCount = ATOMIC_INIT(0);
 //WIN_GLOBAL_STATE_S   g_VoGlobalState;
 WIN_STATE_S	     g_VoModState;
@@ -3637,10 +3631,3 @@ EXPORT_SYMBOL(DRV_WIN_SendFrame);
 EXPORT_SYMBOL(HI_DRV_WIN_SetZorder);
 EXPORT_SYMBOL(DRV_WIN_SetSftwareStage);
 //#endif
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

@@ -59,12 +59,6 @@
 #include "drv_hdmi_ext.h"
 #include "drv_com_logo.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
-
 DRV_DISP_STATE_S	 g_DispModState;
 DRV_DISP_GLOBAL_STATE_S	 g_DispUserCountState;
 DRV_DISP_GLOBAL_STATE_S	 g_DispKernelCountState;
@@ -3403,10 +3397,4 @@ EXPORT_SYMBOL(DRV_DISP_DeInit);
 EXPORT_SYMBOL(DRV_DISP_ProcRegister);
 EXPORT_SYMBOL(DRV_DISP_ProcUnRegister);
 
-#endif
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
 #endif

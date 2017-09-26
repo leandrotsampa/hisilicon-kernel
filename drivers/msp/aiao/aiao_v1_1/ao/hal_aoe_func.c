@@ -19,12 +19,6 @@
 #include "hi_audsp_aoe.h"
 #include "hal_aoe_func.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 static volatile S_AOE_REGS_TYPE*	g_pAOEReg;
 static volatile S_AIP_REGS_TYPE*	g_pAipReg[AOE_AIP_BUTT];
 static volatile S_MIXER_REGS_TYPE*	g_pMixerReg[AOE_ENGINE_BUTT];
@@ -1420,9 +1414,3 @@ HI_VOID iHAL_AOE_ENGINE_Destroy(AOE_ENGINE_ID_E enENGINE)
 {
     return;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

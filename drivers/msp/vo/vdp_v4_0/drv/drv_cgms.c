@@ -6,14 +6,6 @@
 #include "drv_cgms.h"
 #include "vdp_software_selfdefine.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* __cplusplus */
-
-
 #ifndef __DISP_PLATFORM_BOOT__
 HI_S32 DRV_CGMS_Init(HI_DRV_DISPLAY_E enDisp,HI_DRV_DISP_FMT_E enFmt,DISP_CGMS_INFO_S *pstCgms)
 {
@@ -341,11 +333,3 @@ HI_S32 DRV_CGMS_Get(DISP_CGMS_INFO_S *pstCgms,DISP_CGMS_STATE_S *pstCurState)
 	return HI_SUCCESS;
 }
 #endif
-
-
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

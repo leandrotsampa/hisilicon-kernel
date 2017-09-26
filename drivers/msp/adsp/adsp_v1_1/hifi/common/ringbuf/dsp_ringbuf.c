@@ -10,12 +10,6 @@
 
 #include "adsp_osal_ext.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif /* End of #ifdef __cplusplus */
-
 typedef struct
 {
     // read
@@ -412,9 +406,3 @@ HI_VOID RBUF_UpdateAttr(HI_VOID* hRBUF, RBUF_ATTR_S* pstAttr)
     state->stAttr.uLatencyMs   = pstAttr->uLatencyMs;
     state->stAttr.uLatencySize = pstAttr->uLatencySize;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif
-#endif /* __cplusplus */

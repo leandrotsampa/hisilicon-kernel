@@ -21,12 +21,6 @@ Date		    Author		Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */
-
 #include <asm/io.h>
 #include <linux/delay.h>
 
@@ -680,9 +674,3 @@ HI_U32 PngHalGetIrqNum()
 {
     return g_u32PngIrqNum;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/* __cplusplus */
-#endif	/* __cplusplus */

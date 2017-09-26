@@ -6,12 +6,6 @@
 
 //#define OPTM_ALG_ACMCHECKPRINT 0
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* End of #ifdef __cplusplus */
-
 HI_U32 OPTM_ALG_InPTSSqn_CalNowRate(OPTM_ALG_FRD_S *pPtsInfo, HI_U32 env)
 {
     HI_U32 nowRate;
@@ -55,9 +49,3 @@ HI_VOID OPTM_ALG_InPTSSqn_ChangeInFrameRate(OPTM_ALG_FRD_S *pPtsInfo,HI_U32 nowR
     else
     { pPtsInfo->StableThreshold = 3; }
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

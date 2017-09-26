@@ -2,12 +2,9 @@
  * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
  * SPDX-License-Identifier: GPL-2.0
  */
+
 #include "vpss_img.h"
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif
-#endif
+
 HI_S32 VPSS_IMG_AddFulImage(VPSS_IMAGELIST_INFO_S *pstImageList,
 			    VPSS_IMAGE_NODE_S *pstFulImage)
 {
@@ -954,8 +951,3 @@ HI_S32 VPSS_IMG_Reset(VPSS_IMAGELIST_INFO_S *pstImgInfo)
 
     return HI_SUCCESS;
 }
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif /* __cplusplus */
-#endif /* __cplusplus */

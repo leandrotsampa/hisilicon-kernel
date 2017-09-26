@@ -9,12 +9,6 @@
 //#include "drv_vdec_private.h"
 #include "drv_omxvdec_alg.h"
 
-#ifdef __cplusplus
- #if __cplusplus
-extern "C" {
- #endif
-#endif /* __cplusplus */
-
 /***************************** Macro Definition ******************************/
 
 #define PTS_REC_MAX_NUM		(16)
@@ -582,9 +576,3 @@ static HI_VOID PTSREC_FrameRateDetect(HI_HANDLE hHandle, IMAGE *pstImage)
 	pstImage->frame_rate = u32FrameRate * 1024 / 10;
     }
 }
-
-#ifdef __cplusplus
- #if __cplusplus
-}
- #endif
-#endif /* __cplusplus */

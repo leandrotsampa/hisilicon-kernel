@@ -24,13 +24,6 @@
 #include "gfx2d_config.h"
 #include "gfx2d_fence.h"
 
-
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 #define GFX2D_ALIGN(value) ((value + 0xf) & 0xfffffff0)
 
 typedef enum tagGFX2D_LIST_TASKSTATE_E
@@ -621,9 +614,3 @@ HI_S32 GFX2D_LIST_WriteProc(struct file *file, const char __user *buf, \
 {
     return HI_SUCCESS;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/

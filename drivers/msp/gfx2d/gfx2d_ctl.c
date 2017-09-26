@@ -22,12 +22,6 @@
 #include "hi_gfx_comm_k.h"
 #include "hi_gfx2d_errcode.h"
 
-#ifdef __cplusplus
-#if __cplusplus
-extern "C" {
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
-
 static HI_U32 gs_u32DevRef = 0;
 static DEFINE_MUTEX(gs_stDevRefMutex);
 
@@ -321,9 +315,3 @@ HI_BOOL GFX2D_CTL_CheckOpen(HI_VOID)
 {
     return (gs_u32DevRef > 0) ? HI_TRUE : HI_FALSE;
 }
-
-#ifdef __cplusplus
-#if __cplusplus
-}
-#endif	/*__cplusplus*/
-#endif	/*__cplusplus*/
