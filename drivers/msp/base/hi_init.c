@@ -45,9 +45,6 @@
 #include "drv_vi_ext.h"
 #include "drv_hdmirx_ext.h"
 #include "drv_pq_ext.h"
-#ifndef CA_FRAMEWORK_V100_SUPPORT
-#include "drv_klad_ext.h"
-#endif
 
 #ifdef HI_SND_AMP_SUPPORT
 #include "drv_amp_ext.h"
@@ -80,20 +77,11 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     JPEG_DRV_ModInit();
     PNG_DRV_ModInit();
     GFX2D_OS_ModInit();
-
-#ifndef CA_FRAMEWORK_V100_SUPPORT
-    KLAD_ModInit();
-#endif
-
     I2C_DRV_ModInit();
     DMX_DRV_ModInit();
-
     PVR_DRV_ModInit();
-
     SYNC_DRV_ModInit();
-
     ADSP_DRV_ModInit();
-
     AIAO_DRV_ModInit();
 
 #ifdef HI_SND_SIF_SUPPORT
@@ -105,11 +93,8 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
 #endif
 
     ADEC_DRV_ModInit();
-
     VPSS_DRV_ModInit();
-
     MCE_DRV_ModInit();
-
     KEYLED_DRV_ModInit();
     SCI_DRV_ModInit();
     AENC_DRV_ModInit();
