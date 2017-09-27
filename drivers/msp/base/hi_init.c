@@ -46,21 +46,8 @@
 #include "drv_hdmirx_ext.h"
 #include "drv_pq_ext.h"
 
-#ifdef HI_SND_AMP_SUPPORT
-#include "drv_amp_ext.h"
-#endif
-
-#ifdef HI_SND_SIF_SUPPORT
-#include "drv_sif_ext.h"
-#endif
-
-#ifdef HI_ADAC_SLIC_SUPPORT
-#include "drv_slic_ext.h"
-#endif
-
 #include "drv_gfx2d_ext.h"
 #include "drv_ci_ext.h"
-#include "drv_cimaxplus_ext.h"
 #include "drv_hdmirx_ext.h"
 
 #ifndef MODULE
@@ -83,49 +70,12 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     SYNC_DRV_ModInit();
     ADSP_DRV_ModInit();
     AIAO_DRV_ModInit();
-
-#ifdef HI_SND_SIF_SUPPORT
-    SIF_DRV_ModInit();
-#endif
-
-#ifdef HI_SND_AMP_SUPPORT
-    AMP_DRV_ModInit();
-#endif
-
     ADEC_DRV_ModInit();
     VPSS_DRV_ModInit();
     MCE_DRV_ModInit();
     KEYLED_DRV_ModInit();
     SCI_DRV_ModInit();
     AENC_DRV_ModInit();
-
-#ifdef HI_VENC_SUPPORT
-    VENC_DRV_ModInit();
-#endif
-
-#ifdef HI_VI_SUPPORT
-    VI_DRV_ModInit();
-
-#ifdef HI_VI_REAL_SUPPORT
-#ifdef HI_HDMI_RX_SUPPORT
-    HDMIRX_DRV_ModuleInit();
-#else
-    SIL9293_DRV_ModInit();
-#endif
-#endif
-#endif
-
-#ifdef HI_ADAC_SLIC_SUPPORT
-    slac_init();
-#endif
-
-#ifdef HI_CIPLUS_SUPPORT
-    CI_DRV_ModInit();
-#endif
-
-#ifdef HI_CI_DEV_CIMAXPLUS
-    CIMAXPLUS_DRV_ModInit();
-#endif
 
     return HI_SUCCESS;
 }

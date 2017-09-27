@@ -33,10 +33,5 @@ typedef struct
 {
     HI_U32 (*pfnHDMIRXGetDataRoute)(HI_VOID);
 } HDMIRX_EXPORT_FUNC_S;
-HI_S32 __init SIL9293_DRV_ModInit(HI_VOID);
-HI_VOID __exit SIL9293_HAL_DeInit(HI_VOID);
-
-HI_S32 __init HDMIRX_DRV_ModuleInit(HI_VOID);
-HI_VOID __exit HDMIRX_DRV_ModuleExit(HI_VOID);
 
 #endif

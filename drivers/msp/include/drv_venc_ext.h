@@ -52,7 +52,4 @@ typedef struct
     FN_VENC_SetSrcInfo	 pfnSetSrcInfo;
 } VENC_EXPORT_FUNC_S;
 
-HI_S32 VENC_DRV_ModInit(HI_VOID);
-HI_VOID VENC_DRV_ModExit(HI_VOID);
-
 #endif //__DRV_VENC_EXT_H__

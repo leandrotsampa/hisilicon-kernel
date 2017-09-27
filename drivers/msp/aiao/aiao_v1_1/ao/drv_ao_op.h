@@ -29,10 +29,6 @@ History	      :
 #include "hal_tianlai_adac_v500.h"
 #include "hal_tianlai_adac_v510.h"
 #include "drv_ao_private.h"
-
-#ifdef HI_SND_AMP_SUPPORT
-#include "drv_amp_ext.h"
-#endif
 #include "drv_ao_ioctl.h"
 
 /***************************** Macro Definition ******************************/
@@ -122,9 +118,6 @@ typedef struct
     HI_U32		    u32OpMask; /* bit0(0/1) and bit1(0/1)*/
     AIAO_PORT_ID_E	    enPortID[AO_SNDOP_MAX_AOP_NUM];
     AOE_AOP_ID_E	    enAOP[AO_SNDOP_MAX_AOP_NUM];
-#ifdef HI_SND_AMP_SUPPORT
-    AMP_EXPORT_FUNC_S*	     pstAmpFunc;
-#endif
     SND_ENGINE_TYPE_E	    enEngineType[AO_SNDOP_MAX_AOP_NUM];
     MMZ_BUFFER_S	    stRbfMmz[AO_SNDOP_MAX_AOP_NUM];
     AIAO_PORT_USER_CFG_S    stPortUserAttr[AO_SNDOP_MAX_AOP_NUM];

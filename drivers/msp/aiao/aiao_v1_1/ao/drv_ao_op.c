@@ -822,9 +822,7 @@ static HI_VOID SndOpInitState(SND_OP_STATE_S* state)
 	state->enAOP[idx] = AOE_AOP_BUTT;
 	state->enEngineType[idx] = SND_ENGINE_TYPE_BUTT;
     }
-#ifdef HI_SND_AMP_SUPPORT
-    state->pstAmpFunc = HI_NULL;
-#endif
+
     return;
 }
 
@@ -1780,21 +1778,6 @@ HI_S32 SndOpSetMute(HI_VOID* pSndOp, HI_U32 u32Mute)
 	    }
 	}
     }
-
-#ifdef HI_SND_AMP_SUPPORT
-    if (state->pstAmpFunc)
-    {
-	if (state->pstAmpFunc->pfnAMP_SetMute)
-	{
-	    Ret = (state->pstAmpFunc->pfnAMP_SetMute)(bMute);
-	    if (HI_SUCCESS != Ret)
-	    {
-		HI_FATAL_AO("Amp mute failed\n");
-		return HI_FAILURE;
-	    }
-	}
-    }
-#endif
 
     state->u32UserMute = u32Mute;
 

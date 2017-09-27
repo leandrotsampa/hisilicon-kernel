@@ -32,11 +32,6 @@ ifeq ($(CFG_HI_CIPLUS_SUPPORT),y)
     endif
 endif
 
-ifeq ($(CFG_HI_HDMI_RX_SUPPORT),y)
-EXTRA_CFLAGS += -DHI_VI_REAL_SUPPORT
-EXTRA_CFLAGS += -DHI_HDMI_RX_SUPPORT
-endif
-
 MOD_NAME := hi_base
 
 obj-y += $(MOD_NAME).o
