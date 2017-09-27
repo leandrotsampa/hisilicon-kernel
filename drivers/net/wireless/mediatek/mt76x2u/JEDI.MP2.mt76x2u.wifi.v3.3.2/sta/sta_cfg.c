@@ -3776,10 +3776,10 @@ INT Set_WOW_WakeOnPort_Enable(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 
 	/* clear all port setting */
 	if (pAd->WOW_Cfg.bWakeonportEnable == FALSE) {
-		NdisZeroMemory(pAd->WOW_Cfg.TcpPortV4, WOW_MAX_PORT_NUM_TCPV4);
-		NdisZeroMemory(pAd->WOW_Cfg.TcpPortV6, WOW_MAX_PORT_NUM_TCPV6);
-		NdisZeroMemory(pAd->WOW_Cfg.UdpPortV4, WOW_MAX_PORT_NUM_UDPV4);
-		NdisZeroMemory(pAd->WOW_Cfg.UdpPortV6, WOW_MAX_PORT_NUM_UDPV6);
+		NdisZeroMemory(pAd->WOW_Cfg.TcpPortV4, sizeof(pAd->WOW_Cfg.TcpPortV4));
+		NdisZeroMemory(pAd->WOW_Cfg.TcpPortV6, sizeof(pAd->WOW_Cfg.TcpPortV6));
+		NdisZeroMemory(pAd->WOW_Cfg.UdpPortV4, sizeof(pAd->WOW_Cfg.UdpPortV4));
+		NdisZeroMemory(pAd->WOW_Cfg.UdpPortV6, sizeof(pAd->WOW_Cfg.UdpPortV6));
 		pAd->WOW_Cfg.TcpPortCntV4 = 0;
 		pAd->WOW_Cfg.TcpPortCntV6 = 0;
 		pAd->WOW_Cfg.UdpPortCntV4 = 0;
@@ -3801,7 +3801,7 @@ INT Set_WOW_TcpPort_v4(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 	INT ret = TRUE;
 	LONG Value = 0;
 
-	NdisZeroMemory(pAd->WOW_Cfg.TcpPortV4, WOW_MAX_PORT_NUM_TCPV4);
+	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV4, sizeof(pAd->WOW_Cfg.UdpPortV4));
 	while ((this_char = strsep((char **)&arg, ",")) != NULL && i < WOW_MAX_PORT_NUM_TCPV4) {
 		if (*this_char == '-') {
 			DBGPRINT(RT_DEBUG_ERROR, ("Illegal TCP port\n"));
@@ -3832,7 +3832,7 @@ INT Set_WOW_TcpPort_v6(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 	INT ret = TRUE;
 	LONG Value = 0;
 
-	NdisZeroMemory(pAd->WOW_Cfg.TcpPortV6, WOW_MAX_PORT_NUM_TCPV6);
+	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV6, sizeof(pAd->WOW_Cfg.UdpPortV6));
 	while ((this_char = strsep((char **)&arg, ",")) != NULL && i < WOW_MAX_PORT_NUM_TCPV6) {
 		if (*this_char == '-') {
 			DBGPRINT(RT_DEBUG_ERROR, ("Illegal TCP port\n"));
@@ -3862,7 +3862,7 @@ INT Set_WOW_UdpPort_v4(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 	INT ret = TRUE;
 	LONG Value = 0;
 
-	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV4, WOW_MAX_PORT_NUM_UDPV4);
+	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV4, sizeof(pAd->WOW_Cfg.UdpPortV4));
 	while ((this_char = strsep((char **)&arg, ",")) != NULL && i < WOW_MAX_PORT_NUM_UDPV4) {
 		if (*this_char == '-') {
 			DBGPRINT(RT_DEBUG_ERROR, ("Illegal UDP port\n"));
@@ -3892,7 +3892,7 @@ INT Set_WOW_UdpPort_v6(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 	INT ret = TRUE;
 	LONG Value = 0;
 
-	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV6, WOW_MAX_PORT_NUM_UDPV6);
+	NdisZeroMemory(pAd->WOW_Cfg.UdpPortV6, sizeof(pAd->WOW_Cfg.UdpPortV6));
 	while ((this_char = strsep((char **)&arg, ",")) != NULL && i < WOW_MAX_PORT_NUM_UDPV6) {
 		if (*this_char == '-') {
 			DBGPRINT(RT_DEBUG_ERROR, ("Illegal UDP port\n"));
@@ -3922,7 +3922,7 @@ INT Set_WOW_IP(IN PRTMP_ADAPTER pAd, IN PSTRING arg)
 	LONG Value = 0;
 	INT ret = TRUE;
 
-	NdisZeroMemory(pAd->WOW_Cfg.WowIP, 4);
+	NdisZeroMemory(pAd->WOW_Cfg.WowIP, sizeof(pAd->WOW_Cfg.WowIP));
 	DBGPRINT(RT_DEBUG_ERROR, ("[%s] IP:", __func__));
 	while ((this_char = strsep((char **)&arg, ".")) != NULL && i < 4) {
 		ret = os_strtol(this_char, 10, &Value);
