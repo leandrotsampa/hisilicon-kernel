@@ -1394,7 +1394,6 @@ static void sHdcp2xVirtualIsrHandler(HdcpObj_t* hdcpObj)
 		sResetKsvFifo(hdcpObj);
 		sRcvIdGet(hdcpObj);
 		sPrintKsvList(hdcpObj);
-#ifndef HDMI_TEE_SUPPORT
 		if( HI_SUCCESS != DRV_HDMI_SrmCheck(hdcpObj->ksvList.pListStart,(hdcpObj->ksvList.length / SII_HDCP2X_RCVID_LENGTH)) )
 		{
 			hdcpObj->authState = SII_MOD_HDCP_EVENT__FAILED;
@@ -1403,7 +1402,6 @@ static void sHdcp2xVirtualIsrHandler(HdcpObj_t* hdcpObj)
 			sStartHdcp(hdcpObj, false);
 			return ;
 		}
-#endif
 	}
 
 
@@ -1448,7 +1446,6 @@ static void sHdcp2xVirtualIsrHandler(HdcpObj_t* hdcpObj)
 //			SII_LIB_LOG_DEBUG1(hdcpObj, ("seq_num_v:%x ", seq_num_v));
 			//Read ReceiverID List
 			sRcvIdListGet(hdcpObj);
-#ifndef HDMI_TEE_SUPPORT
 			if( HI_SUCCESS != DRV_HDMI_SrmCheck(hdcpObj->ksvList.pListStart,(hdcpObj->ksvList.length / SII_HDCP2X_RCVID_LENGTH)) )
 			{
 				hdcpObj->authState = SII_MOD_HDCP_EVENT__FAILED;
@@ -1457,7 +1454,6 @@ static void sHdcp2xVirtualIsrHandler(HdcpObj_t* hdcpObj)
 				sStartHdcp(hdcpObj, false);
 				return ;
 			}
-#endif
 			SII_LIB_LOG_DEBUG1(hdcpObj, ("Receiver ID List::  "));
 			sPrintKsvList(hdcpObj);
 		    if ((hdcpObj->hdcp2x_repeater_ready) && (!rpt_fail))
@@ -1571,7 +1567,6 @@ static void sVirtualIsrHandler(HdcpObj_t* hdcpObj)
 		hdcpObj->ksvList.pList += SII_BKSV_LIST_BYTES;
 		SII_LIB_LOG_DEBUG1(hdcpObj, "Sink BKSVs::  \n");
 		sPrintKsvList(hdcpObj);
-#ifndef HDMI_TEE_SUPPORT
 			if( HI_SUCCESS != DRV_HDMI_SrmCheck(hdcpObj->ksvList.pListStart,(hdcpObj->ksvList.length / SII_BKSV_LIST_BYTES)) )
 			{
 				hdcpObj->authState = SII_MOD_HDCP_EVENT__FAILED;
@@ -1581,7 +1576,6 @@ static void sVirtualIsrHandler(HdcpObj_t* hdcpObj)
 				//sHardwareInit(hdcpObj);
 			}
 			else
-#endif
 			{
 				// Part 1 is done and no downstream Part 2 needs to be done
 			hdcpObj->authState = SII_MOD_HDCP_EVENT__AUTHENTICATED;
@@ -1618,7 +1612,6 @@ static void sVirtualIsrHandler(HdcpObj_t* hdcpObj)
 							hdcpObj->ksvList.pList += SII_BKSV_LIST_BYTES;
 							SII_LIB_LOG_DEBUG1(hdcpObj, "Sink BKSVs::  \n");
 							sPrintKsvList(hdcpObj);
-#ifndef HDMI_TEE_SUPPORT
 								if( HI_SUCCESS != DRV_HDMI_SrmCheck(hdcpObj->ksvList.pListStart,(hdcpObj->ksvList.length / SII_BKSV_LIST_BYTES)) )
 								{
 									hdcpObj->authState = SII_MOD_HDCP_EVENT__FAILED;
@@ -1627,7 +1620,6 @@ static void sVirtualIsrHandler(HdcpObj_t* hdcpObj)
 									sStartHdcp(hdcpObj, false);
 									break ;
 								}
-#endif
 
 								// Part 1 is done and no downstream Part 2 needs to be done
 							hdcpObj->authState = SII_MOD_HDCP_EVENT__AUTHENTICATED;

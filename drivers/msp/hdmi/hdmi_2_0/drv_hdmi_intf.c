@@ -1001,9 +1001,6 @@ static HI_S32 HdcpStrategy(HDMI_DEVICE_S* pstHdmiDev)
     HDMI_SINK_CAPABILITY_S  *pstSinkCaps = HI_NULL;
     HI_BOOL		    bHdcp22Mode = HI_FALSE;
     HI_BOOL		    bHdcp14Mode = HI_FALSE;
-#ifdef HDMI_TEE_SUPPORT
-    HDMI_TEE_PARAM_S stParam;
-#endif
     CHECK_POINTER(pstHdmiDev);
     CHECK_POINTER(pstHdmiDev->pstHdmiHal);
 
@@ -1044,7 +1041,6 @@ static HI_S32 HdcpStrategy(HDMI_DEVICE_S* pstHdmiDev)
 
 	    HDMI_INFO("Sink hdcp2.2 support(%d)\n", pstHdmiDev->stHdcpInfo.eHdcp22Support);
 
-#ifndef HDMI_TEE_SUPPORT
 	    s32Ret = pstHdmiDev->pstHdmiHal->HAL_HDMI_HdcpMcuCodeLoad(pstHdmiDev->pstHdmiHal, pstHdmiDev->stHdcpInfo.enHdcpMode);
 	    if(HI_SUCCESS != s32Ret)
 	    {
@@ -1052,20 +1048,6 @@ static HI_S32 HdcpStrategy(HDMI_DEVICE_S* pstHdmiDev)
 		return HI_FAILURE;
 	    }
 	    pstHdmiDev->stHdcpInfo.bHdcp2Prep = HI_TRUE;
-#else
-	    if(!pstHdmiDev->stHdcpInfo.bHdcpWasOn)
-	    {
-		HDMI_MEMSET(&stParam, 0, sizeof(HDMI_TEE_PARAM_S));
-		stParam.enTeeCmd = HI_HDMI_HDCP22_INIT;
-		s32Ret = DRV_HDMI_TeeCmdSend(pstHdmiDev->u32HdmiDevId, &stParam);
-		if(s32Ret != HI_SUCCESS)
-		{
-		    HDMI_ERR("8051 code check fail. \n");
-		    return HI_FAILURE;
-		}
-		pstHdmiDev->stHdcpInfo.bHdcp2Prep = HI_TRUE;
-	    }
-#endif
 	}
 	else if (HI_TRUE == bHdcp14Mode)
 	{
@@ -1238,37 +1220,6 @@ static HI_S32 HdmiAttrConstruct(HDMI_DEVICE_S * pstHdmiDev, HDMI_ATTR_S *pstAttr
     return HI_SUCCESS;
 }
 
-#ifdef HDMI_TEE_SUPPORT
-static HI_S32 HdmiTeeHdcpCapSet(HDMI_DEVICE_S *pstHdmiDev)
-{
-    HDMI_TEE_PARAM_S	     stParam;
-    HI_S32		     s32Ret = HI_SUCCESS;
-    HDMI_TX_CAPABILITY_S     stTxCap;
-    HDMI_HDCP_CAPABILITY_S   *pstHdcpCaps = HI_NULL;
-    CHECK_POINTER(pstHdmiDev);
-
-	HDMI_MEMSET(&stParam, 0, sizeof(HDMI_TEE_PARAM_S));
-	HDMI_MEMSET(&stTxCap, 0, sizeof(HDMI_TX_CAPABILITY_S));
-
-    pstHdcpCaps = &(pstHdmiDev->stEdidInfo.stCapability.stHdcpSupport);
-    if(HI_TRUE == pstHdmiDev->stTeeInfo.bTeeOpen)
-    {
-	stParam.enTeeCmd = HI_HDMI_HDCP_CAPS;
-
-	pstHdmiDev->pstHdmiHal->HAL_HDMI_TxCapabilityGet(pstHdmiDev->pstHdmiHal, &stTxCap);
-
-	stParam.seHdcpCaps.bHdcp14Support = (pstHdcpCaps->bHdcp14Support & stTxCap.bTxHdcp_14);
-	stParam.seHdcpCaps.bHdcp22Support = (pstHdcpCaps->bHdcp22Support & stTxCap.bTxHdcp_22);
-
-	s32Ret = DRV_HDMI_TeeCmdSend(pstHdmiDev->u32HdmiDevId, &stParam);
-	if(s32Ret != HI_SUCCESS)
-	{
-	    HDMI_ERR("send HDCP caps to tee error!\n");
-	}
-    }
-    return s32Ret;
-}
-#endif
 /*
 static HDMI_TRANSITION_STATE_E HdmiTransitionStateGet(HDMI_DEVICE_S * pstHdmiDev)
 {
@@ -1327,10 +1278,6 @@ HI_S32 HpdEvent(HDMI_DEVICE_S* pstHdmiDev)
     }while( u32TimeOutCnt-- );
     HDMI_INFO("HDCP SinkCapabilityGet timeout=%d ms\n", ((20 - u32TimeOutCnt) * 50) );
 
-#ifdef HDMI_TEE_SUPPORT
-    s32Ret = HdmiTeeHdcpCapSet(pstHdmiDev);
-#endif
-
     HdmiCecNetWorkSet(pstHdmiDev);
 
 #ifdef HDMI_HDR_SUPPORT
@@ -1380,15 +1327,6 @@ static HI_S32 HdmiEventCallback(HI_VOID* pData , HDMI_EVENT_E enEvent)
 {
     HI_S32	    s32Ret	    = HI_SUCCESS;
     HDMI_DEVICE_S* pstHdmiDev	    = (HDMI_DEVICE_S*) pData;
-#ifdef HDMI_TEE_SUPPORT
-    HDMI_TEE_PARAM_S	stParam;
-    HI_BOOL		bTeeEventHdcp1xSucc = HI_FALSE;
-
-    HDMI_MEMSET(&stParam, 0, sizeof(stParam));
-    stParam.enTeeCmd	= HI_HDMI_HDCP14_EVENT;
-    stParam.pvData	= &bTeeEventHdcp1xSucc;
-    stParam.u32Size	= sizeof(bTeeEventHdcp1xSucc);
-#endif
 
     CHECK_POINTER(pstHdmiDev);
     CHECK_POINTER(pstHdmiDev->pstHdmiHal);
@@ -1412,14 +1350,6 @@ static HI_S32 HdmiEventCallback(HI_VOID* pData , HDMI_EVENT_E enEvent)
 		DRV_HDMI_BlackDataSet(pstHdmiDev, HI_TRUE);
 				DRV_HDMI_AudioEnable(pstHdmiDev, HDMI_AO_MODE_DRV_SELF, HI_FALSE);
 		pstHdmiDev->stHdcpInfo.bHdcpAuthSuc = HI_FALSE;
-
-#ifdef HDMI_TEE_SUPPORT
-		if(HDMI_HDCP_MODE_1_4 == pstHdmiDev->stHdcpInfo.enHdcpMode)
-		{
-		    bTeeEventHdcp1xSucc = HI_FALSE;
-		    DRV_HDMI_TeeCmdSend(pstHdmiDev->u32HdmiDevId, &stParam);
-		}
-#endif
 		break;
 	    }
 	case HDMI_EVENT_RSEN_CONNECT:
@@ -1442,14 +1372,6 @@ static HI_S32 HdmiEventCallback(HI_VOID* pData , HDMI_EVENT_E enEvent)
 		DRV_HDMI_BlackDataSet(pstHdmiDev, HI_FALSE);
 				DRV_HDMI_AudioEnable(pstHdmiDev, HDMI_AO_MODE_DRV_SELF, HI_TRUE);
 		pstHdmiDev->stHdcpInfo.bHdcpAuthSuc = HI_TRUE;
-
-#ifdef HDMI_TEE_SUPPORT
-		if(HDMI_HDCP_MODE_1_4 == pstHdmiDev->stHdcpInfo.enHdcpMode)
-		{
-		    bTeeEventHdcp1xSucc = HI_TRUE;
-		    DRV_HDMI_TeeCmdSend(pstHdmiDev->u32HdmiDevId, &stParam);
-		}
-#endif
 		break;
 	    }
 	case HDMI_EVENT_SCRAMBLE_FAIL:
@@ -1647,10 +1569,6 @@ static HI_S32 HdmiDeviceInit(HDMI_DEVICE_S * pstHdmiDev)
     pstHdmiDev->stHdrInfo.stZeroDrmIfTimer.u32Time	= ZERO_DRMIF_SEND_TIME;
 #endif
 
-#ifdef HDMI_TEE_SUPPORT
-    pstHdmiDev->stTeeInfo.bTeeOpen = HI_FALSE;
-#endif
-
     /* video attribute init*/
     pstVideoAttr->enVideoTiming = HDMI_VIDEO_TIMING_1280X720P_50000;
     pstVideoAttr->u32ClkFs	= 74250;
@@ -1796,10 +1714,6 @@ HI_S32 DRV_HDMI_Open(HDMI_DEVICE_S* pstHdmiDev, HI_BOOL bUser)
 
     HDMI_INFO("u32UserCnt: %d, u32KernelCnt: %d\n", pstHdmiDev->u32UserCnt, pstHdmiDev->u32KernelCnt);
 
-#ifdef HDMI_TEE_SUPPORT
-    DRV_HDMI_TeeOpen(pstHdmiDev->u32HdmiDevId);
-#endif
-
     /*20150513, l232354 STB boot have done it. But BVT have not done it in boot.
 	  BVT work in boot need equa SBT work in boot later.
 	*/
@@ -1944,9 +1858,6 @@ HI_S32 DRV_HDMI_Close(HDMI_DEVICE_S* pstHdmiDev, HI_BOOL bUser)
 
     if (pstHdmiDev->u32UserCnt == 0 && pstHdmiDev->u32KernelCnt == 0)
     {
-#ifdef HDMI_TEE_SUPPORT
-	DRV_HDMI_TeeClose(pstHdmiDev->u32HdmiDevId);
-#endif
 		DRV_HDMI_SrmDeinit();
 	HdmiRelease(pstHdmiDev);
 	pstHdmiDev->enRunState = HDMI_RUN_STATE_CLOSE;
@@ -2019,10 +1930,6 @@ static HI_VOID HdmiDebugDelay(HDMI_DEVICE_S* pstHdmiDev, HI_U8 *u8Info)
 
 HI_S32 DRV_HDMI_Stop(HDMI_DEVICE_S* pstHdmiDev)
 {
-#ifdef HDMI_TEE_SUPPORT
-    HDMI_TEE_PARAM_S stParam;
-#endif
-
     HDMI_INFO(">>> DRV_HDMI_Stop in...\n");
 
     CHECK_POINTER(pstHdmiDev);
@@ -2046,11 +1953,6 @@ HI_S32 DRV_HDMI_Stop(HDMI_DEVICE_S* pstHdmiDev)
     {
 	msleep(200);
     }
-#ifdef HDMI_TEE_SUPPORT
-    HDMI_MEMSET(&stParam, 0, sizeof(HDMI_TEE_PARAM_S));
-    stParam.enTeeCmd = HI_HDMI_STOP;
-    DRV_HDMI_TeeCmdSend(pstHdmiDev->u32HdmiDevId, &stParam);
-#endif
 
     HdmiDebugDelay(pstHdmiDev, "DRV_HDMI_Stop phy disable");
     HdmiPhyOutputEnable(pstHdmiDev, HI_FALSE);

@@ -28,11 +28,6 @@
 #include "hi_drv_hdmi.h"
 #include "drv_hdmi_srm.h"
 
-#ifdef HDMI_TEE_SUPPORT
-#include "teek_client_api.h"	// tee
-#include "drv_hdmi_tee.h"
-#endif
-
 #define HDMI_DBG_PRINT		    HI_DRV_PROC_EchoHelper
 #define HDMI_DBG_ERR		    HDMI_DBG_PRINT("[HDMI DBG ERROR]: %s [%d],",__func__,__LINE__);HDMI_DBG_PRINT
 

@@ -12,10 +12,6 @@
 #include "drv_hdmi_edid.h"
 #include "drv_hdmi_event.h"
 
-#ifdef HDMI_TEE_SUPPORT
-#include "drv_hdmi_tee.h"
-#endif
-
 typedef enum
 {
 	STATE_PLUG_UNKNOWN = -1,
@@ -69,9 +65,6 @@ typedef struct
     HDMI_DEBUG_CONEXT_S	     stDebugContext;
     HDMI_MUTEX				 stMutexThread;
     HDMI_HDR_INFO_S	     stHdrInfo;
-#ifdef HDMI_TEE_SUPPORT
-    HDMI_TEE_INFO_S	     stTeeInfo;
-#endif
 }HDMI_DEVICE_S;
 
 HI_S32 DRV_HDMI_Init(HI_VOID);
