@@ -1232,7 +1232,7 @@ static int soc_snd_platform_probe(struct platform_device* pdev)
 #endif
 
 #ifdef MUTE_FRAME_OUTPUT
-    memset(DumpBuf, 0, MUTE_FRAME_TIME * 192000 / 1000);
+    memset(DumpBuf, 0, sizeof(DumpBuf));
 #endif
 
     ret = snd_soc_register_platform(&pdev->dev, &aiao_soc_platform_drv);
