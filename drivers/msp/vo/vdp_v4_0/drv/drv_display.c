@@ -4980,9 +4980,9 @@ HI_S32	DRV_DISP_O5_SetMacv(HI_BOOL bEnable)
 
     /*TODO: convert user macvision table to 5 bytes registers  */
     if (bEnable)
-	memcpy(u32macv, g_O5_u8MacvTable, 5);
+	memcpy(u32macv, g_O5_u8MacvTable, sizeof(u32macv));
     else
-	memset(u32macv, 0x0, 5);
+	memset(u32macv, 0x0, sizeof(u32macv));
 
     ret = DISP_SetMacrovision(HI_DRV_DISPLAY_0, HI_DRV_DISP_MACROVISION_CUSTOMER);
 
