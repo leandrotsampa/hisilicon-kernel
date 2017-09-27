@@ -513,7 +513,7 @@ static inline HI_U32 HIFB_PROC_GetAlpha(HI_CHAR *pStr)
     HI_BOOL bIsStrValid = HI_FALSE;
 
     pStr++;
-    while (pStr != '\0')
+    while (*pStr != '\0')
     {
 	if (HI_FALSE == bIsStrValid)
 	{
