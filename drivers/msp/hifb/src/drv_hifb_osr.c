@@ -711,9 +711,7 @@ static inline HI_S32  HIFB_OSR_CheckWhetherLayerPosSupport(HIFB_LAYER_INFO_S *ps
 static inline HI_VOID HIFB_OSR_CheckWhetherDispSizeChange(struct fb_info *info, HIFB_LAYER_INFO_S *pstLayerInfo);
 static inline HI_S32  HIFB_OSR_CheckWhetherMemSizeEnough(struct fb_info *info, HIFB_LAYER_INFO_S *pstLayerInfo);
 
-#ifdef CFG_HIFB_PROC_SUPPORT
 extern HI_VOID HI_UNF_HIFB_CaptureImgFromLayer(HI_U32 u32LayerID, HI_BOOL bAlphaEnable);
-#endif
 
 /******************************* API realization *****************************/
 
@@ -1780,10 +1778,9 @@ static HI_S32 hifb_vo_callback(HI_VOID *pParaml, HI_VOID *pParamr)
     struct timeval tv;
     HI_U32 NowTimeMs;
     HIFB_RECT stInRect	 = {0};
-#ifdef CFG_HIFB_PROC_SUPPORT
     HI_U32 EndTimeMs;
     DRV_HIFB_DECMPSTATUS_S stDeCmpStatus;
-#endif
+
     if (NULL == pParaml)
     {
        return HI_FAILURE;
@@ -1807,7 +1804,6 @@ static HI_S32 hifb_vo_callback(HI_VOID *pParaml, HI_VOID *pParamr)
 
     g_stDrvAdpCallBackFunction.HIFB_DRV_SetInVoCallBackScanLine(*pu32LayerId);
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     HI_GFX_Memset(&stDeCmpStatus, 0x0, sizeof(DRV_HIFB_DECMPSTATUS_S));
     g_stDrvAdpCallBackFunction.HIFB_DRV_GetDeCmpStatus(*pu32LayerId, &stDeCmpStatus,pstPar->stProcInfo.bDebugByMoreMessage);
 
@@ -1826,7 +1822,6 @@ static HI_S32 hifb_vo_callback(HI_VOID *pParaml, HI_VOID *pParamr)
     {
        g_stDrvAdpCallBackFunction.HIFB_DRV_SetVdpIntMask(0x0);
     }
-#endif
 
     if (!pstPar->stRunInfo.bModifying)
     {
@@ -1893,11 +1888,10 @@ static HI_S32 hifb_vo_callback(HI_VOID *pParaml, HI_VOID *pParamr)
     HIFB_OSR_UpdataCmp(*pu32LayerId);
 #endif
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     do_gettimeofday(&tv);
     EndTimeMs = tv.tv_sec * 1000 + tv.tv_usec / 1000;
     HIFB_PROC_VoCallBackCostTime(*pu32LayerId,(EndTimeMs - NowTimeMs));
-#endif
+
     return HI_SUCCESS;
 }
 
@@ -4462,9 +4456,7 @@ static HI_S32 DRV_HIFB_Close(struct fb_info *info, HI_S32 user)
     }
 
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     DRV_HIFB_DestoryProc(par->stBaseInfo.u32LayerID);
-#endif
 
 #ifdef CFG_HIFB_FENCE_SUPPORT
     DRV_HIFB_FenceDInit(par);
@@ -4759,9 +4751,7 @@ static HI_S32 DRV_HIFB_Open(struct fb_info *info, HI_S32 user)
 	return HI_FAILURE;
     }
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     DRV_HIFB_CreateProc(par->stBaseInfo.u32LayerID);
-#endif
 
     par->stExtendInfo.bShow = HI_TRUE;
     par->bVblank	    = HI_TRUE;
@@ -5552,7 +5542,6 @@ HI_VOID DRV_HIFB_SetDecmpLayerInfo(HI_U32 LayerId)
 	return;
     }
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     if (HI_TRUE == pstPar->stProcInfo.bHasDeCmpErr)
     {
        pstPar->stProcInfo.bHasDeCmpErr = HI_FALSE;
@@ -5560,7 +5549,6 @@ HI_VOID DRV_HIFB_SetDecmpLayerInfo(HI_U32 LayerId)
        DRV_HIFB_UnLock(&pstPar->stBaseInfo.lock,&LockParFlag);
        return;
     }
-#endif
 
     UnCmpStride = CONIFG_HIFB_GetMaxStride(pstPar->stExtendInfo.u32DisplayWidth,32,&CmpStride,CONFIG_HIFB_DECOMPRESS_DATA_STRIDE_ALIGN);
 

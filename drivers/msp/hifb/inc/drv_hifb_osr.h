@@ -244,9 +244,7 @@ typedef struct
 
     HIFB_RTIME_INFO_S	stRunInfo;
     HIFB_FRAME_INFO_S	stFrameInfo;
-#ifdef CFG_HIFB_PROC_SUPPORT
     DRV_HIFB_PROC_S	stProcInfo;
-#endif
     HIFB_DISP_TMPBUF_S	stDispTmpBuf;
 
 #ifdef CFG_HIFB_FENCE_SUPPORT

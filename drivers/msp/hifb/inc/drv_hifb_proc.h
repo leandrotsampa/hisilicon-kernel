@@ -30,8 +30,6 @@ Date		      Author		    Modification
 
 #include "drv_hifb_config.h"
 
-#ifdef CFG_HIFB_PROC_SUPPORT
-
 /***************************** Macro Definition ******************************/
 #define HIFB_PROC_VOCALLBACK_COUNT_COSTTIME	  10
 
@@ -83,6 +81,5 @@ HI_VOID HIFB_PROC_CountVoCallBackScanLineAbnormalTimes(HI_U32 LayerID);
 HI_VOID HIFB_PROC_SetStartAndUpScanLine(HI_U32 StartScanLine, HI_U32 UpScanLine);
 HI_VOID HIFB_PROC_SetVoCallBackInOutScanLine(HI_U32 LayerId, HI_U32 ScanLine, HI_BOOL bInScanLine);
 HI_VOID HIFB_PROC_CheckScanLineAbnormal(HI_U32 LayerID, HI_BOOL *pAbnormal);
-#endif
 
 #endif

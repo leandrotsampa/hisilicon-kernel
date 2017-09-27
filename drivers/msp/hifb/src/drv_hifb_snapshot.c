@@ -35,14 +35,10 @@ Date		    Author		  Modification
 
 
 /***************************** Macro Definition ******************************/
-#ifdef CFG_HIFB_PROC_SUPPORT
 #define HIFB_SNAPSHOT_INFO(fmt...) HI_PRINT(fmt)
-#endif
 
 //#define CONFIG_HIFB_SNAPSHOT_DEBUG
 
-
-#ifdef CFG_HIFB_PROC_SUPPORT
 /*************************** Structure Definition ****************************/
 //λͼͷ�ļ��ṹ��ע���ֽڶ������
 
@@ -478,5 +474,3 @@ HI_VOID HI_UNF_HIFB_SetCaptureImgFromLayerState(HI_BOOL CaptureImgEnable)
     gs_CaptureEnable = CaptureImgEnable;
     return;
 }
-
-#endif

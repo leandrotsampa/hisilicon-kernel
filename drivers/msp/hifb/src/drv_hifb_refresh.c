@@ -68,11 +68,7 @@ static HI_VOID HIFB_PanDisplayForNoStero(struct fb_var_screeninfo *var, struct f
 static HI_VOID HIFB_UpNonStereoADDR(struct fb_var_screeninfo *var, struct fb_info *info);
 static HI_U32  HIFB_GetNonStereoADDR(struct fb_var_screeninfo *var, struct fb_info *info);
 
-
-#ifdef CFG_HIFB_PROC_SUPPORT
 extern HI_VOID HI_UNF_HIFB_CaptureImgFromLayer(HI_U32 u32LayerID, HI_BOOL bAlphaEnable);
-#endif
-
 
 #ifdef CFG_HIFB_FENCE_SUPPORT
 static HI_VOID DRV_HIFB_HwcRefreshWork(struct work_struct *work);
@@ -93,9 +89,7 @@ HI_S32 DRV_HIFB_PanDisplay(struct fb_var_screeninfo *var, struct fb_info *info)
 
     HIFB_CHECK_UNEQUAL_RETURN(HIFB_REFRESH_MODE_WITH_PANDISPLAY, pstPar->stExtendInfo.enBufMode, HI_SUCCESS);
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     HI_UNF_HIFB_CaptureImgFromLayer(pstPar->stBaseInfo.u32LayerID, HI_FALSE);
-#endif
 
     (HI_TRUE == pstPar->st3DInfo.IsStereo) ? (HIFB_PanDisplayForStero(var,info)) : (HIFB_PanDisplayForNoStero(var,info));
 
@@ -276,14 +270,12 @@ HI_S32 DRV_HIFB_FenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
        return -EFAULT;
     }
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     pstPar->stProcInfo.HwcRefreshUnSyncCnt++;
     pstPar->stProcInfo.b3DStatus = pstPar->st3DInfo.IsStereo;
     pstPar->stProcInfo.bHwcRefreshInDeCmpStatus = pstWork->stLayerInfo.bDeCompress;
     pstPar->stProcInfo.HwcRefreshInDispFmt	= (HI_U32)pstWork->stLayerInfo.eFmt;
     pstPar->stProcInfo.HwcRefreshInDispStride	= pstWork->stLayerInfo.u32Stride;
     pstPar->stProcInfo.HwcRefreshInDispAdress	= pstWork->stLayerInfo.u32LayerAddr;
-#endif
 
     pstWork->pstPar = pstPar;
     pstWork->stLayerInfo.s32ReleaseFenceFd = s32FenceFd;
@@ -364,9 +356,8 @@ static HI_VOID DRV_HIFB_HwcRefreshWork(struct work_struct *work)
     pstPar->bEndHwcRefresh = HI_TRUE;
     wake_up_interruptible(&pstPar->WaiteEndHwcRefresh);
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     pstPar->stProcInfo.HwcRefreshUnSyncCnt--;
-#endif
+
     return;
 }
 
@@ -463,14 +454,12 @@ HI_S32 DRV_HIFB_NoFenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
        return -EFAULT;
     }
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     pstPar->stProcInfo.HwcRefreshUnSyncCnt++;
     pstPar->stProcInfo.b3DStatus = pstPar->st3DInfo.IsStereo;
     pstPar->stProcInfo.bHwcRefreshInDeCmpStatus = stHwcLayerInfo.bDeCompress;
     pstPar->stProcInfo.HwcRefreshInDispFmt	= (HI_U32)stHwcLayerInfo.eFmt;
     pstPar->stProcInfo.HwcRefreshInDispStride	= stHwcLayerInfo.u32Stride;
     pstPar->stProcInfo.HwcRefreshInDispAdress	= stHwcLayerInfo.u32LayerAddr;
-#endif
 
     stHwcLayerInfo.bStereo = pstPar->st3DInfo.IsStereo;
     if (copy_to_user(pArgs,&stHwcLayerInfo,sizeof(HIFB_HWC_LAYERINFO_S)))
@@ -528,9 +517,7 @@ HI_S32 DRV_HIFB_NoFenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
     pstPar->stFrameInfo.u32RefreshFrame++;
     pstPar->bHwcRefresh = HI_TRUE;
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     pstPar->stProcInfo.HwcRefreshUnSyncCnt--;
-#endif
 
     return HI_SUCCESS;
 }

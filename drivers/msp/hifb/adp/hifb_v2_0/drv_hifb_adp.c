@@ -55,10 +55,7 @@ Date		    Author		  Modification
 #include "drv_hifb_wbc.h"
 #include "drv_pq_ext.h"
 
-#ifdef CFG_HIFB_PROC_SUPPORT
 #include "drv_hifb_proc.h"
-#endif
-
 #include "drv_hifb_paracheck.h"
 #include "drv_hifb_config.h"
 #include "hi_gfx_sys_k.h"
@@ -1529,12 +1526,10 @@ static HI_VOID OPTM_GFX_GET_DECMP_Status(HIFB_LAYER_ID_E enLayerId)
 
 HI_VOID DRV_HIFB_ADP_UpDataCallBack(HI_VOID* u32Param0, HI_VOID* u32Param1)
 {
-#ifdef CFG_HIFB_PROC_SUPPORT
     HI_U32 CurScanline = 0;
     HI_U32 UpScanline  = 0;
     HI_U32 StartScanline = 0;
     HI_BOOL bScanLineAbnormal = HI_FALSE;
-#endif
     OPTM_GFX_GP_E *pEnGpId = (OPTM_GFX_GP_E *)u32Param0;
     HI_DRV_DISP_CALLBACK_INFO_S *pstDispInfo = (HI_DRV_DISP_CALLBACK_INFO_S *)u32Param1;
 
@@ -1576,7 +1571,6 @@ HI_VOID DRV_HIFB_ADP_UpDataCallBack(HI_VOID* u32Param0, HI_VOID* u32Param1)
 	return HIFB_ADP_DispSetting(*pEnGpId,pstDispInfo);
     }
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     if (OPTM_GFX_GP_0 == *pEnGpId)
     {
        HIFB_HAL_GetVoCallBackCurScanLine(&CurScanline);
@@ -1592,7 +1586,6 @@ HI_VOID DRV_HIFB_ADP_UpDataCallBack(HI_VOID* u32Param0, HI_VOID* u32Param1)
     {
        //return;
     }
-#endif
 
     if (HI_DRV_DISP_C_VT_INT == pstDispInfo->eEventType)
     {
@@ -3409,9 +3402,7 @@ HI_S32 OPTM_GfxUpLayerReg(HIFB_LAYER_ID_E enLayerId)
 	**/
     OPTM_CheckGPMask_BYGPID(enGpId);
 
-#ifdef CFG_HIFB_PROC_SUPPORT
     HIFB_PROC_CountVoCallBackScanLineAbnormalTimes(enLayerId);
-#endif
 
     OPTM_VDP_GFX_SetRegUp(g_stGfxDevice[enLayerId].enGfxHalId);
     OPTM_VDP_GP_SetRegUp (g_stGfxGPDevice[g_stGfxDevice[enLayerId].enGPId].enGpHalId);
@@ -3426,11 +3417,10 @@ HI_S32 OPTM_GfxUpLayerReg(HIFB_LAYER_ID_E enLayerId)
 
 HI_VOID HIFB_ADP_SetInOutScanLine(HIFB_LAYER_ID_E LayerId, HI_BOOL bInScanLine)
 {
-#ifdef CFG_HIFB_PROC_SUPPORT
     HI_U32 Scanline = 0;
     HIFB_HAL_GetVoCallBackCurScanLine(&Scanline);
     HIFB_PROC_SetVoCallBackInOutScanLine(LayerId,Scanline,bInScanLine);
-#endif
+
     return;
 }
 

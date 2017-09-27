@@ -22,8 +22,6 @@ Date		       Author		     Modification
 
 /* SPDX-License-Identifier: GPL-2.0 */
 
-#ifdef CFG_HIFB_PROC_SUPPORT
-
 /*********************************add include here******************************/
 #include <linux/ctype.h>
 #include <linux/module.h>
@@ -956,4 +954,3 @@ static inline HI_VOID HIFB_PrintHwcRefreshStatus(struct fb_info *pstFbInfo, stru
 
     return;
 }
-#endif
