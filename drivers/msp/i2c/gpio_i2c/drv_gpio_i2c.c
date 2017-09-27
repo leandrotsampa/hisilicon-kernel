@@ -1356,7 +1356,7 @@ long HI_DRV_GPIOI2C_Compat_Ioctl(void *file, unsigned int cmd, unsigned long arg
 	    break;
 
 	case CMD_I2C_READ:
-	    if (copy_from_user(&I2cData, argp, sizeof(I2C_DATA_S)))
+	    if (copy_from_user(&I2cData, argp, sizeof(I2cData)))
 	    {
 		HI_ERR_GPIOI2C("copy data from user fail!\n");
 		Ret = HI_ERR_I2C_COPY_DATA_ERR;
