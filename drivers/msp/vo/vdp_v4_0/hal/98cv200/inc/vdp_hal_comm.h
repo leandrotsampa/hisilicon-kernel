@@ -22,8 +22,7 @@
 #endif
 #endif
 //#include "c_union_define.h"
-#include "vdp_reg_define.h"
-
+#include "hi_reg_common.h"
 
 //HI_U32 VDP_RegRead(HI_U32 a);
 //HI_VOID VDP_RegWrite(HI_U32 a, HI_U32 b);

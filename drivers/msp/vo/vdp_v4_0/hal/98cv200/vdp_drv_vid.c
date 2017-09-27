@@ -9,7 +9,6 @@
 #include "vdp_hal_mmu.h"
 #include "vdp_drv_pq_csc.h"
 #include "vdp_drv_pq_zme.h"
-#include "vdp_reg_define.h"
 #include "vdp_hal_comm.h"
 
 
