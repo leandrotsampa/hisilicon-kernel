@@ -1,0 +1,21 @@
+HiSilicon STB PCIE/SATA/USB3 PHY
+
+Properties:
+- compatible: Should be "hisilicon,hi3798cv200-combphy"
+- #phy-cells: Should be 1
+	used to select the mode for phy
+- clocks: The phandle to clock provider and clock specifier pair.
+- resets: The phandle to reset controller and reset specifier pair.
+- hisilicon,peripheral-syscon: Phandle to the peripheral controller.
+
+Example:
+
+combphy1: phy {
+	compatible = "hisilicon,hi3798cv200-combphy";
+	#phy-cells = <1>;
+	clocks = <&crg HISTB_COMBPHY1_CLK>;
+	resets = <&crg 0x188 12>;
+	assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
+	assigned-clock-rates = <100000000>;
+	hisilicon,peripheral-syscon = <&peri_ctrl>;
+};
