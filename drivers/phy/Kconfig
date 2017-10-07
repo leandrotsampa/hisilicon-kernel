@@ -490,4 +490,14 @@ config PHY_NS2_PCIE
 	help
 	  Enable this to support the Broadcom Northstar2 PCIe PHY.
 	  If unsure, say N.
+
+config PHY_HISTB_COMBPHY
+	tristate "HiSilicon STB SoCs COMBPHY support"
+	depends on OF
+	select GENERIC_PHY
+	select MFD_SYSCON
+	help
+	  Enable this to support the HISILICON STB SoCs COMBPHY.
+	  If unsure, say N.
+
 endmenu
