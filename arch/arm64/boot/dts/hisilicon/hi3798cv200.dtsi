@@ -8,6 +8,7 @@
  */
 
 #include <dt-bindings/clock/histb-clock.h>
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/reset/ti-syscon.h>
 
@@ -433,6 +434,35 @@
 			assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
 			assigned-clock-rates = <100000000>;
 			hisilicon,peripheral-syscon = <&peri_ctrl>;
+		};
+
+		pcie@9860000 {
+			compatible = "hisilicon,hi3798cv200-pcie";
+			reg = <0x9860000 0x1000>,
+			      <0x0 0x2000>,
+			      <0x2000000 0x01000000>;
+			reg-names = "control", "rc-dbi", "config";
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			bus-range = <0 15>;
+			num-lanes = <1>;
+			ranges = <0x81000000 0x0 0x00000000 0x4f00000 0x0 0x100000
+				  0x82000000 0x0 0x3000000 0x3000000 0x0 0x01f00000>;
+			#interrupt-cells = <1>;
+			interrupt-map-mask = <0 0 0 0x7>;
+			interrupt-map = <0 0 0 1 &gic 0 131 4>;
+			clocks = <&crg HISTB_PCIE_AUX_CLK>,
+				 <&crg HISTB_PCIE_PIPE_CLK>,
+				 <&crg HISTB_PCIE_SYS_CLK>,
+				 <&crg HISTB_PCIE_BUS_CLK>;
+			clock-names = "aux", "pipe", "sys", "bus";
+			resets = <&crg 0x18c 6>, <&crg 0x18c 5>, <&crg 0x18c 4>;
+			reset-names = "soft", "sys", "bus";
+			phys = <&combphy1 0>;
+			phy-names = "phy";
+			reset-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
+			status = "ok";
 		};
 	};
 };
