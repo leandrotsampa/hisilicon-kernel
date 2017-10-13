@@ -436,7 +436,7 @@
 			hisilicon,peripheral-syscon = <&peri_ctrl>;
 		};
 
-		pcie@9860000 {
+		pcie: pcie@9860000 {
 			compatible = "hisilicon,hi3798cv200-pcie";
 			reg = <0x9860000 0x1000>,
 			      <0x0 0x2000>,
@@ -449,6 +449,8 @@
 			num-lanes = <1>;
 			ranges = <0x81000000 0x0 0x00000000 0x4f00000 0x0 0x100000
 				  0x82000000 0x0 0x3000000 0x3000000 0x0 0x01f00000>;
+			interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "msi";
 			#interrupt-cells = <1>;
 			interrupt-map-mask = <0 0 0 0x7>;
 			interrupt-map = <0 0 0 1 &gic 0 131 4>;
@@ -461,8 +463,7 @@
 			reset-names = "soft", "sys", "bus";
 			phys = <&combphy1 0>;
 			phy-names = "phy";
-			reset-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
-			status = "ok";
+			status = "disabled";
 		};
 	};
 };
