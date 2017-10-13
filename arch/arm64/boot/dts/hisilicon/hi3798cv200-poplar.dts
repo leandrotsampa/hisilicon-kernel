@@ -146,6 +146,11 @@
 	status = "okay";
 };
 
+&pcie {
+	reset-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+};
+
 &sd0 {
 	bus-width = <4>;
 	cap-sd-highspeed;
