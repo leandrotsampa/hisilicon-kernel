@@ -17,6 +17,7 @@
 #include <linux/of.h>
 #include <linux/of_gpio.h>
 #include <linux/pci.h>
+#include <linux/phy/phy.h>
 #include <linux/platform_device.h>
 #include <linux/resource.h>
 #include <linux/reset.h>
@@ -49,8 +50,7 @@
 
 struct histb_pcie_host {
 	void __iomem *sysctrl;
-	int power_gpio;
-	bool gpio_active_high;
+	int reset_gpio;
 	struct clk *aux_clk;
 	struct clk *pipe_clk;
 	struct clk *sys_clk;
@@ -59,6 +59,7 @@ struct histb_pcie_host {
 	struct reset_control *sys_reset;
 	struct reset_control *bus_reset;
 	struct pcie_port pp;
+	struct phy *phy;	/* DT phy */
 };
 
 #define to_histb_pcie(x) container_of(x, struct histb_pcie_host, pp)
@@ -232,9 +233,8 @@ static void histb_pcie_host_disable(struct histb_pcie_host *hipcie)
 	clk_disable_unprepare(hipcie->sys_clk);
 	clk_disable_unprepare(hipcie->bus_clk);
 
-	if (gpio_is_valid(hipcie->power_gpio))
-		gpio_set_value_cansleep(hipcie->power_gpio,
-					!hipcie->gpio_active_high);
+	if (gpio_is_valid(hipcie->reset_gpio))
+		gpio_set_value_cansleep(hipcie->reset_gpio, 0);
 }
 
 static int histb_pcie_host_enable(struct pcie_port *pp)
@@ -244,28 +244,27 @@ static int histb_pcie_host_enable(struct pcie_port *pp)
 	int ret;
 
 	/* power on pcie device if have */
-	if (gpio_is_valid(hipcie->power_gpio))
-		gpio_set_value_cansleep(hipcie->power_gpio,
-					hipcie->gpio_active_high);
+	if (gpio_is_valid(hipcie->reset_gpio))
+		gpio_set_value_cansleep(hipcie->reset_gpio, 1);
 
 	ret = clk_prepare_enable(hipcie->bus_clk);
 	if (ret) {
-		dev_err(dev, "cannot prepare/enable bus_clk\n");
+		dev_err(dev, "cannot prepare/enable bus clk\n");
 		goto err_bus_clk;
 	}
 	ret = clk_prepare_enable(hipcie->sys_clk);
 	if (ret) {
-		dev_err(dev, "cannot prepare/enable sys_clk\n");
+		dev_err(dev, "cannot prepare/enable sys clk\n");
 		goto err_sys_clk;
 	}
 	ret = clk_prepare_enable(hipcie->pipe_clk);
 	if (ret) {
-		dev_err(dev, "cannot prepare/enable pipe_clk\n");
+		dev_err(dev, "cannot prepare/enable pipe clk\n");
 		goto err_pipe_clk;
 	}
 	ret = clk_prepare_enable(hipcie->aux_clk);
 	if (ret) {
-		dev_err(dev, "cannot prepare/enable aux_clk\n");
+		dev_err(dev, "cannot prepare/enable aux clk\n");
 		goto err_aux_clk;
 	}
 
@@ -300,6 +299,8 @@ static int histb_pcie_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct device_node *np = pdev->dev.of_node;
 	struct device *dev = &pdev->dev;
+	enum of_gpio_flags of_flags;
+	unsigned long flag = GPIOF_DIR_OUT;
 	int ret;
 
 	hipcie = devm_kzalloc(dev, sizeof(*hipcie), GFP_KERNEL);
@@ -309,74 +310,72 @@ static int histb_pcie_probe(struct platform_device *pdev)
 	pp = &hipcie->pp;
 	pp->dev = dev;
 
-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "sysctrl");
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "control");
 	hipcie->sysctrl = devm_ioremap_resource(dev, res);
 	if (IS_ERR(hipcie->sysctrl)) {
 		dev_err(dev, "cannot get sysctrl base\n");
 		return PTR_ERR(hipcie->sysctrl);
 	}
 
-	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "rc_dbi");
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "rc-dbi");
 	pp->dbi_base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(pp->dbi_base)) {
-		dev_err(dev, "cannot get rc_dbi base\n");
+		dev_err(dev, "cannot get rc-dbi base\n");
 		return PTR_ERR(pp->dbi_base);
 	}
 
-	hipcie->power_gpio = of_get_named_gpio(np, "power-gpios", 0);
-	hipcie->gpio_active_high = of_property_read_bool(np,
-						"power-gpios-active-high");
-	if (gpio_is_valid(hipcie->power_gpio)) {
-		ret = devm_gpio_request_one(dev, hipcie->power_gpio,
-				hipcie->gpio_active_high ?
-					GPIOF_OUT_INIT_HIGH :
-					GPIOF_OUT_INIT_LOW,
-					"PCIe Dev power");
+	hipcie->reset_gpio = of_get_named_gpio_flags(np,
+				"reset-gpios", 0, &of_flags);
+	if (of_flags & OF_GPIO_ACTIVE_LOW)
+		flag |= GPIOF_ACTIVE_LOW;
+	if (gpio_is_valid(hipcie->reset_gpio)) {
+		ret = devm_gpio_request_one(dev, hipcie->reset_gpio,
+				flag, "PCIe device power control");
 		if (ret) {
 			dev_err(dev, "unable to request gpio\n");
 			return ret;
 		}
 	}
 
-	hipcie->aux_clk = devm_clk_get(dev, "aux_clk");
+	hipcie->aux_clk = devm_clk_get(dev, "aux");
 	if (IS_ERR(hipcie->aux_clk)) {
-		dev_err(dev, "Failed to get pcie aux_clk clock\n");
+		dev_err(dev, "Failed to get pcie aux clk\n");
 		return PTR_ERR(hipcie->aux_clk);
 	}
 
-	hipcie->pipe_clk = devm_clk_get(dev, "pipe_clk");
+	hipcie->pipe_clk = devm_clk_get(dev, "pipe");
 	if (IS_ERR(hipcie->pipe_clk)) {
-		dev_err(dev, "Failed to get pcie pipe_clk clock\n");
+		dev_err(dev, "Failed to get pcie pipe clk\n");
 		return PTR_ERR(hipcie->pipe_clk);
 	}
 
-	hipcie->sys_clk = devm_clk_get(dev, "sys_clk");
+	hipcie->sys_clk = devm_clk_get(dev, "sys");
 	if (IS_ERR(hipcie->sys_clk)) {
-		dev_err(dev, "Failed to get pcie sys_clk clock\n");
+		dev_err(dev, "Failed to get pcie sys clk\n");
 		return PTR_ERR(hipcie->sys_clk);
 	}
 
-	hipcie->bus_clk = devm_clk_get(dev, "bus_clk");
+	hipcie->bus_clk = devm_clk_get(dev, "bus");
 	if (IS_ERR(hipcie->bus_clk)) {
-		dev_err(dev, "Failed to get pcie bus_clk clock\n");
+		dev_err(dev, "Failed to get pcie bus clk\n");
 		return PTR_ERR(hipcie->bus_clk);
 	}
 
-	hipcie->soft_reset = devm_reset_control_get(dev, "soft_reset");
+	hipcie->soft_reset = devm_reset_control_get(dev, "soft");
 	if (IS_ERR(hipcie->soft_reset)) {
-		dev_err(dev, "couldn't get soft_reset\n");
+		dev_err(dev, "couldn't get soft reset\n");
 		return PTR_ERR(hipcie->soft_reset);
 	}
 
-	hipcie->sys_reset = devm_reset_control_get(dev, "sys_reset");
+	hipcie->sys_reset = devm_reset_control_get(dev, "sys");
 	if (IS_ERR(hipcie->sys_reset)) {
-		dev_err(dev, "couldn't get sys_reset\n");
+		dev_err(dev, "couldn't get sys reset\n");
 		return PTR_ERR(hipcie->sys_reset);
 	}
 
-	hipcie->bus_reset = devm_reset_control_get(dev, "bus_reset");
+	hipcie->bus_reset = devm_reset_control_get(dev, "bus");
 	if (IS_ERR(hipcie->bus_reset)) {
-		dev_err(dev, "couldn't get bus_reset\n");
+		dev_err(dev, "couldn't get bus reset\n");
 		return PTR_ERR(hipcie->bus_reset);
 	}
 
@@ -393,6 +392,18 @@ static int histb_pcie_probe(struct platform_device *pdev)
 			dev_err(dev, "cannot request msi irq\n");
 			return ret;
 		}
+	}
+
+	hipcie->phy = devm_phy_get(dev, "phy");
+	if (IS_ERR(hipcie->phy)) {
+		dev_info(dev, "no pcie-phy found\n");
+		hipcie->phy = NULL;
+		/* fall through here!
+		 * if no pcie-phy found, phy init
+		 * should be done under boot!
+		 */
+	} else {
+		phy_init(hipcie->phy);
 	}
 
 	pp->root_bus_nr = -1;
@@ -421,11 +432,13 @@ static int histb_pcie_remove(struct platform_device *pdev)
 
 	histb_pcie_host_disable(hipcie);
 
+	if (hipcie->phy)
+		phy_exit(hipcie->phy);
+
 	return 0;
 }
 
 static const struct of_device_id histb_pcie_of_match[] = {
-	{ .compatible = "hisilicon,histb-pcie", },
 	{ .compatible = "hisilicon,hi3798cv200-pcie", },
 	{},
 };
