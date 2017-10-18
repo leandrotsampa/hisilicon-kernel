@@ -11,6 +11,7 @@
 
 #include <dt-bindings/gpio/gpio.h>
 #include "hi3798cv200.dtsi"
+#include "poplar-pinctrl.dtsi"
 
 / {
 	model = "HiSilicon Poplar Development Board";

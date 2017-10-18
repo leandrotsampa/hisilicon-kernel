@@ -113,6 +113,54 @@
 			reg = <0x8a20000 0x1000>;
 		};
 
+		pmx0: pinconf@8a21000 {
+			compatible = "pinconf-single";
+			reg = <0x8a21000 0x180>;
+			pinctrl-single,register-width = <32>;
+			pinctrl-single,function-mask = <7>;
+			pinctrl-single,gpio-range = <
+				&range 0  8 2  /* GPIO 0 */
+				&range 8  1 0  /* GPIO 1 */
+				&range 9  4 2
+				&range 13 1 0
+				&range 14 1 1
+				&range 15 1 0
+				&range 16 5 0  /* GPIO 2 */
+				&range 21 3 1
+				&range 24 4 1  /* GPIO 3 */
+				&range 28 2 2
+				&range 86 1 1
+				&range 87 1 0
+				&range 30 4 2  /* GPIO 4 */
+				&range 34 3 0
+				&range 37 1 2
+				&range 38 3 2  /* GPIO 6 */
+				&range 41 5 0
+				&range 46 8 1  /* GPIO 7 */
+				&range 54 8 1  /* GPIO 8 */
+				&range 64 7 1  /* GPIO 9 */
+				&range 71 1 0
+				&range 72 6 1  /* GPIO 10 */
+				&range 78 1 0
+				&range 79 1 1
+				&range 80 6 1  /* GPIO 11 */
+				&range 70 2 1
+				&range 88 8 0  /* GPIO 12 */
+			>;
+
+			range: gpio-range {
+				#pinctrl-single,gpio-range-cells = <3>;
+			};
+		};
+
+		pmx1: pinconf@8000044 {
+			compatible = "pinctrl-single";
+			reg = <0x8000044 4>;
+			pinctrl-single,register-width = <32>;
+			pinctrl-single,function-mask = <1>;
+			pinctrl-single,bit-per-mux;
+		};
+
 		uart0: serial@8b00000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x8b00000 0x1000>;
@@ -228,6 +276,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 0 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -241,6 +290,13 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <
+				&pmx0 0 8 1
+				&pmx0 1 9 4
+				&pmx0 5 13 1
+				&pmx0 6 14 1
+				&pmx0 7 15 1
+			>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -254,6 +310,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 16 5 &pmx0 5 21 3>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -267,6 +324,12 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <
+				&pmx0 0 24 4
+				&pmx0 4 28 2
+				&pmx0 6 86 1
+				&pmx0 7 87 1
+			>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -280,6 +343,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 30 4 &pmx0 4 34 3 &pmx0 7 37 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -306,6 +370,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 38 3 &pmx0 0 41 5>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -319,6 +384,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 46 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -332,6 +398,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 54 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -345,6 +412,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 64 7 &pmx0 71 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -358,6 +426,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 72 6 &pmx0 6 78 1 &pmx0 7 79 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -371,6 +440,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 80 6 &pmx0 6 70 2>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
@@ -384,6 +454,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
+			gpio-ranges = <&pmx0 0 88 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
