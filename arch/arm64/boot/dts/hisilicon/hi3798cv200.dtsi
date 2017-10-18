@@ -424,6 +424,8 @@
 			reg = <0x8001000 0x1000>;
 			interrupts = <GIC_SPI 47 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&sysctrl HISTB_IR_CLK>;
+			hisilicon,power-syscon = <&sysctrl>;
+			linux,rc-map-name = "rc-hisi-poplar";
 			status = "disabled";
 		};
 
