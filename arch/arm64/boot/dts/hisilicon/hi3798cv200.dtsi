@@ -260,12 +260,14 @@
 		};
 
 		emmc: mmc@9830000 {
-			compatible = "snps,dw-mshc";
+			compatible = "hisilicon,hi3798cv200-dw-mshc";
 			reg = <0x9830000 0x10000>;
 			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&crg HISTB_MMC_CIU_CLK>,
-				 <&crg HISTB_MMC_BIU_CLK>;
-			clock-names = "ciu", "biu";
+				 <&crg HISTB_MMC_BIU_CLK>,
+				 <&crg HISTB_MMC_SAMPLE_CLK>,
+				 <&crg HISTB_MMC_DRV_CLK>;
+			clock-names = "ciu", "biu", "ciu-sample", "ciu-drive";
 		};
 
 		gpio0: gpio@8b20000 {
