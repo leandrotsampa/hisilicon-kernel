@@ -93,6 +93,18 @@ static struct hisi_mux_clock hi3798cv200_mux_clks[] = {
 		0x9c, 8, 2, 0, sdio_mux_table, },
 };
 
+static u32 mmc_phase_reg[] = {0, 1, 2, 3, 4, 5, 6, 7};
+static u32 mmc_phase_val[] = {0, 45, 90, 135, 180, 225, 270, 315};
+
+static struct hisi_phase_clock hi3798cv200_phase_clks[] = {
+	{ HISTB_MMC_SAMPLE_CLK, "mmc_sample", "clk_mmc_ciu",
+	CLK_SET_RATE_PARENT, 0xa0, 12, 3, mmc_phase_val,
+	mmc_phase_reg, ARRAY_SIZE(mmc_phase_reg)},
+	{ HISTB_MMC_DRV_CLK, "mmc_drive", "clk_mmc_ciu",
+	CLK_SET_RATE_PARENT, 0xa0, 16, 3, mmc_phase_val,
+	mmc_phase_reg, ARRAY_SIZE(mmc_phase_reg)},
+};
+
 static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 	/* UART */
 	{ HISTB_UART2_CLK, "clk_uart2", "75m",
@@ -189,11 +201,18 @@ static struct hisi_clock_data *hi3798cv200_clk_register(
 	if (ret)
 		goto unregister_fixed_rate;
 
+	ret = hisi_clk_register_phase(&pdev->dev,
+				hi3798cv200_phase_clks,
+				ARRAY_SIZE(hi3798cv200_phase_clks),
+				clk_data);
+	if (ret)
+		goto unregister_mux;
+
 	ret = hisi_clk_register_gate(hi3798cv200_gate_clks,
 				ARRAY_SIZE(hi3798cv200_gate_clks),
 				clk_data);
 	if (ret)
-		goto unregister_mux;
+		goto unregister_phase;
 
 	ret = of_clk_add_provider(pdev->dev.of_node,
 			of_clk_src_onecell_get, &clk_data->clk_data);
@@ -210,6 +229,10 @@ unregister_fixed_rate:
 unregister_mux:
 	hisi_clk_unregister_mux(hi3798cv200_mux_clks,
 				ARRAY_SIZE(hi3798cv200_mux_clks),
+				clk_data);
+unregister_phase:
+	hisi_clk_unregister_phase(hi3798cv200_phase_clks,
+				ARRAY_SIZE(hi3798cv200_phase_clks),
 				clk_data);
 unregister_gate:
 	hisi_clk_unregister_gate(hi3798cv200_gate_clks,
