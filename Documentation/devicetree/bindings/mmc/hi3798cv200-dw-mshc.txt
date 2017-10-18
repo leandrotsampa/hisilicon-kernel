@@ -1,0 +1,51 @@
+* Hisilicon specific extensions to the Synopsys Designware Mobile
+  Storage Host Controller
+
+Read synopsys-dw-mshc.txt for more details
+
+The Synopsys designware mobile storage host controller is used to interface
+a SoC with storage medium such as eMMC or SD/MMC cards. This file documents
+differences between the core Synopsys dw mshc controller properties described
+by synopsys-dw-mshc.txt and the properties used by the Hisilicon specific
+extensions to the Synopsys Designware Mobile Storage Host Controller.
+
+Required Properties:
+
+* compatible: should be one of the following.
+  - "hisilicon,hi3798cv200-dw-mshc": for controllers with hi3798cv200 specific extensions.
+
+Optional Properties:
+* clocks: from common clock binding: if ciu-drive and ciu-sample are
+  specified in clock-names, should contain handles to these clocks.
+
+* clock-names:Apart from the clock-names described in synopsys-dw-mshc.txt
+  two more clocks "ciu-drive" and "ciu-sample" are supported. They are used
+  to control the clock phases, "ciu-sample" is required for tuning high-speed modes.
+
+Example:
+
+	/* for Hi3798cv200 */
+
+	/* SoC portion */
+	emmc: mmc@9830000 {
+		compatible = "hisilicon,hi3798cv200-dw-mshc";
+		reg = <0x9830000 0x10000>;
+		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&crg HISTB_MMC_CIU_CLK>,
+			 <&crg HISTB_MMC_BIU_CLK>,
+			 <&crg HISTB_MMC_SAMPLE_CLK>;
+		clock-names = "ciu", "biu", "ciu-sample";
+	};
+
+	/* Board portion */
+	&emmc {
+		status = "okay";
+		num-slots = <1>;
+		fifo-depth = <256>;
+		clock-frequency = <200000000>;
+		cap-mmc-highspeed;
+		mmc-ddr-1_8v;
+		mmc-hs200-1_8v;
+		non-removable;
+		bus-width = <8>;
+	};
