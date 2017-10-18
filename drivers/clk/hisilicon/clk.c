@@ -199,6 +199,51 @@ err:
 }
 EXPORT_SYMBOL_GPL(hisi_clk_register_mux);
 
+int hisi_clk_register_phase(struct device *dev,
+			const struct hisi_phase_clock *clks,
+			int nums, struct hisi_clock_data *data)
+{
+	int i;
+	struct clk *clk;
+	void __iomem *base = data->base;
+
+	for (i = 0; i < nums; i++) {
+		clk =	clk_register_hisi_phase(dev,
+				&clks[i], base, &hisi_clk_lock);
+
+		if (IS_ERR(clk)) {
+			pr_err("%s: failed to register clock %s\n",
+			       __func__, clks[i].name);
+			goto err;
+		}
+
+		data->clk_data.clks[clks[i].id] = clk;
+	}
+	return 0;
+
+err:
+	while (i--)
+		clk_unregister_hisi_phase(data->clk_data.clks[clks[i].id]);
+
+	return PTR_ERR(clk);
+}
+EXPORT_SYMBOL_GPL(hisi_clk_register_phase);
+
+void hisi_clk_unregister_phase(const struct hisi_phase_clock *clks,
+				int nums, struct hisi_clock_data *data)
+{
+	struct clk **clocks = data->clk_data.clks;
+	int i, id;
+
+	for (i = 0; i < nums; i++) {
+		id = clks[i].id;
+
+		if (clocks[id])
+			clk_unregister_hisi_phase(clocks[id]);
+	}
+}
+EXPORT_SYMBOL_GPL(hisi_clk_unregister_phase);
+
 int hisi_clk_register_divider(const struct hisi_divider_clock *clks,
 				      int nums, struct hisi_clock_data *data)
 {
