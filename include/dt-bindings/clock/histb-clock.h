@@ -61,6 +61,9 @@
 #define HISTB_USB2_OTG_UTMI_CLK	39
 #define HISTB_USB2_PHY1_REF_CLK	40
 #define HISTB_USB2_PHY2_REF_CLK	41
+#define HISTB_COMBPHY0_CLK	42
+#define HISTB_USB3_CLK		43
+#define HISTB_USB3_CLK1		44
 
 /* clocks provided by mcu CRG */
 #define HISTB_MCE_CLK	1

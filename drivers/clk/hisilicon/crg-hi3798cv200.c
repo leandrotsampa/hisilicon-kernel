@@ -49,8 +49,27 @@
 #define HI3798CV200_FIXED_60M	83
 #define HI3798CV200_FIXED_166P5M	84
 #define HI3798CV200_SDIO0_MUX	85
+#define HI3798CV200_COMBPHY0_MUX	86
 
 #define HI3798CV200_CRG_NR_CLKS		128
+
+#define PERI_CRG44_USB3CTRL		0x00b0
+#define USB3_BUS_CKEN			BIT(0)
+#define USB3_REF_CKEN			BIT(1)
+#define USB3_SUSPEND_CKEN		BIT(2)
+#define USB3_PIPE_CKEN			BIT(3)
+#define USB3_UTMI_CKEN			BIT(4)
+#define USB3_BUS_GS_CKEN		BIT(5)
+#define USB3_BUS_GM_CKEN		BIT(6)
+#define USB3_VCC_SRST_REQ		BIT(12)
+#define USB3_BUS_CKEN1			BIT(16)
+#define USB3_REF_CKEN1			BIT(17)
+#define USB3_SUSPEND_CKEN1		BIT(18)
+#define USB3_PIPE_CKEN1			BIT(19)
+#define USB3_UTMI_CKEN1			BIT(20)
+#define USB3_BUS_GS_CKEN1		BIT(21)
+#define USB3_BUS_GM_CKEN1		BIT(22)
+#define USB3_VCC_SRST_REQ1		BIT(28)
 
 static const struct hisi_fixed_rate_clock hi3798cv200_fixed_rate_clks[] = {
 	{ HISTB_OSC_CLK, "clk_osc", NULL, 0, 24000000, },
@@ -85,6 +104,9 @@ static u32 sdio_mux_table[] = {0, 1, 2, 3};
 static struct hisi_mux_clock hi3798cv200_mux_clks[] = {
 	{ HI3798CV200_MMC_MUX, "mmc_mux", mmc_mux_p, ARRAY_SIZE(mmc_mux_p),
 		CLK_SET_RATE_PARENT, 0xa0, 8, 3, 0, mmc_mux_table, },
+	{ HI3798CV200_COMBPHY0_MUX, "combphy0_mux",
+		comphy1_mux_p, ARRAY_SIZE(comphy1_mux_p),
+		CLK_SET_RATE_PARENT, 0x188, 2, 2, 0, comphy1_mux_table, },
 	{ HI3798CV200_COMBPHY1_MUX, "combphy1_mux",
 		comphy1_mux_p, ARRAY_SIZE(comphy1_mux_p),
 		CLK_SET_RATE_PARENT, 0x188, 10, 2, 0, comphy1_mux_table, },
@@ -159,6 +181,9 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0xcc, 4, 0, },
 	{ HISTB_ETH1_MACIF_CLK, "clk_macif1", "clk_bus_m1",
 		CLK_SET_RATE_PARENT, 0xcc, 25, 0, },
+	/* COMBPHY0 */
+	{ HISTB_COMBPHY0_CLK, "clk_combphy0", "combphy0_mux",
+		CLK_SET_RATE_PARENT, 0x188, 0, 0, },
 	/* COMBPHY1 */
 	{ HISTB_COMBPHY1_CLK, "clk_combphy1", "combphy1_mux",
 		CLK_SET_RATE_PARENT, 0x188, 8, 0, },
@@ -179,6 +204,17 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0xbc, 0, 0 },
 	{ HISTB_USB2_PHY2_REF_CLK, "clk_u2_phy2_ref", "24m",
 		CLK_SET_RATE_PARENT, 0xbc, 2, 0 },
+};
+
+static const struct hisi_misc_clock hi3798cv200_misc_clks[] = {
+	{"clk_u3_host0", NULL, HISTB_USB3_CLK, PERI_CRG44_USB3CTRL,
+		USB3_VCC_SRST_REQ, USB3_BUS_CKEN|USB3_BUS_GM_CKEN
+		|USB3_BUS_GS_CKEN|USB3_UTMI_CKEN|USB3_PIPE_CKEN
+		|USB3_SUSPEND_CKEN|USB3_REF_CKEN},
+	{"clk_u3_host1", NULL, HISTB_USB3_CLK1, PERI_CRG44_USB3CTRL,
+		USB3_VCC_SRST_REQ1, USB3_BUS_CKEN1|USB3_BUS_GM_CKEN1
+		|USB3_BUS_GS_CKEN1|USB3_UTMI_CKEN1|USB3_PIPE_CKEN1
+		|USB3_SUSPEND_CKEN1|USB3_REF_CKEN1},
 };
 
 static struct hisi_clock_data *hi3798cv200_clk_register(
@@ -216,10 +252,16 @@ static struct hisi_clock_data *hi3798cv200_clk_register(
 	if (ret)
 		goto unregister_phase;
 
+	ret = hisi_clk_register_misc(&pdev->dev, hi3798cv200_misc_clks,
+					ARRAY_SIZE(hi3798cv200_misc_clks),
+					clk_data);
+	if (ret)
+		goto unregister_gate;
+
 	ret = of_clk_add_provider(pdev->dev.of_node,
 			of_clk_src_onecell_get, &clk_data->clk_data);
 	if (ret)
-		goto unregister_gate;
+		goto unregister_misc;
 
 	return clk_data;
 
@@ -240,6 +282,11 @@ unregister_gate:
 	hisi_clk_unregister_gate(hi3798cv200_gate_clks,
 				ARRAY_SIZE(hi3798cv200_gate_clks),
 				clk_data);
+unregister_misc:
+	hisi_clk_unregister_misc(hi3798cv200_misc_clks,
+				ARRAY_SIZE(hi3798cv200_misc_clks),
+				clk_data);
+
 	return ERR_PTR(ret);
 }
 
