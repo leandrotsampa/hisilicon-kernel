@@ -10,6 +10,7 @@
 #include <dt-bindings/clock/histb-clock.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/phy/phy.h>
 #include <dt-bindings/reset/ti-syscon.h>
 
 / {
@@ -452,8 +453,8 @@
 			interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
 			interrupt-names = "msi";
 			#interrupt-cells = <1>;
-			interrupt-map-mask = <0 0 0 0x7>;
-			interrupt-map = <0 0 0 1 &gic 0 131 4>;
+			interrupt-map-mask = <0 0 0 0>;
+			interrupt-map = <0 0 0 0 &gic 0 131 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&crg HISTB_PCIE_AUX_CLK>,
 				 <&crg HISTB_PCIE_PIPE_CLK>,
 				 <&crg HISTB_PCIE_SYS_CLK>,
@@ -461,7 +462,7 @@
 			clock-names = "aux", "pipe", "sys", "bus";
 			resets = <&crg 0x18c 6>, <&crg 0x18c 5>, <&crg 0x18c 4>;
 			reset-names = "soft", "sys", "bus";
-			phys = <&combphy1 0>;
+			phys = <&combphy1 PHY_TYPE_PCIE>;
 			phy-names = "phy";
 			status = "disabled";
 		};
