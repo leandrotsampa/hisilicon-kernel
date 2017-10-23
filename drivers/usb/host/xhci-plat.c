@@ -24,6 +24,7 @@
 #include "xhci-plat.h"
 #include "xhci-mvebu.h"
 #include "xhci-rcar.h"
+#include "xhci-histb.h"
 
 static struct hc_driver __read_mostly xhci_plat_hc_driver;
 
@@ -100,6 +101,10 @@ static const struct xhci_plat_priv xhci_plat_renesas_rcar_gen3 = {
 	.plat_start = xhci_rcar_start,
 };
 
+static const struct xhci_plat_priv xhci_plat_histb = {
+	.plat_start = xhci_histb_start,
+};
+
 static const struct of_device_id usb_xhci_of_match[] = {
 	{
 		.compatible = "generic-xhci",
@@ -129,6 +134,9 @@ static const struct of_device_id usb_xhci_of_match[] = {
 	}, {
 		.compatible = "renesas,rcar-gen3-xhci",
 		.data = &xhci_plat_renesas_rcar_gen3,
+	}, {
+		.compatible = "hisilicon,hi3798cv200-xhci",
+		.data = &xhci_plat_histb,
 	},
 	{},
 };
