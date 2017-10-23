@@ -79,6 +79,13 @@ config USB_XHCI_TEGRA
 	  Say 'Y' to enable the support for the xHCI host controller
 	  found in NVIDIA Tegra124 and later SoCs.
 
+config USB_XHCI_HISTB
+	tristate "xHCI support for HiSilicon STB SoCs"
+	depends on USB_XHCI_PLATFORM
+	---help---
+	  Say 'Y' to enable the support for the xHCI host controller
+	  found in HiSilicon STB SoCs.
+
 endif # USB_XHCI_HCD
 
 config USB_EHCI_HCD
