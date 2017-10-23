@@ -54,8 +54,8 @@ Example:
 		interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
 		interrupt-names = "msi";
 		#interrupt-cells = <1>;
-		interrupt-map-mask = <0 0 0 7>;
-		interrupt-map = <0x0 0 0 1 &gic 0 131 4>;
+		interrupt-map-mask = <0 0 0 0>;
+		interrupt-map = <0 0 0 0 &gic 0 131 IRQ_TYPE_LEVEL_HIGH>;
 		clocks = <&crg PCIE_AUX_CLK>,
 			 <&crg PCIE_PIPE_CLK>,
 			 <&crg PCIE_SYS_CLK>,
@@ -63,4 +63,6 @@ Example:
 		clock-names = "aux", "pipe", "sys", "bus";
 		resets = <&crg 0x18c 6>, <&crg 0x18c 5>, <&crg 0x18c 4>;
 		reset-names = "soft", "sys", "bus";
+		phys = <&combphy1 PHY_TYPE_PCIE>;
+		phy-names = "phy";
 	};
