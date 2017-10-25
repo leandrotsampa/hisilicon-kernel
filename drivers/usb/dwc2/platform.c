@@ -87,6 +87,18 @@ static const struct dwc2_core_params params_hi6220 = {
 	.hibernation			= -1,
 };
 
+static const struct dwc2_core_params params_hi3798cv200 = {
+	.otg_cap			= DWC2_CAP_PARAM_NO_HNP_SRP_CAPABLE,
+	.phy_type			= DWC2_PHY_TYPE_PARAM_UTMI,
+	.phy_utmi_width			= 8,
+	.host_rx_fifo_size		= -1,
+	.host_nperio_tx_fifo_size	= -1,
+	.host_perio_tx_fifo_size	= -1,
+	.max_transfer_size		= -1,
+	.max_packet_count		= -1,
+	.host_channels			= -1,
+};
+
 static const struct dwc2_core_params params_bcm2835 = {
 	.otg_cap			= 0,	/* HNP/SRP capable */
 	.otg_ver			= 0,	/* 1.3 */
@@ -513,6 +525,8 @@ static void dwc2_driver_shutdown(struct platform_device *dev)
 static const struct of_device_id dwc2_of_match_table[] = {
 	{ .compatible = "brcm,bcm2835-usb", .data = &params_bcm2835 },
 	{ .compatible = "hisilicon,hi6220-usb", .data = &params_hi6220 },
+	{ .compatible = "hisilicon,hi3798cv200-usb",
+	  .data = &params_hi3798cv200 },
 	{ .compatible = "rockchip,rk3066-usb", .data = &params_rk3066 },
 	{ .compatible = "lantiq,arx100-usb", .data = &params_ltq },
 	{ .compatible = "lantiq,xrx200-usb", .data = &params_ltq },
