@@ -376,3 +376,41 @@ void __init hi6220_clk_register_divider(const struct hi6220_divider_clock *clks,
 		data->clk_data.clks[clks[i].id] = clk;
 	}
 }
+
+int hisi_clk_register_misc(struct device *dev,
+				const struct hisi_misc_clock *clks,
+				int nums, struct hisi_clock_data *data)
+{
+	struct clk *clk;
+	int i;
+
+	for (i = 0; i < nums; i++) {
+		clk = clk_register_hisi_misc(dev, &clks[i], data->base);
+		if (IS_ERR(clk)) {
+			dev_err(dev, "Failed to register clock %s\n",
+					clks[i].name);
+			goto err;
+		}
+
+		data->clk_data.clks[clks[i].id] = clk;
+	}
+
+	return 0;
+
+err:
+	while (i--)
+		clk_unregister_hisi_misc(data->clk_data.clks[clks[i].id]);
+
+	return PTR_ERR(clk);
+}
+EXPORT_SYMBOL_GPL(hisi_clk_register_misc);
+
+void hisi_clk_unregister_misc(const struct hisi_misc_clock *clks,
+				int nums, struct hisi_clock_data *data)
+{
+	struct clk **clocks = data->clk_data.clks;
+
+	while (nums--)
+		clk_unregister_hisi_misc(clocks[clks[nums - 1].id]);
+}
+EXPORT_SYMBOL_GPL(hisi_clk_unregister_misc);

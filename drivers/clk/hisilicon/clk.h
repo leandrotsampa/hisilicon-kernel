@@ -117,6 +117,15 @@ struct hisi_gate_clock {
 	const char		*alias;
 };
 
+struct hisi_misc_clock {
+	const char	*name;
+	const char	*parent_name;
+	u32		id;
+	u32		reg_offset;
+	u32		ctrl_rst_mask;
+	u32		ctrl_clk_mask;
+};
+
 struct clk *hisi_register_clkgate_sep(struct device *, const char *,
 				const char *, unsigned long,
 				void __iomem *, u8,
@@ -150,6 +159,15 @@ void hisi_clk_register_gate_sep(const struct hisi_gate_clock *,
 				int, struct hisi_clock_data *);
 void hi6220_clk_register_divider(const struct hi6220_divider_clock *,
 				int, struct hisi_clock_data *);
+struct clk *clk_register_hisi_misc(struct device *dev,
+					const struct hisi_misc_clock *clk,
+					void __iomem *base);
+void clk_unregister_hisi_misc(struct clk *clk);
+int hisi_clk_register_misc(struct device *dev,
+				const struct hisi_misc_clock *clks,
+				int nums, struct hisi_clock_data *data);
+void hisi_clk_unregister_misc(const struct hisi_misc_clock *clks,
+				int nums, struct hisi_clock_data *data);
 
 #define hisi_clk_unregister(type) \
 static inline \
