@@ -18,12 +18,16 @@
  */
 
 #include <linux/clk.h>
+#include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/io.h>
+#include <linux/mfd/syscon.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/phy/phy.h>
+#include <linux/regmap.h>
 #include <linux/reset.h>
+#include <linux/uaccess.h>
 
 #define INNO_PHY_PORT_NUM	2
 #define REF_CLK_STABLE_TIME	100	/* unit:us */
@@ -40,6 +44,9 @@
 #define PHY_TEST_RST		BIT(23)	/* low active */
 #define PHY_CLK_ENABLE		BIT(2)
 
+#define PERI_USB3		0x12c
+#define USB2_2P_CHIPID		BIT(28)
+
 struct hisi_inno_phy_port {
 	struct phy *phy;
 	struct device *dev;
@@ -48,6 +55,7 @@ struct hisi_inno_phy_port {
 
 struct hisi_inno_phy_priv {
 	void __iomem *mmio;
+	struct regmap *syscon;
 	struct clk *ref_clk;
 	struct reset_control *por_rst;
 	struct hisi_inno_phy_port ports[INNO_PHY_PORT_NUM];
@@ -120,6 +128,83 @@ static const struct phy_ops hisi_inno_phy_ops = {
 	.owner = THIS_MODULE,
 };
 
+static ssize_t hisi_inno_phy_role_write(struct file *file,
+					const char __user *ubuf,
+					size_t count, loff_t *ppos)
+{
+	struct seq_file *s = file->private_data;
+	struct hisi_inno_phy_priv *priv = s->private;
+	char buf[16];
+
+	memset(buf, 0, sizeof(buf));
+
+	if (copy_from_user(&buf, ubuf, min_t(size_t, sizeof(buf) - 1, count)))
+		return -EFAULT;
+
+	if (!strncmp(buf, "host", 4))
+		regmap_update_bits(priv->syscon, PERI_USB3, USB2_2P_CHIPID, 0);
+	else if (!strncmp(buf, "peripheral", 10))
+		regmap_update_bits(priv->syscon, PERI_USB3, USB2_2P_CHIPID,
+				   USB2_2P_CHIPID);
+	else
+		return -EINVAL;
+
+	return count;
+}
+
+static int hisi_inno_phy_role_show(struct seq_file *s, void *unused)
+{
+	struct hisi_inno_phy_priv *priv = s->private;
+	u32 val;
+	int ret;
+
+	ret = regmap_read(priv->syscon, PERI_USB3, &val);
+	if (ret)
+		return ret;
+
+	if (val & USB2_2P_CHIPID)
+		seq_puts(s, "peripheral\n");
+	else
+		seq_puts(s, "host\n");
+
+	return 0;
+}
+
+static int hisi_inno_phy_role_open(struct inode *inode, struct file *file)
+{
+	return single_open(file, hisi_inno_phy_role_show, inode->i_private);
+}
+
+static const struct file_operations hisi_inno_phy_role_fops = {
+	.open = hisi_inno_phy_role_open,
+	.read = seq_read,
+	.write = hisi_inno_phy_role_write,
+	.llseek = seq_lseek,
+	.release = single_release,
+};
+
+static struct dentry *hisi_inno_phy_dbg_root;
+static struct dentry *hisi_inno_phy_role;
+
+static int hisi_inno_phy_debugfs_init(struct hisi_inno_phy_priv *priv)
+{
+	hisi_inno_phy_dbg_root = debugfs_create_dir("hisi_inno_phy", NULL);
+
+	if (!hisi_inno_phy_dbg_root || IS_ERR(hisi_inno_phy_dbg_root))
+		return -ENODEV;
+
+	hisi_inno_phy_role = debugfs_create_file("role", 0644,
+						 hisi_inno_phy_dbg_root, priv,
+						 &hisi_inno_phy_role_fops);
+	if (!hisi_inno_phy_role) {
+		debugfs_remove(hisi_inno_phy_dbg_root);
+		hisi_inno_phy_dbg_root = NULL;
+		return -ENODEV;
+	}
+
+	return 0;
+}
+
 static struct phy *hisi_inno_phy_xlate(struct device *dev,
 				       struct of_phandle_args *args)
 {
@@ -151,6 +236,10 @@ static int hisi_inno_phy_probe(struct platform_device *pdev)
 		ret = PTR_ERR(priv->mmio);
 		return ret;
 	}
+
+	priv->syscon = syscon_node_to_regmap(np->parent);
+	if (IS_ERR(priv->syscon))
+		return PTR_ERR(priv->syscon);
 
 	priv->ref_clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(priv->ref_clk))
@@ -192,6 +281,10 @@ static int hisi_inno_phy_probe(struct platform_device *pdev)
 	}
 
 	dev_set_drvdata(dev, priv);
+
+	ret = hisi_inno_phy_debugfs_init(priv);
+	if (ret)
+		dev_dbg(dev, "failed to create debugfs: %d\n", ret);
 
 	provider = devm_of_phy_provider_register(dev, hisi_inno_phy_xlate);
 	return PTR_ERR_OR_ZERO(provider);
