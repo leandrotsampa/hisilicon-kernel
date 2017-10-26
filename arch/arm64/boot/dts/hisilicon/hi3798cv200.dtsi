@@ -108,7 +108,7 @@
 			#reset-cells = <2>;
 		};
 
-		peri_ctrl: peri_ctrl@8a20000 {
+		perictrl: peripheral-controller@8a20000 {
 			compatible = "hisilicon,hi3798cv200-perictrl", "syscon";
 			reg = <0x8a20000 0x1000>;
 		};
@@ -511,7 +511,7 @@
 			resets = <&crg 0x188 12>;
 			assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
 			assigned-clock-rates = <100000000>;
-			hisilicon,peripheral-syscon = <&peri_ctrl>;
+			hisilicon,peripheral-syscon = <&perictrl>;
 		};
 
 		pcie: pcie@9860000 {
