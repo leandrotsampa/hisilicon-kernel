@@ -19,6 +19,10 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
+	aliases {
+		combphy1 = &combphy1;
+	};
+
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
@@ -109,8 +113,22 @@
 		};
 
 		perictrl: peripheral-controller@8a20000 {
-			compatible = "hisilicon,hi3798cv200-perictrl", "syscon";
+			compatible = "hisilicon,hi3798cv200-perictrl", "syscon",
+				     "simple-mfd";
 			reg = <0x8a20000 0x1000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x8a20000 0x1000>;
+
+			combphy1: phy@858 {
+				compatible = "hisilicon,hi3798cv200-combphy";
+				reg = <0x858 0x8>;
+				#phy-cells = <1>;
+				clocks = <&crg HISTB_COMBPHY1_CLK>;
+				resets = <&crg 0x188 12>;
+				assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
+				assigned-clock-rates = <100000000>;
+			};
 		};
 
 		pmx0: pinconf@8a21000 {
@@ -502,16 +520,6 @@
 			hisilicon,power-syscon = <&sysctrl>;
 			linux,rc-map-name = "rc-hisi-poplar";
 			status = "disabled";
-		};
-
-		combphy1: combphy1 {
-			compatible = "hisilicon,hi3798cv200-combphy";
-			#phy-cells = <1>;
-			clocks = <&crg HISTB_COMBPHY1_CLK>;
-			resets = <&crg 0x188 12>;
-			assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
-			assigned-clock-rates = <100000000>;
-			hisilicon,peripheral-syscon = <&perictrl>;
 		};
 
 		pcie: pcie@9860000 {
