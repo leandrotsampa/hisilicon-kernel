@@ -22,9 +22,6 @@
 #include <linux/reset.h>
 #include <dt-bindings/phy/phy.h>
 
-#define PERI_CTRL			0x8
-#define COMBPHY1_MODE_MASK		GENMASK(12, 11)
-#define COMBPHY1_MODE_SHIFT		11
 #define COMBPHY_MODE_PCIE		0
 #define COMBPHY_MODE_USB3		1
 #define COMBPHY_MODE_SATA		2
@@ -38,14 +35,21 @@
 #define COMBPHY_TEST_ADDR_MASK		GENMASK(16, 12)
 #define COMBPHY_CLKREF_OUT_OEN		BIT(0)
 
+struct histb_combphy_mode {
+	int fixed;
+	int select;
+	u32 reg;
+	u32 shift;
+	u32 mask;
+};
+
 struct histb_combphy_priv {
 	void __iomem *mmio;
 	struct regmap *syscon;
 	struct reset_control *por_rst;
 	struct clk *ref_clk;
 	struct phy *phy;
-	int phy_mode;
-	int phy_id;
+	struct histb_combphy_mode mode;
 };
 
 static void nano_register_write(struct histb_combphy_priv *priv,
@@ -69,27 +73,36 @@ static void nano_register_write(struct histb_combphy_priv *priv,
 	writel(val, reg);
 }
 
+static int is_mode_fixed(struct histb_combphy_mode *mode)
+{
+	return (mode->fixed != PHY_NONE) ? true : false;
+}
+
 static int histb_combphy_set_mode(struct histb_combphy_priv *priv)
 {
+	struct histb_combphy_mode *mode = &priv->mode;
 	struct regmap *syscon = priv->syscon;
-	u32 mode;
+	u32 hw_sel;
 
-	switch (priv->phy_mode) {
+	if (is_mode_fixed(mode))
+		return 0;
+
+	switch (mode->select) {
 	case PHY_TYPE_SATA:
-		mode = COMBPHY_MODE_SATA;
+		hw_sel = COMBPHY_MODE_SATA;
 		break;
 	case PHY_TYPE_PCIE:
-		mode = COMBPHY_MODE_PCIE;
+		hw_sel = COMBPHY_MODE_PCIE;
 		break;
 	case PHY_TYPE_USB3:
-		mode = COMBPHY_MODE_USB3;
+		hw_sel = COMBPHY_MODE_USB3;
 		break;
 	default:
 		return -EINVAL;
 	}
 
-	return regmap_update_bits(syscon, PERI_CTRL, COMBPHY1_MODE_MASK,
-				  mode << COMBPHY1_MODE_SHIFT);
+	return regmap_update_bits(syscon, mode->reg, mode->mask,
+				  hw_sel << mode->shift);
 }
 
 static int histb_combphy_init(struct phy *phy)
@@ -98,12 +111,9 @@ static int histb_combphy_init(struct phy *phy)
 	u32 val;
 	int ret;
 
-	/* PHY0 doesn't support mode setting */
-	if (priv->phy_id != 0) {
-		ret = histb_combphy_set_mode(priv);
-		if (ret)
-			return ret;
-	}
+	ret = histb_combphy_set_mode(priv);
+	if (ret)
+		return ret;
 
 	/* Clear bypass bit to enable encoding/decoding */
 	val = readl(priv->mmio + COMBPHY_CFG_REG);
@@ -158,21 +168,23 @@ static struct phy *histb_combphy_xlate(struct device *dev,
 				       struct of_phandle_args *args)
 {
 	struct histb_combphy_priv *priv = dev_get_drvdata(dev);
+	struct histb_combphy_mode *mode = &priv->mode;
 
 	if (args->args_count < 1) {
 		dev_err(dev, "invalid number of arguments\n");
 		return ERR_PTR(-EINVAL);
 	}
 
-	priv->phy_mode = args->args[0];
+	mode->select = args->args[0];
 
-	if (priv->phy_mode < PHY_TYPE_SATA || priv->phy_mode > PHY_TYPE_USB3) {
-		dev_err(dev, "invalid phy mode argument\n");
+	if (mode->select < PHY_TYPE_SATA || mode->select > PHY_TYPE_USB3) {
+		dev_err(dev, "invalid phy mode select argument\n");
 		return ERR_PTR(-EINVAL);
 	}
 
-	if (priv->phy_id == 0 && priv->phy_mode != PHY_TYPE_USB3) {
-		dev_err(dev, "PHY0 works in USB3 mode only\n");
+	if (is_mode_fixed(mode) && mode->select != mode->fixed) {
+		dev_err(dev, "mode select %d mismatch fixed phy mode %d\n",
+			mode->select, mode->fixed);
 		return ERR_PTR(-EINVAL);
 	}
 
@@ -185,7 +197,9 @@ static int histb_combphy_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct histb_combphy_priv *priv;
 	struct device_node *np = dev->of_node;
+	struct histb_combphy_mode *mode;
 	struct resource *res;
+	u32 vals[3];
 	int ret;
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
@@ -205,9 +219,31 @@ static int histb_combphy_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->syscon);
 	}
 
-	priv->phy_id = of_alias_get_id(np, "combphy");
-	if (priv->phy_id < 0)
-		priv->phy_id = 0;
+	mode = &priv->mode;
+	mode->fixed = PHY_NONE;
+
+	ret = of_property_read_u32(np, "hisilicon,fixed-mode", &mode->fixed);
+	if (ret == 0)
+		dev_dbg(dev, "found fixed phy mode %d\n", mode->fixed);
+
+	ret = of_property_read_u32_array(np, "hisilicon,mode-select-bits",
+					 vals, ARRAY_SIZE(vals));
+	if (ret == 0) {
+		if (is_mode_fixed(mode)) {
+			dev_err(dev, "found select bits for fixed mode phy\n");
+			return -EINVAL;
+		}
+
+		mode->reg = vals[0];
+		mode->shift = vals[1];
+		mode->mask = vals[2];
+		dev_dbg(dev, "found mode select bits\n");
+	} else {
+		if (!is_mode_fixed(mode)) {
+			dev_err(dev, "no valid select bits found for non-fixed phy\n");
+			return -ENODEV;
+		}
+	}
 
 	priv->ref_clk = devm_clk_get(dev, NULL);
 	if (IS_ERR(priv->ref_clk)) {
