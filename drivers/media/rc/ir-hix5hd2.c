@@ -205,6 +205,7 @@ static int hix5hd2_ir_probe(struct platform_device *pdev)
 	struct hix5hd2_ir_priv *priv;
 	struct device_node *node = pdev->dev.of_node;
 	const char *map_name;
+	u32 val;
 	int ret;
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
@@ -263,6 +264,13 @@ static int hix5hd2_ir_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto clkerr;
 
+	priv->rdev = rdev;
+	priv->dev = dev;
+
+	/* Clear possible pending interrupts */
+	val = readl_relaxed(priv->base + IR_INTS);
+	writel_relaxed(val, priv->base + IR_INTC);
+
 	if (devm_request_irq(dev, priv->irq, hix5hd2_ir_rx_interrupt,
 			     0, pdev->name, priv) < 0) {
 		dev_err(dev, "IRQ %d register failed\n", priv->irq);
@@ -270,8 +278,6 @@ static int hix5hd2_ir_probe(struct platform_device *pdev)
 		goto regerr;
 	}
 
-	priv->rdev = rdev;
-	priv->dev = dev;
 	platform_set_drvdata(pdev, priv);
 
 	return ret;
