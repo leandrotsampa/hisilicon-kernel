@@ -19,10 +19,6 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
-	aliases {
-		combphy1 = &combphy1;
-	};
-
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
@@ -149,6 +145,7 @@
 				resets = <&crg 0x188 12>;
 				assigned-clocks = <&crg HISTB_COMBPHY1_CLK>;
 				assigned-clock-rates = <100000000>;
+				hisilicon,mode-select-bits = <0x0008 11 (0x3 << 11)>;
 			};
 		};
 
