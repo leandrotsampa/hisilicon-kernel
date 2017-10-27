@@ -45,7 +45,7 @@ void xhci_histb_start(struct usb_hcd *hcd)
 	if (!hcd->regs)
 		return;
 
-	phy = phy_get(hcd->self.sysdev, "combo");
+	phy = phy_get(hcd->self.controller, "combo");
 	if (IS_ERR(phy)) {
 		if (PTR_ERR(phy) == -EPROBE_DEFER)
 			return;
@@ -68,7 +68,7 @@ void xhci_histb_start(struct usb_hcd *hcd)
 		struct regmap *syscon;
 		u32 syscon_reg;
 
-		np = hcd->self.sysdev->of_node;
+		np = hcd->self.controller->of_node;
 		if (of_parse_phandle_with_fixed_args(np,
 			"hisilicon,peripheral-syscon", 1, 0, &out_args))
 			return;
