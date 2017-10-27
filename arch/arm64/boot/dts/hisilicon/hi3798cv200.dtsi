@@ -137,6 +137,17 @@
 				reset-names = "power_on", "utmi0";
 			};
 
+			combphy0: phy@850 {
+				compatible = "hisilicon,hi3798cv200-combphy";
+				reg = <0x850 0x8>;
+				#phy-cells = <1>;
+				clocks = <&crg HISTB_COMBPHY0_CLK>;
+				resets = <&crg 0x188 4>;
+				assigned-clocks = <&crg HISTB_COMBPHY0_CLK>;
+				assigned-clock-rates = <100000000>;
+				hisilicon,fixed-mode = <PHY_TYPE_USB3>;
+			};
+
 			combphy1: phy@858 {
 				compatible = "hisilicon,hi3798cv200-combphy";
 				reg = <0x858 0x8>;
@@ -599,6 +610,27 @@
 			reset-names = "bus", "phy", "utmi";
 			phys = <&usb2_phy1 0>;
 			phy-names = "usb";
+			status = "disabled";
+		};
+
+		xhci0: xhci@98a0000 {
+			compatible = "hisilicon,hi3798cv200-xhci";
+			reg = <0x98a0000 0x10000>;
+			interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&crg HISTB_USB3_CLK>;
+			phys = <&usb2_phy1 1>, <&combphy0 PHY_TYPE_USB3>;
+			phy-names = "usb", "combo";
+			status = "disabled";
+		};
+
+		xhci1: xhci@98b0000 {
+			compatible = "hisilicon,hi3798cv200-xhci";
+			reg = <0x98b0000 0x10000>;
+			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&crg HISTB_USB3_CLK1>;
+			phys = <&usb2_phy2 0>;
+			phy-names = "usb";
+			hisilicon,peripheral-syscon = <&perictrl 0x13c>;
 			status = "disabled";
 		};
 

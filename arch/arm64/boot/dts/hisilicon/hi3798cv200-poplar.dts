@@ -196,3 +196,11 @@
 	label = "LS-UART0";
 };
 /* No optional LS-UART1 on Low Speed Expansion Connector. */
+
+&xhci0 {
+	status = "okay";
+};
+
+&xhci1 {
+	status = "okay";
+};
