@@ -12,19 +12,24 @@ Required properties:
 
 Refer to phy/phy-bindings.txt for the generic PHY binding properties
 
-Note:
+Optional properties:
+- hisilicon,fixed-mode: If the phy device doesn't support mode select
+  but a fixed mode setting, the property should be present to specify
+  the particular mode.
+- hisilicon,mode-select-bits: If the phy device support mode select,
+  this property should be present to specify the register bits in
+  peripheral controller, as a 3 integers tuple:
+  <register_offset bit_shift bit_mask>.
+
+Notes:
+- Between hisilicon,fixed-mode and hisilicon,mode-select-bits, one and only
+  one of them should be present.
 - The device node should be a child of peripheral controller that contains
   COMBPHY configuration/state and PERI_CTRL register used to select PHY mode.
-- The combphy devices should have aliases defined.
 
-Example:
+Examples:
 
-aliases {
-	combphy0 = &combphy0;
-	combphy1 = &combphy1;
-};
-
-peri_ctrl: peri_ctrl@8a20000 {
+perictrl: peripheral-controller@8a20000 {
 	compatible = "hisilicon,hi3798cv200-perictrl", "syscon",
 		     "simple-mfd";
 	reg = <0x8a20000 0x1000>;
@@ -38,6 +43,7 @@ peri_ctrl: peri_ctrl@8a20000 {
 		#phy-cells = <1>;
 		clocks = <&crg HISTB_COMBPHY0_CLK>;
 		resets = <&crg 0x188 4>;
+		hisilicon,fixed-mode = <PHY_TYPE_USB3>;
 	};
 
 	combphy1: phy@858 {
@@ -46,5 +52,6 @@ peri_ctrl: peri_ctrl@8a20000 {
 		#phy-cells = <1>;
 		clocks = <&crg HISTB_COMBPHY1_CLK>;
 		resets = <&crg 0x188 12>;
+		hisilicon,mode-select-bits = <0x0008 11 (0x3 << 11)>;
 	};
 };
