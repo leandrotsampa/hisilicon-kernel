@@ -68,6 +68,18 @@
 	status = "okay";
 };
 
+&emmc {
+	status = "okay";
+	num-slots = <1>;
+	fifo-depth = <256>;
+	clock-frequency = <200000000>;
+	cap-mmc-highspeed;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
+	non-removable;
+	bus-width = <8>;
+};
+
 &gmac1 {
 	status = "okay";
 	#address-cells = <1>;
@@ -182,17 +194,5 @@
 &uart2 {
 	status = "okay";
 	label = "LS-UART0";
-};
-
-&emmc {
-	status = "okay";
-	num-slots = <1>;
-	fifo-depth = <256>;
-	clock-frequency = <200000000>;
-	cap-mmc-highspeed;
-	mmc-ddr-1_8v;
-	mmc-hs200-1_8v;
-	non-removable;
-	bus-width = <8>;
 };
 /* No optional LS-UART1 on Low Speed Expansion Connector. */
