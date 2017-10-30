@@ -4939,7 +4939,7 @@ loop:
 done:
 	hub_port_disable(hub, port1, 1);
 	if (hcd->driver->relinquish_port && !hub->hdev->parent) {
-		if (status != -ENOTCONN && status != -ENODEV)
+		if (status != -ENODEV)
 			hcd->driver->relinquish_port(hcd, port1);
 	}
 }
