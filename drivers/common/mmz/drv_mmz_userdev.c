@@ -385,7 +385,7 @@ static int ioctl_mmb_user_unmap(struct file *file, unsigned int iocmd, struct mm
 		ret = do_munmap(current->mm, addr, len);
 		up_write(&current->mm->mmap_sem);
 
-		if(!IS_ERR_VALUE(ret)) {
+		if(ret) {
 			/** the memory may be used by system later so clean the L2 cache(L1 cache is guaranted by do_munmap)  **/
 			udata->uvirt = NULL;
 		}
