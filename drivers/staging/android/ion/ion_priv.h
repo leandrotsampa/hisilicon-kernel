@@ -41,6 +41,8 @@
  * @size:		size of the buffer
  * @priv_virt:		private data to the buffer representable as
  *			a void *
+ * @priv_phys:		private data to the buffer representable as
+ *			an ion_phys_addr_t (and someday a phys_addr_t)
  * @lock:		protects the buffers cnt fields
  * @kmap_cnt:		number of times the buffer is mapped to the kernel
  * @vaddr:		the kernel mapping if kmap_cnt is not zero
@@ -66,7 +68,10 @@ struct ion_buffer {
 	unsigned long flags;
 	unsigned long private_flags;
 	size_t size;
-	void *priv_virt;
+	union {
+		void *priv_virt;
+		ion_phys_addr_t priv_phys;
+	};
 	struct mutex lock;
 	int kmap_cnt;
 	void *vaddr;
@@ -160,6 +165,8 @@ struct ion_handle {
  * struct ion_heap_ops - ops to operate on a given heap
  * @allocate:		allocate memory
  * @free:		free memory
+ * @phys		get physical address of a buffer (only define on
+ *			physically contiguous heaps)
  * @map_kernel		map memory to the kernel
  * @unmap_kernel	unmap memory to the kernel
  * @map_user		map memory to userspace
@@ -176,6 +183,8 @@ struct ion_heap_ops {
 			struct ion_buffer *buffer, unsigned long len,
 			unsigned long align, unsigned long flags);
 	void (*free)(struct ion_buffer *buffer);
+	int (*phys)(struct ion_heap *heap, struct ion_buffer *buffer,
+		    ion_phys_addr_t *addr, size_t *len);
 	void * (*map_kernel)(struct ion_heap *heap, struct ion_buffer *buffer);
 	void (*unmap_kernel)(struct ion_heap *heap, struct ion_buffer *buffer);
 	int (*map_user)(struct ion_heap *mapper, struct ion_buffer *buffer,

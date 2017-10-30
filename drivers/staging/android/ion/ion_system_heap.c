@@ -434,9 +434,21 @@ static void ion_system_contig_heap_free(struct ion_buffer *buffer)
 	kfree(table);
 }
 
+static int ion_system_contig_heap_phys(struct ion_heap *heap,
+				       struct ion_buffer *buffer,
+				       ion_phys_addr_t *addr, size_t *len)
+{
+	struct sg_table *table = buffer->priv_virt;
+	struct page *page = sg_page(table->sgl);
+	*addr = page_to_phys(page);
+	*len = buffer->size;
+	return 0;
+}
+
 static struct ion_heap_ops kmalloc_ops = {
 	.allocate = ion_system_contig_heap_allocate,
 	.free = ion_system_contig_heap_free,
+	.phys = ion_system_contig_heap_phys,
 	.map_kernel = ion_heap_map_kernel,
 	.unmap_kernel = ion_heap_unmap_kernel,
 	.map_user = ion_heap_map_user,
