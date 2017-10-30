@@ -33,7 +33,11 @@ typedef unsigned int		HI_U32;
 #endif
 
 #define L2_CACHE_SIZE  (512*1024)
+#if 0
 #define mmz_flush_dcache_all		flush_cache_all
+#else
+static inline void mmz_flush_dcache_all(void) { }
+#endif
 #define mmz_flush_dcache_area		__flush_dcache_area
 
 /* alloc status	  */
