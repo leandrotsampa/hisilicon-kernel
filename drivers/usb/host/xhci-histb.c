@@ -17,11 +17,11 @@
 #include "xhci.h"
 #include "xhci-histb.h"
 
+#define GTXTHRCFG		(0xc108)
+#define GRXTHRCFG		(0xc10c)
 #define REG_GCTL		(0xc110)
 #define REG_GUSB2PHYCFG0	(0xc200)
 #define REG_GUSB3PIPECTL0	(0xc2c0)
-#define GTXTHRCFG		(0xc108)
-#define GRXTHRCFG		(0xc10c)
 
 #define BIT_UTMI_8_16		BIT(3)
 #define BIT_UTMI_ULPI		BIT(4)
@@ -89,31 +89,31 @@ void xhci_histb_start(struct usb_hcd *hcd)
 		 * GUSB3PIPECTL0[2:1] = 01 : Tx Deemphasis = -3.5dB,
 		 * refer to spec
 		 */
-		regmap_read(hcd->regs, REG_GUSB3PIPECTL0, &reg);
+		reg = readl(hcd->regs + REG_GUSB3PIPECTL0);
 		//reg &= ~USB3_SUSPEND_EN;
 		reg &= ~USB3_DEEMPHASIS_MASK;
 		reg |= USB3_DEEMPHASIS0;
 		reg |= USB3_TX_MARGIN1;
-		regmap_write(hcd->regs, REG_GUSB3PIPECTL0, reg);
+		writel(reg, hcd->regs + REG_GUSB3PIPECTL0);
 
 		udelay(20);
 	}
 
 	/* USB2 PHY chose ulpi 8bit interface */
-	regmap_read(hcd->regs, REG_GUSB2PHYCFG0, &reg);
+	reg = readl(hcd->regs + REG_GUSB2PHYCFG0);
 	reg &= ~BIT_UTMI_ULPI;
 	reg &= ~(BIT_UTMI_8_16);
 	reg &= ~BIT_FREECLK_EXIST;
-	regmap_write(hcd->regs, REG_GUSB2PHYCFG0, reg);
+	writel(reg, hcd->regs + REG_GUSB2PHYCFG0);
 
 	/* [13:12] 01: Host; 10: Device; 11: OTG */
-	regmap_read(hcd->regs, REG_GCTL, &reg);
+	reg = readl(hcd->regs + REG_GCTL);
 	reg &= ~(0x3 << 12);
 	reg |= (0x1 << 12);
-	regmap_write(hcd->regs, REG_GCTL, reg);
+	writel(reg, hcd->regs + REG_GCTL);
 
-	regmap_write(hcd->regs, GTXTHRCFG, 0x23100000);
-	regmap_write(hcd->regs, GRXTHRCFG, 0x23100000);
+	writel(0x2310000, hcd->regs + GTXTHRCFG);
+	writel(0x2310000, hcd->regs + GRXTHRCFG);
 
 	udelay(200);
 }
