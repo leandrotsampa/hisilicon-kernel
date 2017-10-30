@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
+ * SPDX-License-Identifier: GPL-2.0
+ */
+
+#ifndef _SYNC_EXT_H_
+#define _SYNC_EXT_H_
+
+#include "hi_type.h"
+#include "hi_drv_sync.h"
+
+typedef HI_VOID (*FN_SYNC_VidProc)(HI_HANDLE, SYNC_VID_INFO_S *, SYNC_VID_OPT_S *);
+typedef HI_VOID (*FN_SYNC_PcrProc)(HI_HANDLE, HI_U64, HI_U64);
+
+typedef struct
+{
+    FN_SYNC_VidProc	pfnSYNC_VidProc;
+    FN_SYNC_PcrProc	pfnSYNC_PcrProc;
+} SYNC_EXPORT_FUNC_S;
+
+HI_S32	SYNC_DRV_ModInit(HI_VOID);
+HI_VOID SYNC_DRV_ModExit(HI_VOID);
+
+#endif
