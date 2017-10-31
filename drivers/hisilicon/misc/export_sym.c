@@ -22,10 +22,10 @@ EXPORT_SYMBOL(__irq_set_affinity);
 
 #ifdef CONFIG_GPIOLIB
 extern struct spinlock gpio_lock;
-extern struct list_head gpio_chips;
+extern struct list_head gpio_devices;
 
 EXPORT_SYMBOL(gpio_lock);
-EXPORT_SYMBOL(gpio_chips);
+EXPORT_SYMBOL(gpio_devices);
 #endif
 
 char *audio_options_string = NULL;
