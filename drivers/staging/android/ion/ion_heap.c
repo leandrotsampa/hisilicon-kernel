@@ -17,6 +17,7 @@
 #include <linux/err.h>
 #include <linux/freezer.h>
 #include <linux/kthread.h>
+#include <linux/hisilicon/tee_smmu.h>
 #include <linux/mm.h>
 #include <linux/rtmutex.h>
 #include <linux/sched.h>
@@ -101,6 +102,75 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
 			return 0;
 	}
 	return 0;
+}
+
+int ion_heap_map_iommu(struct ion_buffer *buffer,
+			struct ion_iommu_map *map_data)
+{
+	struct sg_table *table = buffer->sg_table;
+	int ret;
+	TEE_MEM_BUFFER_S teebuf;
+	unsigned long phys_addr;
+	size_t size;
+	u32 sec_smmu = 0;
+
+	if (buffer->sec_flag) {
+		/* secure iommu */
+		memset(&teebuf, 0x0, sizeof(TEE_MEM_BUFFER_S));
+		teebuf.table = table;
+		teebuf.u32Size = buffer->size;
+
+		if (!buffer->heap->ops->phys) {
+			phys_addr = 0;
+		} else {
+			buffer->heap->ops->phys(buffer->heap, buffer, &phys_addr, &size);
+		}
+
+		ret = hisi_secmem_alloc(&teebuf, phys_addr, 0, &sec_smmu);
+		if (ret) {
+			pr_err("%s: sec iommu map failed, heap: %s\n", __func__,
+				buffer->heap->name);
+			return ret;
+		}
+		map_data->format.iova_start = (unsigned long)sec_smmu;
+		map_data->format.iova_size = buffer->size;
+	} else {
+		/* normal iommu   */
+		ret = hisi_iommu_map_domain(table->sgl, &map_data->format);
+		if (ret) {
+			pr_err("%s: iommu map failed, heap: %s\n", __func__,
+				buffer->heap->name);
+		}
+	}
+	return ret;
+}
+
+void ion_heap_unmap_iommu(struct ion_iommu_map *map_data)
+{
+	int ret;
+	struct ion_buffer *buffer;
+
+	if (NULL == map_data)
+	{
+		pr_err("%s: iommu unmap failed, err args!\n", __func__);
+		return;
+	}
+	buffer = map_data->buffer;
+	if (buffer->sec_flag) {
+		ret = hisi_secmem_free(map_data->format.iova_start, 1);
+		if (ret) {
+			pr_err("%s: iommu unmap failed, heap: %s\n", __func__,
+				map_data->buffer->heap->name);
+		}
+		/* clear the sec flag  */
+		buffer->sec_flag = 0;
+	} else {
+		ret = hisi_iommu_unmap_domain(&map_data->format);
+		if (ret) {
+			pr_err("%s: iommu unmap failed, heap: %s\n", __func__,
+				map_data->buffer->heap->name);
+		}
+	}
 }
 
 static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)

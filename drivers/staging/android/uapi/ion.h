@@ -19,8 +19,10 @@
 
 #include <linux/ioctl.h>
 #include <linux/types.h>
+#include <linux/iommu.h>
 
 typedef int ion_user_handle_t;
+#define ion_phys_addr_t unsigned long
 
 /**
  * enum ion_heap_types - list of all possible types of heaps
@@ -40,11 +42,23 @@ enum ion_heap_type {
 	ION_HEAP_TYPE_CARVEOUT,
 	ION_HEAP_TYPE_CHUNK,
 	ION_HEAP_TYPE_DMA,
+	ION_HEAP_TYPE_TEE_SEC_MEM,
+	/* backwards compatible with v3.4 ion */
+	ION_HEAP_ID_CMA = 15, /* cma: ddr */
+	ION_HEAP_ID_TEE_SEC_MEM, /* secure mem in TEE */
 	ION_HEAP_TYPE_CUSTOM, /*
 			       * must be last so device specific heaps always
 			       * are at the end of this enum
 			       */
+	ION_NUM_HEAPS = 31,
 };
+
+#define ION_HEAP_SYSTEM_MASK		(1 << ION_HEAP_TYPE_SYSTEM)
+#define ION_HEAP_SYSTEM_CONTIG_MASK	(1 << ION_HEAP_TYPE_SYSTEM_CONTIG)
+#define ION_HEAP_CARVEOUT_MASK		(1 << ION_HEAP_TYPE_CARVEOUT)
+#define ION_HEAP_TYPE_DMA_MASK		(1 << ION_HEAP_TYPE_DMA)
+#define ION_HEAP_CMA_MASK		(1 << ION_HEAP_ID_CMA)
+#define ION_HEAP_TEE_SEC_MASK		(1 << ION_HEAP_ID_TEE_SEC_MEM)
 
 #define ION_NUM_HEAP_IDS		(sizeof(unsigned int) * 8)
 
@@ -116,6 +130,19 @@ struct ion_handle_data {
 };
 
 /**
+ * struct ion_phys_data - metadata passed to/from the kernel to get the physic
+ *                        address
+ * @handle:    a handle
+ * @len:        buffer len
+ * @phys_addr:  physic address of the handle
+ */
+struct ion_phys_data {
+	ion_user_handle_t handle;
+	size_t len;
+	ion_phys_addr_t phys_addr;
+};
+
+/**
  * struct ion_custom_data - metadata passed to/from userspace for a custom ioctl
  * @cmd:	the custom ioctl function to call
  * @arg:	additional data to pass to the custom ioctl, typically a user
@@ -156,6 +183,18 @@ struct ion_heap_query {
 	__u64 heaps; /* buffer to be populated */
 	__u32 reserved1;
 	__u32 reserved2;
+};
+
+/**
+ * struct ion_map_iommu_data - metadata passed between userspace for iommu mapping
+ * @handle:	the handle of buffer
+ * @format:	the format of iommu mapping
+ * Provided by userspace as an argument to the ioctl
+ */
+struct iommu_map_format;
+struct ion_map_iommu_data {
+	ion_user_handle_t handle;
+	struct iommu_map_format format;
 };
 
 #define ION_IOC_MAGIC		'I'
@@ -232,5 +271,33 @@ struct ion_heap_query {
  */
 #define ION_IOC_HEAP_QUERY     _IOWR(ION_IOC_MAGIC, 8, \
 					struct ion_heap_query)
+
+/**
+ * DOC: ION_IOC_PHYS - given an ion_handle,return the physic address of the buffer
+ *
+ * Takes an ion_phys_data struct with the handle field populated with a valid
+ * opaque handle.  Returns the struct with the physic_addr field set the physic
+ * address of the internal buffer and the buffer len
+ */
+#define ION_IOC_PHYS		_IOWR(ION_IOC_MAGIC, 8, struct ion_phys_data)
+/**
+ * DOC: ION_IOC_MAP_IOMMU - map a buffr to iova
+ */
+#define ION_IOC_MAP_IOMMU       _IOWR(ION_IOC_MAGIC, 9, struct ion_map_iommu_data)
+
+/**
+ * DOC: ION_IOC_UNMAP_IOMMU - destory iommu mapping of a buffer
+ */
+#define ION_IOC_UNMAP_IOMMU     _IOWR(ION_IOC_MAGIC, 10, struct ion_map_iommu_data)
+
+/**
+ * DOC: ION_IOC_MAP_SEC_IOMMU - map a buffr to SEC SMMU iova
+ */
+#define ION_IOC_MAP_SEC_IOMMU       _IOWR(ION_IOC_MAGIC, 11, struct ion_map_iommu_data)
+
+/**
+ * DOC: ION_IOC_UNMAP_SEC_IOMMU - destory iommu SEC mapping of a buffer
+ */
+#define ION_IOC_UNMAP_SEC_IOMMU     _IOWR(ION_IOC_MAGIC, 12, struct ion_map_iommu_data)
 
 #endif /* _UAPI_LINUX_ION_H */
