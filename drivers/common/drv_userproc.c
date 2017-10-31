@@ -35,6 +35,7 @@
 #include <linux/list.h>
 #include <linux/rbtree.h>
 #include <linux/version.h>
+#include <linux/stringhash.h>
 #include <asm/atomic.h>
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3, 10, 0)
 #else
@@ -108,13 +109,12 @@ static UMP_DIR_S *g_pstHisiDirent = HI_NULL, *g_pstMspDirent = HI_NULL;
 
 static HI_VOID PROC_RemoveDirForcibly(UMP_DIR_S *pstDir);
 static HI_VOID PROC_RemoveEntry(UMP_DIR_S *pstDir, UMP_ENTRY_S * pstEntry);
-extern unsigned int full_name_hash(const unsigned char *name, unsigned int len);
 
 /*********************************** Code ************************************/
 
 static UMP_DIR_S * RBTree_Find_Dirent(UMP_DIR_S * pszParent, const HI_CHAR * pszName)
 {
-    HI_U32 hash = full_name_hash(pszName, strlen(pszName))  & 0x7fffffffU;
+    HI_U32 hash = full_name_hash(NULL, pszName, strlen(pszName))  & 0x7fffffffU;
     struct rb_node *node = g_stUProcParam.root.rb_node;
 
     while(node)
@@ -198,7 +198,7 @@ static void RBTree_Erase_Dirent(UMP_DIR_S * pszParent, UMP_DIR_S*pszDirent)
 
 static UMP_ENTRY_S * RBTree_Find_Entry(UMP_DIR_S * pstDir, const HI_CHAR * pszName)
 {
-    HI_U32 hash = full_name_hash(pszName, strlen(pszName))  & 0x7fffffffU;
+    HI_U32 hash = full_name_hash(NULL, pszName, strlen(pszName))  & 0x7fffffffU;
     struct rb_node *node = pstDir->entry_root.rb_node;
 
     while(node)
@@ -593,7 +593,7 @@ UMP_DIR_S * PROC_AddDir(const HI_CHAR* pszName, const HI_CHAR* pszParent, struct
 
     /* Init directory parameter */
     HI_OSAL_Snprintf(pstDir->dir_name, sizeof(pstDir->dir_name), "%s", pszName);
-    pstDir->dir_name_hash = full_name_hash(pszName, strlen(pszName)) & 0x7fffffffU;
+    pstDir->dir_name_hash = full_name_hash(NULL, pszName, strlen(pszName)) & 0x7fffffffU;
     pstDir->entry_root = RB_ROOT;
     pstDir->parent = HI_NULL;
     pstDir->pstFile = pstFile;
@@ -702,7 +702,7 @@ UMP_DIR_S * PROC_AddPrivateDir(const HI_CHAR* pszName, struct proc_dir_entry *ps
 
     /* Init other parameter */
     HI_OSAL_Strncpy(pstDir->dir_name, pszName, sizeof(pstDir->dir_name)-1);
-    pstDir->dir_name_hash = full_name_hash(pszName, strlen(pszName)) & 0x7fffffffU;
+    pstDir->dir_name_hash = full_name_hash(NULL, pszName, strlen(pszName)) & 0x7fffffffU;
     pstDir->entry_root = RB_ROOT;
     pstDir->entry = pstEntry;
     pstDir->parent = HI_NULL;
@@ -822,7 +822,7 @@ UMP_ENTRY_S* PROC_AddEntry(const HI_DRV_USRMODEPROC_ENTRY_S* pstParam, HI_BOOL b
 
     /* Init other parameter */
     HI_OSAL_Strncpy(pstEntry->entry_name, pstParam->aszName, sizeof(pstEntry->entry_name)-1);
-    pstEntry->entry_name_hash = full_name_hash(pstParam->aszName, strlen(pstParam->aszName)) & 0x7fffffffU;
+    pstEntry->entry_name_hash = full_name_hash(NULL, pstParam->aszName, strlen(pstParam->aszName)) & 0x7fffffffU;
     pstEntry->parent = pstDir->entry;
 
     pstEntry->stInfo.pFile	    = pstParam->pFile;
