@@ -73,12 +73,24 @@ struct ion_platform_data {
 };
 
 /**
+ * ion_reserve() - reserve memory for ion heaps if applicable
+ * @data:	platform data specifying starting physical address and
+ *		size
+ *
+ * Calls memblock reserve to set aside memory for heaps that are
+ * located at specific memory addresses or of specific sizes not
+ * managed by the kernel
+ */
+void ion_reserve(struct ion_platform_data *data);
+
+/**
  * ion_client_create() -  allocate a client and returns it
  * @dev:		the global ion device
  * @name:		used for debugging
  */
 struct ion_client *ion_client_create(struct ion_device *dev,
 				     const char *name);
+struct ion_client *hisi_ion_client_create(const char *name);
 
 /**
  * ion_client_destroy() -  free's a client and all it's handles
@@ -88,6 +100,7 @@ struct ion_client *ion_client_create(struct ion_device *dev,
  * any handles it is holding.
  */
 void ion_client_destroy(struct ion_client *client);
+void hisi_ion_client_destroy(struct ion_client *client);
 
 /**
  * ion_alloc - allocate ion memory
@@ -119,6 +132,27 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 void ion_free(struct ion_client *client, struct ion_handle *handle);
 
 /**
+ * set_buffer_cached - set buffer to be cached when map
+ * @client:	the client
+ * @handle:	the handle to free
+ * @flags :	the flags to set to buffer
+ *
+ * set buffer flags which used when map
+ */
+int set_buffer_cached(struct ion_client *client, struct ion_handle *handle,
+						unsigned long flags);
+
+/**
+ * get_pages_from_buffer() - get pages from buffer
+ * @client: the client
+ * @handle: the handle to buffer
+ * @size :  buffer size
+ * the pages will be returned in sg_tagel.
+ */
+struct sg_table *get_pages_from_buffer(struct ion_client *client,
+			struct ion_handle *handle, unsigned long *size);
+
+/**
  * ion_phys - returns the physical address and len of a handle
  * @client:	the client
  * @handle:	the handle
@@ -136,6 +170,17 @@ void ion_free(struct ion_client *client, struct ion_handle *handle);
  */
 int ion_phys(struct ion_client *client, struct ion_handle *handle,
 	     ion_phys_addr_t *addr, size_t *len);
+
+/**
+ * ion_map_dma - return an sg_table describing a handle
+ * @client:	the client
+ * @handle:	the handle
+ *
+ * This function returns the sg_table describing
+ * a particular ion handle.
+ */
+struct sg_table *ion_sg_table(struct ion_client *client,
+			      struct ion_handle *handle);
 
 /**
  * ion_map_kernel - create mapping for the given handle
@@ -191,5 +236,26 @@ struct ion_handle *ion_import_dma_buf(struct ion_client *client,
  * another exporter is passed in this function will return ERR_PTR(-EINVAL)
  */
 struct ion_handle *ion_import_dma_buf_fd(struct ion_client *client, int fd);
+
+/**
+ * ion_map_iommu() - create iommu mapping for the given handle
+ * @client:     the client
+ * @handle:     the handle
+ * @format:     the format of iommu mapping
+ */
+int ion_map_iommu(struct ion_client *client, struct ion_handle *handle,
+				struct iommu_map_format *format);
+/**
+ * ion_unmap_iommu() - destroy a iommu mapping for a handle
+ * @client:     the client
+ * @handle:     the handle
+ */
+void ion_unmap_iommu(struct ion_client *client, struct ion_handle *handle);
+
+/**
+ *  * hisi_get_cma_heap() - get cma heap via heap name
+ *   * @name: the cma heap name
+ *    */
+struct ion_platform_heap *hisi_get_cma_heap(const char *name);
 
 #endif /* _LINUX_ION_H */

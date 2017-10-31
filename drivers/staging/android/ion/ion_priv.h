@@ -27,8 +27,16 @@
 #include <linux/shrinker.h>
 #include <linux/types.h>
 #include <linux/miscdevice.h>
+#include <linux/iommu.h>
+#include <linux/hisilicon/hisi-iommu.h>
 
 #include "ion.h"
+
+struct ion_iommu_map {
+	struct ion_buffer *buffer;
+	struct kref ref;
+	struct iommu_map_format format;
+};
 
 /**
  * struct ion_buffer - metadata for a particular buffer
@@ -83,6 +91,8 @@ struct ion_buffer {
 	int handle_count;
 	char task_comm[TASK_COMM_LEN];
 	pid_t pid;
+	struct ion_iommu_map *iommu_map;
+	unsigned int sec_flag;	/* is the buffer secure? 1: secure 0 normal  */
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 
@@ -190,6 +200,9 @@ struct ion_heap_ops {
 	int (*map_user)(struct ion_heap *mapper, struct ion_buffer *buffer,
 			struct vm_area_struct *vma);
 	int (*shrink)(struct ion_heap *heap, gfp_t gfp_mask, int nr_to_scan);
+	int (*map_iommu)(struct ion_buffer *buffer,
+					struct ion_iommu_map *map_data);
+	void (*unmap_iommu)(struct ion_iommu_map *map_data);
 };
 
 /**
@@ -300,6 +313,9 @@ void *ion_heap_map_kernel(struct ion_heap *, struct ion_buffer *);
 void ion_heap_unmap_kernel(struct ion_heap *, struct ion_buffer *);
 int ion_heap_map_user(struct ion_heap *, struct ion_buffer *,
 			struct vm_area_struct *);
+int ion_heap_map_iommu(struct ion_buffer *buffer,
+			struct ion_iommu_map *map_data);
+void ion_heap_unmap_iommu(struct ion_iommu_map *map_data);
 int ion_heap_buffer_zero(struct ion_buffer *buffer);
 int ion_heap_pages_zero(struct page *page, size_t size, pgprot_t pgprot);
 
@@ -460,7 +476,6 @@ int ion_page_pool_shrink(struct ion_page_pool *pool, gfp_t gfp_mask,
  */
 void ion_pages_sync_for_device(struct device *dev, struct page *page,
 		size_t size, enum dma_data_direction dir);
-
 long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg);
 
 int ion_sync_for_device(struct ion_client *client, int fd);
@@ -478,5 +493,13 @@ struct ion_handle *ion_handle_get_by_id(struct ion_client *client,
 int ion_handle_put(struct ion_handle *handle);
 
 int ion_query_heaps(struct ion_client *client, struct ion_heap_query *query);
+
+
+/**
+ * hisi_register_ion_device() - register device for heaps
+ */
+int hisi_register_ion_device(void);
+
+extern struct device *hisi_get_cma_device(const char *name);
 
 #endif /* _ION_PRIV_H */
