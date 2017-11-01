@@ -95,6 +95,9 @@ static inline __maybe_unused phys_addr_t cma_early_percent_memory(void)
 
 #endif
 
+/* init cma zone */
+extern int hisi_declare_heap_memory(void);
+
 /**
  * dma_contiguous_reserve() - reserve area(s) for contiguous memory handling
  * @limit: End address of the reserved memory (optional, 0 for any).
@@ -112,6 +115,8 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
 	bool fixed = false;
 
 	pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+
+	hisi_declare_heap_memory();
 
 	if (size_cmdline != -1) {
 		selected_size = size_cmdline;
