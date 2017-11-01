@@ -53,19 +53,19 @@
 #ifndef MODULE
 HI_S32 __init HI_DRV_LoadModules(HI_VOID)
 {
-    GPIO_DRV_ModInit();
-    GPIOI2C_DRV_ModInit();
+    // GPIO_DRV_ModInit();
+    // GPIOI2C_DRV_ModInit();
     PDM_DRV_ModInit();
     PQ_DRV_ModInit();
     HDMI_DRV_ModInit();
     VDP_DRV_ModInit();
     TDE_DRV_ModInit();
     HIFB_DRV_ModInit();
-    JPEG_DRV_ModInit();
-    PNG_DRV_ModInit();
+    // JPEG_DRV_ModInit();
+    // PNG_DRV_ModInit();
     GFX2D_OS_ModInit();
-    I2C_DRV_ModInit();
-    DMX_DRV_ModInit();
+    // I2C_DRV_ModInit();
+    // DMX_DRV_ModInit();
     PVR_DRV_ModInit();
     SYNC_DRV_ModInit();
     ADSP_DRV_ModInit();
@@ -73,9 +73,9 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     ADEC_DRV_ModInit();
     VPSS_DRV_ModInit();
     MCE_DRV_ModInit();
-    KEYLED_DRV_ModInit();
-    SCI_DRV_ModInit();
-    AENC_DRV_ModInit();
+    // KEYLED_DRV_ModInit();
+    // SCI_DRV_ModInit();
+    // AENC_DRV_ModInit();
 
     return HI_SUCCESS;
 }
