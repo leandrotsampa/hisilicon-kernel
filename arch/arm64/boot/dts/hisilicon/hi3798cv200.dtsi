@@ -19,6 +19,74 @@
 	#address-cells = <2>;
 	#size-cells = <2>;
 
+	virtdev {
+		compatible = "virt-device";
+		interrupts = <0 36 4>,  /* "sci0"          */
+			     <0 47 4>,  /* "ir_std"        */
+			     <0 47 4>,  /* "ir_s2"         */
+			     <0 48 4>,  /* "keyled_ct1642" */
+			     <0 48 4>,  /* "keyled_std"    */
+			     <0 71 4>,  /* "gsf0"          */
+			     <0 72 4>,  /* "gsf1"          */
+			     <0 75 4>,  /* "multicipher"   */
+			     <0 82 4>,  /* "dmx"           */
+			     <0 84 4>,  /* "aiao"          */
+			     <0 88 4>,  /* "hdmi"          */
+			     <0 90 4>,  /* "vdp"           */
+			     <0 91 4>,  /* "tde"           */
+			     <0 92 4>,  /* "gfx2d"         */
+			     <0 93 4>,  /* "vpss0"         */
+			     <0 95 4>,  /* "vdec_vdh"      */
+			     <0 96 4>,  /* "png"           */
+			     <0 97 4>,  /* "jpeg"          */
+			     <0 101 4>, /* "venc"          */
+			     <0 102 4>, /* "jpge"          */
+			     <0 104 4>, /* "vdec_scd"      */
+			     <0 105 4>, /* "vdec_vdh_safe" */
+			     <0 106 4>, /* "vdec_scd_safe" */
+			     <0 126 4>, /* "cipher"        */
+			     <0 141 4>, /* "gpu_mmu"       */
+			     <0 142 4>, /* "gpu_job"       */
+			     <0 143 4>, /* "gpu"           */
+			     <0 146 4>, /* "SecInvokeirq"  */
+			     <0 147 4>, /* "hdmi_cec"      */
+			     <0 148 4>, /* "mmu_vdh_safe"  */
+			     <0 149 4>, /* "mmu_vdh"       */
+			     <0 150 4>; /* "pastc"         */
+		interrupt-names = /* 36  */ "sci0",
+				  /* 47  */ "ir_std",
+				  /* 47  */ "ir_s2",
+				  /* 48  */ "keyled_ct1642",
+				  /* 48  */ "keyled_std",
+				  /* 71  */ "gsf0",
+				  /* 72  */ "gsf1",
+				  /* 75  */ "multicipher",
+				  /* 82  */ "dmx",
+				  /* 84  */ "aiao",
+				  /* 88  */ "hdmi",
+				  /* 90  */ "vdp",
+				  /* 91  */ "tde",
+				  /* 92  */ "gfx2d",
+				  /* 93  */ "vpss0",
+				  /* 95  */ "vdec_vdh",
+				  /* 96  */ "png",
+				  /* 97  */ "jpeg",
+				  /* 101 */ "venc",
+				  /* 102 */ "jpge",
+				  /* 104 */ "vdec_scd",
+				  /* 105 */ "vdec_vdh_safe",
+				  /* 106 */ "vdec_scd_safe",
+				  /* 126 */ "cipher",
+				  /* 141 */ "gpu_mmu",
+				  /* 142 */ "gpu_job",
+				  /* 143 */ "gpu",
+				  /* 146 */ "SecInvokeirq",
+				  /* 147 */ "hdmi_cec",
+				  /* 148 */ "mmu_vdh_safe",
+				  /* 149 */ "mmu_vdh",
+				  /* 150 */ "pastc";
+	};
+
 	psci {
 		compatible = "arm,psci-0.2";
 		method = "smc";
