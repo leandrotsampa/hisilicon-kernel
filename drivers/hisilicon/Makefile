@@ -1,7 +1,6 @@
 
 #obj-y += kapi/ misc/ soc/ clk/ atags/ flash_stats/
 
-#obj-$(CONFIG_BLK_DEV_RAM)		+= initmrd/
 #obj-$(CONFIG_BLK_DEV_LOOP)		+= initfile/
 #obj-$(CONFIG_VIRTUAL_INPUT)		+= vinput/
 #obj-$(CONFIG_CMA)			+= cma/
@@ -15,4 +14,5 @@ obj-y += atags/
 obj-y += kapi/
 obj-y += misc/
 
+obj-$(CONFIG_BLK_DEV_RAM) += initmrd/
 obj-$(CONFIG_CMA) += cma/
