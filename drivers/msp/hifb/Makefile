@@ -21,7 +21,7 @@ HAL_DIR	 := hifb_v2_0
 EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android \
 		-I$(srctree)/drivers/msp/hifb/adp/$(HAL_DIR)
 
-EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT
+#EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT
 EXTRA_CFLAGS += -DCFG_HIFB_ANDROID_SUPPORT
 
 ifeq ($(CFG_HIFB_CURSOR_SUPPORT), y)
