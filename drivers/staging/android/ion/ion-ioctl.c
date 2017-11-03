@@ -28,6 +28,8 @@ union ion_ioctl_arg {
 	struct ion_handle_data handle;
 	struct ion_custom_data custom;
 	struct ion_heap_query query;
+	struct ion_phys_data phys;
+	struct ion_map_iommu_data map_iommu;
 };
 
 static int validate_ioctl_arg(unsigned int cmd, union ion_ioctl_arg *arg)
@@ -135,6 +137,21 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			ret = data.fd.fd;
 		break;
 	}
+	case ION_IOC_PHYS:
+	{
+		struct ion_handle *handle;
+		int valid;
+
+		handle = ion_handle_get_by_id(client, data.phys.handle);
+		if (IS_ERR(handle))
+			return PTR_ERR(handle);
+		valid = ion_phys(client, handle, &data.phys.phys_addr,
+							&data.phys.len);
+		ion_handle_put(handle);
+		if (valid)
+			return -EINVAL;
+		break;
+	}
 	case ION_IOC_IMPORT:
 	{
 		struct ion_handle *handle;
@@ -157,6 +174,78 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			return -ENOTTY;
 		ret = dev->custom_ioctl(client, data.custom.cmd,
 						data.custom.arg);
+		break;
+	}
+	case ION_IOC_MAP_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ret = ion_map_iommu(client, handle, &data.map_iommu.format);
+		if (ret) {
+			pr_err("%s: iommu map failed!\n", __func__);
+			ion_handle_put(handle);
+			return -EFAULT;
+		}
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_UNMAP_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+		ion_unmap_iommu(client, handle);
+		data.map_iommu.format.iova_start = 0;
+		data.map_iommu.format.iova_size = 0;
+
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_MAP_SEC_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ret = ion_map_sec_iommu(client, handle, &data.map_iommu.format);
+		if (ret) {
+			pr_err("%s: map to sec smmu failed!\n", __func__);
+			ion_handle_put(handle);
+			return -EFAULT;
+		}
+
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_UNMAP_SEC_IOMMU:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.map_iommu.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+
+		ion_unmap_sec_iommu(client, handle);
+		data.map_iommu.format.iova_start = 0;
+		data.map_iommu.format.iova_size = 0;
+
+		ion_handle_put(handle);
 		break;
 	}
 	case ION_IOC_HEAP_QUERY:
