@@ -253,6 +253,21 @@ int ion_map_iommu(struct ion_client *client, struct ion_handle *handle,
 void ion_unmap_iommu(struct ion_client *client, struct ion_handle *handle);
 
 /**
+ * ion_map_sec_iommu() - create secure iommu mapping with for the given handle
+ * @client:     the client
+ * @handle:     the handle
+ * @format:     the format of iommu mapping
+ */
+int ion_map_sec_iommu(struct ion_client *client, struct ion_handle *handle,
+					struct iommu_map_format *format);
+/**
+ * ion_unmap_sec_iommu() - destroy a secure iommu mapping for a handle
+ * @client:     the client
+ * @handle:     the handle
+ */
+int ion_unmap_sec_iommu(struct ion_client *client, struct ion_handle *handle);
+
+/**
  *  * hisi_get_cma_heap() - get cma heap via heap name
  *   * @name: the cma heap name
  *    */

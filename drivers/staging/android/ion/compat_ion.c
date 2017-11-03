@@ -66,15 +66,15 @@ struct compat_ion_map_iommu_data {
 				      struct compat_ion_handle_data)
 #define COMPAT_ION_IOC_CUSTOM	_IOWR(ION_IOC_MAGIC, 6, \
 				      struct compat_ion_custom_data)
-#define COMPAT_ION_IOC_PHYS	_IOWR(ION_IOC_MAGIC, 8, \
+#define COMPAT_ION_IOC_PHYS	_IOWR(ION_IOC_MAGIC, 9, \
 				      struct compat_ion_phys_data)
-#define COMPAT_ION_IOC_MAP_IOMMU _IOWR(ION_IOC_MAGIC, 9, \
+#define COMPAT_ION_IOC_MAP_IOMMU _IOWR(ION_IOC_MAGIC, 10, \
 				struct compat_ion_map_iommu_data)
-#define COMPAT_ION_IOC_UNMAP_IOMMU _IOWR(ION_IOC_MAGIC, 10, \
+#define COMPAT_ION_IOC_UNMAP_IOMMU _IOWR(ION_IOC_MAGIC, 11, \
 				struct compat_ion_map_iommu_data)
-#define COMPAT_ION_IOC_MAP_SEC_IOMMU _IOWR(ION_IOC_MAGIC, 11, \
+#define COMPAT_ION_IOC_MAP_SEC_IOMMU _IOWR(ION_IOC_MAGIC, 12, \
 				struct compat_ion_map_iommu_data)
-#define COMPAT_ION_IOC_UNMAP_SEC_IOMMU _IOWR(ION_IOC_MAGIC, 12, \
+#define COMPAT_ION_IOC_UNMAP_SEC_IOMMU _IOWR(ION_IOC_MAGIC, 13, \
 				struct compat_ion_map_iommu_data)
 
 static int compat_get_ion_allocation_data(

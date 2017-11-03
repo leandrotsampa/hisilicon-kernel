@@ -279,25 +279,25 @@ struct ion_map_iommu_data {
  * opaque handle.  Returns the struct with the physic_addr field set the physic
  * address of the internal buffer and the buffer len
  */
-#define ION_IOC_PHYS		_IOWR(ION_IOC_MAGIC, 8, struct ion_phys_data)
+#define ION_IOC_PHYS		_IOWR(ION_IOC_MAGIC, 9, struct ion_phys_data)
 /**
  * DOC: ION_IOC_MAP_IOMMU - map a buffr to iova
  */
-#define ION_IOC_MAP_IOMMU       _IOWR(ION_IOC_MAGIC, 9, struct ion_map_iommu_data)
+#define ION_IOC_MAP_IOMMU       _IOWR(ION_IOC_MAGIC, 10, struct ion_map_iommu_data)
 
 /**
  * DOC: ION_IOC_UNMAP_IOMMU - destory iommu mapping of a buffer
  */
-#define ION_IOC_UNMAP_IOMMU     _IOWR(ION_IOC_MAGIC, 10, struct ion_map_iommu_data)
+#define ION_IOC_UNMAP_IOMMU     _IOWR(ION_IOC_MAGIC, 11, struct ion_map_iommu_data)
 
 /**
  * DOC: ION_IOC_MAP_SEC_IOMMU - map a buffr to SEC SMMU iova
  */
-#define ION_IOC_MAP_SEC_IOMMU       _IOWR(ION_IOC_MAGIC, 11, struct ion_map_iommu_data)
+#define ION_IOC_MAP_SEC_IOMMU       _IOWR(ION_IOC_MAGIC, 12, struct ion_map_iommu_data)
 
 /**
  * DOC: ION_IOC_UNMAP_SEC_IOMMU - destory iommu SEC mapping of a buffer
  */
-#define ION_IOC_UNMAP_SEC_IOMMU     _IOWR(ION_IOC_MAGIC, 12, struct ion_map_iommu_data)
+#define ION_IOC_UNMAP_SEC_IOMMU     _IOWR(ION_IOC_MAGIC, 13, struct ion_map_iommu_data)
 
 #endif /* _UAPI_LINUX_ION_H */
