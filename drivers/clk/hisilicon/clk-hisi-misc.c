@@ -82,6 +82,7 @@ struct clk *clk_register_hisi_misc(struct device *dev,
 	init.ops = &clk_misc_ops;
 	init.parent_names = clk->parent_name ? &clk->parent_name : NULL;
 	init.num_parents = clk->parent_name ? 1 : 0;
+	init.flags = clk->flags;
 
 	clk_misc->reg_addr = base + clk->reg_offset;
 	clk_misc->ctrl_rst_mask = clk->ctrl_rst_mask;

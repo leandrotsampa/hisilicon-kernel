@@ -118,9 +118,10 @@ struct hisi_gate_clock {
 };
 
 struct hisi_misc_clock {
+	u32		id;
 	const char	*name;
 	const char	*parent_name;
-	u32		id;
+	unsigned long	flags;
 	u32		reg_offset;
 	u32		ctrl_rst_mask;
 	u32		ctrl_clk_mask;
