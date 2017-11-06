@@ -142,6 +142,17 @@ int hisi_clk_register_fixed_factor(const struct hisi_fixed_factor_clock *,
 				int, struct hisi_clock_data *);
 int hisi_clk_register_mux(const struct hisi_mux_clock *, int,
 				struct hisi_clock_data *);
+
+struct clk *clk_register_hisi_mux_sw(struct device *dev,
+				     const struct hisi_mux_clock *clk,
+				     void __iomem *base, spinlock_t *lock);
+void clk_unregister_hisi_mux_sw(struct clk *clk);
+int hisi_clk_register_mux_sw(struct device *dev,
+			     const struct hisi_mux_clock *clks,
+			     int nums, struct hisi_clock_data *data);
+void hisi_clk_unregister_mux_sw(const struct hisi_mux_clock *clks,
+				int nums, struct hisi_clock_data *data);
+
 struct clk *clk_register_hisi_phase(struct device *dev,
 				const struct hisi_phase_clock *clks,
 				void __iomem *base, spinlock_t *lock);

@@ -3,6 +3,7 @@
 #
 
 obj-y	+= clk.o clkgate-separated.o clkdivider-hi6220.o clk-hisi-phase.o clk-hisi-misc.o
+obj-y += clkmux-hisi-sw.o
 
 obj-$(CONFIG_ARCH_HI3xxx)	+= clk-hi3620.o
 obj-$(CONFIG_ARCH_HIP04)	+= clk-hip04.o
