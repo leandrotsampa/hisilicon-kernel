@@ -50,6 +50,10 @@
 #define HI3798CV200_FIXED_166P5M	84
 #define HI3798CV200_SDIO0_MUX	85
 #define HI3798CV200_COMBPHY0_MUX	86
+#define HI3798CV200_FIXED_500M		87
+#define HI3798CV200_FIXED_600M		88
+#define HI3798CV200_FIXED_675M		89
+#define HI3798CV200_GPU_MUX		90
 
 #define HI3798CV200_CRG_NR_CLKS		128
 
@@ -71,6 +75,10 @@
 #define USB3_BUS_GM_CKEN1		BIT(22)
 #define USB3_VCC_SRST_REQ1		BIT(28)
 
+#define PERI_CRG53_GPU			0x00d4
+#define GPU_SRST_REQ			BIT(4)
+#define GPU_CKEN			BIT(0)
+
 static const struct hisi_fixed_rate_clock hi3798cv200_fixed_rate_clks[] = {
 	{ HISTB_OSC_CLK, "clk_osc", NULL, 0, 24000000, },
 	{ HISTB_APB_CLK, "clk_apb", NULL, 0, 100000000, },
@@ -87,6 +95,11 @@ static const struct hisi_fixed_rate_clock hi3798cv200_fixed_rate_clks[] = {
 	{ HI3798CV200_FIXED_166P5M, "166p5m", NULL, 0, 165000000, },
 	{ HI3798CV200_FIXED_200M, "200m", NULL, 0, 200000000, },
 	{ HI3798CV200_FIXED_250M, "250m", NULL, 0, 250000000, },
+	{ HI3798CV200_FIXED_300M, "300m", NULL, 0, 300000000, },
+	{ HI3798CV200_FIXED_400M, "400m", NULL, 0, 400000000, },
+	{ HI3798CV200_FIXED_500M, "500m", NULL, 0, 500000000, },
+	{ HI3798CV200_FIXED_600M, "600m", NULL, 0, 600000000, },
+	{ HI3798CV200_FIXED_675M, "675m", NULL, 0, 675000000, },
 };
 
 static const char *const mmc_mux_p[] = {
@@ -101,6 +114,10 @@ static const char *const sdio_mux_p[] = {
 		"100m", "50m", "150m", "166p5m" };
 static u32 sdio_mux_table[] = {0, 1, 2, 3};
 
+static const char *const gpu_mux_p[] = {
+		"400m", "600m", "300m", "675m", "500m", "200m" };
+static u32 gpu_mux_table[] = { 1, 3, 4, 5, 6, 7 };
+
 static struct hisi_mux_clock hi3798cv200_mux_clks[] = {
 	{ HI3798CV200_MMC_MUX, "mmc_mux", mmc_mux_p, ARRAY_SIZE(mmc_mux_p),
 		CLK_SET_RATE_PARENT, 0xa0, 8, 3, 0, mmc_mux_table, },
@@ -113,6 +130,12 @@ static struct hisi_mux_clock hi3798cv200_mux_clks[] = {
 	{ HI3798CV200_SDIO0_MUX, "sdio0_mux", sdio_mux_p,
 		ARRAY_SIZE(sdio_mux_p), CLK_SET_RATE_PARENT,
 		0x9c, 8, 2, 0, sdio_mux_table, },
+};
+
+static struct hisi_mux_clock hi3798cv200_mux_sw_clks[] = {
+	{ HI3798CV200_GPU_MUX, "gpu_mux", gpu_mux_p,
+		ARRAY_SIZE(gpu_mux_p), 0,
+		0x124, 0, 3, 0, gpu_mux_table, },
 };
 
 static u32 mmc_phase_reg[] = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -207,14 +230,16 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 };
 
 static const struct hisi_misc_clock hi3798cv200_misc_clks[] = {
-	{"clk_u3_host0", NULL, HISTB_USB3_CLK, PERI_CRG44_USB3CTRL,
+	{ HISTB_USB3_CLK, "clk_u3_host0", NULL, 0, PERI_CRG44_USB3CTRL,
 		USB3_VCC_SRST_REQ, USB3_BUS_CKEN|USB3_BUS_GM_CKEN
 		|USB3_BUS_GS_CKEN|USB3_UTMI_CKEN|USB3_PIPE_CKEN
-		|USB3_SUSPEND_CKEN|USB3_REF_CKEN},
-	{"clk_u3_host1", NULL, HISTB_USB3_CLK1, PERI_CRG44_USB3CTRL,
+		|USB3_SUSPEND_CKEN|USB3_REF_CKEN },
+	{ HISTB_USB3_CLK1, "clk_u3_host1", NULL, 0, PERI_CRG44_USB3CTRL,
 		USB3_VCC_SRST_REQ1, USB3_BUS_CKEN1|USB3_BUS_GM_CKEN1
 		|USB3_BUS_GS_CKEN1|USB3_UTMI_CKEN1|USB3_PIPE_CKEN1
-		|USB3_SUSPEND_CKEN1|USB3_REF_CKEN1},
+		|USB3_SUSPEND_CKEN1|USB3_REF_CKEN1 },
+	{ HISTB_GPU_CLK, "clk_gpu", "gpu_mux", CLK_SET_RATE_PARENT,
+		PERI_CRG53_GPU, GPU_SRST_REQ, GPU_CKEN },
 };
 
 static struct hisi_clock_data *hi3798cv200_clk_register(
@@ -239,12 +264,18 @@ static struct hisi_clock_data *hi3798cv200_clk_register(
 	if (ret)
 		goto unregister_fixed_rate;
 
+	ret = hisi_clk_register_mux_sw(&pdev->dev, hi3798cv200_mux_sw_clks,
+				ARRAY_SIZE(hi3798cv200_mux_sw_clks),
+				clk_data);
+	if (ret)
+		goto unregister_mux;
+
 	ret = hisi_clk_register_phase(&pdev->dev,
 				hi3798cv200_phase_clks,
 				ARRAY_SIZE(hi3798cv200_phase_clks),
 				clk_data);
 	if (ret)
-		goto unregister_mux;
+		goto unregister_mux_sw;
 
 	ret = hisi_clk_register_gate(hi3798cv200_gate_clks,
 				ARRAY_SIZE(hi3798cv200_gate_clks),
@@ -265,26 +296,29 @@ static struct hisi_clock_data *hi3798cv200_clk_register(
 
 	return clk_data;
 
-unregister_fixed_rate:
-	hisi_clk_unregister_fixed_rate(hi3798cv200_fixed_rate_clks,
-				ARRAY_SIZE(hi3798cv200_fixed_rate_clks),
-				clk_data);
-
-unregister_mux:
-	hisi_clk_unregister_mux(hi3798cv200_mux_clks,
-				ARRAY_SIZE(hi3798cv200_mux_clks),
-				clk_data);
-unregister_phase:
-	hisi_clk_unregister_phase(hi3798cv200_phase_clks,
-				ARRAY_SIZE(hi3798cv200_phase_clks),
+unregister_misc:
+	hisi_clk_unregister_misc(hi3798cv200_misc_clks,
+				ARRAY_SIZE(hi3798cv200_misc_clks),
 				clk_data);
 unregister_gate:
 	hisi_clk_unregister_gate(hi3798cv200_gate_clks,
 				ARRAY_SIZE(hi3798cv200_gate_clks),
 				clk_data);
-unregister_misc:
-	hisi_clk_unregister_misc(hi3798cv200_misc_clks,
-				ARRAY_SIZE(hi3798cv200_misc_clks),
+unregister_phase:
+	hisi_clk_unregister_phase(hi3798cv200_phase_clks,
+				ARRAY_SIZE(hi3798cv200_phase_clks),
+				clk_data);
+unregister_mux_sw:
+	hisi_clk_unregister_mux_sw(hi3798cv200_mux_sw_clks,
+				ARRAY_SIZE(hi3798cv200_mux_sw_clks),
+				clk_data);
+unregister_mux:
+	hisi_clk_unregister_mux(hi3798cv200_mux_clks,
+				ARRAY_SIZE(hi3798cv200_mux_clks),
+				clk_data);
+unregister_fixed_rate:
+	hisi_clk_unregister_fixed_rate(hi3798cv200_fixed_rate_clks,
+				ARRAY_SIZE(hi3798cv200_fixed_rate_clks),
 				clk_data);
 
 	return ERR_PTR(ret);
