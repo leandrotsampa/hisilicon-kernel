@@ -579,6 +579,36 @@
 			status = "disabled";
 		};
 
+		vddgpu: regulator@8a23020 {
+			compatible = "hisilicon,hi3798cv200-volt";
+			reg = <0x8a23020 0x4>;
+			reg-names = "base-address";
+			regulator-name = "vdd-gpu";
+			regulator-min-microvolt = <650000>;
+			regulator-max-microvolt = <1150000>;
+			regulator-always-on;
+		};
+
+		mali: gpu@9200000 {
+			compatible = "arm,malit720", "arm,mali", "arm,mali-midgard";
+			reg = <0x9200000 0x4000>;
+			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-names = "JOB", "MMU", "GPU";
+			clocks = <&crg HISTB_GPU_CLK>;
+			clock-names = "clk_mali";
+			mali-supply = <&vddgpu>;
+			operating-points = <
+				200000 880000
+				300000 880000
+				400000 880000
+				500000 880000
+				600000 920000
+				675000 980000
+			>;
+		};
+
 		gmac0: ethernet@9840000 {
 			compatible = "hisilicon,hi3798cv200-gmac", "hisilicon,hisi-gmac-v2";
 			reg = <0x9840000 0x1000>,
