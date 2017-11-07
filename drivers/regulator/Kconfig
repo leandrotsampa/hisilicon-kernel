@@ -260,6 +260,13 @@ config REGULATOR_GPIO
 	  and the platform has to provide a mapping of GPIO-states
 	  to target volts/amps.
 
+config REGULATOR_HI3798CV200
+	tristate "Hisilicon Hi3798CV200 regulators"
+	depends on ARCH_HISI || COMPILE_TEST
+	help
+	  This driver provides support for the voltage regulators on the
+	  Hi3798CV200.
+
 config REGULATOR_HI6421
 	tristate "HiSilicon Hi6421 PMIC voltage regulator support"
 	depends on MFD_HI6421_PMIC && OF
