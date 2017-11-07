@@ -6,13 +6,11 @@
  *
  * Purpose: omxvdec main entry
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/platform_device.h>
 
@@ -31,12 +29,13 @@ extern HI_BOOL	g_DynamicFsEnable;
 extern HI_BOOL	g_LowDelayStatistics;
 extern HI_U32	g_DispNum;
 extern HI_U32	g_SegSize;	   // (M)
-extern HI_BOOL	g_RawMoveEnable;   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü±ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½scdï¿½Ð¸ï¿½Ê§ï¿½Ü²ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+extern HI_BOOL	g_RawMoveEnable;   // ÂëÁ÷°áÒÆÊ¹ÄÜ±êÖ¾£¬½â¾öscdÇÐ¸îÊ§°Ü²»ÊÍ·ÅÂëÁ÷µÄÇé¿ö
 extern HI_BOOL	g_FastOutputMode;
 extern HI_U32	g_CompressEnable;
 
 
 /*=================== MACRO ====================*/
+#if (1 == HI_PROC_SUPPORT)
 #define DBG_CMD_NUM			   (2)
 #define DBG_CMD_LEN			   (256)
 
@@ -67,6 +66,7 @@ extern HI_U32	g_CompressEnable;
 #define DBG_CMD_MAP_FRAME		   "map_frm"
 
 #define DBG_CMD_HELP			   "help"
+#endif
 
 
 /*================ GLOBAL VALUE ================*/
@@ -81,6 +81,7 @@ HI_U32	g_SaveSrcYuvChanNum	= -1;
 struct file *g_SaveRawFile	= HI_NULL;
 struct file *g_SaveSrcYuvFile	= HI_NULL;
 
+#if (1 == HI_PROC_SUPPORT)
 HI_CHAR	 g_SavePath[PATH_LEN]	 = {'/','m','n','t','\0'};
 HI_CHAR	 g_SaveName[NAME_LEN]	 = {'o','m','x','\0'};
 HI_U32	 g_SaveNum		 = 0;
@@ -92,6 +93,7 @@ typedef struct
     FN_PROC_CMD_HANDLER pHandler;
 
 }PROC_COMMAND_NODE;
+#endif
 
 HI_U32	 g_LowDelayCountFrame = 100;
 extern HI_BOOL	g_FastOutputMode;
@@ -119,8 +121,15 @@ typedef struct
 }IOCTL_COMMAND_NODE;
 
 MODULE_DESCRIPTION("omxvdec driver");
-MODULE_AUTHOR("y00226912, 2013-03-14");
+MODULE_AUTHOR("sdk, 2013-03-14");
 MODULE_LICENSE("GPL");
+
+#ifdef VFMW_VPSS_BYPASS_EN
+static HI_VOID OMXVDEC_List_Init(OMXVDEC_List_S *pList);
+static HI_VOID OMXVDEC_List_Deinit(OMXVDEC_List_S *pList);
+static HI_S32 omxvdec_get_occoupied_frame_info(OMXVDEC_PROC_OCCOUPY_FRAME_INFO *p_proc_occoupy_frame);
+#endif
+
 
 /* ==========================================================================
  * FUNTION
@@ -159,6 +168,14 @@ HI_VOID omxvdec_release_mem(HI_VOID *pBuffer, eMEM_ALLOC eMemAlloc)
 		HI_DRV_OMXVDEC_Release(pTmpBuffer, 1);
 		break;
 	    }
+
+    #if (1 == PRE_ALLOC_VDEC_VDH_MMZ)
+	case ALLOC_BY_PRE:
+	    {
+		VDEC_Chan_ReleasePreMMZ(pTmpBuffer);
+		break;
+	    }
+    #endif
 
 	default:
 	    {
@@ -738,6 +755,141 @@ static HI_S32 omxvdec_ioctl_chan_port_enable(struct file *fd, OMXVDEC_IOCTL_MSG 
     return 0;
 }
 
+#ifdef VFMW_VPSS_BYPASS_EN
+static HI_S32 omxvdec_ioctl_chan_release_frame(struct file *fd, OMXVDEC_IOCTL_MSG *pMsg)
+{
+    HI_S32 ret;
+    OMXVDEC_BUF_DESC user_buf;
+    OMXVDEC_CHAN_CTX *pchan = omxvdec_ioctl_get_chan_context(fd, pMsg);
+
+    OMXVDEC_ASSERT_RETURN(pchan != HI_NULL, "chan context is null");
+
+    if (copy_from_user(&user_buf, (VOID *)(HI_SIZE_T)pMsg->in, sizeof(OMXVDEC_BUF_DESC)))
+    {
+	OmxPrint(OMX_FATAL, "%s: call copy_from_user failed!\n", __func__);
+
+	return -EIO;
+    }
+
+    ret = channel_release_frame(pchan, &user_buf);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s: call VDEC_IOCTL_CHAN_RELEASE_FRAME failed!\n", __func__);
+
+	return -EFAULT;
+    }
+
+    return 0;
+}
+
+static HI_S32 omxvdec_ioctl_chan_record_occupied_frame(struct file *fd, OMXVDEC_IOCTL_MSG *pMsg)
+{
+    HI_S32 ret;
+    OMXVDEC_CHAN_CTX *pchan = omxvdec_ioctl_get_chan_context(fd, pMsg);
+
+    OMXVDEC_ASSERT_RETURN(pchan != HI_NULL, "chan context is null");
+
+    ret = channel_record_occupied_frame(pchan);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s: call VDEC_IOCTL_CHAN_RECORD_OCCUPIED_FRAME failed!\n", __func__);
+
+	return -EFAULT;
+    }
+
+    return 0;
+}
+
+#ifdef HI_TVOS_SUPPORT
+static HI_S32 omxvdec_ioctl_chan_global_release_frame(struct file *fd, OMXVDEC_IOCTL_MSG *pMsg)
+{
+    HI_S32 ret;
+    OMXVDEC_BUF_DESC user_buf;
+    OMXVDEC_CHAN_CTX *pchan = omxvdec_ioctl_get_chan_context(fd, pMsg);
+
+    OMXVDEC_ASSERT_RETURN(pchan != HI_NULL, "chan context is null");
+
+    if (copy_from_user(&user_buf, (VOID *)(HI_SIZE_T)pMsg->in, sizeof(OMXVDEC_BUF_DESC)))
+    {
+	OmxPrint(OMX_FATAL, "%s: call copy_from_user failed!\n", __func__);
+
+	return -EIO;
+    }
+
+    ret = channel_global_release_frame(pchan, &user_buf);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s: call channel_global_release_frame failed!\n", __func__);
+
+	return -EFAULT;
+    }
+
+    return 0;
+}
+#endif
+
+static HI_S32 omxvdec_ioctl_chan_get_bypass_info(struct file *fd, OMXVDEC_IOCTL_MSG *pMsg)
+{
+    HI_S32 ret;
+    OMXVDEC_DRV_CFG chan_cfg;
+    HI_BOOL VpssBypassEn = HI_FALSE;
+    OMXVDEC_CHAN_CTX *pchan = omxvdec_ioctl_get_chan_context(fd, pMsg);
+
+    OMXVDEC_ASSERT_RETURN(pchan != HI_NULL, "chan context is null");
+
+    if (copy_from_user(&chan_cfg, (VOID *)(HI_SIZE_T)pMsg->in, sizeof(OMXVDEC_DRV_CFG)))
+    {
+	OmxPrint(OMX_FATAL, "%s: call copy_from_user failed!\n", __func__);
+
+	return -EFAULT;
+    }
+    ret = channel_get_processor_bypass(pchan, &chan_cfg);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s: call VDEC_IOCTL_CHAN_GET_BYPASS_INFO failed!\n", __func__);
+
+	return -EFAULT;
+    }
+
+    VpssBypassEn = pchan->bVpssBypass;
+
+    if (copy_to_user((VOID *)(HI_SIZE_T)pMsg->out, &VpssBypassEn, sizeof(HI_BOOL)))
+    {
+	OmxPrint(OMX_FATAL, "%s: call copy_from_user failed!\n", __func__);
+
+	return -EIO;
+    }
+
+    return 0;
+}
+
+static HI_S32 omxvdec_ioctl_chan_set_bypass_info(struct file *fd, OMXVDEC_IOCTL_MSG *pMsg)
+{
+    HI_S32 ret;
+    OMXVDEC_DRV_CFG chan_cfg;
+    OMXVDEC_CHAN_CTX *pchan = omxvdec_ioctl_get_chan_context(fd, pMsg);
+
+    OMXVDEC_ASSERT_RETURN(pchan != HI_NULL, "chan context is null");
+
+    if (copy_from_user(&chan_cfg, (VOID *)(HI_SIZE_T)pMsg->in, sizeof(OMXVDEC_DRV_CFG)))
+    {
+	OmxPrint(OMX_FATAL, "%s: call copy_from_user failed!\n", __func__);
+
+	return -EFAULT;
+    }
+    pchan->output_view = chan_cfg.output_view;
+    ret = channel_set_processor_bypass(pchan);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s: call VDEC_IOCTL_CHAN_SET_BYPASS_INFO failed!\n", __func__);
+
+	return -EFAULT;
+    }
+
+    return 0;
+}
+#endif
+
 static const IOCTL_COMMAND_NODE g_IOCTL_CommandTable[] =
 {
     {VDEC_IOCTL_CHAN_CREATE,		     omxvdec_ioctl_chan_create},
@@ -755,6 +907,17 @@ static const IOCTL_COMMAND_NODE g_IOCTL_CommandTable[] =
     {VDEC_IOCTL_FLUSH_PORT,		     omxvdec_ioctl_flush_port},
     {VDEC_IOCTL_CHAN_GET_MSG,		     omxvdec_ioctl_chan_get_msg},
     {VDEC_IOCTL_CHAN_PORT_ENABLE,	     omxvdec_ioctl_chan_port_enable},
+
+#ifdef VFMW_VPSS_BYPASS_EN
+    {VDEC_IOCTL_CHAN_RELEASE_FRAME,	     omxvdec_ioctl_chan_release_frame},
+    {VDEC_IOCTL_CHAN_RECORD_OCCUPIED_FRAME,  omxvdec_ioctl_chan_record_occupied_frame},
+#ifdef HI_TVOS_SUPPORT
+    {VDEC_IOCTL_CHAN_GLOBAL_RELEASE_FRAME,   omxvdec_ioctl_chan_global_release_frame},
+#endif
+    {VDEC_IOCTL_CHAN_GET_BYPASS_INFO,	     omxvdec_ioctl_chan_get_bypass_info},
+    {VDEC_IOCTL_CHAN_SET_BYPASS_INFO,	     omxvdec_ioctl_chan_set_bypass_info},
+#endif
+
     {0,					     HI_NULL}, //terminal element
 };
 
@@ -858,6 +1021,10 @@ static HI_S32 omxvdec_probe(struct platform_device * pltdev)
     platform_set_drvdata(pltdev, omxvdec);
     g_OmxVdec = omxvdec;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    OMXVDEC_List_Init(&g_OmxVdec->stRemainFrmList);
+#endif
+
     OmxPrint(OMX_TRACE, "omxvdec probe ok.\n");
 
     return 0;
@@ -876,6 +1043,10 @@ static HI_S32 omxvdec_remove(struct platform_device *pltdev)
     OMXVDEC_ENTRY *omxvdec = HI_NULL;
 
     OmxPrint(OMX_TRACE, "omxvdec prepare to remove.\n");
+
+#ifdef VFMW_VPSS_BYPASS_EN
+    OMXVDEC_List_Deinit(&g_OmxVdec->stRemainFrmList);
+#endif
 
     omxvdec = platform_get_drvdata(pltdev);
     if (HI_NULL == omxvdec)
@@ -961,6 +1132,7 @@ static inline HI_S32 omxvdec_string_to_value(HI_PCHAR str, HI_U32 *data)
     return HI_SUCCESS;
 }
 
+#if (1 == HI_PROC_SUPPORT)
 HI_VOID omxvdec_help_proc(HI_VOID)
 {
     HI_DRV_PROC_EchoHelper(
@@ -1660,6 +1832,11 @@ static HI_S32 omxvdec_read_proc(struct seq_file *p, HI_VOID *v)
     unsigned long flags;
     OMXVDEC_CHAN_CTX *pchan = NULL;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    HI_U32 i = 0;
+    OMXVDEC_PROC_OCCOUPY_FRAME_INFO proc_occoupy_frame;
+#endif
+
     if (HI_NULL == g_OmxVdec)
     {
 	PROC_PRINT(p, "Warnning: g_OmxVdec = NULL\n");
@@ -1692,6 +1869,22 @@ static HI_S32 omxvdec_read_proc(struct seq_file *p, HI_VOID *v)
 	task_proc_entry(p, &g_OmxVdec->task);
     }
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    memset(&proc_occoupy_frame, 0, sizeof(proc_occoupy_frame));
+
+    omxvdec_get_occoupied_frame_info(&proc_occoupy_frame);
+
+    PROC_PRINT(p, "%-25s :%d\n", "occoupy frame",  proc_occoupy_frame.occoupy_frame_num);
+
+    if (proc_occoupy_frame.occoupy_frame_num != 0)
+    {
+	for (i = 0; i < proc_occoupy_frame.occoupy_frame_num; i++)
+	{
+	    PROC_PRINT(p, "%-25s:0x%x/%p/%d\n", "Phy/Vir/Size",	 proc_occoupy_frame.frmBufRec[i].u32StartPhyAddr,\
+		       proc_occoupy_frame.frmBufRec[i].pu8StartVirAddr, proc_occoupy_frame.frmBufRec[i].u32Size);
+	}
+    }
+#endif
     PROC_PRINT(p, "\n");
 
     if (0 != g_OmxVdec->total_chan_num)
@@ -1737,6 +1930,7 @@ HI_VOID omxvdec_exit_proc(HI_VOID)
 
     return;
 }
+#endif
 
 
 static HI_S32 omxvdec_suspend(struct platform_device *pltdev, pm_message_t state)
@@ -1795,6 +1989,7 @@ HI_S32 OMXVDEC_DRV_ModInit(HI_VOID)
 	return ret;
     }
 
+#if (1 == HI_PROC_SUPPORT)
     ret = omxvdec_init_proc();
     if (ret != HI_SUCCESS)
     {
@@ -1807,6 +2002,7 @@ HI_S32 OMXVDEC_DRV_ModInit(HI_VOID)
 #ifdef MODULE
     HI_PRINT("Load hi_omxvdec.ko success.\t(%s)\n", VERSION_STRING);
 #endif
+#endif
 
     return HI_SUCCESS;
 }
@@ -1816,12 +2012,226 @@ HI_VOID OMXVDEC_DRV_ModExit(HI_VOID)
     platform_driver_unregister(&omxvdec_driver);
     platform_device_unregister(&omxvdec_device);
 
+#if (1 == HI_PROC_SUPPORT)
     omxvdec_exit_proc();
 
 #ifdef MODULE
     HI_PRINT("Unload hi_omxvdec.ko success.\t(%s)\n", VERSION_STRING);
 #endif
+#endif
+
 }
+
+#ifdef VFMW_VPSS_BYPASS_EN
+
+static HI_VOID OMXVDEC_List_Init(OMXVDEC_List_S *pList)
+{
+   D_OMXVDEC_CHECK_PTR(pList);
+
+   if (HI_FALSE == pList->bInit)
+   {
+      memset(&pList->stSpecialFrmRec[0],0, sizeof(OMXVDEC_FRM_INFO_S)*OMXVDEC_MAX_REMAIN_FRM_NUM);
+
+      spin_lock_init(&g_OmxVdec->stRemainFrmList.bypass_lock);
+
+      pList->bInit = HI_TRUE;
+      pList->s32Num = 0;
+   }
+   return;
+}
+
+static HI_VOID OMXVDEC_List_Deinit(OMXVDEC_List_S *pList)
+{
+    HI_U32 i = 0;
+    OMXVDEC_FRM_INFO_S *pSpecialFrmRec;
+
+    D_OMXVDEC_CHECK_PTR(pList);
+
+    for (i = 0; i < OMXVDEC_MAX_REMAIN_FRM_NUM; i++)
+    {
+	pSpecialFrmRec = &pList->stSpecialFrmRec[i];
+	if ((ALLOC_BY_MMZ == pSpecialFrmRec->enbufferNodeStatus || ALLOC_BY_MMZ_UNMAP== pSpecialFrmRec->enbufferNodeStatus)
+	    &&(pSpecialFrmRec->frmBufRec.u32StartPhyAddr != 0)
+	    && (pSpecialFrmRec->frmBufRec.u32StartPhyAddr != 0xffffffff))
+	{
+	    omxvdec_release_mem(&pSpecialFrmRec->frmBufRec, pSpecialFrmRec->enbufferNodeStatus);
+	}
+	else if (ALLOC_BY_SEC == pSpecialFrmRec->enbufferNodeStatus)
+	{
+	    OmxPrint(OMX_FATAL,"%s,bypass not support tvp yet!\n",__func__);
+	}
+       //Çå¿Õ¸Ã½ÚµãÄÚÈÝ£¬ÊÓÎª¿ÕÏÐ½Úµã
+       memset(pSpecialFrmRec, 0, sizeof(OMXVDEC_FRM_INFO_S));
+    }
+    pList->s32Num = 0;
+    pList->bInit = HI_FALSE;
+    return ;
+}
+
+HI_S32 OMXVDEC_List_FindNode(OMXVDEC_List_S *pList,HI_U32 u32TargetPhyAddr,HI_U32 *pIndex)
+{
+   HI_U32 index = 0;
+   OMXVDEC_FRM_INFO_S *pSpecialFrmRec;
+   unsigned long   flags;
+
+   D_OMXVDEC_CHECK_PTR_RET(pList);
+   D_OMXVDEC_CHECK_PTR_RET(pIndex);
+
+   spin_lock_irqsave(&pList->bypass_lock, flags);
+
+   for (index = 0; index < OMXVDEC_MAX_REMAIN_FRM_NUM; index++)
+   {
+       pSpecialFrmRec = &pList->stSpecialFrmRec[index];
+       if ( pSpecialFrmRec->frmBufRec.u32StartPhyAddr == u32TargetPhyAddr )
+       {
+	   *pIndex = index;
+	   break;
+       }
+   }
+
+   spin_unlock_irqrestore(&pList->bypass_lock, flags);
+
+   if (index >= OMXVDEC_MAX_REMAIN_FRM_NUM)
+   {
+       return HI_FAILURE;
+   }
+   else
+   {
+       return HI_SUCCESS;
+   }
+}
+
+
+HI_S32 OMXVDEC_Frame_in_List(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec)
+{
+    HI_U32 index;
+    OMXVDEC_FRM_INFO_S *pListRec;
+
+    D_OMXVDEC_CHECK_PTR_RET(pList);
+    D_OMXVDEC_CHECK_PTR_RET(pSpecialFrmRec);
+
+    for (index = 0; index < OMXVDEC_MAX_REMAIN_FRM_NUM; index++)
+    {
+	pListRec = &pList->stSpecialFrmRec[index];
+	if (pListRec->frmBufRec.u32StartPhyAddr == pSpecialFrmRec->frmBufRec.u32StartPhyAddr)
+	{
+	    break;
+	}
+    }
+
+    if (index >= OMXVDEC_MAX_REMAIN_FRM_NUM)
+    {
+	OmxPrint(OMX_INFO,"frame is NOT in list phy:%x\n", pSpecialFrmRec->frmBufRec.u32StartPhyAddr);
+
+	return HI_FAILURE;
+    }
+    else
+    {
+	OmxPrint(OMX_INFO,"frame is in list phy:%x\n", pSpecialFrmRec->frmBufRec.u32StartPhyAddr);
+
+	return HI_SUCCESS;
+    }
+}
+
+
+HI_S32 OMXVDEC_List_Add(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec)
+{
+
+   HI_U32 index;
+   OMXVDEC_FRM_INFO_S *pListRec;
+
+   D_OMXVDEC_CHECK_PTR_RET(pList);
+   D_OMXVDEC_CHECK_PTR_RET(pSpecialFrmRec);
+
+   for (index = 0; index < OMXVDEC_MAX_REMAIN_FRM_NUM; index++)
+   {
+       pListRec = &pList->stSpecialFrmRec[index];
+       if (pListRec->frmBufRec.u32StartPhyAddr == 0)
+       {
+	   memcpy(pListRec, pSpecialFrmRec, sizeof(OMXVDEC_FRM_INFO_S));
+	   pList->s32Num++;
+	   if (pList->s32Num > OMXVDEC_MAX_REMAIN_FRM_NUM)
+	   {
+	       OmxPrint(OMX_FATAL,"Remain Frame num = %d larger than Max(%d),force to be %d\n",pList->s32Num,OMXVDEC_MAX_REMAIN_FRM_NUM,OMXVDEC_MAX_REMAIN_FRM_NUM);
+	       pList->s32Num = OMXVDEC_MAX_REMAIN_FRM_NUM;
+	   }
+	   break;
+       }
+   }
+   if (index >= OMXVDEC_MAX_REMAIN_FRM_NUM)
+   {
+       OmxPrint(OMX_FATAL,"can't find the idle node of the global frame list! Remain Frame num = %d\n",pList->s32Num);
+   }
+   return HI_SUCCESS;
+}
+
+HI_S32 OMXVDEC_List_Del(OMXVDEC_List_S *pList,HI_U32 u32Index)
+{
+   OMXVDEC_FRM_INFO_S *pSpecialFrmRec;
+   unsigned long   flags;
+
+   OmxPrint(OMX_TRACE,"%s enter\n", __func__);
+
+   D_OMXVDEC_CHECK_PTR_RET(pList);
+
+   if (u32Index >= OMXVDEC_MAX_REMAIN_FRM_NUM)
+   {
+      OmxPrint(OMX_FATAL,"want to delete index(%d) >= %d(max), error!!!\n",u32Index,OMXVDEC_MAX_REMAIN_FRM_NUM);
+      return HI_FAILURE;
+   }
+
+   spin_lock_irqsave(&pList->bypass_lock, flags);
+
+   pSpecialFrmRec = &pList->stSpecialFrmRec[u32Index];
+
+   //Çå¿Õ¸Ã½ÚµãÄÚÈÝ£¬ÊÓÎª¿ÕÏÐ½Úµã
+   memset(pSpecialFrmRec, 0, sizeof(OMXVDEC_FRM_INFO_S));
+   pList->s32Num--;
+   if (pList->s32Num < 0)
+   {
+      OmxPrint(OMX_FATAL,"the vdec global remain frame < 0 ??!	force to be 0!\n");
+      pList->s32Num = 0;
+   }
+
+   OmxPrint(OMX_INFO,"%s phy:0x%x size:%d\n", __func__, pSpecialFrmRec->frmBufRec.u32StartPhyAddr, pSpecialFrmRec->frmBufRec.u32Size);
+
+   spin_unlock_irqrestore(&pList->bypass_lock, flags);
+
+   OmxPrint(OMX_TRACE,"%s exit\n", __func__);
+
+   return HI_SUCCESS;
+}
+
+/******************************************************/
+/***		»ñÈ¡specialÖ¡ÐÅÏ¢		    ***/
+/** Ìá¹©¸ø vdec_ctrl ²é¿´procÐÅÏ¢µÄº¯Êý		    ***/
+/******************************************************/
+HI_S32 omxvdec_get_occoupied_frame_info(OMXVDEC_PROC_OCCOUPY_FRAME_INFO *p_proc_occoupy_frame)
+{
+    HI_U32 u32Index = 0;
+    HI_U32 SpecialFrmCnt = 0;
+
+    OMXVDEC_FRM_INFO_S *p_occoupy_frame;
+
+    p_proc_occoupy_frame->occoupy_frame_num = g_OmxVdec->stRemainFrmList.s32Num;
+
+    if (p_proc_occoupy_frame->occoupy_frame_num != 0)
+    {
+	for (u32Index = 0; u32Index < OMXVDEC_MAX_REMAIN_FRM_NUM; u32Index++)
+	{
+	    p_occoupy_frame = &g_OmxVdec->stRemainFrmList.stSpecialFrmRec[u32Index];
+	    if (p_occoupy_frame->frmBufRec.u32StartPhyAddr != 0)
+	    {
+		memcpy(&p_proc_occoupy_frame->frmBufRec[SpecialFrmCnt], &p_occoupy_frame->frmBufRec, sizeof(MMZ_BUFFER_S));
+		SpecialFrmCnt++;
+	    }
+	}
+    }
+
+    return HI_SUCCESS;
+}
+
+#endif
 
 #ifdef MODULE
 module_init(OMXVDEC_DRV_ModInit);

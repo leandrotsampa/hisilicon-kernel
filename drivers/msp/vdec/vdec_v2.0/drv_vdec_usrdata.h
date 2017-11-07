@@ -15,7 +15,7 @@
 
 ******************************************************************************/
 
-/* SPDX-License-Identifier: GPL-2.0 */
+
 
 #ifndef __DRV_VDEC_USRDATA_H__
 #define __DRV_VDEC_USRDATA_H__
@@ -27,6 +27,12 @@
 #include "hi_unf_common.h"
 #include "drv_vdec_ioctl.h"
 #include "vfmw.h"
+
+#ifdef __cplusplus
+#if __cplusplus
+extern "C" {
+#endif
+#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 
@@ -56,5 +62,10 @@ HI_S32 USRDATA_Rls(HI_HANDLE hHandle, VDEC_VIDEO_USERDATA_S* pstUsrData, HI_UNF_
 HI_S32 USRDATA_SetEosFlag(HI_HANDLE hHandle);
 HI_S32 USRDATA_Arrange(HI_HANDLE hHandle, USRDAT* pstUsrData);
 HI_S32 USRDATA_Put(HI_HANDLE hHandle, USRDAT* pstUsrData, HI_UNF_VIDEO_USERDATA_TYPE_E enType);
+#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif /* __cplusplus */
 
 #endif /* __DRV_VDEC_USRDATA_H__ */

@@ -71,6 +71,9 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     ADSP_DRV_ModInit();
     AIAO_DRV_ModInit();
     ADEC_DRV_ModInit();
+    VFMW_DRV_ModInit();
+    VDEC_DRV_ModInit();
+    OMXVDEC_DRV_ModInit();
     VPSS_DRV_ModInit();
     MCE_DRV_ModInit();
     // KEYLED_DRV_ModInit();

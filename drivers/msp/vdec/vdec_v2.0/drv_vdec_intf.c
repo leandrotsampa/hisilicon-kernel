@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/version.h>
 #include <linux/proc_fs.h>
 #include <linux/ioport.h>
@@ -26,6 +22,14 @@
 #include "hi_drv_vdec.h"
 #include "drv_vdec_private.h"
 #include "hi_drv_stat.h"
+
+// add by w00278582
+#define MAX_VID_PROTOCOL_NAME 20
+#ifdef __cplusplus
+ #if __cplusplus
+extern "C" {
+ #endif
+#endif /* End of #ifdef __cplusplus */
 
 extern HI_U32 g_CHAN_FRAME_RATE[HI_VDEC_MAX_INSTANCE_NEW];
 
@@ -120,6 +124,7 @@ static VDEC_REGISTER_PARAM_S s_stProcParam =
 static HI_S8  VdecSavePath[256] = {'/','m','n','t',0};
 extern HI_U32 MaskCtrlWord;
 extern HI_BOOL g_bMapFrmEnable;
+extern HI_BOOL g_bEopEnable;
 extern HI_S32 VdecRawChanNum;
 extern HI_S32 VdecYuvChanNum;
 
@@ -182,6 +187,13 @@ static __inline__ int str2val(char *str, unsigned int *data)
 
 static HI_S32 VDEC_DRV_CtrlReadProc(struct seq_file *p, HI_VOID *v)
 {
+#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
+    HI_U32 i;
+    VDEC_SPECIAL_FRM_PROC_S stSpecialFrmProc;
+    memset(&stSpecialFrmProc, 0, sizeof(VDEC_SPECIAL_FRM_PROC_S));
+    VDEC_DRV_GetSpecialFrmInfo(&stSpecialFrmProc);
+#endif
+
     PROC_PRINT(p, "\n");
     PROC_PRINT(p, "%-35s:%d\n", "VDEC VERSION",	  VDEC_VERSION);
     PROC_PRINT(p, "%-35s:%d\n", "MaskCtrlWord",	  MaskCtrlWord);
@@ -189,6 +201,23 @@ static HI_S32 VDEC_DRV_CtrlReadProc(struct seq_file *p, HI_VOID *v)
     PROC_PRINT(p, "%-35s:%s\n", "VdecSavePath",	  VdecSavePath);
     PROC_PRINT(p, "%-35s:%d\n", "VdecRawChanNum", VdecRawChanNum);
     PROC_PRINT(p, "%-35s:%d\n", "VdecYuvChanNum", VdecYuvChanNum);
+#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
+    PROC_PRINT(p, "%-35s:%d\n", "SpeclalFrmNum",  stSpecialFrmProc.u32SpecialFrmNum);
+
+    if (stSpecialFrmProc.u32SpecialFrmNum != 0)
+    {
+	for (i = 0; i < stSpecialFrmProc.u32SpecialFrmNum; i++)
+	{
+	    PROC_PRINT(p, "%-35s:0x%x/%p/%d\n", "PhyAddr/VirAddr/Size",
+			  stSpecialFrmProc.frmBufRec[i].u32StartPhyAddr,
+			  stSpecialFrmProc.frmBufRec[i].pu8StartVirAddr,
+			  stSpecialFrmProc.frmBufRec[i].u32Size);
+	}
+    }
+
+#endif
+    PROC_PRINT(p, "%-35s:%d\n", "VdecEopEnable", g_bEopEnable);
+
     PROC_PRINT(p, "\n");
     PROC_PRINT(p, "================== param in () is not necessary ==================\n");
     PROC_PRINT(p, "echo	 dat0	     dat1      dat2   > /proc/msp/vdec_ctrl\n");
@@ -200,6 +229,7 @@ static HI_S32 VDEC_DRV_CtrlReadProc(struct seq_file *p, HI_VOID *v)
     PROC_PRINT(p, "echo	 maskcmp     on/off	      -- enable/disable mask compress\n");
     PROC_PRINT(p, "echo	 setfps	     handle   fps     -- set frame rate\n");
     PROC_PRINT(p, "echo	 map_frm     on/off	      -- enable/disable map frame buf\n");
+    PROC_PRINT(p, "echo	 setEopEnable on/off	      -- enable/disable EOP function\n");
     PROC_PRINT(p, "===================================================================\n");
 
     return 0;
@@ -547,7 +577,7 @@ static HI_S32 VDEC_DRV_CtrlWriteProc(struct file * file,
     VDEC_DRV_GetProcArg(buf, dat2, 2);
     VDEC_DRV_GetProcArg(buf, dat3, 3);
 
-    if (0 == strncmp(dat1, "help", 4))
+    if (0 == strncmp(dat1, "help", 5))
     {
 	HI_DRV_PROC_EchoHelper("================== VDEC CTRL INFO ==================\n");
 	HI_DRV_PROC_EchoHelper("=========== param in () is not necessary ===========\n");
@@ -559,6 +589,7 @@ static HI_S32 VDEC_DRV_CtrlWriteProc(struct file * file,
 	HI_DRV_PROC_EchoHelper("echo  maskdfs	     on/off	       -- enable/disable mask dynamic fs\n");
 	HI_DRV_PROC_EchoHelper("echo  map_frm	     on/off	       -- enable/disable map frame buf\n");
 	HI_DRV_PROC_EchoHelper("echo  maskcmp	     on/off	       -- enable/disable mask compress\n");
+	HI_DRV_PROC_EchoHelper("echo  setEopEnable   on/off	       -- enable/disable EOP function\n");
 	HI_DRV_PROC_EchoHelper("====================================================\n");
     }
     else if (0 == strncmp(dat1, "savestream", 10))
@@ -613,7 +644,23 @@ static HI_S32 VDEC_DRV_CtrlWriteProc(struct file * file,
     {
 	SetFps(dat2, dat3, handle);
     }
-
+    else if (strncmp(dat1, "setEopEnable", 13) == 0)
+    {
+	if (strncmp(dat2, "on", 3) == 0)
+	{
+	    g_bEopEnable = HI_TRUE;
+	    HI_DRV_PROC_EchoHelper("Enable EOP.\n");
+	}
+	else if (strncmp(dat2, "off", 4) == 0)
+	{
+	    g_bEopEnable = HI_FALSE;
+	    HI_DRV_PROC_EchoHelper("Disable EOP.\n");
+	}
+	else
+	{
+	    HI_DRV_PROC_EchoHelper("Unkown command \"%s\".\n", dat2);
+	}
+    }
     else
     {
 	HI_FATAL_VDEC("FATAL: unkown echo cmd '%d'!\n");
@@ -1042,7 +1089,7 @@ static HI_VOID ReadDataFlowInfo(struct seq_file *p,
     if (pstChan->hDmxVidChn == HI_INVALID_HANDLE)
     {
 	PROC_PRINT(p,
-		   "DMX/USER->VDEC\n"
+		   "USER->VDEC\n"
 		   "GetStreamBuffer(Try/OK)		: %d/%d\n"
 		   "PutStreamBuffer(Try/OK)		: %d/%d\n",
 		   pstBMStatus->u32GetTry, pstBMStatus->u32GetOK,
@@ -1216,6 +1263,9 @@ static HI_S32 VDEC_DRV_ReadProc(struct seq_file *p, HI_VOID *v)
 {
     HI_S32 i;
     HI_S32 s32Ret;
+    HI_S32 FrmIdx;
+    HI_U32 ValidFrmNum = 0;
+    CHAN_FRAME_BUFFER_S *pFrmRec;
     VDEC_CHANNEL_S* pstChan;
     VDEC_CHAN_STATINFO_S* pstStatInfo;
     DRV_PROC_ITEM_S* pstProcItem;
@@ -1251,7 +1301,7 @@ static HI_S32 VDEC_DRV_ReadProc(struct seq_file *p, HI_VOID *v)
 	GetCapLevel(pstChan->stUserCfgCap.enCapLevel, aszCapLevel, sizeof(aszCapLevel));
 	GetProtocolLevel(pstChan->stUserCfgCap.enProtocolLevel, aszProtocolLevel, sizeof(aszProtocolLevel));
 
-	s32Ret = VDEC_FindVpssHandleByVdecHandle(i,&hVpss);
+	s32Ret = VDEC_FindVpssHandleByVdecHandle(i, &hVpss);
 	if (s32Ret != HI_SUCCESS)
 	{
 	    HI_ERR_VDEC("VDEC_FindVpssHandleByVdecHandle ERR\n");
@@ -1301,20 +1351,62 @@ static HI_S32 VDEC_DRV_ReadProc(struct seq_file *p, HI_VOID *v)
 	{
 	    PROC_PRINT(p,"-------------------Dynamic Frame Store Information--------------------\n"
 			 "Dynamic Frame Store Mode	      : %s\n"
-			 "DFS config Frame Number	      : %d\n"
-			 "DFS Extra  Frame Number	      : %d\n"
-			 "DFS Delay  Time(ms)		      : %d\n"
-			 "DFS Max Mem Use(byte)		      : %#x\n"
-			 "DFS Memory PhyAddress		      : %#x\n"
-			 "DFS Memory Length(byte)	      : %d\n",
+			 "DFS Report Frame Number	      : %d\n"
+			 "DFS Report Frame Size		      : %d\n"
+			 "DFS Report Pmv Number		      : %d\n"
+			 "DFS Report Pmv Size		      : %d\n"
+			 "DFS Report HdrMetadata Number	      : %d\n"
+			 "DFS Report AllocFrameOnly	      : %d\n"
+			 "DFS Report ImageNumOnly	      : %d\n"
+			 "DFS Report ImageSizeOnly	      : %d\n"
+			 "DFS Extra Frame Number	      : %d\n"
+			 "DFS Config Frame Number	      : %d\n"
+			 "DFS Config Pmv Number		      : %d\n",
 			 "Self",
-			 pstChan->stOption.u32CfgFrameNum,
+			 pstChan->stVFMWReportFrameInfo.u32ImageNum,
+			 pstChan->stVFMWReportFrameInfo.u32ImageSize,
+			 pstChan->stVFMWReportFrameInfo.u32PmvNum,
+			 pstChan->stVFMWReportFrameInfo.u32PmvSize,
+			 pstChan->stVFMWReportFrameInfo.u32HdrMetadataSize,
+			 pstChan->stVFMWReportFrameInfo.u32AllocFrameOnly,
+			 pstChan->stVFMWReportFrameInfo.u32ImageNumOnly,
+			 pstChan->stVFMWReportFrameInfo.u32ImageSizeOnly,
 			 pstChan->stOption.s32ExtraFrameStoreNum,
-			 pstChan->stOption.s32DelayTime,
-			 pstChan->stOption.u32MaxMemUse,
-			 pstChan->stVDHMMZBuf.u32StartPhyAddr,
-			 pstChan->stVDHMMZBuf.u32Size
-			 );//l00273086
+			 pstChan->stVFMWConfiguredBufferNum.u32ImageNum,
+			 pstChan->stVFMWConfiguredBufferNum.u32PmvNum
+		      );
+
+	    PROC_PRINT(p,"---------------------Dynamic Frame Store Detail-----------------------\n");
+	    PROC_PRINT(p,"%-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s %-10s\n",
+		       "FrmIdx", "bConfig", "bAvai", "bWaitRel",
+		       "FrmStatus", "FrmPhy", "FrmVir", "FrmSize",
+		       "PmvStatus", "PmvPhy", "PmvVir", "PmvSize",
+		       "HdrStatus", "HdrPhy", "HdrVir", "HdrSize");
+	    for (FrmIdx=0; FrmIdx<VDEC_MAX_BUFFER_RECORD; FrmIdx++)
+	    {
+		pFrmRec = &(pstChan->stFrameBufferRecord[FrmIdx]);
+		if (pFrmRec->bConfigured == HI_TRUE || pFrmRec->bAvailable == HI_TRUE)
+		{
+		    ValidFrmNum++;
+		    PROC_PRINT(p,"%-10d %-10d %-10d %-10d %-10d 0x%-10x %-10p %-10d %-10d 0x%-10x %-10p %-10d %-10d 0x%-10x %-10p %-10d\n", FrmIdx,
+			pFrmRec->bConfigured,
+			pFrmRec->bAvailable,
+			pFrmRec->bWaitRelease,
+			pFrmRec->enFrameBufferNodeStatus,
+			pFrmRec->stFrameBuffer.u32StartPhyAddr,
+			pFrmRec->stFrameBuffer.pu8StartVirAddr,
+			pFrmRec->stFrameBuffer.u32Size,
+			pFrmRec->enPmvBufferNodeStatus,
+			pFrmRec->stPmvBuffer.u32StartPhyAddr,
+			pFrmRec->stPmvBuffer.pu8StartVirAddr,
+			pFrmRec->stPmvBuffer.u32Size,
+			pFrmRec->enHdrBufferNodeStatus,
+			pFrmRec->stHdrBuffer.u32StartPhyAddr,
+			pFrmRec->stHdrBuffer.pu8StartVirAddr,
+			pFrmRec->stHdrBuffer.u32Size);
+		}
+	    }
+	    PROC_PRINT(p,"ValidFrmNum			      : %d\n", ValidFrmNum);
 	}
 
 	PROC_PRINT(p,	"--------------------------Stream Information--------------------------\n"
@@ -1357,12 +1449,14 @@ HI_S32 VDEC_DRV_ModInit(HI_VOID)
 {
     int ret;
 
+#ifndef HI_MCE_SUPPORT
     ret = VDEC_DRV_Init();
     if (HI_SUCCESS != ret)
     {
 	HI_FATAL_VDEC("Init drv fail!\n");
 	return HI_FAILURE;
     }
+#endif
 
     strncpy(VdecDev.devfs_name, UMAP_DEVNAME_VDEC, sizeof(VdecDev.devfs_name) - 1);
     VdecDev.fops   = &VdecFileOpts;
@@ -1383,6 +1477,10 @@ HI_S32 VDEC_DRV_ModInit(HI_VOID)
 	return HI_FAILURE;
     }
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    VDEC_DRV_SpecialFrmListInit();
+#endif
+
 #ifdef MODULE
     HI_PRINT("Load hi_vdec.ko success.\t(%s)\n", VERSION_STRING);
 #endif
@@ -1392,10 +1490,15 @@ HI_S32 VDEC_DRV_ModInit(HI_VOID)
 
 HI_VOID VDEC_DRV_ModExit(HI_VOID)
 {
+#ifdef VFMW_VPSS_BYPASS_EN
+    VDEC_DRV_SpecialFrmListDeinit();
+#endif
     VDEC_DRV_UnregisterProc();
     HI_DRV_DEV_UnRegister(&VdecDev);
 
+#ifndef HI_MCE_SUPPORT
     VDEC_DRV_Exit();
+#endif
 
     VDEC_DRV_DestoryTask();
 
@@ -1409,3 +1512,9 @@ module_exit(VDEC_DRV_ModExit);
 
 MODULE_AUTHOR("HISILICON");
 MODULE_LICENSE("GPL");
+
+#ifdef __cplusplus
+ #if __cplusplus
+}
+ #endif
+#endif /* End of #ifdef __cplusplus */

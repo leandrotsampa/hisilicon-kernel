@@ -15,8 +15,6 @@
 
 ******************************************************************************/
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 /******************************* Include Files *******************************/
 
 /* Sys headers */
@@ -32,6 +30,12 @@
 #include "drv_vdec_private.h"
 #include "drv_vdec_buf_mng.h"
 #include "drv_vdec_usrdata.h"
+
+#ifdef __cplusplus
+#if __cplusplus
+extern "C"{
+#endif
+#endif /* __cplusplus */
 
 /***************************** Macro Definition ******************************/
 
@@ -121,14 +125,19 @@ HI_S32 USRDATA_Alloc(HI_HANDLE hHandle, HI_DRV_VDEC_USERDATABUF_S *pstBuf)
 	return HI_FAILURE;
     }
 
+    hBuf = hHandle + HI_VDEC_MAX_INSTANCE_NEW + pstBuf->UserDataType;
+
     /* Create buffer manager instance */
     stBufInstCfg.enAllocType = BUFMNG_ALLOC_INNER;
     stBufInstCfg.u32PhyAddr = 0;
     stBufInstCfg.pu8UsrVirAddr = HI_NULL;
     stBufInstCfg.pu8KnlVirAddr = HI_NULL;
     stBufInstCfg.u32Size = pstBuf->u32Size;
+	#ifdef HI_TEE_SUPPORT
+    stBufInstCfg.bTvp	       = HI_FALSE;
+	#endif
     snprintf(stBufInstCfg.aszName, sizeof(stBufInstCfg.aszName),"VDEC_UsrData%02d", (HI_U8)hHandle);
-    s32Ret = BUFMNG_Create(&hBuf, &stBufInstCfg);
+    s32Ret = BUFMNG_Create(hBuf, &stBufInstCfg);
     if (s32Ret != HI_SUCCESS)
     {
 	HI_ERR_VDEC("BUFMNG_Create err:%#x!\n", s32Ret);
@@ -374,7 +383,15 @@ HI_S32 USRDATA_Put(HI_HANDLE hHandle, USRDAT* pstUsrData, HI_UNF_VIDEO_USERDATA_
 	return HI_FAILURE;
     }
 
-    memcpy(stBuf.pu8KnlVirAddr + sizeof(VDEC_VIDEO_USERDATA_S), pstUsrData->data, pstUsrData->data_size);
+#ifdef HI_TEE_SUPPORT
+    if (HI_TRUE == pstChan->bTvp)
+    {
+    }
+    else
+#endif
+    {
+	memcpy(stBuf.pu8KnlVirAddr + sizeof(VDEC_VIDEO_USERDATA_S), pstUsrData->data, pstUsrData->data_size);
+    }
 
     pstPutData->pu8Buffer = (HI_U64)(HI_SIZE_T)(stBuf.pu8UsrVirAddr + sizeof(VDEC_VIDEO_USERDATA_S));
     stBuf.u32Marker = enType;
@@ -520,3 +537,9 @@ EXPORT_SYMBOL(USRDATA_Rls);
 EXPORT_SYMBOL(USRDATA_Acq);
 EXPORT_SYMBOL(USRDATA_Alloc);
 EXPORT_SYMBOL(USRDATA_SetUserAddr);
+
+#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif /* End of #ifdef __cplusplus */

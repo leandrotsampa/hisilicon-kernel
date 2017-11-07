@@ -6,13 +6,11 @@
  *
  * Purpose: omxvdec processor vpss functions
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <asm/div64.h>
 #include "hi_drv_module.h"
@@ -25,7 +23,7 @@
 #include "hi_math.h"
 #include "vfmw_ext.h"
 
-#include "vfmw.h"  //add by l00228308 for vpss bypass
+#include "vfmw.h"  //add by sdk for vpss bypass
 
 /*================ EXTERN VALUE ================*/
 extern HI_BOOL	g_SaveYuvEnable;
@@ -43,7 +41,69 @@ extern HI_BOOL	g_FastOutputMode;
 extern HI_U32 g_CompressEnable;
 
 /*=================== MACRO ====================*/
-#define	 REALID(id)	      (id%100+2)
+#define	 REALID(id)	      (id % 100 + 2)
+
+#define OMX_VIDEO_FORMAT_SWITCH_TO_UNF(source, dest) \
+do { \
+    switch ((source)) \
+    { \
+    case STD_MPEG2: \
+	(dest) = HI_UNF_VCODEC_TYPE_MPEG2; \
+	break; \
+    case STD_MPEG4: \
+	(dest) = HI_UNF_VCODEC_TYPE_MPEG4; \
+	break; \
+    case STD_AVS: \
+	(dest) = HI_UNF_VCODEC_TYPE_AVS; \
+	break; \
+    case STD_H263: \
+	(dest) = HI_UNF_VCODEC_TYPE_H263; \
+	break; \
+    case STD_H264: \
+	(dest) = HI_UNF_VCODEC_TYPE_H264; \
+	break; \
+    case STD_REAL8: \
+	(dest) = HI_UNF_VCODEC_TYPE_REAL8; \
+	break; \
+    case STD_REAL9: \
+	(dest) = HI_UNF_VCODEC_TYPE_REAL9; \
+	break; \
+    case STD_WMV: \
+    case STD_VC1: \
+	(dest) = HI_UNF_VCODEC_TYPE_VC1; \
+	break; \
+    case STD_VP6: \
+	(dest) = HI_UNF_VCODEC_TYPE_VP6; \
+	break; \
+    case STD_VP6F: \
+	(dest) = HI_UNF_VCODEC_TYPE_VP6F; \
+	break; \
+    case STD_VP6A: \
+	(dest) = HI_UNF_VCODEC_TYPE_VP6A; \
+	break; \
+    case STD_DIVX3: \
+	(dest) = HI_UNF_VCODEC_TYPE_DIVX3; \
+	break; \
+    case STD_RAW: \
+	(dest) = HI_UNF_VCODEC_TYPE_RAW; \
+	break; \
+    case STD_JPEG: \
+	(dest) = HI_UNF_VCODEC_TYPE_JPEG; \
+	break; \
+    case STD_VP8: \
+	(dest) = HI_UNF_VCODEC_TYPE_VP8; \
+	break; \
+    case STD_HEVC: \
+	(dest) = HI_UNF_VCODEC_TYPE_HEVC; \
+	break; \
+    case STD_VP9: \
+	(dest) = HI_UNF_VCODEC_TYPE_VP9; \
+	break; \
+    default: \
+	(dest) = HI_UNF_VCODEC_TYPE_BUTT; \
+	break; \
+    } \
+} while (0)
 
 //HDR
 #define SMPTE_ST_2084 (16)
@@ -55,7 +115,11 @@ extern HI_U32 g_CompressEnable;
 /*================ GLOBAL VALUE ================*/
 HI_BOOL	 g_FrameRateLimit	 = HI_FALSE;//HI_TRUE;
 
+#ifdef HI_TVOS_SUPPORT
+HI_BOOL	 g_DeInterlaceEnable	 = HI_TRUE;
+#else
 HI_BOOL	 g_DeInterlaceEnable	 = HI_FALSE;
+#endif
 
 HI_BOOL	 g_BypassVpss		 = HI_FALSE;
 MMZ_BUFFER_S  g_YUV_ExchangeBuffer;
@@ -603,12 +667,14 @@ static HI_S32 processor_report_frame(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME
 	user_buf.out_frame.save_yuv		= g_SaveYuvEnable;
     }
 
+#if (1 == HI_PROC_SUPPORT)
     if (HI_TRUE == user_buf.out_frame.save_yuv)
     {
 	snprintf(user_buf.out_frame.save_path, sizeof(user_buf.out_frame.save_path),
 		 "%s/%s_%d_%dx%d.yuv", g_SavePath, g_SaveName, g_SaveNum, pstFrame->u32Width, pstFrame->u32Height);
 	user_buf.out_frame.save_path[PATH_LEN-1] = '\0';
     }
+#endif
 
     if (pchan->output_flush_pending)
     {
@@ -714,7 +780,7 @@ static HI_S32 processor_get_frame_buffer(OMXVDEC_CHAN_CTX *pchan, HI_VOID *pstAr
 	return HI_FAILURE;
     }
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß±ä»¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½
+    // ¼ì²âÊä³ö¿í¸ß±ä»¯£¬½øÐÐÉÏ±¨
     if (pVpssFrm->u32FrmW != pchan->out_width || pVpssFrm->u32FrmH != pchan->out_height)
     {
 	OmxPrint(OMX_INFO, "Image size changed: %dx%d stride:%d change to %dx%d stride:%d\n", pchan->out_width, \
@@ -759,7 +825,7 @@ static HI_S32 processor_get_frame_buffer(OMXVDEC_CHAN_CTX *pchan, HI_VOID *pstAr
 	pVpssFrm->u32StartPhyAddr = (HI_U32)OutFrame.PhyAddr;
 	pVpssFrm->pu8StartVirAddr = OutFrame.VirAddr;
 
-	//PrivatePhyAddr = -1 ï¿½ï¿½Ê¾Î´ï¿½ï¿½ï¿½ï¿½metadataï¿½ï¿½ï¿½ï¿½Ê±Ò²ï¿½ï¿½ï¿½Ý¸ï¿½VPSSï¿½ï¿½ï¿½ï¿½VPSSï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½
+	//PrivatePhyAddr = -1 ±íÊ¾Î´·ÖÅämetadata£¬´ËÊ±Ò²´«µÝ¸øVPSS£¬¸øVPSS×÷ÅÐ¶ÏÓÃ
 	pVpssFrm->u32PrivDataPhyAddr = (HI_U32)OutFrame.PrivatePhyAddr;
 	pVpssFrm->pu8PrivDataVirAddr = OutFrame.PrivateVirAddr;
 	pVpssFrm->u32PrivDataSize    = (HI_U32)OutFrame.PrivateLength;
@@ -954,7 +1020,7 @@ static HI_S32 processor_event_handler(HI_HANDLE ChanId, HI_DRV_VPSS_EVENT_E enEv
 	    break;
 
 	case  VPSS_EVENT_BUFLIST_FULL:
-	    //VPSSÊ¹ï¿½ï¿½ï¿½â²¿BUFFERï¿½ï¿½ï¿½ï¿½Ó¦ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+	    //VPSSÊ¹ÓÃÍâ²¿BUFFER£¬²»Ó¦¸Ã±¨Õâ¸öÏûÏ¢
 	    OmxPrint(OMX_WARN, "%s, VPSS_EVENT_BUFLIST_FULL, not expected.\n", __func__);
 	    break;
 
@@ -1006,9 +1072,9 @@ static HI_VOID processor_convert_desc_info_part1(OMXVDEC_CHAN_CTX *pchan, IMAGE 
     }
     else
     {
-	IsCmpFlag = (pchan->is_compress == HI_TRUE) && (pstImage->format.isCompressed);
+	IsCmpFlag = pstImage->CompressEn;
 
-	if (pstImage->format.vdh_2d_en)
+	if (pstImage->format.linear_en)
 	{
 	    pstFrame->ePixFormat = (IsCmpFlag == HI_TRUE) ? HI_DRV_PIX_FMT_NV21_CMP : HI_DRV_PIX_FMT_NV21;
 	}
@@ -1111,6 +1177,10 @@ static HI_VOID processor_convert_desc_info_part2(OMXVDEC_CHAN_CTX *pchan, IMAGE 
 	}
     }
 
+#ifdef HI_OMX_TEE_SUPPORT
+    pstFrame->bSecure = (pstImage->is_SecureFrame == 1) ? HI_TRUE : HI_FALSE;
+#endif
+
     return;
 }
 
@@ -1120,17 +1190,17 @@ static HI_VOID processor_convert_addr_info(OMXVDEC_CHAN_CTX *pchan, IMAGE *pstIm
     {
 	pstFrame->stBufAddr[0].u32PhyAddr_YHead	   = pstImage->top_luma_phy_addr;
 	pstFrame->stBufAddr[0].u32PhyAddr_Y	   = pstImage->luma_phy_addr;
-	pstFrame->stBufAddr[0].u32Stride_Y	   = pstImage->image_stride;
+	pstFrame->stBufAddr[0].u32Stride_Y	   = pstImage->y_stride;
 	pstFrame->stBufAddr[0].u32PhyAddr_C	   = pstImage->top_chrom_phy_addr;
 	pstFrame->stBufAddr[0].u32Stride_C	   = pstFrame->stBufAddr[0].u32Stride_Y;
     }
     else
     {
-	if ((pchan->is_compress == HI_FALSE) || (pstImage->format.isCompressed == 0))
+	if (pstImage->CompressEn == 0)
 	{
-	    pstFrame->stBufAddr[0].u32PhyAddr_YHead    = pstImage->top_luma_phy_addr;//ï¿½ï¿½Ñ¹ï¿½ï¿½Ê±ï¿½ï¿½Ò²ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	    pstFrame->stBufAddr[0].u32PhyAddr_YHead    = pstImage->top_luma_phy_addr;//·ÇÑ¹ËõÊ±£¬Ò²¸³Öµ£¬±£Ö¤²»»á³ö´í
 	    pstFrame->stBufAddr[0].u32PhyAddr_Y	       = pstImage->luma_phy_addr;
-	    pstFrame->stBufAddr[0].u32Stride_Y	       = pstImage->image_stride / 16;
+	    pstFrame->stBufAddr[0].u32Stride_Y	       = pstImage->y_stride / 16;
 
 	    pstFrame->stBufAddr[0].u32PhyAddr_CHead    = pstImage->top_chrom_phy_addr;
 	    pstFrame->stBufAddr[0].u32PhyAddr_C	       = pstImage->top_chrom_phy_addr;
@@ -1140,7 +1210,7 @@ static HI_VOID processor_convert_addr_info(OMXVDEC_CHAN_CTX *pchan, IMAGE *pstIm
 	{
 	    pstFrame->stBufAddr[0].u32PhyAddr_YHead    = pstImage->top_luma_phy_addr;
 	    pstFrame->stBufAddr[0].u32PhyAddr_Y	       = pstImage->top_luma_phy_addr + pstImage->head_info_size;
-	    pstFrame->stBufAddr[0].u32Stride_Y	       = pstImage->image_stride / 16;
+	    pstFrame->stBufAddr[0].u32Stride_Y	       = pstImage->y_stride / 16;
 	    pstFrame->stBufAddr[0].u32PhyAddr_CHead    = pstImage->top_chrom_phy_addr;
 	    pstFrame->stBufAddr[0].u32PhyAddr_C	       = pstImage->top_chrom_phy_addr + (pstImage->head_info_size / 2);
 	    pstFrame->stBufAddr[0].u32Stride_C	       = pstFrame->stBufAddr[0].u32Stride_Y;
@@ -1153,8 +1223,13 @@ static HI_VOID processor_convert_addr_info(OMXVDEC_CHAN_CTX *pchan, IMAGE *pstIm
 	    pstFrame->stBufAddr_LB[0].u32PhyAddr_Y = pstImage->luma_2bit_phy_addr;
 	    pstFrame->stBufAddr_LB[0].u32PhyAddr_C = pstImage->chrom_2bit_phy_addr;
 
+	#if defined(CHIP_TYPE_hi3798mv200) || defined(CHIP_TYPE_hi3798mv300) || defined(CHIP_TYPE_hi3796mv200)
+	    pstFrame->stBufAddr_LB[0].u32Stride_Y  = pstImage->image_stride_2bit / 16;
+	    pstFrame->stBufAddr_LB[0].u32Stride_C  = pstImage->image_stride_2bit / 16;
+	#else
 	    pstFrame->stBufAddr_LB[0].u32Stride_Y  = pstImage->image_stride_2bit / 32;
 	    pstFrame->stBufAddr_LB[0].u32Stride_C  = pstImage->image_stride_2bit / 32;
+	#endif
 	}
     }
 
@@ -1162,7 +1237,7 @@ static HI_VOID processor_convert_addr_info(OMXVDEC_CHAN_CTX *pchan, IMAGE *pstIm
     if (pstImage->is_3D)
     {
 	pstFrame->stBufAddr[1].u32PhyAddr_Y	   = pstImage->top_luma_phy_addr_1;
-	pstFrame->stBufAddr[1].u32Stride_Y	   = pstImage->image_stride/16;
+	pstFrame->stBufAddr[1].u32Stride_Y	   = pstImage->y_stride/16;
 	pstFrame->stBufAddr[1].u32PhyAddr_C	   = pstImage->top_chrom_phy_addr_1;
 	pstFrame->stBufAddr[1].u32Stride_C	   = pstFrame->stBufAddr[1].u32Stride_Y;
     }
@@ -1240,6 +1315,8 @@ static HI_VOID processor_convert_private_info(OMXVDEC_CHAN_CTX *pchan, IMAGE *ps
     pstvdecPrivInfo->stBTLInfo.u32Is1D		= pstImage->BTLInfo.u32Is1D;
     pstvdecPrivInfo->u32Usertag			= pstImage->Usertag;
 
+    OMX_VIDEO_FORMAT_SWITCH_TO_UNF(pchan->protocol, pstvdecPrivInfo->entype);
+
     /*interleaved source, VPSS module swtich field to frame, need to adjust pts*/
     pstvdecPrivInfo->s32InterPtsDelta = (g_DeInterlaceEnable == HI_FALSE) ? 0: pstImage->InterPtsDelta;
 
@@ -1278,6 +1355,9 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
 {
     HI_S32 ret = HI_FAILURE;
     IMAGE stImage;
+#ifdef VFMW_VPSS_BYPASS_EN
+    unsigned long   flags;
+#endif
 
     pchan->omx_chan_statinfo.GetImageTry++;
 
@@ -1295,27 +1375,28 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
 
     /* read ready image struct from vfmw. */
     //memset(&stImage, 0, sizeof(IMAGE));
+#ifdef VFMW_VPSS_BYPASS_EN
+    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+#endif
 
     stImage.pOutFrame = (HI_U64)(HI_SIZE_T)pstFrame;
 
     ret = pchan->image_ops.read_image(pchan->decoder_id, &stImage);
-    if (g_BypassVpss == HI_TRUE && ret == HI_SUCCESS)
-    {
-	ret = pchan->image_ops.release_image(pchan->decoder_id, &stImage);
-	ret = HI_FAILURE;
-    }
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+#endif
     if (ret != HI_SUCCESS)
     {
 	if (pchan->last_frame_info[0] == DECODER_REPORT_LAST_FRAME)
 	{
-	    /* ï¿½ï¿½ï¿½Ò»Ö¡ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ / ï¿½ï¿½ï¿½Ò»Ö¡ï¿½Ï±ï¿½Ê§ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+	    /* ×îºóÒ»Ö¡ÒÑ¾­±»ÄÃ×ß / ×îºóÒ»Ö¡ÉÏ±¨Ê§°ÜµÄÇé¿ö´¦Àí */
 	    if((pchan->last_frame_processor_got == pchan->last_frame_image_id)
 	    || (pchan->last_frame_info[1]) == REPORT_LAST_FRAME_FAIL)
 	    {
 	       OmxPrint(OMX_INFO, "VPSS got no frame to handle, report a fake one!\n");
 	       pchan->last_frame_info[0] = PROCESSOR_GOT_LAST_FRAME;
-	       ret = processor_report_last_frame(pchan); /* ï¿½ï¿½ï¿½ï¿½Ùµï¿½ï¿½ï¿½ï¿½Ò»Ö¡ */
+	       ret = processor_report_last_frame(pchan); /* Êä³ö¼ÙµÄ×îºóÒ»Ö¡ */
 
 	       if (ret != HI_SUCCESS)
 	       {
@@ -1346,6 +1427,15 @@ static HI_S32 processor_get_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S 
     }
     pchan->omx_chan_statinfo.GetImageOK++;
 
+    if (g_BypassVpss == HI_TRUE)
+    {
+	ret = pchan->image_ops.release_image(pchan->decoder_id, &stImage);
+	if (ret != HI_SUCCESS)
+	{
+	    OmxPrint(OMX_VPSS, "VPSS release_image failed!\n");
+	}
+    }
+
     return HI_SUCCESS;
 }
 
@@ -1356,6 +1446,9 @@ HI_S32 processor_release_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S *ps
     HI_DRV_VIDEO_PRIVATE_S* pstPrivInfo = HI_NULL;
     HI_VDEC_PRIV_FRAMEINFO_S* pstVdecPrivInfo = HI_NULL;
     unsigned long   flags;
+#ifdef VFMW_VPSS_BYPASS_EN
+    HI_U32 OccupiedFrmIndex = 0;
+#endif
 
     pchan->omx_chan_statinfo.ReleaseImageTry++;
 
@@ -1377,7 +1470,7 @@ HI_S32 processor_release_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S *ps
     pstVdecPrivInfo = (HI_VDEC_PRIV_FRAMEINFO_S*)(pstPrivInfo->u32Reserve);
 
     memset(&stImage, 0, sizeof(IMAGE));
-    stImage.image_stride	 = pstFrame->stBufAddr[0].u32Stride_Y;
+    stImage.y_stride	     = pstFrame->stBufAddr[0].u32Stride_Y;
     stImage.disp_height		 = pstFrame->u32Height;
     stImage.disp_width		 = pstFrame->u32Width;
     stImage.luma_phy_addr	 = pstFrame->stBufAddr[0].u32PhyAddr_Y;
@@ -1388,11 +1481,48 @@ HI_S32 processor_release_image(OMXVDEC_CHAN_CTX *pchan, HI_DRV_VIDEO_FRAME_S *ps
     stImage.BTLInfo.btl_imageid	 = pstVdecPrivInfo->stBTLInfo.u32BTLImageID;
     stImage.BTLInfo.u32Is1D	 = pstVdecPrivInfo->stBTLInfo.u32Is1D;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+#endif
+
     ret = pchan->image_ops.release_image(pchan->decoder_id, &stImage);
+
+#ifdef VFMW_VPSS_BYPASS_EN
+    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+#endif
 
     if (ret != HI_SUCCESS)
     {
 	OmxPrint(OMX_ERR, "%s call release_image failed!\n", __func__);
+
+    #ifdef VFMW_VPSS_BYPASS_EN
+	if ((0 != g_OmxVdec->stRemainFrmList.s32Num) && (channel_IsOccupiedFrm(pstFrame->stBufAddr[0].u32PhyAddr_YHead, &OccupiedFrmIndex)))
+	{
+	    /*this channel have special frame*/
+	    if (OccupiedFrmIndex >= VFMW_MAX_RESERVE_NUM)
+	    {
+	       OmxPrint(OMX_FATAL, "%s release_occupied_frame[id = %d] failed!\n", __func__,OccupiedFrmIndex);
+
+	       return HI_FAILURE;
+	    }
+
+	    OmxPrint(OMX_INFO, "processor_release_image PhyAddr= 0x%x\n",pstFrame->stBufAddr[0].u32PhyAddr_YHead);
+
+	    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock,flags);
+	    g_OmxVdec->stRemainFrmList.stSpecialFrmRec[OccupiedFrmIndex].bCanRls = HI_TRUE;
+	    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock,flags);
+
+	    g_OmxVdec->task.task_state = TASK_STATE_ONCALL;
+	    wake_up(&g_OmxVdec->task.task_wait);
+
+	    pchan->omx_chan_statinfo.ReleaseImageOK++;
+
+	    OmxPrint(OMX_VPSS, "VPSS release image success! Phyaddr = 0x%x,id = %d\n",pstFrame->stBufAddr[0].u32PhyAddr_YHead, pstFrame->u32FrameIndex);
+
+	    return HI_SUCCESS;
+	}
+    #endif
+
 	return HI_FAILURE;
     }
 
@@ -1526,7 +1656,11 @@ HI_S32 processor_create_inst(OMXVDEC_CHAN_CTX *pchan, OMX_PIX_FORMAT_E color_for
 	return HI_FAILURE;
     }
 
-    stVpssCfg.bProgRevise = g_DeInterlaceEnable; //ï¿½ï¿½ï¿½ï¿½DEI
+#ifdef HI_OMX_TEE_SUPPORT
+    stVpssCfg.bSecure = pchan->is_tvp;
+#endif
+
+    stVpssCfg.bProgRevise = g_DeInterlaceEnable; //¿ª¹ØDEI
     ret = (pVpssFunc->pfnVpssCreateVpss)(&stVpssCfg, &pchan->processor_id);
     if (ret != HI_SUCCESS)
     {
@@ -1558,7 +1692,7 @@ HI_S32 processor_create_inst(OMXVDEC_CHAN_CTX *pchan, OMX_PIX_FORMAT_E color_for
     }
 
     pchan->color_format			= color_format;
-    stVpssPortCfg.s32OutputWidth	= 0;	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
+    stVpssPortCfg.s32OutputWidth	= 0;	// ¿í¸ßÉèÎª0±íÊ¾¸ù¾ÝÊäÈë×ÔÊÊÓ¦ÅäÖÃ
     stVpssPortCfg.s32OutputHeight	= 0;
     stVpssPortCfg.eFormat		= processor_color_omx_to_hal(color_format);
     stVpssPortCfg.enOutBitWidth		= HI_DRV_PIXEL_BITWIDTH_10BIT;
@@ -1690,7 +1824,11 @@ HI_S32 processor_start_inst(OMXVDEC_CHAN_CTX *pchan)
 	return HI_FAILURE;
     }
 
+#ifdef HI_TVOS_SUPPORT
+    bStore =  HI_TRUE;
+#else
     bStore = (pchan->is_overlay == HI_TRUE)? HI_TRUE : HI_FALSE;
+#endif
 
     ret = (pVpssFunc->pfnVpssSendCommand)(pchan->processor_id, HI_DRV_VPSS_USER_COMMAND_STOREPRIV, &bStore);
 
@@ -1772,3 +1910,76 @@ HI_S32 processor_reset_inst(OMXVDEC_CHAN_CTX *pchan)
 
     return HI_SUCCESS;
 }
+
+#ifdef VFMW_VPSS_BYPASS_EN
+
+HI_S32 processor_set_bypass(OMXVDEC_CHAN_CTX *pchan)
+{
+    HI_S32 ret;
+    HI_DRV_VPSS_PORT_CFG_S stVpssPortCfg;
+
+    memset(&stVpssPortCfg, 0, sizeof(HI_DRV_VPSS_PORT_CFG_S));
+
+    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
+
+    if (HI_NULL == pchan)
+    {
+	OmxPrint(OMX_FATAL, "%s pchan = NULL!\n", __func__);
+	return HI_FAILURE;
+    }
+
+    OmxPrint(OMX_INFO, "%s output_view:%d\n", __func__, pchan->output_view);
+
+    ret = (pVpssFunc->pfnVpssGetPortCfg)(pchan->port_id, &stVpssPortCfg);
+    if (ret == HI_SUCCESS)
+    {
+	stVpssPortCfg.bPassThrough = pchan->output_view; //1: view  0: texture
+	ret = (pVpssFunc->pfnVpssSetPortCfg)(pchan->port_id, &stVpssPortCfg);
+    }
+    else
+    {
+	 OmxPrint(OMX_FATAL, "%s call pfnVpssGetPortCfg failed, ret = %d\n", __func__, ret);
+    }
+    OmxPrint(OMX_TRACE, "%s exit normally!return = %x\n", __func__,ret);
+    return ret;
+}
+
+HI_S32 processor_get_bypass(OMXVDEC_CHAN_CTX *pchan,PROCESSOR_BYPASSATTR_S *pBypasaAttr)
+{
+   //´Ë´¦ÉÏ±¨ÊÇ·ñbypass
+   HI_DRV_VPSS_BYPASSATTR_S stVpssBypassInfo;
+   HI_S32 s32Ret = HI_FAILURE;
+
+   memset(&stVpssBypassInfo, 0, sizeof(HI_DRV_VPSS_BYPASSATTR_S));
+
+   if ((HI_NULL == pBypasaAttr) || (HI_NULL == pchan))
+   {
+       OmxPrint(OMX_FATAL, "%s pchan = NULL!\n", __func__);
+       return HI_FAILURE;
+   }
+
+   stVpssBypassInfo.u32InputWidth  = pBypasaAttr->u32InputWidth;
+   stVpssBypassInfo.u32InputHeight = pBypasaAttr->u32InputHeight;
+   stVpssBypassInfo.u32InputFrameRate = pBypasaAttr->u32InputFrameRate;
+   stVpssBypassInfo.enInputPixFormat  = pBypasaAttr->enInputPixFormat;
+
+   if (pVpssFunc->pfnVpssSendCommand)
+   {
+      s32Ret = (pVpssFunc->pfnVpssSendCommand)(pchan->processor_id, HI_DRV_VPSS_USER_COMMAND_CHECKBYPASS, &(stVpssBypassInfo));
+
+      if (HI_SUCCESS != s32Ret)
+      {
+	  OmxPrint(OMX_ALWS,"%s,VPSS Check bypass failed!return 0x%x,pchan->processor_id = %d\n",__func__,s32Ret,pchan->processor_id);
+	  pchan->bVpssBypass = HI_FALSE;
+      }
+      else
+      {
+	  pchan->bVpssBypass = stVpssBypassInfo.bVpssBypass;
+      }
+   }
+
+   OmxPrint(OMX_INFO, "%s bVpssBypass:%d\n", __func__, pchan->bVpssBypass);
+
+   return s32Ret;
+}
+#endif

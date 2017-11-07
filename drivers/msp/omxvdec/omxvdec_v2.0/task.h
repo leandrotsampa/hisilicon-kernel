@@ -6,13 +6,11 @@
  *
  * Purpose: omxvdec task interface
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef __TASK_H__
 #define __TASK_H__

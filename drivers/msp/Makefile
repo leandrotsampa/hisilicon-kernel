@@ -25,11 +25,14 @@ objects += hdmi
 objects += hi_dbe
 objects += hifb
 objects += mce
+objects += omxvdec
 objects += pdm
 objects += pq
 objects += pvr
 objects += sync
 objects += tde
+objects += vdec
+objects += vfmw
 objects += vo
 objects += vpss
 
