@@ -53,7 +53,7 @@
 #ifndef MODULE
 HI_S32 __init HI_DRV_LoadModules(HI_VOID)
 {
-    // GPIO_DRV_ModInit();
+    GPIO_DRV_ModInit();
     // GPIOI2C_DRV_ModInit();
     PDM_DRV_ModInit();
     PQ_DRV_ModInit();

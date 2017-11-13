@@ -19,6 +19,7 @@ objects += adsp
 objects += aiao
 objects += base
 objects += gfx2d
+objects += gpio
 objects += gpu
 objects += hdmi
 objects += hi_dbe
