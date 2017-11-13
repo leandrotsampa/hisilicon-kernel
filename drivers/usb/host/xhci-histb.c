@@ -112,8 +112,8 @@ void xhci_histb_start(struct usb_hcd *hcd)
 	reg |= (0x1 << 12);
 	writel(reg, hcd->regs + REG_GCTL);
 
-	writel(0x2310000, hcd->regs + GTXTHRCFG);
-	writel(0x2310000, hcd->regs + GRXTHRCFG);
+	writel(0x23180000, hcd->regs + GTXTHRCFG);
+	writel(0x23180000, hcd->regs + GRXTHRCFG);
 
 	udelay(200);
 }
