@@ -2,10 +2,6 @@
 *
 * Copyright (C) 2016 Hisilicon Technologies Co., Ltd.  All rights reserved.
 *
-* This program is confidential and proprietary to Hisilicon  Technologies Co., Ltd. (Hisilicon),
-* and may not be copied, reproduced, modified, disclosed to others, published or used, in
-* whole or in part, without the express prior written permission of Hisilicon.
-*
 ******************************************************************************
 File Name	 : hi_jpeg_reg.h
 Version		   : Initial Draft
