@@ -46,6 +46,8 @@
 #include "drv_gpio_ext.h"
 #include "drv_gpio.h"
 
+#include "../../gpio/gpiolib.h"
+
 #define	 GPIO_MAX_BUF 256
 #define	 GPIO_BUF_HEAD g_stGpioAttr.GpioIrqList[g_stGpioAttr.Head]
 #define	 GPIO_BUF_TAIL g_stGpioAttr.GpioIrqList[g_stGpioAttr.Tail]
@@ -75,34 +77,11 @@ typedef struct
     struct semaphore  mutex;
 } GPIO_ATTR_S;
 
-struct gpio_desc {
-    struct gpio_chip	*chip;
-    unsigned long	flags;
-/* flag symbols are bit numbers */
-#define FLAG_REQUESTED	0
-#define FLAG_IS_OUT 1
-#define FLAG_EXPORT 2	/* protected by sysfs_lock */
-#define FLAG_SYSFS  3	/* exported via /sys/class/gpio/control */
-#define FLAG_TRIG_FALL	4   /* trigger on falling edge */
-#define FLAG_TRIG_RISE	5   /* trigger on rising edge */
-#define FLAG_ACTIVE_LOW 6   /* value has active low */
-#define FLAG_OPEN_DRAIN 7   /* Gpio is open drain type */
-#define FLAG_OPEN_SOURCE 8  /* Gpio is open source type */
-#define FLAG_USED_AS_IRQ 9  /* GPIO is connected to an IRQ */
-
-#define ID_SHIFT    16	/* add new flags before this one */
-
-#define GPIO_FLAGS_MASK	    ((1 << ID_SHIFT) - 1)
-#define GPIO_TRIGGER_MASK   (BIT(FLAG_TRIG_FALL) | BIT(FLAG_TRIG_RISE))
-
-    const char	    *label;
-};
-
 static GPIO_GET_GPIONUM_S g_GpioNum;
 static atomic_t gpio_init_counter = ATOMIC_INIT(0);
 static GPIO_ATTR_S g_stGpioAttr;
 extern struct spinlock gpio_lock;
-extern struct list_head gpio_chips;
+extern struct list_head gpio_devices;
 
 HI_VOID DRV_GPIO_Dump(HI_VOID)
 {
@@ -530,7 +509,7 @@ HI_S32 HI_DRV_GPIO_CearGroupInt(HI_U32 u32GpioGroup)
 HI_S32 HI_DRV_GPIO_GetGpioNum(GPIO_GET_GPIONUM_S* GpioNum)
 {
     unsigned long   flags;
-    struct gpio_chip *chip;
+    struct gpio_device *gpiodev;
 
     if (HI_NULL == GpioNum) {
 	HI_ERR_GPIO("GpioNum null\n");
@@ -541,9 +520,9 @@ HI_S32 HI_DRV_GPIO_GetGpioNum(GPIO_GET_GPIONUM_S* GpioNum)
     GpioNum->u8GpioMaxNum = 0;
 
     spin_lock_irqsave(&gpio_lock, flags);
-    list_for_each_entry(chip, &gpio_chips, list) {
+    list_for_each_entry(gpiodev, &gpio_devices, list) {
 	GpioNum->u8GpioGrpNum ++;
-	GpioNum->u8GpioMaxNum += chip->ngpio;
+	GpioNum->u8GpioMaxNum += gpiodev->ngpio;
     }
     spin_unlock_irqrestore(&gpio_lock, flags);
 
