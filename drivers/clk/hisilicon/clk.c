@@ -248,15 +248,15 @@ void hisi_clk_unregister_mux_sw(const struct hisi_mux_clock *clks,
 EXPORT_SYMBOL_GPL(hisi_clk_unregister_mux_sw);
 
 int hisi_clk_register_phase(struct device *dev,
-			const struct hisi_phase_clock *clks,
-			int nums, struct hisi_clock_data *data)
+				const struct hisi_phase_clock *clks,
+				int nums, struct hisi_clock_data *data)
 {
 	int i;
 	struct clk *clk;
 	void __iomem *base = data->base;
 
 	for (i = 0; i < nums; i++) {
-		clk =	clk_register_hisi_phase(dev,
+		clk = clk_register_hisi_phase(dev,
 				&clks[i], base, &hisi_clk_lock);
 
 		if (IS_ERR(clk)) {

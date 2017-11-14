@@ -172,7 +172,7 @@ void hisi_clk_register_gate_sep(const struct hisi_gate_clock *,
 void hi6220_clk_register_divider(const struct hi6220_divider_clock *,
 				int, struct hisi_clock_data *);
 struct clk *clk_register_hisi_misc(struct device *dev,
-					const struct hisi_misc_clock *clk,
+					const struct hisi_misc_clock *clock,
 					void __iomem *base);
 void clk_unregister_hisi_misc(struct clk *clk);
 int hisi_clk_register_misc(struct device *dev,

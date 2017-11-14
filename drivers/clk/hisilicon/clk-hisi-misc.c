@@ -68,37 +68,46 @@ static const struct clk_ops clk_misc_ops = {
 };
 
 struct clk *clk_register_hisi_misc(struct device *dev,
-					const struct hisi_misc_clock *clk,
+					const struct hisi_misc_clock *clock,
 					void __iomem *base)
 {
 	struct hisi_clk_misc *clk_misc;
 	struct clk_init_data init;
+	struct clk *clk;
 
-	clk_misc = devm_kzalloc(dev, sizeof(*clk_misc), GFP_KERNEL);
+	clk_misc = kzalloc(sizeof(*clk_misc), GFP_KERNEL);
 	if (!clk_misc)
 		return ERR_PTR(-ENOMEM);
 
-	init.name = clk->name;
+	init.name = clock->name;
 	init.ops = &clk_misc_ops;
-	init.parent_names = clk->parent_name ? &clk->parent_name : NULL;
-	init.num_parents = clk->parent_name ? 1 : 0;
-	init.flags = clk->flags;
+	init.parent_names = clock->parent_name ? &clock->parent_name : NULL;
+	init.num_parents = clock->parent_name ? 1 : 0;
+	init.flags = clock->flags;
 
-	clk_misc->reg_addr = base + clk->reg_offset;
-	clk_misc->ctrl_rst_mask = clk->ctrl_rst_mask;
-	clk_misc->ctrl_clk_mask = clk->ctrl_clk_mask;
+	clk_misc->reg_addr = base + clock->reg_offset;
+	clk_misc->ctrl_rst_mask = clock->ctrl_rst_mask;
+	clk_misc->ctrl_clk_mask = clock->ctrl_clk_mask;
 	clk_misc->hw.init = &init;
 
-	return clk_register(NULL, &clk_misc->hw);
+	clk = clk_register(dev, &clk_misc->hw);
+	if (IS_ERR(clk))
+		kfree(clk_misc);
+
+	return clk;
 }
 EXPORT_SYMBOL_GPL(clk_register_hisi_misc);
 
 void clk_unregister_hisi_misc(struct clk *clk)
 {
-	if (IS_ERR(clk))
+	struct clk_hw *hw;
+
+	hw = __clk_get_hw(clk);
+
+	if (!hw)
 		return;
 
 	clk_unregister(clk);
-	kfree(to_clk_misc(__clk_get_hw(clk)));
+	kfree(to_clk_misc(hw));
 }
 EXPORT_SYMBOL_GPL(clk_unregister_hisi_misc);
