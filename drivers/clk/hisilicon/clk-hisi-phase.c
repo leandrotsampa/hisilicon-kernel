@@ -27,6 +27,8 @@ struct clk_hisi_phase {
 };
 #define to_clk_hisi_phase(_hw) container_of(_hw, struct clk_hisi_phase, hw)
 
+#define PHASE_REG_INVALID 0xFF
+
 static u32 hisi_clk_get_phase_reg(struct clk_hisi_phase *phase, int degrees)
 {
 	int i;
@@ -35,7 +37,7 @@ static u32 hisi_clk_get_phase_reg(struct clk_hisi_phase *phase, int degrees)
 		if (phase->phase_values[i] == degrees)
 			return phase->phase_regs[i];
 
-	return -EINVAL;
+	return PHASE_REG_INVALID;
 }
 
 static int hisi_clk_set_phase(struct clk_hw *hw, int degrees)
@@ -45,8 +47,8 @@ static int hisi_clk_set_phase(struct clk_hw *hw, int degrees)
 	unsigned long flags = 0;
 
 	phase_reg = hisi_clk_get_phase_reg(phase, degrees);
-	if (phase_reg < 0)
-		return phase_reg;
+	if (phase_reg == PHASE_REG_INVALID)
+		return -EINVAL;
 
 	if (phase->lock)
 		spin_lock_irqsave(phase->lock, flags);
@@ -81,6 +83,7 @@ void clk_unregister_hisi_phase(struct clk *clk)
 
 	phase = to_clk_hisi_phase(hw);
 	clk_unregister(clk);
+	kfree(phase);
 }
 EXPORT_SYMBOL_GPL(clk_unregister_hisi_phase);
 
@@ -92,7 +95,7 @@ struct clk *clk_register_hisi_phase(struct device *dev,
 	struct clk *clk;
 	struct clk_init_data init;
 
-	phase = devm_kzalloc(dev, sizeof(struct clk_hisi_phase), GFP_KERNEL);
+	phase = kzalloc(sizeof(struct clk_hisi_phase), GFP_KERNEL);
 	if (!phase)
 		return ERR_PTR(-ENOMEM);
 
@@ -111,7 +114,10 @@ struct clk *clk_register_hisi_phase(struct device *dev,
 	phase->phase_num = clks->phase_num;
 	phase->hw.init = &init;
 
-	clk = clk_register(NULL, &phase->hw);
+	clk = clk_register(dev, &phase->hw);
+	if (IS_ERR(clk))
+		kfree(phase);
+
 	return clk;
 }
 EXPORT_SYMBOL_GPL(clk_register_hisi_phase);

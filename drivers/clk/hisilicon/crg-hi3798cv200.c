@@ -330,8 +330,17 @@ static void hi3798cv200_clk_unregister(struct platform_device *pdev)
 
 	of_clk_del_provider(pdev->dev.of_node);
 
+	hisi_clk_unregister_misc(hi3798cv200_misc_clks,
+				ARRAY_SIZE(hi3798cv200_misc_clks),
+				crg->clk_data);
 	hisi_clk_unregister_gate(hi3798cv200_gate_clks,
 				ARRAY_SIZE(hi3798cv200_gate_clks),
+				crg->clk_data);
+	hisi_clk_unregister_phase(hi3798cv200_phase_clks,
+				ARRAY_SIZE(hi3798cv200_phase_clks),
+				crg->clk_data);
+	hisi_clk_unregister_mux_sw(hi3798cv200_mux_sw_clks,
+				ARRAY_SIZE(hi3798cv200_mux_sw_clks),
 				crg->clk_data);
 	hisi_clk_unregister_mux(hi3798cv200_mux_clks,
 				ARRAY_SIZE(hi3798cv200_mux_clks),
