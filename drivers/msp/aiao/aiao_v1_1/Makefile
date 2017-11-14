@@ -83,8 +83,8 @@ $(MOD_NAME)-y += \
 		$(ALSA_DIR)/drv_ao_func.o \
 		$(ALSA_DIR)/alsa_aiao_volume_func.o
 #===============================================================================
-EXTRA_CFLAGS += -DHI_ALSA_AI_SUPPORT
-$(MOD_NAME)-y += $(ALSA_DIR)/drv_ai_func.o
+#EXTRA_CFLAGS += -DHI_ALSA_AI_SUPPORT
+#$(MOD_NAME)-y += $(ALSA_DIR)/drv_ai_func.o
 #===============================================================================
 #I2S SUPPORT
 EXTRA_CFLAGS += -DHI_I2S0_SUPPORT
