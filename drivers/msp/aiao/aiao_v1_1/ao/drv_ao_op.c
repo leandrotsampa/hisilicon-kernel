@@ -1851,7 +1851,7 @@ static HI_VOID SndOpDisableMuteCtrl(HI_U8* pu8Data)
     }
     if (pCard->pstGpioFunc && pCard->pstGpioFunc->pfnGpioWriteBit)
     {
-	(pCard->pstGpioFunc->pfnGpioWriteBit)(HI_SND_MUTECTL_GPIO, 0);
+	(pCard->pstGpioFunc->pfnGpioWriteBit)(HI_SND_MUTECTL_GPIO, 1);
     }
     ADAC_FastPowerEnable(HI_FALSE);    //diable fast power up
     return;
