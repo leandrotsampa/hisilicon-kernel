@@ -12,6 +12,7 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
 #include <asm/setup.h>
+#include <linux/gpio.h>
 #include <linux/interrupt.h>
 
 #include "hi_type.h"
@@ -29,7 +30,7 @@
 #include "hi_audsp_aflt.h"
 #endif
 
-#define HI_SND_MUTECTL_GPIO	0x48
+#define HI_SND_MUTECTL_GPIO	(ARCH_NR_GPIOS - 10 * 8) /* GPIO9_0 */
 
 static HI_S32 SndOpSetDelayCompensation(HI_VOID* pSndOp, HI_U32 u32RealDelayMs);
 static HI_S32 SndOpGetDelayCompensation(HI_VOID* pSndOp, HI_U32* pu32RealDelayMs);
