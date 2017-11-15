@@ -48,7 +48,7 @@
 
 #include "../../gpio/gpiolib.h"
 
-#define	 GPIO_MAX_BUF 256
+#define	 GPIO_MAX_BUF ARCH_NR_GPIOS
 #define	 GPIO_BUF_HEAD g_stGpioAttr.GpioIrqList[g_stGpioAttr.Head]
 #define	 GPIO_BUF_TAIL g_stGpioAttr.GpioIrqList[g_stGpioAttr.Tail]
 #define	 INC_BUF(x, len) (((x) + 1) % (len))
