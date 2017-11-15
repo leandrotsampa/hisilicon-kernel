@@ -398,7 +398,6 @@
 			gpio-ranges = <&pmx0 0 0 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio1: gpio@8b21000 {
@@ -418,7 +417,6 @@
 			>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio2: gpio@8b22000 {
@@ -432,7 +430,6 @@
 			gpio-ranges = <&pmx0 0 16 5 &pmx0 5 21 3>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio3: gpio@8b23000 {
@@ -451,7 +448,6 @@
 			>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio4: gpio@8b24000 {
@@ -465,7 +461,6 @@
 			gpio-ranges = <&pmx0 0 30 4 &pmx0 4 34 3 &pmx0 7 37 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio5: gpio@8004000 {
@@ -478,7 +473,6 @@
 			#interrupt-cells = <2>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio6: gpio@8b26000 {
@@ -492,7 +486,6 @@
 			gpio-ranges = <&pmx0 0 38 3 &pmx0 0 41 5>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio7: gpio@8b27000 {
@@ -506,7 +499,6 @@
 			gpio-ranges = <&pmx0 0 46 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio8: gpio@8b28000 {
@@ -520,7 +512,6 @@
 			gpio-ranges = <&pmx0 0 54 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio9: gpio@8b29000 {
@@ -534,7 +525,6 @@
 			gpio-ranges = <&pmx0 0 64 7 &pmx0 7 71 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio10: gpio@8b2a000 {
@@ -548,7 +538,6 @@
 			gpio-ranges = <&pmx0 0 72 6 &pmx0 6 78 1 &pmx0 7 79 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio11: gpio@8b2b000 {
@@ -562,7 +551,6 @@
 			gpio-ranges = <&pmx0 0 80 6 &pmx0 6 70 2>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		gpio12: gpio@8b2c000 {
@@ -576,7 +564,6 @@
 			gpio-ranges = <&pmx0 0 88 8>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
-			status = "disabled";
 		};
 
 		vddgpu: regulator@8a23020 {
