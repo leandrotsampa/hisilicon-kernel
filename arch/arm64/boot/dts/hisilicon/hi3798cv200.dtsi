@@ -531,7 +531,7 @@
 			#gpio-cells = <2>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
-			gpio-ranges = <&pmx0 0 64 7 &pmx0 71 1>;
+			gpio-ranges = <&pmx0 0 64 7 &pmx0 7 71 1>;
 			clocks = <&crg HISTB_APB_CLK>;
 			clock-names = "apb_pclk";
 			status = "disabled";
