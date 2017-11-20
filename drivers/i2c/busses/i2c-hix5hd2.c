@@ -19,6 +19,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
+#include <linux/reset.h>
 
 /* Register Map */
 #define HIX5I2C_CTRL		0x00
@@ -92,6 +93,7 @@ struct hix5hd2_i2c_priv {
 	int stop;
 	void __iomem *regs;
 	struct clk *clk;
+	struct reset_control *rst;
 	struct device *dev;
 	spinlock_t lock;	/* IRQ synchronization */
 	int err;
@@ -157,7 +159,9 @@ static void hix5hd2_i2c_init(struct hix5hd2_i2c_priv *priv)
 static void hix5hd2_i2c_reset(struct hix5hd2_i2c_priv *priv)
 {
 	clk_disable_unprepare(priv->clk);
+	reset_control_assert(priv->rst);
 	msleep(20);
+	reset_control_deassert(priv->rst);
 	clk_prepare_enable(priv->clk);
 	hix5hd2_i2c_init(priv);
 }
@@ -441,6 +445,16 @@ static int hix5hd2_i2c_probe(struct platform_device *pdev)
 		return irq;
 	}
 
+	priv->rst = devm_reset_control_get_optional(&pdev->dev, NULL);
+	if (IS_ERR(priv->rst)) {
+		ret = PTR_ERR(priv->rst);
+		if (ret == -EPROBE_DEFER)
+			return ret;
+		priv->rst = NULL;
+	} else {
+		reset_control_deassert(priv->rst);
+	}
+
 	priv->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(priv->clk)) {
 		dev_err(&pdev->dev, "cannot get clock\n");
@@ -488,6 +502,7 @@ err_runtime:
 	pm_runtime_set_suspended(priv->dev);
 err_clk:
 	clk_disable_unprepare(priv->clk);
+	reset_control_assert(priv->rst);
 	return ret;
 }
 
@@ -509,6 +524,7 @@ static int hix5hd2_i2c_runtime_suspend(struct device *dev)
 	struct hix5hd2_i2c_priv *priv = platform_get_drvdata(pdev);
 
 	clk_disable_unprepare(priv->clk);
+	reset_control_assert(priv->rst);
 
 	return 0;
 }
@@ -518,6 +534,7 @@ static int hix5hd2_i2c_runtime_resume(struct device *dev)
 	struct platform_device *pdev = to_platform_device(dev);
 	struct hix5hd2_i2c_priv *priv = platform_get_drvdata(pdev);
 
+	reset_control_deassert(priv->rst);
 	clk_prepare_enable(priv->clk);
 	hix5hd2_i2c_init(priv);
 
