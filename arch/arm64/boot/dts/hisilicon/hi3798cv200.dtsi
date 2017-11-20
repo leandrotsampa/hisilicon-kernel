@@ -302,6 +302,7 @@
 			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
 			clock-frequency = <400000>;
 			clocks = <&crg HISTB_I2C0_CLK>;
+			resets = <&crg 0x6c 5>;
 			status = "disabled";
 		};
 
@@ -313,6 +314,7 @@
 			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
 			clock-frequency = <400000>;
 			clocks = <&crg HISTB_I2C1_CLK>;
+			resets = <&crg 0x6c 9>;
 			status = "disabled";
 		};
 
@@ -324,6 +326,7 @@
 			interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
 			clock-frequency = <400000>;
 			clocks = <&crg HISTB_I2C2_CLK>;
+			resets = <&crg 0x6c 13>;
 			status = "disabled";
 		};
 
@@ -335,6 +338,7 @@
 			interrupts = <GIC_SPI 41 IRQ_TYPE_LEVEL_HIGH>;
 			clock-frequency = <400000>;
 			clocks = <&crg HISTB_I2C3_CLK>;
+			resets = <&crg 0x6c 17>;
 			status = "disabled";
 		};
 
@@ -346,6 +350,7 @@
 			interrupts = <GIC_SPI 42 IRQ_TYPE_LEVEL_HIGH>;
 			clock-frequency = <400000>;
 			clocks = <&crg HISTB_I2C4_CLK>;
+			resets = <&crg 0x6c 21>;
 			status = "disabled";
 		};
 
