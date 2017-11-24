@@ -162,14 +162,6 @@ static int dhd_wlan_get_mac_addr(unsigned char *buf)
 	return err;
 }
 
-#if !defined(WL_WIRELESS_EXT)
-struct cntry_locales_custom {
-	char iso_abbrev[WLC_CNTRY_BUF_SZ];	/* ISO 3166-1 country abbreviation */
-	char custom_locale[WLC_CNTRY_BUF_SZ];	/* Custom firmware locale */
-	int32 custom_locale_rev;		/* Custom local revisin default -1 */
-};
-#endif
-
 static struct cntry_locales_custom brcm_wlan_translate_custom_table[] = {
 	/* Table should be filled out based on custom platform regulatory requirement */
 	{"",   "XT", 49},  /* Universal if Country code is unknown or empty */

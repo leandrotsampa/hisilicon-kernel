@@ -2,38 +2,13 @@
 # 1. WL_IFACE_COMB_NUM_CHANNELS must be added if Android version is 4.4 with Kernel version 3.0~3.4,
 #    otherwise please remove it.
 
-CONFIG_BCMDHD := m
+#CONFIG_BCMDHD := m
 #CONFIG_BCMDHD_SDIO := y
-CONFIG_BCMDHD_PCIE := y
+#CONFIG_BCMDHD_PCIE := y
 #CONFIG_BCMDHD_OOB := y
 CONFIG_BCMDHD_PROPTXSTATUS := y
 #CONFIG_DHD_USE_STATIC_BUF := y
 CONFIG_VTS_SUPPORT := y
-
-ifeq ($(CFG_HI_EXPORT_FLAG),)
-    ifneq ($(srctree),)
-    KERNEL_DIR := $(srctree)
-
-    SDK_DIR := $(shell cd $(KERNEL_DIR)/../../.. && /bin/pwd)
-    else
-    SDK_DIR := $(shell cd $(CURDIR)/../../../../../.. && /bin/pwd)
-    endif
-
-    include $(SDK_DIR)/base.mak
-endif
-
-MODULE_SRC := bcmdhd.1.579.77.41.x
-
-
-
-INSTALL_DIR := $(ANDROID_PRODUCT_OUT)/system/lib/modules
-
-
-
-FW_INSTALL_DIR := $(ANDROID_PRODUCT_OUT)/system/etc/firmware/AP6356S
-
-BUILD_MODULES = $(patsubst %,%_build,${MODULE_SRC})
-UNINSTALL_MODULES = $(patsubst %,%_uninstall,${MODULE})
 
 DHDCFLAGS = -Wall -Wstrict-prototypes -Dlinux -DBCMDRIVER -DSDTEST	 \
 	-DBCMDONGLEHOST -DUNRELEASEDCHIP -DBCMDMA32 -DBCMFILEIMAGE	      \
@@ -45,11 +20,6 @@ DHDCFLAGS = -Wall -Wstrict-prototypes -Dlinux -DBCMDRIVER -DSDTEST	 \
 	-DBCMSDIOH_TXGLOM_EXT -DWL_EXT_IAPSTA				      \
 	-DENABLE_INSMOD_NO_FW_LOAD					      \
 	-I$(src) -I$(src)/include \
-	-I$(COMMON_DIR)/include \
-	-I$(MSP_DIR)/include \
-	-I$(MSP_DRV_INCLUDE) \
-	-I$(MSP_API_INCLUDE) \
-	-I$(SDK_DIR)/source/kernel/linux-3.18.y/arch/arm/mach-s40/include
 #	-Idrivers/net/wireless/bcmdhd -Idrivers/net/wireless/bcmdhd/include
 
 DHDOFILES = aiutils.o siutils.o sbutils.o bcmutils.o bcmwifi_channels.o \
