@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -36,22 +36,22 @@
 #endif /* defined (BT_OVER_SDIO) */
 
 
-#define SDIOH_API_RC_SUCCESS                          (0x00)
-#define SDIOH_API_RC_FAIL	                      (0x01)
+#define SDIOH_API_RC_SUCCESS			      (0x00)
+#define SDIOH_API_RC_FAIL			      (0x01)
 #define SDIOH_API_SUCCESS(status) (status == 0)
 
-#define SDIOH_READ              0	/* Read request */
-#define SDIOH_WRITE             1	/* Write request */
+#define SDIOH_READ		0	/* Read request */
+#define SDIOH_WRITE		1	/* Write request */
 
-#define SDIOH_DATA_FIX          0	/* Fixed addressing */
-#define SDIOH_DATA_INC          1	/* Incremental addressing */
+#define SDIOH_DATA_FIX		0	/* Fixed addressing */
+#define SDIOH_DATA_INC		1	/* Incremental addressing */
 
-#define SDIOH_CMD_TYPE_NORMAL   0       /* Normal command */
-#define SDIOH_CMD_TYPE_APPEND   1       /* Append command */
-#define SDIOH_CMD_TYPE_CUTTHRU  2       /* Cut-through command */
+#define SDIOH_CMD_TYPE_NORMAL	0	/* Normal command */
+#define SDIOH_CMD_TYPE_APPEND	1	/* Append command */
+#define SDIOH_CMD_TYPE_CUTTHRU	2	/* Cut-through command */
 
-#define SDIOH_DATA_PIO          0       /* PIO mode */
-#define SDIOH_DATA_DMA          1       /* DMA mode */
+#define SDIOH_DATA_PIO		0	/* PIO mode */
+#define SDIOH_DATA_DMA		1	/* DMA mode */
 
 /* Max number of glommed pkts */
 #ifdef CUSTOM_MAX_TXGLOM_SIZE
@@ -141,7 +141,7 @@ extern uint sdioh_query_iofnum(sdioh_info_t *si);
 
 /* handle iovars */
 extern int sdioh_iovar_op(sdioh_info_t *si, const char *name,
-                          void *params, int plen, void *arg, int len, bool set);
+			  void *params, int plen, void *arg, int len, bool set);
 
 /* Issue abort to the specified function and clear controller as needed */
 extern int sdioh_abort(sdioh_info_t *si, uint fnc);

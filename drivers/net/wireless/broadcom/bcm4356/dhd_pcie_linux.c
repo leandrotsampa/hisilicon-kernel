@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -69,9 +69,9 @@
 #include <linux/platform_device.h>
 #endif /* USE_SMMU_ARCH_MSM */
 
-#define PCI_CFG_RETRY 		10
+#define PCI_CFG_RETRY		10
 #define OS_HANDLE_MAGIC		0x1234abcd	/* Magic # to recognize osh */
-#define BCM_MEM_FILENAME_LEN 	24		/* Mem. filename length */
+#define BCM_MEM_FILENAME_LEN	24		/* Mem. filename length */
 
 #define OSL_PKTTAG_CLEAR(p) \
 do { \
@@ -95,7 +95,7 @@ unsigned char gpio_direction = 0;
 #define OOB_PORT "ttyUSB0"
 #endif /* PCIE_OOB */
 
-/* user defined data structures  */
+/* user defined data structures	 */
 
 typedef struct dhd_pc_res {
 	uint32 bar0_size;
@@ -109,10 +109,10 @@ typedef bool (*dhdpcie_cb_fn_t)(void *);
 typedef struct dhdpcie_info
 {
 	dhd_bus_t	*bus;
-	osl_t 			*osh;
-	struct pci_dev  *dev;		/* pci device handle */
-	volatile char 	*regs;		/* pci device memory va */
-	volatile char 	*tcm;		/* pci device memory va */
+	osl_t			*osh;
+	struct pci_dev	*dev;		/* pci device handle */
+	volatile char	*regs;		/* pci device memory va */
+	volatile char	*tcm;		/* pci device memory va */
 	uint32			tcm_size;	/* pci device memory size */
 	struct pcos_info *pcos_info;
 	uint16		last_intrstatus;	/* to cache intrstatus */
@@ -1082,8 +1082,8 @@ Name:  osl_pci_get_resource
 
 Parametrs:
 
-1: struct pci_dev *pdev   -- pci device structure
-2: pci_res                       -- structure containing pci configuration space values
+1: struct pci_dev *pdev	  -- pci device structure
+2: pci_res			 -- structure containing pci configuration space values
 
 
 Return value:
@@ -1233,9 +1233,9 @@ extern void wl_android_post_init(void); // terence 20120530: fix critical sectio
 int dhdpcie_init(struct pci_dev *pdev)
 {
 
-	osl_t 				*osh = NULL;
-	dhd_bus_t 			*bus = NULL;
-	dhdpcie_info_t		*dhdpcie_info =  NULL;
+	osl_t				*osh = NULL;
+	dhd_bus_t			*bus = NULL;
+	dhdpcie_info_t		*dhdpcie_info =	 NULL;
 	wifi_adapter_info_t	*adapter = NULL;
 #ifdef BCMPCIE_OOB_HOST_WAKE
 	dhdpcie_os_info_t	*dhdpcie_osinfo = NULL;
@@ -1511,8 +1511,8 @@ Name:  dhdpcie_isr
 
 Parametrs:
 
-1: IN int irq   -- interrupt vector
-2: IN void *arg      -- handle to private data structure
+1: IN int irq	-- interrupt vector
+2: IN void *arg	     -- handle to private data structure
 
 Return value:
 
@@ -2190,7 +2190,7 @@ bool dhd_runtimepm_state(dhd_pub_t *dhd)
 			DHD_GENERAL_LOCK(dhd, flags);
 			DHD_BUS_BUSY_CLEAR_RPM_SUSPEND_IN_PROGRESS(dhd);
 			DHD_BUS_BUSY_SET_RPM_SUSPEND_DONE(dhd);
-			/* For making sure NET TX Queue active  */
+			/* For making sure NET TX Queue active	*/
 			dhd_bus_start_queue(bus);
 			DHD_GENERAL_UNLOCK(dhd, flags);
 
@@ -2208,7 +2208,7 @@ bool dhd_runtimepm_state(dhd_pub_t *dhd)
 			dhd_os_busbusy_wake(bus->dhd);
 			/* Inform the wake up context that Resume is over */
 			bus->runtime_resume_done = TRUE;
-			/* For making sure NET TX Queue active  */
+			/* For making sure NET TX Queue active	*/
 			dhd_bus_start_queue(bus);
 			DHD_GENERAL_UNLOCK(dhd, flags);
 

@@ -6,21 +6,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -39,7 +39,7 @@
 #define SBSDIO_SPROM_CS			0x10000		/* sprom command and status */
 #define SBSDIO_SPROM_INFO		0x10001		/* sprom info register */
 #define SBSDIO_SPROM_DATA_LOW		0x10002		/* sprom indirect access data byte 0 */
-#define SBSDIO_SPROM_DATA_HIGH		0x10003 	/* sprom indirect access data byte 1 */
+#define SBSDIO_SPROM_DATA_HIGH		0x10003		/* sprom indirect access data byte 1 */
 #define SBSDIO_SPROM_ADDR_LOW		0x10004		/* sprom indirect access addr byte 0 */
 #define SBSDIO_SPROM_ADDR_HIGH		0x10005		/* sprom indirect access addr byte 0 */
 #define SBSDIO_CHIP_CTRL_DATA		0x10006		/* xtal_pu (gpio) output */
@@ -53,15 +53,15 @@
 #define SBSDIO_FUNC1_SBADDRHIGH		0x1000C		/* SB Address Window High (b31:b24)    */
 #define SBSDIO_FUNC1_FRAMECTRL		0x1000D		/* Frame Control (frame term/abort) */
 #define SBSDIO_FUNC1_CHIPCLKCSR		0x1000E		/* ChipClockCSR (ALP/HT ctl/status) */
-#define SBSDIO_FUNC1_SDIOPULLUP 	0x1000F		/* SdioPullUp (on cmd, d0-d2) */
+#define SBSDIO_FUNC1_SDIOPULLUP		0x1000F		/* SdioPullUp (on cmd, d0-d2) */
 #define SBSDIO_FUNC1_WFRAMEBCLO		0x10019		/* Write Frame Byte Count Low */
 #define SBSDIO_FUNC1_WFRAMEBCHI		0x1001A		/* Write Frame Byte Count High */
 #define SBSDIO_FUNC1_RFRAMEBCLO		0x1001B		/* Read Frame Byte Count Low */
 #define SBSDIO_FUNC1_RFRAMEBCHI		0x1001C		/* Read Frame Byte Count High */
 #define SBSDIO_FUNC1_MESBUSYCTRL	0x1001D		/* MesBusyCtl at 0x1001D (rev 11) */
 
-#define SBSDIO_FUNC1_MISC_REG_START	0x10000 	/* f1 misc register start */
-#define SBSDIO_FUNC1_MISC_REG_LIMIT	0x1001C 	/* f1 misc register end */
+#define SBSDIO_FUNC1_MISC_REG_START	0x10000		/* f1 misc register start */
+#define SBSDIO_FUNC1_MISC_REG_LIMIT	0x1001C		/* f1 misc register end */
 
 /* Sdio Core Rev 12 */
 #define SBSDIO_FUNC1_WAKEUPCTRL			0x1001E
@@ -120,9 +120,9 @@
 							 * external pads in tri-state; requires
 							 * sdio bus power cycle to clear (rev 9)
 							 */
-#define SBSDIO_DEVCTL_EN_F2_BLK_WATERMARK 0x10  /* Enable function 2 tx for each block */
+#define SBSDIO_DEVCTL_EN_F2_BLK_WATERMARK 0x10	/* Enable function 2 tx for each block */
 #define SBSDIO_DEVCTL_F2WM_ENAB		0x10		/* Enable F2 Watermark */
-#define SBSDIO_DEVCTL_NONDAT_PADS_ISO 	0x20		/* Isolate sdio clk and cmd (non-data) */
+#define SBSDIO_DEVCTL_NONDAT_PADS_ISO	0x20		/* Isolate sdio clk and cmd (non-data) */
 
 /* SBSDIO_FUNC1_CHIPCLKCSR */
 #define SBSDIO_FORCE_ALP		0x01		/* Force ALP request to backplane */
@@ -167,7 +167,7 @@
 /* direct(mapped) cis space */
 #define SBSDIO_CIS_BASE_COMMON		0x1000		/* MAPPED common CIS address */
 #define SBSDIO_CIS_SIZE_LIMIT		0x200		/* maximum bytes in one CIS */
-#define SBSDIO_OTP_CIS_SIZE_LIMIT       0x078           /* maximum bytes OTP CIS */
+#define SBSDIO_OTP_CIS_SIZE_LIMIT	0x078		/* maximum bytes OTP CIS */
 
 #define SBSDIO_CIS_OFT_ADDR_MASK	0x1FFFF		/* cis offset addr is < 17 bits */
 

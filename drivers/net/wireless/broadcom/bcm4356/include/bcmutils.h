@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -36,13 +36,13 @@ extern "C" {
 #endif
 
 
-#define bcm_strncpy_s(dst, noOfElements, src, count)    strncpy((dst), (src), (count))
-#define bcm_strncat_s(dst, noOfElements, src, count)    strncat((dst), (src), (count))
+#define bcm_strncpy_s(dst, noOfElements, src, count)	strncpy((dst), (src), (count))
+#define bcm_strncat_s(dst, noOfElements, src, count)	strncat((dst), (src), (count))
 #define bcm_snprintf_s snprintf
 #define bcm_sprintf_s snprintf
 
 /*
- * #define bcm_strcpy_s(dst, count, src)            strncpy((dst), (src), (count))
+ * #define bcm_strcpy_s(dst, count, src)	    strncpy((dst), (src), (count))
  * Use bcm_strcpy_s instead as it is a safer option
  * bcm_strcat_s: Use bcm_strncat_s as a safer option
  *
@@ -102,7 +102,7 @@ struct bcmstrbuf {
 #include <hnd_pktq.h>
 #include <hnd_pktpool.h>
 
-#define GPIO_PIN_NOTDEFINED 	0x20	/* Pin not defined */
+#define GPIO_PIN_NOTDEFINED	0x20	/* Pin not defined */
 
 /*
  * Spin at most 'us' microseconds while 'exp' is true.
@@ -310,7 +310,7 @@ int bcmstrnicmp(const char* s1, const char* s2, int cnt);
 
 /* ** driver/apps-shared section ** */
 
-#define BCME_STRLEN 		64	/* Max string length for BCM errors */
+#define BCME_STRLEN		64	/* Max string length for BCM errors */
 #define VALID_BCMERROR(e)  ((e <= 0) && (e >= BCME_LAST))
 
 
@@ -331,8 +331,8 @@ int bcmstrnicmp(const char* s1, const char* s2, int cnt);
 #define BCME_NOTAP			-6	/* Not AP */
 #define BCME_NOTSTA			-7	/* Not STA  */
 #define BCME_BADKEYIDX			-8	/* BAD Key Index */
-#define BCME_RADIOOFF 			-9	/* Radio Off */
-#define BCME_NOTBANDLOCKED		-10	/* Not  band locked */
+#define BCME_RADIOOFF			-9	/* Radio Off */
+#define BCME_NOTBANDLOCKED		-10	/* Not	band locked */
 #define BCME_NOCLK			-11	/* No Clock */
 #define BCME_BADRATESET			-12	/* BAD Rate valueset */
 #define BCME_BADBAND			-13	/* BAD Band */
@@ -359,29 +359,29 @@ int bcmstrnicmp(const char* s1, const char* s2, int cnt);
 #define BCME_NOT_WME_ASSOCIATION	-34	/* Not WME Association */
 #define BCME_SDIO_ERROR			-35	/* SDIO Bus Error */
 #define BCME_DONGLE_DOWN		-36	/* Dongle Not Accessible */
-#define BCME_VERSION			-37 	/* Incorrect version */
-#define BCME_TXFAIL			-38 	/* TX failure */
+#define BCME_VERSION			-37	/* Incorrect version */
+#define BCME_TXFAIL			-38	/* TX failure */
 #define BCME_RXFAIL			-39	/* RX failure */
-#define BCME_NODEVICE			-40 	/* Device not present */
-#define BCME_NMODE_DISABLED		-41 	/* NMODE disabled */
+#define BCME_NODEVICE			-40	/* Device not present */
+#define BCME_NMODE_DISABLED		-41	/* NMODE disabled */
 #define BCME_NONRESIDENT		-42 /* access to nonresident overlay */
-#define BCME_SCANREJECT			-43 	/* reject scan request */
-#define BCME_USAGE_ERROR                -44     /* WLCMD usage error */
-#define BCME_IOCTL_ERROR                -45     /* WLCMD ioctl error */
-#define BCME_SERIAL_PORT_ERR            -46     /* RWL serial port error */
-#define BCME_DISABLED			-47     /* Disabled in this build */
+#define BCME_SCANREJECT			-43	/* reject scan request */
+#define BCME_USAGE_ERROR		-44	/* WLCMD usage error */
+#define BCME_IOCTL_ERROR		-45	/* WLCMD ioctl error */
+#define BCME_SERIAL_PORT_ERR		-46	/* RWL serial port error */
+#define BCME_DISABLED			-47	/* Disabled in this build */
 #define BCME_DECERR				-48		/* Decrypt error */
 #define BCME_ENCERR				-49		/* Encrypt error */
 #define BCME_MICERR				-50		/* Integrity/MIC error */
 #define BCME_REPLAY				-51		/* Replay */
 #define BCME_IE_NOTFOUND		-52		/* IE not found */
 #define BCME_DATA_NOTFOUND		-53		/* Complete data not found in buffer */
-#define BCME_NOT_GC			-54     /* expecting a group client */
-#define BCME_PRS_REQ_FAILED		-55     /* GC presence req failed to sent */
-#define BCME_NO_P2P_SE			-56      /* Could not find P2P-Subelement */
-#define BCME_NOA_PND			-57      /* NoA pending, CB shuld be NULL */
-#define BCME_FRAG_Q_FAILED		-58      /* queueing 80211 frag failedi */
-#define BCME_GET_AF_FAILED		-59      /* Get p2p AF pkt failed */
+#define BCME_NOT_GC			-54	/* expecting a group client */
+#define BCME_PRS_REQ_FAILED		-55	/* GC presence req failed to sent */
+#define BCME_NO_P2P_SE			-56	 /* Could not find P2P-Subelement */
+#define BCME_NOA_PND			-57	 /* NoA pending, CB shuld be NULL */
+#define BCME_FRAG_Q_FAILED		-58	 /* queueing 80211 frag failedi */
+#define BCME_GET_AF_FAILED		-59	 /* Get p2p AF pkt failed */
 #define BCME_MSCH_NOTREADY		-60		/* scheduler not ready */
 #define BCME_LAST   BCME_MSCH_NOTREADY
 
@@ -445,7 +445,7 @@ int bcmstrnicmp(const char* s1, const char* s2, int cnt);
 	"Scan Rejected",		\
 	"WLCMD usage error",		\
 	"WLCMD ioctl error",		\
-	"RWL serial port error", 	\
+	"RWL serial port error",	\
 	"Disabled",			\
 	"Decrypt error", \
 	"Encrypt error", \
@@ -499,9 +499,9 @@ int bcmstrnicmp(const char* s1, const char* s2, int cnt);
 #define ROUNDDN(p, align)	((p) & ~((align) - 1))
 #define	ISALIGNED(a, x)		(((uintptr)(a) & ((x) - 1)) == 0)
 #define ALIGN_ADDR(addr, boundary) (void *)(((uintptr)(addr) + (boundary) - 1) \
-	                                         & ~((boundary) - 1))
+						 & ~((boundary) - 1))
 #define ALIGN_SIZE(size, boundary) (((size) + (boundary) - 1) \
-	                                         & ~((boundary) - 1))
+						 & ~((boundary) - 1))
 #define	ISPOWEROF2(x)		((((x) - 1) & (x)) == 0)
 #define VALID_MASK(mask)	!((mask) & ((mask) + 1))
 
@@ -577,22 +577,22 @@ extern void bcm_bitprint32(const uint32 u32);
  * ----------------------------------------------------------------------------
  */
 
-#define DECLARE_MAP_API(NB, RSH, LSH, OFF, MSK)                     \
-static INLINE void setbit##NB(void *ptr, uint32 ix, uint32 val)     \
-{                                                                   \
-	uint32 *addr = (uint32 *)ptr;                                   \
-	uint32 *a = addr + (ix >> RSH); /* (ix / 2^RSH) */              \
-	uint32 pos = (ix & OFF) << LSH; /* (ix % 2^RSH) * 2^LSH */      \
-	uint32 mask = (MSK << pos);                                     \
-	uint32 tmp = *a & ~mask;                                        \
-	*a = tmp | (val << pos);                                        \
-}                                                                   \
-static INLINE uint32 getbit##NB(void *ptr, uint32 ix)               \
-{                                                                   \
-	uint32 *addr = (uint32 *)ptr;                                   \
-	uint32 *a = addr + (ix >> RSH);                                 \
-	uint32 pos = (ix & OFF) << LSH;                                 \
-	return ((*a >> pos) & MSK);                                     \
+#define DECLARE_MAP_API(NB, RSH, LSH, OFF, MSK)			    \
+static INLINE void setbit##NB(void *ptr, uint32 ix, uint32 val)	    \
+{								    \
+	uint32 *addr = (uint32 *)ptr;					\
+	uint32 *a = addr + (ix >> RSH); /* (ix / 2^RSH) */		\
+	uint32 pos = (ix & OFF) << LSH; /* (ix % 2^RSH) * 2^LSH */	\
+	uint32 mask = (MSK << pos);					\
+	uint32 tmp = *a & ~mask;					\
+	*a = tmp | (val << pos);					\
+}								    \
+static INLINE uint32 getbit##NB(void *ptr, uint32 ix)		    \
+{								    \
+	uint32 *addr = (uint32 *)ptr;					\
+	uint32 *a = addr + (ix >> RSH);					\
+	uint32 pos = (ix & OFF) << LSH;					\
+	return ((*a >> pos) & MSK);					\
 }
 
 DECLARE_MAP_API(2, 4, 1, 15U, 0x0003) /* setbit2() and getbit2() */
@@ -621,8 +621,8 @@ DECLARE_MAP_API(8, 2, 3, 3U, 0x00FF) /* setbit8() and getbit8() */
 #define MODSUB_POW2(x, y, bound) (((x) - (y)) & ((bound) - 1))
 
 /* crc defines */
-#define CRC8_INIT_VALUE  0xff		/* Initial CRC8 checksum value */
-#define CRC8_GOOD_VALUE  0x9f		/* Good final CRC8 checksum value */
+#define CRC8_INIT_VALUE	 0xff		/* Initial CRC8 checksum value */
+#define CRC8_GOOD_VALUE	 0x9f		/* Good final CRC8 checksum value */
 #define CRC16_INIT_VALUE 0xffff		/* Initial CRC16 checksum value */
 #define CRC16_GOOD_VALUE 0xf0b8		/* Good final CRC16 checksum value */
 #define CRC32_INIT_VALUE 0xffffffff	/* Initial CRC32 checksum value */
@@ -898,9 +898,9 @@ extern void bcm_inc_bytes(uchar *num, int num_bytes, uint8 amount);
 extern int bcm_cmp_bytes(const uchar *arg1, const uchar *arg2, uint8 nbytes);
 extern void bcm_print_bytes(const char *name, const uchar *cdata, int len);
 
-typedef  uint32 (*bcmutl_rdreg_rtn)(void *arg0, uint arg1, uint32 offset);
+typedef	 uint32 (*bcmutl_rdreg_rtn)(void *arg0, uint arg1, uint32 offset);
 extern uint bcmdumpfields(bcmutl_rdreg_rtn func_ptr, void *arg0, uint arg1, struct fielddesc *str,
-                          char *buf, uint32 bufsize);
+			  char *buf, uint32 bufsize);
 extern uint bcm_bitcount(uint8 *bitmap, uint bytelength);
 
 extern int bcm_bprintf(struct bcmstrbuf *b, const char *fmt, ...);
@@ -914,17 +914,17 @@ unsigned int process_nvram_vars(char *varbuf, unsigned int len);
 
 /* trace any object allocation / free, with / without features (flags) set to the object */
 
-#define BCM_OBJDBG_ADD           1
-#define BCM_OBJDBG_REMOVE        2
-#define BCM_OBJDBG_ADD_PKT       3
+#define BCM_OBJDBG_ADD		 1
+#define BCM_OBJDBG_REMOVE	 2
+#define BCM_OBJDBG_ADD_PKT	 3
 
 /* object feature: set or clear flags */
-#define BCM_OBJECT_FEATURE_FLAG       1
+#define BCM_OBJECT_FEATURE_FLAG	      1
 #define BCM_OBJECT_FEATURE_PKT_STATE  2
 /* object feature: flag bits */
-#define BCM_OBJECT_FEATURE_0     (1 << 0)
-#define BCM_OBJECT_FEATURE_1     (1 << 1)
-#define BCM_OBJECT_FEATURE_2     (1 << 2)
+#define BCM_OBJECT_FEATURE_0	 (1 << 0)
+#define BCM_OBJECT_FEATURE_1	 (1 << 1)
+#define BCM_OBJECT_FEATURE_2	 (1 << 2)
 /* object feature: clear flag bits field set with this flag */
 #define BCM_OBJECT_FEATURE_CLEAR (1 << 31)
 #ifdef BCM_OBJECT_TRACE
@@ -968,7 +968,7 @@ extern void bcm_uint64_divide(uint32* r, uint32 a_high, uint32 a_low, uint32 b);
 static const uint8 /* Table only for use by bcm_cntsetbits */
 _CSBTBL[256] =
 {
-#	define B2(n)    n,     n + 1,     n + 1,     n + 2
+#	define B2(n)	n,     n + 1,	  n + 1,     n + 2
 #	define B4(n) B2(n), B2(n + 1), B2(n + 1), B2(n + 2)
 #	define B6(n) B4(n), B4(n + 1), B4(n + 1), B4(n + 2)
 	B6(0), B6(0 + 1), B6(0 + 1), B6(0 + 2)
@@ -1028,11 +1028,11 @@ bcm_count_leading_zeros(uint32 u32arg)
 {
 #if defined(__USE_ASM_CLZ__)
 	int zeros;
-	__asm__ volatile("clz    %0, %1 \n" : "=r" (zeros) : "r"  (u32arg));
+	__asm__ volatile("clz	 %0, %1 \n" : "=r" (zeros) : "r"  (u32arg));
 	return zeros;
 #else	/* C equivalent */
 	return C_bcm_count_leading_zeros(u32arg);
-#endif  /* C equivalent */
+#endif	/* C equivalent */
 }
 
 /*
@@ -1083,10 +1083,10 @@ extern void bcm_mwbmap_audit(struct bcm_mwbmap * mwbmap_hdl);
 
 /* INTERFACE: Simple unique 16bit Id Allocator using a stack implementation. */
 
-#define ID8_INVALID     0xFFu
-#define ID16_INVALID    0xFFFFu
-#define ID32_INVALID    0xFFFFFFFFu
-#define ID16_UNDEFINED              ID16_INVALID
+#define ID8_INVALID	0xFFu
+#define ID16_INVALID	0xFFFFu
+#define ID32_INVALID	0xFFFFFFFFu
+#define ID16_UNDEFINED		    ID16_INVALID
 
 /*
  * Construct a 16bit id allocator, managing 16bit ids in the range:
@@ -1146,7 +1146,7 @@ uint16 bcm_ip_cksum(uint8 *buf, uint32 len, uint32 sum);
 #define _dll_t_
 /*
  * -----------------------------------------------------------------------------
- *                      Double Linked List Macros
+ *			Double Linked List Macros
  * -----------------------------------------------------------------------------
  *
  * All dll operations must be performed on a pre-initialized node.
@@ -1162,8 +1162,8 @@ uint16 bcm_ip_cksum(uint8 *buf, uint32 len, uint32 sum);
  * Example of declaring an initializing someList and inserting nodeA, nodeB
  *
  *     typedef struct item {
- *         dll_t node;
- *         int someData;
+ *	   dll_t node;
+ *	   int someData;
  *     } Item_t;
  *     Item_t nodeA, nodeB, nodeC;
  *     nodeA.someData = 11111, nodeB.someData = 22222, nodeC.someData = 33333;
@@ -1183,11 +1183,11 @@ uint16 bcm_ip_cksum(uint8 *buf, uint32 len, uint32 sum);
  *
  *   dll_t * item_p, * next_p;
  *   for (item_p = dll_head_p(&someList); ! dll_end(&someList, item_p);
- *        item_p = next_p)
+ *	  item_p = next_p)
  *   {
- *       next_p = dll_next_p(item_p);
- *       ... use item_p at will, including removing it from list ...
- *       mydisplay((PItem_t)item_p);
+ *	 next_p = dll_next_p(item_p);
+ *	 ... use item_p at will, including removing it from list ...
+ *	 mydisplay((PItem_t)item_p);
  *   }
  *
  * -----------------------------------------------------------------------------
@@ -1277,16 +1277,16 @@ dll_delete(dll_t *node_p)
 	node_p->prev_p->next_p = node_p->next_p;
 	node_p->next_p->prev_p = node_p->prev_p;
 }
-#endif  /* ! defined(_dll_t_) */
+#endif	/* ! defined(_dll_t_) */
 
 /* Elements managed in a double linked list */
 
 typedef struct dll_pool {
-	dll_t       free_list;
-	uint16      free_count;
-	uint16      elems_max;
-	uint16      elem_size;
-	dll_t       elements[1];
+	dll_t	    free_list;
+	uint16	    free_count;
+	uint16	    elems_max;
+	uint16	    elem_size;
+	dll_t	    elements[1];
 } dll_pool_t;
 
 dll_pool_t * dll_pool_init(void * osh, uint16 elems_max, uint16 elem_size);

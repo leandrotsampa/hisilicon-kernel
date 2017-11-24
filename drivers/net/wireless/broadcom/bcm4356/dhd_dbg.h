@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -43,8 +43,8 @@ extern void dhd_log_dump_write(int type, const char *fmt, ...);
 extern char *dhd_log_dump_get_timestamp(void);
 #ifndef _DHD_LOG_DUMP_DEFINITIONS_
 #define _DHD_LOG_DUMP_DEFINITIONS_
-#define DLD_BUF_TYPE_GENERAL    0
-#define DLD_BUF_TYPE_SPECIAL    1
+#define DLD_BUF_TYPE_GENERAL	0
+#define DLD_BUF_TYPE_SPECIAL	1
 #define DHD_LOG_DUMP_WRITE(fmt, ...)	dhd_log_dump_write(DLD_BUF_TYPE_GENERAL, fmt, ##__VA_ARGS__)
 #define DHD_LOG_DUMP_WRITE_EX(fmt, ...)	dhd_log_dump_write(DLD_BUF_TYPE_SPECIAL, fmt, ##__VA_ARGS__)
 #endif /* !_DHD_LOG_DUMP_DEFINITIONS_ */
@@ -138,7 +138,7 @@ do {	\
 } while (0)
 #endif /* !DHD_EFI	*/
 #else
-#define DHD_MSGTRACE_LOG(args)  do {if (dhd_msg_level & DHD_MSGTRACE_VAL) printf args;} while (0)
+#define DHD_MSGTRACE_LOG(args)	do {if (dhd_msg_level & DHD_MSGTRACE_VAL) printf args;} while (0)
 #endif /* DHD_LOG_DUMP */
 
 #if defined(DHD_LOG_DUMP) && defined(DHD_EFI)
@@ -152,8 +152,8 @@ do {	\
 #ifdef DHD_LOG_DUMP
 #ifdef DHD_EFI
 #define DHD_ERROR_MEM(args)					\
-do {                                        \
-	if (dhd_msg_level & DHD_ERROR_VAL) {    \
+do {					    \
+	if (dhd_msg_level & DHD_ERROR_VAL) {	\
 		dhd_log_dump_print_drv("[%s] %s: ", dhd_log_dump_get_timestamp(), __FUNCTION__); \
 		dhd_log_dump_print_drv args;	\
 	}	\
@@ -161,8 +161,8 @@ do {                                        \
 #define DHD_ERROR_EX(args)	DHD_ERROR(args)
 #else
 #define DHD_ERROR_MEM(args)					\
-do {                                        \
-	if (dhd_msg_level & DHD_ERROR_VAL) {    \
+do {					    \
+	if (dhd_msg_level & DHD_ERROR_VAL) {	\
 			if (dhd_msg_level & DHD_ERROR_MEM_VAL) {	\
 				printf args;	\
 			}	\
@@ -171,8 +171,8 @@ do {                                        \
 	}	\
 } while (0)
 #define DHD_ERROR_EX(args)					\
-do {                                        \
-	if (dhd_msg_level & DHD_ERROR_VAL) {    \
+do {					    \
+	if (dhd_msg_level & DHD_ERROR_VAL) {	\
 		printf args;	\
 		DHD_LOG_DUMP_WRITE_EX("[%s] %s: ", dhd_log_dump_get_timestamp(), __FUNCTION__);	\
 		DHD_LOG_DUMP_WRITE_EX args;	\
@@ -289,9 +289,9 @@ do {	\
 #define DHD_DBGIF(args)
 
 #if defined(DHD_EFI) && defined(DHD_LOG_DUMP)
-#define DHD_ERROR_MEM(args)                  \
-do {                                        \
-	if (dhd_msg_level & DHD_ERROR_VAL) {    \
+#define DHD_ERROR_MEM(args)		     \
+do {					    \
+	if (dhd_msg_level & DHD_ERROR_VAL) {	\
 		dhd_log_dump_print("[%s] %s: ", dhd_log_dump_get_timestamp(), __FUNCTION__);	\
 		dhd_log_dump_print args;	\
 	}	\

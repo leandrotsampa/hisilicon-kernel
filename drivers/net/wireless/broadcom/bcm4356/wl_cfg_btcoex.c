@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -391,7 +391,7 @@ void* wl_cfg80211_btcoex_init(struct net_device *ndev)
 	btco_inf->bt_state = BT_DHCP_IDLE;
 	btco_inf->ts_dhcp_start = 0;
 	btco_inf->ts_dhcp_ok = 0;
-	/* Set up timer for BT  */
+	/* Set up timer for BT	*/
 	btco_inf->timer_ms = 10;
 	init_timer(&btco_inf->timer);
 	btco_inf->timer.data = (ulong)btco_inf;
@@ -464,9 +464,9 @@ int wl_cfg80211_set_btcoex_dhcp(struct net_device *dev, dhd_pub_t *dhd, char *co
 
 		/* Retrieve and saved orig regs value */
 		if ((saved_status == FALSE) &&
-			(!dev_wlc_intvar_get_reg(dev, "btc_params", 66,  &saved_reg66)) &&
-			(!dev_wlc_intvar_get_reg(dev, "btc_params", 41,  &saved_reg41)) &&
-			(!dev_wlc_intvar_get_reg(dev, "btc_params", 68,  &saved_reg68)))   {
+			(!dev_wlc_intvar_get_reg(dev, "btc_params", 66,	 &saved_reg66)) &&
+			(!dev_wlc_intvar_get_reg(dev, "btc_params", 41,	 &saved_reg41)) &&
+			(!dev_wlc_intvar_get_reg(dev, "btc_params", 68,	 &saved_reg68)))   {
 				saved_status = TRUE;
 				WL_TRACE(("Saved 0x%x 0x%x 0x%x\n",
 					saved_reg66, saved_reg41, saved_reg68));

@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -166,13 +166,13 @@ typedef struct bcm_mem_link {
 	struct bcm_mem_link *next;
 	uint	size;
 	int	line;
-	void 	*osh;
+	void	*osh;
 	char	file[BCM_MEM_FILENAME_LEN];
 } bcm_mem_link_t;
 
 struct osl_cmn_info {
 	atomic_t malloced;
-	atomic_t pktalloced;    /* Number of allocated packet buffers */
+	atomic_t pktalloced;	/* Number of allocated packet buffers */
 	spinlock_t dbgmem_lock;
 	bcm_mem_link_t *dbgmem_list;
 	bcm_mem_link_t *dbgvmem_list;
@@ -183,7 +183,7 @@ typedef struct osl_cmn_info osl_cmn_t;
 
 struct osl_info {
 	osl_pubinfo_t pub;
-	uint32  flags;		/* If specific cases to be handled in the OSL */
+	uint32	flags;		/* If specific cases to be handled in the OSL */
 #ifdef CTFPOOL
 	ctfpool_t *ctfpool;
 #endif /* CTFPOOL */
@@ -289,29 +289,29 @@ static int16 linuxbcmerrormap[] =
 	-EINVAL,		/* BCME_BADKEYIDX */
 	-EINVAL,		/* BCME_RADIOOFF */
 	-EINVAL,		/* BCME_NOTBANDLOCKED */
-	-EINVAL, 		/* BCME_NOCLK */
-	-EINVAL, 		/* BCME_BADRATESET */
-	-EINVAL, 		/* BCME_BADBAND */
+	-EINVAL,		/* BCME_NOCLK */
+	-EINVAL,		/* BCME_BADRATESET */
+	-EINVAL,		/* BCME_BADBAND */
 	-E2BIG,			/* BCME_BUFTOOSHORT */
 	-E2BIG,			/* BCME_BUFTOOLONG */
-	-EBUSY, 		/* BCME_BUSY */
-	-EINVAL, 		/* BCME_NOTASSOCIATED */
-	-EINVAL, 		/* BCME_BADSSIDLEN */
-	-EINVAL, 		/* BCME_OUTOFRANGECHAN */
-	-EINVAL, 		/* BCME_BADCHAN */
-	-EFAULT, 		/* BCME_BADADDR */
-	-ENOMEM, 		/* BCME_NORESOURCE */
+	-EBUSY,			/* BCME_BUSY */
+	-EINVAL,		/* BCME_NOTASSOCIATED */
+	-EINVAL,		/* BCME_BADSSIDLEN */
+	-EINVAL,		/* BCME_OUTOFRANGECHAN */
+	-EINVAL,		/* BCME_BADCHAN */
+	-EFAULT,		/* BCME_BADADDR */
+	-ENOMEM,		/* BCME_NORESOURCE */
 	-EOPNOTSUPP,		/* BCME_UNSUPPORTED */
 	-EMSGSIZE,		/* BCME_BADLENGTH */
 	-EINVAL,		/* BCME_NOTREADY */
 	-EPERM,			/* BCME_EPERM */
-	-ENOMEM, 		/* BCME_NOMEM */
-	-EINVAL, 		/* BCME_ASSOCIATED */
-	-ERANGE, 		/* BCME_RANGE */
-	-EINVAL, 		/* BCME_NOTFOUND */
-	-EINVAL, 		/* BCME_WME_NOT_ENABLED */
-	-EINVAL, 		/* BCME_TSPEC_NOTFOUND */
-	-EINVAL, 		/* BCME_ACM_NOTSUPPORTED */
+	-ENOMEM,		/* BCME_NOMEM */
+	-EINVAL,		/* BCME_ASSOCIATED */
+	-ERANGE,		/* BCME_RANGE */
+	-EINVAL,		/* BCME_NOTFOUND */
+	-EINVAL,		/* BCME_WME_NOT_ENABLED */
+	-EINVAL,		/* BCME_TSPEC_NOTFOUND */
+	-EINVAL,		/* BCME_ACM_NOTSUPPORTED */
 	-EINVAL,		/* BCME_NOT_WME_ASSOCIATION */
 	-EIO,			/* BCME_SDIO_ERROR */
 	-ENODEV,		/* BCME_DONGLE_DOWN */
@@ -323,7 +323,7 @@ static int16 linuxbcmerrormap[] =
 	-ENODATA,		/* BCME_NONRESIDENT */
 	-EINVAL,		/* BCME_SCANREJECT */
 	-EINVAL,		/* BCME_USAGE_ERROR */
-	-EIO,     		/* BCME_IOCTL_ERROR */
+	-EIO,			/* BCME_IOCTL_ERROR */
 	-EIO,			/* BCME_SERIAL_PORT_ERR */
 	-EOPNOTSUPP,	/* BCME_DISABLED, BCME_NOTENABLED */
 	-EIO,			/* BCME_DECERR */
@@ -332,12 +332,12 @@ static int16 linuxbcmerrormap[] =
 	-ERANGE,		/* BCME_REPLAY */
 	-EINVAL,		/* BCME_IE_NOTFOUND */
 	-EINVAL,		/* BCME_DATA_NOTFOUND */
-	-EINVAL,        /* BCME_NOT_GC */
-	-EINVAL,        /* BCME_PRS_REQ_FAILED */
-	-EINVAL,        /* BCME_NO_P2P_SE */
-	-EINVAL,        /* BCME_NOA_PND */
-	-EINVAL,        /* BCME_FRAG_Q_FAILED */
-	-EINVAL,        /* BCME_GET_AF_FAILED */
+	-EINVAL,	/* BCME_NOT_GC */
+	-EINVAL,	/* BCME_PRS_REQ_FAILED */
+	-EINVAL,	/* BCME_NO_P2P_SE */
+	-EINVAL,	/* BCME_NOA_PND */
+	-EINVAL,	/* BCME_FRAG_Q_FAILED */
+	-EINVAL,	/* BCME_GET_AF_FAILED */
 	-EINVAL,		/* BCME_MSCH_NOTREADY */
 
 /* When an new error code is added to bcmutils.h, add os
@@ -884,11 +884,11 @@ osl_ctfpool_stats(osl_t *osh, void *b)
 	ASSERT((osh != NULL) && (bb != NULL));
 
 	bcm_bprintf(bb, "max_obj %d obj_size %d curr_obj %d refills %d\n",
-	            osh->ctfpool->max_obj, osh->ctfpool->obj_size,
-	            osh->ctfpool->curr_obj, osh->ctfpool->refills);
+		    osh->ctfpool->max_obj, osh->ctfpool->obj_size,
+		    osh->ctfpool->curr_obj, osh->ctfpool->refills);
 	bcm_bprintf(bb, "fast_allocs %d fast_frees %d slow_allocs %d\n",
-	            osh->ctfpool->fast_allocs, osh->ctfpool->fast_frees,
-	            osh->ctfpool->slow_allocs);
+		    osh->ctfpool->fast_allocs, osh->ctfpool->fast_frees,
+		    osh->ctfpool->slow_allocs);
 }
 
 static inline struct sk_buff *

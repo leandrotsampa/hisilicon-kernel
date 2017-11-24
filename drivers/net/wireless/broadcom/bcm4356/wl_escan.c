@@ -113,7 +113,7 @@ wl_chspec_from_legacy(chanspec_t legacy_chspec)
 
 	if (wf_chspec_malformed(chspec)) {
 		ESCAN_ERROR(("wl_chspec_from_legacy: output chanspec (0x%04X) malformed\n",
-		        chspec));
+			chspec));
 		return INVCHANSPEC;
 	}
 
@@ -130,7 +130,7 @@ wl_chspec_to_legacy(chanspec_t chspec)
 
 	if (wf_chspec_malformed(chspec)) {
 		ESCAN_ERROR(("wl_chspec_to_legacy: input chanspec (0x%04X) malformed\n",
-		        chspec));
+			chspec));
 		return INVCHANSPEC;
 	}
 
@@ -159,9 +159,9 @@ wl_chspec_to_legacy(chanspec_t chspec)
 		/* cannot express the bandwidth */
 		char chanbuf[CHANSPEC_STR_LEN];
 		ESCAN_ERROR((
-		        "wl_chspec_to_legacy: unable to convert chanspec %s (0x%04X) "
-		        "to pre-11ac format\n",
-		        wf_chspec_ntoa(chspec, chanbuf), chspec));
+			"wl_chspec_to_legacy: unable to convert chanspec %s (0x%04X) "
+			"to pre-11ac format\n",
+			wf_chspec_ntoa(chspec, chanbuf), chspec));
 		return INVCHANSPEC;
 	}
 
@@ -972,8 +972,8 @@ wl_escan_prep(struct wl_escan_info *escan, wl_uint32_list_t *list,
 		ESCAN_SCAN(("1: scan for %s size=%d\n", ssid_tmp.SSID, ssid_tmp.SSID_len));
 		/* Adding mask to channel numbers */
 		params->channel_num =
-	        htod32((2 << WL_SCAN_PARAMS_NSSID_SHIFT) |
-	               (n_channels & WL_SCAN_PARAMS_COUNT_MASK));
+		htod32((2 << WL_SCAN_PARAMS_NSSID_SHIFT) |
+		       (n_channels & WL_SCAN_PARAMS_COUNT_MASK));
 	}
 	else {
 		ESCAN_SCAN(("Broadcast scan\n"));
@@ -1009,7 +1009,7 @@ static void wl_escan_timeout(unsigned long data)
 		bi = next_bss(bss_list, bi);
 		for_each_bss(bss_list, bi, i) {
 			channel = wf_chspec_ctlchan(wl_chspec_driver_to_host(escan->ioctl_ver, bi->chanspec));
-			ESCAN_ERROR(("SSID :%s  Channel :%d\n", bi->SSID, channel));
+			ESCAN_ERROR(("SSID :%s	Channel :%d\n", bi->SSID, channel));
 		}
 	}
 
@@ -1057,7 +1057,7 @@ wl_escan_set_scan(
 
 	escan = g_escan;
 	if (!escan) {
-		ESCAN_ERROR(("device is not ready\n"));           \
+		ESCAN_ERROR(("device is not ready\n"));		  \
 		return -EIO;
 	}
 	mutex_lock(&escan->usr_sync);
@@ -1348,7 +1348,7 @@ static void wl_escan_deinit(void)
 
 	printf("%s: Enter\n", __FUNCTION__);
 	if (!escan) {
-		ESCAN_ERROR(("device is not ready\n"));           \
+		ESCAN_ERROR(("device is not ready\n"));		  \
 		return;
 	}
 	wl_destroy_event_handler(escan);
@@ -1370,7 +1370,7 @@ static s32 wl_escan_init(void)
 
 	printf("%s: Enter\n", __FUNCTION__);
 	if (!escan) {
-		ESCAN_ERROR(("device is not ready\n"));           \
+		ESCAN_ERROR(("device is not ready\n"));		  \
 		return -EIO;
 	}
 
@@ -1403,7 +1403,7 @@ void wl_escan_detach(dhd_pub_t *dhdp)
 	printf("%s: Enter\n", __FUNCTION__);
 
 	if (!escan) {
-		ESCAN_ERROR(("device is not ready\n"));           \
+		ESCAN_ERROR(("device is not ready\n"));		  \
 		return;
 	}
 

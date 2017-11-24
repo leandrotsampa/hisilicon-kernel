@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -154,7 +154,7 @@ wl_cfgvendor_get_feature_set(struct wiphy *wiphy,
 	reply = dhd_dev_get_feature_set(bcmcfg_to_prmry_ndev(cfg));
 
 	err =  wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        &reply, sizeof(int));
+		&reply, sizeof(int));
 	if (unlikely(err))
 		WL_ERR(("Vendor Command reply failed ret:%d \n", err));
 
@@ -355,7 +355,7 @@ wl_cfgvendor_gscan_get_capabilities(struct wiphy *wiphy,
 	}
 
 	err =  wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        reply, reply_len);
+		reply, reply_len);
 
 	if (unlikely(err)) {
 		WL_ERR(("Vendor Command reply failed ret:%d \n", err));
@@ -389,12 +389,12 @@ wl_cfgvendor_gscan_get_batch_results(struct wiphy *wiphy,
 		return -EBUSY;
 	}
 	results = dhd_dev_pno_get_gscan(bcmcfg_to_prmry_ndev(cfg),
-	             DHD_PNO_GET_BATCH_RESULTS, NULL, &reply_len);
+		     DHD_PNO_GET_BATCH_RESULTS, NULL, &reply_len);
 
 	if (!results) {
 		WL_ERR(("No results to send %d\n", err));
 		err =  wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-		        results, 0);
+			results, 0);
 
 		if (unlikely(err))
 			WL_ERR(("Vendor Command reply failed ret:%d \n", err));
@@ -404,8 +404,8 @@ wl_cfgvendor_gscan_get_batch_results(struct wiphy *wiphy,
 	num_scan_ids = reply_len & 0xFFFF;
 	num_results = (reply_len & 0xFFFF0000) >> 16;
 	mem_needed = (num_results * sizeof(wifi_gscan_result_t)) +
-	             (num_scan_ids * GSCAN_BATCH_RESULT_HDR_LEN) +
-	             VENDOR_REPLY_OVERHEAD + SCAN_RESULTS_COMPLETE_FLAG_LEN;
+		     (num_scan_ids * GSCAN_BATCH_RESULT_HDR_LEN) +
+		     VENDOR_REPLY_OVERHEAD + SCAN_RESULTS_COMPLETE_FLAG_LEN;
 
 	if (mem_needed > (int32)NLMSG_DEFAULT_SIZE) {
 		mem_needed = (int32)NLMSG_DEFAULT_SIZE;
@@ -422,7 +422,7 @@ wl_cfgvendor_gscan_get_batch_results(struct wiphy *wiphy,
 	}
 	iter = results;
 	complete_flag = nla_reserve(skb, GSCAN_ATTRIBUTE_SCAN_RESULTS_COMPLETE,
-	                    sizeof(is_done));
+			    sizeof(is_done));
 	mem_needed = mem_needed - (SCAN_RESULTS_COMPLETE_FLAG_LEN + VENDOR_REPLY_OVERHEAD);
 
 	while (iter) {
@@ -875,7 +875,7 @@ static int wl_cfgvendor_epno_cfg(struct wiphy *wiphy,
 								break;
 							case GSCAN_ATTRIBUTE_EPNO_AUTH:
 								ssid_elem->wpa_auth =
-								        nla_get_u32(inner);
+									nla_get_u32(inner);
 								break;
 						}
 					}
@@ -1020,7 +1020,7 @@ wl_cfgvendor_gscan_get_channel_list(struct wiphy *wiphy,
 		err = -EINVAL;
 		return err;
 	}
-	num_channels =  reply_len/ sizeof(uint32);
+	num_channels =	reply_len/ sizeof(uint32);
 	mem_needed = reply_len + VENDOR_REPLY_OVERHEAD + (ATTRIBUTE_U32_LEN * 2);
 
 	/* Alloc the SKB for vendor_event */
@@ -1526,7 +1526,7 @@ wl_cfgvendor_rtt_get_capability(struct wiphy *wiphy, struct wireless_dev *wdev,
 		goto exit;
 	}
 	err =  wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        &capability, sizeof(capability));
+		&capability, sizeof(capability));
 
 	if (unlikely(err)) {
 		WL_ERR(("Vendor Command reply failed ret:%d \n", err));
@@ -1575,7 +1575,7 @@ wl_cfgvendor_rtt_get_responder_info(struct wiphy *wiphy, struct wireless_dev *wd
 		return err;
 	}
 	err =  wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        &responder_info, sizeof(responder_info));
+		&responder_info, sizeof(responder_info));
 
 	if (unlikely(err)) {
 		WL_ERR(("Vendor cmd reply for -get_avail_ch failed ret:%d \n", err));
@@ -1653,7 +1653,7 @@ static int wl_cfgvendor_enable_lazy_roam(struct wiphy *wiphy,
 		lazy_roam_enable_flag = nla_get_u32(data);
 
 		err = dhd_dev_lazy_roam_enable(bcmcfg_to_prmry_ndev(cfg),
-		           lazy_roam_enable_flag);
+			   lazy_roam_enable_flag);
 
 		if (unlikely(err))
 			WL_ERR(("Could not enable lazy roam:%d \n", err));
@@ -1803,7 +1803,7 @@ wl_cfgvendor_set_bssid_pref(struct wiphy *wiphy,
 		}
 	}
 	err = dhd_dev_set_lazy_roam_bssid_pref(bcmcfg_to_prmry_ndev(cfg),
-	          bssid_pref, flush);
+		  bssid_pref, flush);
 exit:
 	kfree(bssid_pref);
 	return err;
@@ -1866,7 +1866,7 @@ wl_cfgvendor_set_bssid_blacklist(struct wiphy *wiphy,
 			}
 	}
 	err = dhd_dev_set_blacklist_bssid(bcmcfg_to_prmry_ndev(cfg),
-	          blacklist, mem_needed, flush);
+		  blacklist, mem_needed, flush);
 exit:
 	kfree(blacklist);
 	return err;
@@ -1899,7 +1899,7 @@ wl_cfgvendor_set_ssid_whitelist(struct wiphy *wiphy,
 				if (num)
 					mem_needed += (num - 1) * sizeof(ssid_info_t);
 				ssid_whitelist = (wl_ssid_whitelist_t *)
-				        kzalloc(mem_needed, GFP_KERNEL);
+					kzalloc(mem_needed, GFP_KERNEL);
 				if (ssid_whitelist == NULL) {
 					WL_ERR(("%s: Can't malloc %d bytes\n",
 					      __FUNCTION__, mem_needed));
@@ -1932,7 +1932,7 @@ wl_cfgvendor_set_ssid_whitelist(struct wiphy *wiphy,
 							break;
 						case GSCAN_ATTRIBUTE_WL_SSID_LEN:
 							ssid_elem->SSID_len = (uint8)
-							        nla_get_u32(inner);
+								nla_get_u32(inner);
 							break;
 					}
 				}
@@ -1945,7 +1945,7 @@ wl_cfgvendor_set_ssid_whitelist(struct wiphy *wiphy,
 	}
 
 	err = dhd_dev_set_whitelist_ssid(bcmcfg_to_prmry_ndev(cfg),
-	          ssid_whitelist, mem_needed, flush);
+		  ssid_whitelist, mem_needed, flush);
 exit:
 	kfree(ssid_whitelist);
 	return err;
@@ -2650,7 +2650,7 @@ static int wl_cfgvendor_dbg_get_version(struct wiphy *wiphy,
 		goto exit;
 	}
 	ret = wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        buf_ptr, strlen(buf_ptr));
+		buf_ptr, strlen(buf_ptr));
 exit:
 	kfree(buf_ptr);
 	return ret;
@@ -2744,7 +2744,7 @@ static int wl_cfgvendor_dbg_get_feature(struct wiphy *wiphy,
 		goto exit;
 	}
 	ret = wl_cfgvendor_send_cmd_reply(wiphy, bcmcfg_to_prmry_ndev(cfg),
-	        &supported_features, sizeof(supported_features));
+		&supported_features, sizeof(supported_features));
 	if (ret < 0) {
 		WL_ERR(("wl_cfgvendor_send_cmd_reply failed ret:%d\n", ret));
 		goto exit;
@@ -3669,10 +3669,10 @@ int wl_cfgvendor_detach(struct wiphy *wiphy)
 {
 	WL_INFORM(("Vendor: Unregister BRCM cfg80211 vendor interface \n"));
 
-	wiphy->vendor_commands  = NULL;
-	wiphy->vendor_events    = NULL;
+	wiphy->vendor_commands	= NULL;
+	wiphy->vendor_events	= NULL;
 	wiphy->n_vendor_commands = 0;
-	wiphy->n_vendor_events  = 0;
+	wiphy->n_vendor_events	= 0;
 
 	return 0;
 }

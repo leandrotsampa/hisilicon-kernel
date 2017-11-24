@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -39,30 +39,30 @@
 #define OUI_BRCM    0x001018
 #define OUI_GOOGLE  0x001A11
 #define BRCM_VENDOR_SUBCMD_PRIV_STR	1
-#define ATTRIBUTE_U32_LEN                  (NLA_HDRLEN  + 4)
-#define VENDOR_ID_OVERHEAD                 ATTRIBUTE_U32_LEN
-#define VENDOR_SUBCMD_OVERHEAD             ATTRIBUTE_U32_LEN
-#define VENDOR_DATA_OVERHEAD               (NLA_HDRLEN)
+#define ATTRIBUTE_U32_LEN		   (NLA_HDRLEN	+ 4)
+#define VENDOR_ID_OVERHEAD		   ATTRIBUTE_U32_LEN
+#define VENDOR_SUBCMD_OVERHEAD		   ATTRIBUTE_U32_LEN
+#define VENDOR_DATA_OVERHEAD		   (NLA_HDRLEN)
 
 enum brcm_vendor_attr {
 	BRCM_ATTR_DRIVER_CMD,
 	BRCM_ATTR_DRIVER_MAX
 };
 
-#define SCAN_RESULTS_COMPLETE_FLAG_LEN       ATTRIBUTE_U32_LEN
-#define SCAN_INDEX_HDR_LEN                   (NLA_HDRLEN)
-#define SCAN_ID_HDR_LEN                      ATTRIBUTE_U32_LEN
-#define SCAN_FLAGS_HDR_LEN                   ATTRIBUTE_U32_LEN
-#define GSCAN_NUM_RESULTS_HDR_LEN            ATTRIBUTE_U32_LEN
-#define GSCAN_CH_BUCKET_MASK_HDR_LEN         ATTRIBUTE_U32_LEN
-#define GSCAN_RESULTS_HDR_LEN                (NLA_HDRLEN)
+#define SCAN_RESULTS_COMPLETE_FLAG_LEN	     ATTRIBUTE_U32_LEN
+#define SCAN_INDEX_HDR_LEN		     (NLA_HDRLEN)
+#define SCAN_ID_HDR_LEN			     ATTRIBUTE_U32_LEN
+#define SCAN_FLAGS_HDR_LEN		     ATTRIBUTE_U32_LEN
+#define GSCAN_NUM_RESULTS_HDR_LEN	     ATTRIBUTE_U32_LEN
+#define GSCAN_CH_BUCKET_MASK_HDR_LEN	     ATTRIBUTE_U32_LEN
+#define GSCAN_RESULTS_HDR_LEN		     (NLA_HDRLEN)
 #define GSCAN_BATCH_RESULT_HDR_LEN  (SCAN_INDEX_HDR_LEN + SCAN_ID_HDR_LEN + \
 									SCAN_FLAGS_HDR_LEN + \
-							        GSCAN_NUM_RESULTS_HDR_LEN + \
+								GSCAN_NUM_RESULTS_HDR_LEN + \
 								GSCAN_CH_BUCKET_MASK_HDR_LEN + \
 									GSCAN_RESULTS_HDR_LEN)
 
-#define VENDOR_REPLY_OVERHEAD       (VENDOR_ID_OVERHEAD + \
+#define VENDOR_REPLY_OVERHEAD	    (VENDOR_ID_OVERHEAD + \
 									VENDOR_SUBCMD_OVERHEAD + \
 									VENDOR_DATA_OVERHEAD)
 
@@ -87,18 +87,18 @@ typedef enum {
 
 	/* define all vendor startup commands between 0x0 and 0x0FFF */
 	VENDOR_NL80211_SUBCMD_RANGE_START = 0x0001,
-	VENDOR_NL80211_SUBCMD_RANGE_END   = 0x0FFF,
+	VENDOR_NL80211_SUBCMD_RANGE_END	  = 0x0FFF,
 
 	/* define all GScan related commands between 0x1000 and 0x10FF */
 	ANDROID_NL80211_SUBCMD_GSCAN_RANGE_START = 0x1000,
-	ANDROID_NL80211_SUBCMD_GSCAN_RANGE_END   = 0x10FF,
+	ANDROID_NL80211_SUBCMD_GSCAN_RANGE_END	 = 0x10FF,
 
 	/* define all RTT related commands between 0x1100 and 0x11FF */
 	ANDROID_NL80211_SUBCMD_RTT_RANGE_START = 0x1100,
 	ANDROID_NL80211_SUBCMD_RTT_RANGE_END   = 0x11FF,
 
 	ANDROID_NL80211_SUBCMD_LSTATS_RANGE_START = 0x1200,
-	ANDROID_NL80211_SUBCMD_LSTATS_RANGE_END   = 0x12FF,
+	ANDROID_NL80211_SUBCMD_LSTATS_RANGE_END	  = 0x12FF,
 
 	ANDROID_NL80211_SUBCMD_TDLS_RANGE_START = 0x1300,
 	ANDROID_NL80211_SUBCMD_TDLS_RANGE_END	= 0x13FF,
@@ -112,7 +112,7 @@ typedef enum {
 
 	/* define all wifi calling related commands between 0x1600 and 0x16FF */
 	ANDROID_NL80211_SUBCMD_WIFI_OFFLOAD_RANGE_START = 0x1600,
-	ANDROID_NL80211_SUBCMD_WIFI_OFFLOAD_RANGE_END   = 0x16FF,
+	ANDROID_NL80211_SUBCMD_WIFI_OFFLOAD_RANGE_END	= 0x16FF,
 
 	/* define all NAN related commands between 0x1700 and 0x17FF */
 	ANDROID_NL80211_SUBCMD_NAN_RANGE_START = 0x1700,
@@ -218,10 +218,10 @@ enum gscan_attributes {
     /* remaining reserved for additional attributes */
     GSCAN_ATTRIBUTE_NUM_OF_RESULTS = GSCAN_ATTR_SET3,
     GSCAN_ATTRIBUTE_FLUSH_RESULTS,
-    GSCAN_ATTRIBUTE_SCAN_RESULTS,                       /* flat array of wifi_scan_result */
-    GSCAN_ATTRIBUTE_SCAN_ID,                            /* indicates scan number */
-    GSCAN_ATTRIBUTE_SCAN_FLAGS,                         /* indicates if scan was aborted */
-    GSCAN_ATTRIBUTE_AP_FLAGS,                           /* flags on significant change event */
+    GSCAN_ATTRIBUTE_SCAN_RESULTS,			/* flat array of wifi_scan_result */
+    GSCAN_ATTRIBUTE_SCAN_ID,				/* indicates scan number */
+    GSCAN_ATTRIBUTE_SCAN_FLAGS,				/* indicates if scan was aborted */
+    GSCAN_ATTRIBUTE_AP_FLAGS,				/* flags on significant change event */
     GSCAN_ATTRIBUTE_NUM_CHANNELS,
     GSCAN_ATTRIBUTE_CHANNEL_LIST,
     GSCAN_ATTRIBUTE_CH_BUCKET_BITMASK,
@@ -494,16 +494,16 @@ enum wake_stat_attributes {
 
 typedef struct rx_data_cnt_details_t {
 	int rx_unicast_cnt;		/* Total rx unicast packet which woke up host */
-	int rx_multicast_cnt;   /* Total rx multicast packet which woke up host */
-	int rx_broadcast_cnt;   /* Total rx broadcast packet which woke up host */
+	int rx_multicast_cnt;	/* Total rx multicast packet which woke up host */
+	int rx_broadcast_cnt;	/* Total rx broadcast packet which woke up host */
 } RX_DATA_WAKE_CNT_DETAILS;
 
 typedef struct rx_wake_pkt_type_classification_t {
-	int icmp_pkt;   /* wake icmp packet count */
-	int icmp6_pkt;  /* wake icmp6 packet count */
-	int icmp6_ra;   /* wake icmp6 RA packet count */
-	int icmp6_na;   /* wake icmp6 NA packet count */
-	int icmp6_ns;   /* wake icmp6 NS packet count */
+	int icmp_pkt;	/* wake icmp packet count */
+	int icmp6_pkt;	/* wake icmp6 packet count */
+	int icmp6_ra;	/* wake icmp6 RA packet count */
+	int icmp6_na;	/* wake icmp6 NA packet count */
+	int icmp6_ns;	/* wake icmp6 NS packet count */
 } RX_WAKE_PKT_TYPE_CLASSFICATION;
 
 typedef struct rx_multicast_cnt_t {
@@ -517,12 +517,12 @@ typedef struct wlan_driver_wake_reason_cnt_t {
 	int *cmd_event_wake_cnt;     /* Individual wake count array, each index a reason */
 	int cmd_event_wake_cnt_sz;   /* Max number of cmd event wake reasons */
 	int cmd_event_wake_cnt_used; /* Number of cmd event wake reasons specific to the driver */
-	int total_driver_fw_local_wake;    /* Total count of drive/fw wakes, for local reasons */
-	int *driver_fw_local_wake_cnt;     /* Individual wake count array, each index a reason */
+	int total_driver_fw_local_wake;	   /* Total count of drive/fw wakes, for local reasons */
+	int *driver_fw_local_wake_cnt;	   /* Individual wake count array, each index a reason */
 	int driver_fw_local_wake_cnt_sz;   /* Max number of local driver/fw wake reasons */
 	/* Number of local driver/fw wake reasons specific to the driver */
 	int driver_fw_local_wake_cnt_used;
-	int total_rx_data_wake;     /* total data rx packets, that woke up host */
+	int total_rx_data_wake;	    /* total data rx packets, that woke up host */
 	RX_DATA_WAKE_CNT_DETAILS rx_wake_details;
 	RX_WAKE_PKT_TYPE_CLASSFICATION rx_wake_pkt_classification_info;
 	RX_MULTICAST_WAKE_DATA_CNT rx_multicast_wake_pkt_info;
@@ -536,9 +536,9 @@ typedef struct wlan_driver_wake_reason_cnt_t {
 extern int wl_cfgvendor_attach(struct wiphy *wiphy, dhd_pub_t *dhd);
 extern int wl_cfgvendor_detach(struct wiphy *wiphy);
 extern int wl_cfgvendor_send_async_event(struct wiphy *wiphy,
-                  struct net_device *dev, int event_id, const void  *data, int len);
+		  struct net_device *dev, int event_id, const void  *data, int len);
 extern int wl_cfgvendor_send_hotlist_event(struct wiphy *wiphy,
-                struct net_device *dev, void  *data, int len, wl_vendor_event_t event);
+		struct net_device *dev, void  *data, int len, wl_vendor_event_t event);
 #else
 static INLINE int wl_cfgvendor_attach(struct wiphy *wiphy,
 		dhd_pub_t *dhd) { UNUSED_PARAMETER(wiphy); UNUSED_PARAMETER(dhd); return 0; }

@@ -36,12 +36,12 @@ enum escan_state {
 struct wl_escan_info;
 
 typedef s32(*ESCAN_EVENT_HANDLER) (struct wl_escan_info *escan,
-                            const wl_event_msg_t *e, void *data);
+			    const wl_event_msg_t *e, void *data);
 
 typedef struct wl_escan_info {
 	struct net_device *dev;
 	dhd_pub_t *pub;
-	struct timer_list scan_timeout;   /* Timer for catch scan event timeout */
+	struct timer_list scan_timeout;	  /* Timer for catch scan event timeout */
 	int    escan_state;
 	int ioctl_ver;
 
@@ -53,7 +53,7 @@ typedef struct wl_escan_info {
 	u8 *escan_ioctl_buf;
 	spinlock_t eq_lock;	/* for event queue synchronization */
 	struct list_head eq_list;	/* used for event queue */
-	tsk_ctl_t event_tsk;  		/* task of main event handler thread */
+	tsk_ctl_t event_tsk;		/* task of main event handler thread */
 	ESCAN_EVENT_HANDLER evt_handler[WLC_E_LAST];
 	struct mutex usr_sync;	/* maily for up/down synchronization */
 } wl_escan_info_t;

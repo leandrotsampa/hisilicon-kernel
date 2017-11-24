@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -129,14 +129,14 @@ typedef enum
 * Function:   osl_ext_sem_create
 *
 * Purpose:    Creates a counting semaphore object, which can subsequently be
-*             used for thread notification.
+*	      used for thread notification.
 *
 * Parameters: name     (in)  Name to assign to the semaphore (must be unique).
-*             init_cnt (in)  Initial count that the semaphore should have.
-*             sem      (out) Newly created semaphore.
+*	      init_cnt (in)  Initial count that the semaphore should have.
+*	      sem      (out) Newly created semaphore.
 *
 * Returns:    OSL_EXT_SUCCESS if the semaphore was created successfully, or an
-*             error code if the semaphore could not be created.
+*	      error code if the semaphore could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_sem_create(char *name, int init_cnt, osl_ext_sem_t *sem);
@@ -149,7 +149,7 @@ osl_ext_status_t osl_ext_sem_create(char *name, int init_cnt, osl_ext_sem_t *sem
 * Parameters: sem (mod) Semaphore object to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the semaphore was deleted successfully, or an
-*             error code if the semaphore could not be created.
+*	      error code if the semaphore could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_sem_delete(osl_ext_sem_t *sem);
@@ -158,12 +158,12 @@ osl_ext_status_t osl_ext_sem_delete(osl_ext_sem_t *sem);
 * Function:   osl_ext_sem_give
 *
 * Purpose:    Increments the count associated with the semaphore. This will
-*             cause one thread blocked on a take to wake up.
+*	      cause one thread blocked on a take to wake up.
 *
 * Parameters: sem (mod) Semaphore object to give.
 *
 * Returns:    OSL_EXT_SUCCESS if the semaphore was given successfully, or an
-*             error code if the semaphore could not be created.
+*	      error code if the semaphore could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_sem_give(osl_ext_sem_t *sem);
@@ -172,18 +172,18 @@ osl_ext_status_t osl_ext_sem_give(osl_ext_sem_t *sem);
 * Function:   osl_ext_sem_take
 *
 * Purpose:    Decrements the count associated with the semaphore. If the count
-*             is less than zero, then the calling task will become blocked until
-*             another thread does a give on the semaphore. This function will only
-*             block the calling thread for timeout_msec milliseconds, before
-*             returning with OSL_EXT_TIMEOUT.
+*	      is less than zero, then the calling task will become blocked until
+*	      another thread does a give on the semaphore. This function will only
+*	      block the calling thread for timeout_msec milliseconds, before
+*	      returning with OSL_EXT_TIMEOUT.
 *
-* Parameters: sem          (mod) Semaphore object to take.
-*             timeout_msec (in)  Number of milliseconds to wait for the
-*                                semaphore to enter a state where it can be
-*                                taken.
+* Parameters: sem	   (mod) Semaphore object to take.
+*	      timeout_msec (in)	 Number of milliseconds to wait for the
+*				 semaphore to enter a state where it can be
+*				 taken.
 *
 * Returns:    OSL_EXT_SUCCESS if the semaphore was taken successfully, or an
-*             error code if the semaphore could not be created.
+*	      error code if the semaphore could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_sem_take(osl_ext_sem_t *sem, osl_ext_time_ms_t timeout_msec);
@@ -197,13 +197,13 @@ osl_ext_status_t osl_ext_sem_take(osl_ext_sem_t *sem, osl_ext_time_ms_t timeout_
 * Function:   osl_ext_mutex_create
 *
 * Purpose:    Creates a mutex object, which can subsequently be used to control
-*             mutually exclusion of resources.
+*	      mutually exclusion of resources.
 *
 * Parameters: name  (in)  Name to assign to the mutex (must be unique).
-*             mutex (out) Mutex object to initialize.
+*	      mutex (out) Mutex object to initialize.
 *
 * Returns:    OSL_EXT_SUCCESS if the mutex was created successfully, or an
-*             error code if the mutex could not be created.
+*	      error code if the mutex could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_mutex_create(char *name, osl_ext_mutex_t *mutex);
@@ -216,7 +216,7 @@ osl_ext_status_t osl_ext_mutex_create(char *name, osl_ext_mutex_t *mutex);
 * Parameters: mutex (mod) Mutex object to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the mutex was deleted successfully, or an
-*             error code if the mutex could not be created.
+*	      error code if the mutex could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_mutex_delete(osl_ext_mutex_t *mutex);
@@ -225,14 +225,14 @@ osl_ext_status_t osl_ext_mutex_delete(osl_ext_mutex_t *mutex);
 * Function:   osl_ext_mutex_acquire
 *
 * Purpose:    Acquires the indicated mutual exclusion object. If the object is
-*             currently acquired by another task, then this function will wait
-*             for timeout_msec milli-seconds before returning with OSL_EXT_TIMEOUT.
+*	      currently acquired by another task, then this function will wait
+*	      for timeout_msec milli-seconds before returning with OSL_EXT_TIMEOUT.
 *
-* Parameters: mutex        (mod) Mutex object to acquire.
-*             timeout_msec (in)  Number of milliseconds to wait for the mutex.
+* Parameters: mutex	   (mod) Mutex object to acquire.
+*	      timeout_msec (in)	 Number of milliseconds to wait for the mutex.
 *
 * Returns:    OSL_EXT_SUCCESS if the mutex was acquired successfully, or an
-*             error code if the mutex could not be created.
+*	      error code if the mutex could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_mutex_acquire(osl_ext_mutex_t *mutex, osl_ext_time_ms_t timeout_msec);
@@ -241,12 +241,12 @@ osl_ext_status_t osl_ext_mutex_acquire(osl_ext_mutex_t *mutex, osl_ext_time_ms_t
 * Function:   osl_ext_mutex_release
 *
 * Purpose:    Releases the indicated mutual exclusion object. This makes it
-*             available for another task to acquire.
+*	      available for another task to acquire.
 *
 * Parameters: mutex (mod) Mutex object to release.
 *
 * Returns:    OSL_EXT_SUCCESS if the mutex was released successfully, or an
-*             error code if the mutex could not be created.
+*	      error code if the mutex could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_mutex_release(osl_ext_mutex_t *mutex);
@@ -261,23 +261,23 @@ osl_ext_status_t osl_ext_mutex_release(osl_ext_mutex_t *mutex);
 *
 * Purpose:    Creates a timer object.
 *
-* Parameters: name (in)         Name of timer.
-*             timeout_msec (in) Invoke callback after this number of milliseconds.
-*             mode (in)         One-shot or periodic timer.
-*             func (in)         Callback function to invoke on timer expiry.
-*             arg (in)          Argument to callback function.
-*             timer (out)       Timer object to create.
+* Parameters: name (in)		Name of timer.
+*	      timeout_msec (in) Invoke callback after this number of milliseconds.
+*	      mode (in)		One-shot or periodic timer.
+*	      func (in)		Callback function to invoke on timer expiry.
+*	      arg (in)		Argument to callback function.
+*	      timer (out)	Timer object to create.
 *
 * Note: The function callback occurs in interrupt context. The application is
-*       required to provide context switch for the callback if required.
+*	required to provide context switch for the callback if required.
 *
 * Returns:    OSL_EXT_SUCCESS if the timer was created successfully, or an
-*             error code if the timer could not be created.
+*	      error code if the timer could not be created.
 *****************************************************************************
 */
 osl_ext_status_t
 osl_ext_timer_create(char *name, osl_ext_time_ms_t timeout_msec, osl_ext_timer_mode_t mode,
-                 osl_ext_timer_callback func, osl_ext_timer_arg_t arg, osl_ext_timer_t *timer);
+		 osl_ext_timer_callback func, osl_ext_timer_arg_t arg, osl_ext_timer_t *timer);
 
 /****************************************************************************
 * Function:   osl_ext_timer_delete
@@ -287,7 +287,7 @@ osl_ext_timer_create(char *name, osl_ext_time_ms_t timeout_msec, osl_ext_timer_m
 * Parameters: timer (mod) Timer object to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the timer was created successfully, or an
-*             error code if the timer could not be created.
+*	      error code if the timer could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_timer_delete(osl_ext_timer_t *timer);
@@ -297,12 +297,12 @@ osl_ext_status_t osl_ext_timer_delete(osl_ext_timer_t *timer);
 *
 * Purpose:    Start a previously created timer object.
 *
-* Parameters: timer (in)        Timer object.
-*             timeout_msec (in) Invoke callback after this number of milliseconds.
-*             mode (in)         One-shot or periodic timer.
+* Parameters: timer (in)	Timer object.
+*	      timeout_msec (in) Invoke callback after this number of milliseconds.
+*	      mode (in)		One-shot or periodic timer.
 *
 * Returns:    OSL_EXT_SUCCESS if the timer was created successfully, or an
-*             error code if the timer could not be created.
+*	      error code if the timer could not be created.
 *****************************************************************************
 */
 osl_ext_status_t
@@ -314,10 +314,10 @@ osl_ext_timer_start(osl_ext_timer_t *timer,
 *
 * Purpose:    Stop a previously created timer object.
 *
-* Parameters: timer (in)        Timer object.
+* Parameters: timer (in)	Timer object.
 *
 * Returns:    OSL_EXT_SUCCESS if the timer was created successfully, or an
-*             error code if the timer could not be created.
+*	      error code if the timer could not be created.
 *****************************************************************************
 */
 osl_ext_status_t
@@ -344,16 +344,16 @@ osl_ext_time_ms_t osl_ext_time_get(void);
 *
 * Purpose:    Create a task.
 *
-* Parameters: name       (in)  Pointer to task string descriptor.
-*             stack      (in)  Pointer to stack. NULL to allocate.
-*             stack_size (in)  Stack size - in bytes.
-*             priority   (in)  Abstract task priority.
-*             func       (in)  A pointer to the task entry point function.
-*             arg        (in)  Value passed into task entry point function.
-*             task       (out) Task to create.
+* Parameters: name	 (in)  Pointer to task string descriptor.
+*	      stack	 (in)  Pointer to stack. NULL to allocate.
+*	      stack_size (in)  Stack size - in bytes.
+*	      priority	 (in)  Abstract task priority.
+*	      func	 (in)  A pointer to the task entry point function.
+*	      arg	 (in)  Value passed into task entry point function.
+*	      task	 (out) Task to create.
 *
 * Returns:    OSL_EXT_SUCCESS if the task was created successfully, or an
-*             error code if the task could not be created.
+*	      error code if the task could not be created.
 *****************************************************************************
 */
 
@@ -374,7 +374,7 @@ osl_ext_status_t osl_ext_task_create_ex(char* name,
 * Parameters: task (mod) Task to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the task was created successfully, or an
-*             error code if the task could not be created.
+*	      error code if the task could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_task_delete(osl_ext_task_t *task);
@@ -397,7 +397,7 @@ osl_ext_task_t *osl_ext_task_current(void);
 * Function:   osl_ext_task_yield
 *
 * Purpose:    Yield the CPU to other tasks of the same priority that are
-*             ready-to-run.
+*	      ready-to-run.
 *
 * Parameters: None.
 *
@@ -430,12 +430,12 @@ osl_ext_status_t osl_ext_task_enable_stack_check(void);
 * Purpose:    Create a queue.
 *
 * Parameters: name     (in)  Name to assign to the queue (must be unique).
-*             buffer   (in)  Queue buffer. NULL to allocate.
-*             size     (in)  Size of the queue.
-*             queue    (out) Newly created queue.
+*	      buffer   (in)  Queue buffer. NULL to allocate.
+*	      size     (in)  Size of the queue.
+*	      queue    (out) Newly created queue.
 *
 * Returns:    OSL_EXT_SUCCESS if the queue was created successfully, or an
-*             error code if the queue could not be created.
+*	      error code if the queue could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_create(char *name,
@@ -450,7 +450,7 @@ osl_ext_status_t osl_ext_queue_create(char *name,
 * Parameters: queue    (mod) Queue object to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the queue was deleted successfully, or an
-*             error code if the queue could not be deleteed.
+*	      error code if the queue could not be deleteed.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_delete(osl_ext_queue_t *queue);
@@ -459,13 +459,13 @@ osl_ext_status_t osl_ext_queue_delete(osl_ext_queue_t *queue);
 * Function:   osl_ext_queue_send
 *
 * Purpose:    Send/add data to the queue. This function will not block the
-*             calling thread if the queue is full.
+*	      calling thread if the queue is full.
 *
 * Parameters: queue    (mod) Queue object.
-*             data     (in)  Data pointer to be queued.
+*	      data     (in)  Data pointer to be queued.
 *
 * Returns:    OSL_EXT_SUCCESS if the data was queued successfully, or an
-*             error code if the data could not be queued.
+*	      error code if the data could not be queued.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_send(osl_ext_queue_t *queue, void *data);
@@ -474,13 +474,13 @@ osl_ext_status_t osl_ext_queue_send(osl_ext_queue_t *queue, void *data);
 * Function:   osl_ext_queue_send_synchronous
 *
 * Purpose:    Send/add data to the queue. This function will block the
-*             calling thread until the data is dequeued.
+*	      calling thread until the data is dequeued.
 *
 * Parameters: queue    (mod) Queue object.
-*             data     (in)  Data pointer to be queued.
+*	      data     (in)  Data pointer to be queued.
 *
 * Returns:    OSL_EXT_SUCCESS if the data was queued successfully, or an
-*             error code if the data could not be queued.
+*	      error code if the data could not be queued.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_send_synchronous(osl_ext_queue_t *queue, void *data);
@@ -489,31 +489,31 @@ osl_ext_status_t osl_ext_queue_send_synchronous(osl_ext_queue_t *queue, void *da
 * Function:   osl_ext_queue_receive
 *
 * Purpose:    Receive/remove data from the queue. This function will only
-*             block the calling thread for timeout_msec milliseconds, before
-*             returning with OSL_EXT_TIMEOUT.
+*	      block the calling thread for timeout_msec milliseconds, before
+*	      returning with OSL_EXT_TIMEOUT.
 *
-* Parameters: queue        (mod) Queue object.
-*             timeout_msec (in)  Number of milliseconds to wait for the
-*                                data from the queue.
-*             data         (out) Data pointer received/removed from the queue.
+* Parameters: queue	   (mod) Queue object.
+*	      timeout_msec (in)	 Number of milliseconds to wait for the
+*				 data from the queue.
+*	      data	   (out) Data pointer received/removed from the queue.
 *
 * Returns:    OSL_EXT_SUCCESS if the data was dequeued successfully, or an
-*             error code if the data could not be dequeued.
+*	      error code if the data could not be dequeued.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_receive(osl_ext_queue_t *queue,
-                 osl_ext_time_ms_t timeout_msec, void **data);
+		 osl_ext_time_ms_t timeout_msec, void **data);
 
 /****************************************************************************
 * Function:   osl_ext_queue_count
 *
 * Purpose:    Returns the number of items in the queue.
 *
-* Parameters: queue        (mod) Queue object.
-*             count        (out) Data pointer received/removed from the queue.
+* Parameters: queue	   (mod) Queue object.
+*	      count	   (out) Data pointer received/removed from the queue.
 *
 * Returns:    OSL_EXT_SUCCESS if the count was returned successfully, or an
-*             error code if the count is invalid.
+*	      error code if the count is invalid.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_queue_count(osl_ext_queue_t *queue, int *count);
@@ -527,13 +527,13 @@ osl_ext_status_t osl_ext_queue_count(osl_ext_queue_t *queue, int *count);
 * Function:   osl_ext_event_create
 *
 * Purpose:    Creates a event object, which can subsequently be used to
-*             notify and trigger tasks.
+*	      notify and trigger tasks.
 *
 * Parameters: name  (in)  Name to assign to the event (must be unique).
-*             event (out) Event object to initialize.
+*	      event (out) Event object to initialize.
 *
 * Returns:    OSL_EXT_SUCCESS if the event was created successfully, or an
-*             error code if the event could not be created.
+*	      error code if the event could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_event_create(char *name, osl_ext_event_t *event);
@@ -546,7 +546,7 @@ osl_ext_status_t osl_ext_event_create(char *name, osl_ext_event_t *event);
 * Parameters: event (mod) Event object to destroy.
 *
 * Returns:    OSL_EXT_SUCCESS if the event was created successfully, or an
-*             error code if the event could not be created.
+*	      error code if the event could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_event_delete(osl_ext_event_t *event);
@@ -556,13 +556,13 @@ osl_ext_status_t osl_ext_event_delete(osl_ext_event_t *event);
 *
 * Purpose:    Get event from specified event object.
 *
-* Parameters: event        (mod) Event object to get.
-*             requested    (in)  Requested event to get.
-*             timeout_msec (in)  Number of milliseconds to wait for the event.
-*             event_bits   (out) Event bits retrieved.
+* Parameters: event	   (mod) Event object to get.
+*	      requested	   (in)	 Requested event to get.
+*	      timeout_msec (in)	 Number of milliseconds to wait for the event.
+*	      event_bits   (out) Event bits retrieved.
 *
 * Returns:    OSL_EXT_SUCCESS if the event was created successfully, or an
-*             error code if the event could not be created.
+*	      error code if the event could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_event_get(osl_ext_event_t *event,
@@ -574,11 +574,11 @@ osl_ext_status_t osl_ext_event_get(osl_ext_event_t *event,
 *
 * Purpose:    Set event of specified event object.
 *
-* Parameters: event      (mod) Event object to set.
-*             event_bits (in)  Event bits to set.
+* Parameters: event	 (mod) Event object to set.
+*	      event_bits (in)  Event bits to set.
 *
 * Returns:    OSL_EXT_SUCCESS if the event was created successfully, or an
-*             error code if the event could not be created.
+*	      error code if the event could not be created.
 *****************************************************************************
 */
 osl_ext_status_t osl_ext_event_set(osl_ext_event_t *event,
@@ -608,7 +608,7 @@ osl_ext_interrupt_state_t osl_ext_interrupt_disable(void);
 * Purpose:    Restore CPU interrupt state.
 *
 * Parameters: state (in)  Interrupt state to restore returned from
-*                         osl_ext_interrupt_disable().
+*			  osl_ext_interrupt_disable().
 *
 * Returns:   None.
 *****************************************************************************

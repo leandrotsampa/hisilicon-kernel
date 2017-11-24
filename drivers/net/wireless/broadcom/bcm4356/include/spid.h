@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -134,17 +134,17 @@ typedef volatile struct {
 #define STATUS_F3_PKT_LEN_SHIFT		21
 
 /* Bit mask for 16 bits SPID_F1_INFO_REG device register */
-#define F1_ENABLED 			0x0001
+#define F1_ENABLED			0x0001
 #define F1_RDY_FOR_DATA_TRANSFER	0x0002
 #define F1_MAX_PKT_SIZE			0x01FC
 
 /* Bit mask for 16 bits SPID_F2_INFO_REG device register */
-#define F2_ENABLED 			0x0001
+#define F2_ENABLED			0x0001
 #define F2_RDY_FOR_DATA_TRANSFER	0x0002
 #define F2_MAX_PKT_SIZE			0x3FFC
 
 /* Bit mask for 16 bits SPID_F3_INFO_REG device register */
-#define F3_ENABLED 			0x0001
+#define F3_ENABLED			0x0001
 #define F3_RDY_FOR_DATA_TRANSFER	0x0002
 #define F3_MAX_PKT_SIZE			0x3FFC
 

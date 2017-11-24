@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -95,7 +95,7 @@
 
 #define ETHER_TYPE_IAPP_L2_UPDATE	0x6	/* IAPP L2 update frame */
 
-/* Broadcom subtype follows ethertype;  First 2 bytes are reserved; Next 2 are subtype; */
+/* Broadcom subtype follows ethertype;	First 2 bytes are reserved; Next 2 are subtype; */
 #define	ETHER_BRCM_SUBTYPE_LEN	4	/* Broadcom 4 byte subtype */
 
 /* ether header */
@@ -141,7 +141,7 @@ BWL_PRE_PACKED_STRUCT struct	ether_addr {
  * address bit in the 48-bit Ethernet address.
  */
 #define ETHER_SET_LOCALADDR(ea)	(((uint8 *)(ea))[0] = (((uint8 *)(ea))[0] | 2))
-#define ETHER_IS_LOCALADDR(ea) 	(((uint8 *)(ea))[0] & 2)
+#define ETHER_IS_LOCALADDR(ea)	(((uint8 *)(ea))[0] & 2)
 #define ETHER_CLR_LOCALADDR(ea)	(((uint8 *)(ea))[0] = (((uint8 *)(ea))[0] & 0xfd))
 #define ETHER_TOGGLE_LOCALADDR(ea)	(((uint8 *)(ea))[0] = (((uint8 *)(ea))[0] ^ 2))
 
@@ -157,8 +157,8 @@ BWL_PRE_PACKED_STRUCT struct	ether_addr {
 
 /* compare two ethernet addresses - assumes the pointers can be referenced as shorts */
 #define eacmp(a, b)	((((const uint16 *)(a))[0] ^ ((const uint16 *)(b))[0]) | \
-	                 (((const uint16 *)(a))[1] ^ ((const uint16 *)(b))[1]) | \
-	                 (((const uint16 *)(a))[2] ^ ((const uint16 *)(b))[2]))
+			 (((const uint16 *)(a))[1] ^ ((const uint16 *)(b))[1]) | \
+			 (((const uint16 *)(a))[2] ^ ((const uint16 *)(b))[2]))
 
 #define	ether_cmp(a, b)	eacmp(a, b)
 
@@ -195,7 +195,7 @@ static const struct ether_addr ether_null = {{0, 0, 0, 0, 0, 0}};
 static const struct ether_addr ether_ipv6_mcast = {{0x33, 0x33, 0x00, 0x00, 0x00, 0x01}};
 
 #define ETHER_ISBCAST(ea)	((((const uint8 *)(ea))[0] &		\
-	                          ((const uint8 *)(ea))[1] &		\
+				  ((const uint8 *)(ea))[1] &		\
 				  ((const uint8 *)(ea))[2] &		\
 				  ((const uint8 *)(ea))[3] &		\
 				  ((const uint8 *)(ea))[4] &		\
@@ -207,8 +207,8 @@ static const struct ether_addr ether_ipv6_mcast = {{0x33, 0x33, 0x00, 0x00, 0x00
 				  ((const uint8 *)(ea))[4] |		\
 				  ((const uint8 *)(ea))[5]) == 0)
 
-#define ETHER_ISNULLDEST(da)	((((const uint16 *)(da))[0] |           \
-				  ((const uint16 *)(da))[1] |           \
+#define ETHER_ISNULLDEST(da)	((((const uint16 *)(da))[0] |		\
+				  ((const uint16 *)(da))[1] |		\
 				  ((const uint16 *)(da))[2]) == 0)
 #define ETHER_ISNULLSRC(sa)	ETHER_ISNULLDEST(sa)
 
@@ -219,7 +219,7 @@ do { \
 	*(struct ether_header *)(d) = t; \
 } while (0)
 
-#define  ETHER_ISUCAST(ea) ((((uint8 *)(ea))[0] & 0x01) == 0)
+#define	 ETHER_ISUCAST(ea) ((((uint8 *)(ea))[0] & 0x01) == 0)
 
 /* This marks the end of a packed structure section. */
 #include <packed_section_end.h>

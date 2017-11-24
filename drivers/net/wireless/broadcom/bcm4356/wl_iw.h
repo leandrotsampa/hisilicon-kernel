@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -36,13 +36,13 @@
 #include <ethernet.h>
 #include <wlioctl.h>
 
-#define WL_SCAN_PARAMS_SSID_MAX 	10
+#define WL_SCAN_PARAMS_SSID_MAX		10
 #define GET_SSID			"SSID="
 #define GET_CHANNEL			"CH="
-#define GET_NPROBE 			"NPROBE="
-#define GET_ACTIVE_ASSOC_DWELL  	"ACTIVE="
-#define GET_PASSIVE_ASSOC_DWELL  	"PASSIVE="
-#define GET_HOME_DWELL  		"HOME="
+#define GET_NPROBE			"NPROBE="
+#define GET_ACTIVE_ASSOC_DWELL		"ACTIVE="
+#define GET_PASSIVE_ASSOC_DWELL		"PASSIVE="
+#define GET_HOME_DWELL			"HOME="
 #define GET_SCAN_TYPE			"TYPE="
 
 #define BAND_GET_CMD				"GETBAND"
@@ -62,7 +62,7 @@
 
 /* Structure to keep global parameters */
 typedef struct wl_iw_extra_params {
-	int 	target_channel; /* target channel */
+	int	target_channel; /* target channel */
 } wl_iw_extra_params_t;
 
 /* ============================================== */
@@ -86,10 +86,10 @@ typedef struct wl_iw_extra_params {
 #define WL_IW_SET_STOP				(SIOCIWFIRSTPRIV+11)
 #define WL_IW_SET_START			(SIOCIWFIRSTPRIV+13)
 
-#define 		G_SCAN_RESULTS 8*1024
-#define 		WE_ADD_EVENT_FIX	0x80
-#define          G_WLAN_SET_ON	0
-#define          G_WLAN_SET_OFF	1
+#define			G_SCAN_RESULTS 8*1024
+#define			WE_ADD_EVENT_FIX	0x80
+#define		 G_WLAN_SET_ON	0
+#define		 G_WLAN_SET_OFF	1
 
 
 typedef struct wl_iw {
@@ -100,7 +100,7 @@ typedef struct wl_iw {
 	int spy_num;
 	uint32 pwsec;			/* pairwise wsec setting */
 	uint32 gwsec;			/* group wsec setting  */
-	bool privacy_invoked; 		/* IW_AUTH_PRIVACY_INVOKED setting */
+	bool privacy_invoked;		/* IW_AUTH_PRIVACY_INVOKED setting */
 	struct ether_addr spy_addr[IW_MAX_SPY];
 	struct iw_quality spy_qual[IW_MAX_SPY];
 	void  *wlinfo;
@@ -133,16 +133,16 @@ int wl_iw_handle_scanresults_ies(char **event_p, char *end,
 void wl_iw_detach(void);
 
 #define CSCAN_COMMAND				"CSCAN "
-#define CSCAN_TLV_PREFIX 			'S'
+#define CSCAN_TLV_PREFIX			'S'
 #define CSCAN_TLV_VERSION			1
 #define CSCAN_TLV_SUBVERSION			0
-#define CSCAN_TLV_TYPE_SSID_IE          'S'
+#define CSCAN_TLV_TYPE_SSID_IE		'S'
 #define CSCAN_TLV_TYPE_CHANNEL_IE   'C'
 #define CSCAN_TLV_TYPE_NPROBE_IE     'N'
 #define CSCAN_TLV_TYPE_ACTIVE_IE      'A'
 #define CSCAN_TLV_TYPE_PASSIVE_IE    'P'
-#define CSCAN_TLV_TYPE_HOME_IE         'H'
-#define CSCAN_TLV_TYPE_STYPE_IE        'T'
+#define CSCAN_TLV_TYPE_HOME_IE	       'H'
+#define CSCAN_TLV_TYPE_STYPE_IE	       'T'
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 27)
 #define IWE_STREAM_ADD_EVENT(info, stream, ends, iwe, extra) \

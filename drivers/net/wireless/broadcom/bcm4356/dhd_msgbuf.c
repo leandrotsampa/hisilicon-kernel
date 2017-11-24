@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -60,8 +60,8 @@
 #include <linux/cpu.h>
 #include <bcm_ring.h>
 #define DHD_LB_WORKQ_SZ			    (8192)
-#define DHD_LB_WORKQ_SYNC           (16)
-#define DHD_LB_WORK_SCHED           (DHD_LB_WORKQ_SYNC * 2)
+#define DHD_LB_WORKQ_SYNC	    (16)
+#define DHD_LB_WORK_SCHED	    (DHD_LB_WORKQ_SYNC * 2)
 #endif /* DHD_LB */
 
 #include <hnd_debug.h>
@@ -166,7 +166,7 @@ struct msgbuf_ring; /* ring context for common and flow rings */
 
 #define PCIE_D2H_SYNC_WAIT_TRIES    (512UL)
 #define PCIE_D2H_SYNC_NUM_OF_STEPS  (5UL)
-#define PCIE_D2H_SYNC_DELAY         (100UL)	/* in terms of usecs */
+#define PCIE_D2H_SYNC_DELAY	    (100UL)	/* in terms of usecs */
 
 /**
  * Custom callback attached based upon D2H DMA Sync mode advertized by dongle.
@@ -175,7 +175,7 @@ struct msgbuf_ring; /* ring context for common and flow rings */
  * On failure: return 0 (invalid msg_type)
  */
 typedef uint8 (* d2h_sync_cb_t)(dhd_pub_t *dhd, struct msgbuf_ring *ring,
-                                volatile cmn_msg_hdr_t *msg, int msglen);
+				volatile cmn_msg_hdr_t *msg, int msglen);
 
 /*
  * +----------------------------------------------------------------------------
@@ -188,18 +188,18 @@ typedef uint8 (* d2h_sync_cb_t)(dhd_pub_t *dhd, struct msgbuf_ring *ring,
  *
  * Here is a sample mapping for (based on PCIE Full Dongle Rev5) where,
  *  BCMPCIE_H2D_COMMON_MSGRINGS = 2, i.e. 2 H2D common rings,
- *  BCMPCIE_COMMON_MSGRINGS     = 5, i.e. include 3 D2H common rings.
+ *  BCMPCIE_COMMON_MSGRINGS	= 5, i.e. include 3 D2H common rings.
  *
- *  H2D Control  Submit   RingId = 0        FlowId = 0 reserved never allocated
- *  H2D RxPost   Submit   RingId = 1        FlowId = 1 reserved never allocated
+ *  H2D Control	 Submit	  RingId = 0	    FlowId = 0 reserved never allocated
+ *  H2D RxPost	 Submit	  RingId = 1	    FlowId = 1 reserved never allocated
  *
- *  D2H Control  Complete RingId = 2
+ *  D2H Control	 Complete RingId = 2
  *  D2H Transmit Complete RingId = 3
- *  D2H Receive  Complete RingId = 4
+ *  D2H Receive	 Complete RingId = 4
  *
- *  H2D TxPost   FLOWRING RingId = 5         FlowId = 2     (1st flowring)
- *  H2D TxPost   FLOWRING RingId = 6         FlowId = 3     (2nd flowring)
- *  H2D TxPost   FLOWRING RingId = 5 + (N-1) FlowId = (N-1) (Nth flowring)
+ *  H2D TxPost	 FLOWRING RingId = 5	     FlowId = 2	    (1st flowring)
+ *  H2D TxPost	 FLOWRING RingId = 6	     FlowId = 3	    (2nd flowring)
+ *  H2D TxPost	 FLOWRING RingId = 5 + (N-1) FlowId = (N-1) (Nth flowring)
  *
  * When TxPost FlowId(s) are allocated, the FlowIds [0..FLOWID_RESERVED) are
  * unused, where FLOWID_RESERVED is BCMPCIE_H2D_COMMON_MSGRINGS.
@@ -270,7 +270,7 @@ typedef uint8 (* d2h_sync_cb_t)(dhd_pub_t *dhd, struct msgbuf_ring *ring,
 	((offset) + BCMPCIE_H2D_COMMON_MSGRINGS)
 
 
-#define DHD_DMAH_NULL      ((void*)NULL)
+#define DHD_DMAH_NULL	   ((void*)NULL)
 
 /*
  * Pad a DMA-able buffer by an additional cachline. If the end of the DMA-able
@@ -280,20 +280,20 @@ typedef uint8 (* d2h_sync_cb_t)(dhd_pub_t *dhd, struct msgbuf_ring *ring,
  * is not available.
  */
 #if defined(L1_CACHE_BYTES)
-#define DHD_DMA_PAD        (L1_CACHE_BYTES)
+#define DHD_DMA_PAD	   (L1_CACHE_BYTES)
 #else
-#define DHD_DMA_PAD        (128)
+#define DHD_DMA_PAD	   (128)
 #endif
 
 /* Used in loopback tests */
 typedef struct dhd_dmaxfer {
 	dhd_dma_buf_t srcmem;
 	dhd_dma_buf_t dstmem;
-	uint32        srcdelay;
-	uint32        destdelay;
-	uint32        len;
-	bool          in_progress;
-	uint64        start_usec;
+	uint32	      srcdelay;
+	uint32	      destdelay;
+	uint32	      len;
+	bool	      in_progress;
+	uint64	      start_usec;
 	uint32	      d11_lpbk;
 } dhd_dmaxfer_t;
 
@@ -309,33 +309,33 @@ typedef struct dhd_dmaxfer {
  * directly in dongle memory.
  */
 typedef struct msgbuf_ring {
-	bool           inited;
-	uint16         idx;       /* ring id */
-	uint16         rd;        /* read index */
-	uint16         curr_rd;   /* read index for debug */
-	uint16         wr;        /* write index */
-	uint16         max_items; /* maximum number of items in ring */
-	uint16         item_len;  /* length of each item in the ring */
+	bool	       inited;
+	uint16	       idx;	  /* ring id */
+	uint16	       rd;	  /* read index */
+	uint16	       curr_rd;	  /* read index for debug */
+	uint16	       wr;	  /* write index */
+	uint16	       max_items; /* maximum number of items in ring */
+	uint16	       item_len;  /* length of each item in the ring */
 	sh_addr_t      base_addr; /* LITTLE ENDIAN formatted: base address */
-	dhd_dma_buf_t  dma_buf;   /* DMA-able buffer: pa, va, len, dmah, secdma */
-	uint32         seqnum;    /* next expected item's sequence number */
+	dhd_dma_buf_t  dma_buf;	  /* DMA-able buffer: pa, va, len, dmah, secdma */
+	uint32	       seqnum;	  /* next expected item's sequence number */
 #ifdef TXP_FLUSH_NITEMS
-	void           *start_addr;
+	void	       *start_addr;
 	/* # of messages on ring not yet announced to dongle */
-	uint16         pend_items_count;
+	uint16	       pend_items_count;
 #endif /* TXP_FLUSH_NITEMS */
 
-	uint8   ring_type;
-	uint8   n_completion_ids;
-	bool    create_pending;
-	uint16  create_req_id;
-	uint8   current_phase;
+	uint8	ring_type;
+	uint8	n_completion_ids;
+	bool	create_pending;
+	uint16	create_req_id;
+	uint8	current_phase;
 	uint16	compeltion_ring_ids[MAX_COMPLETION_RING_IDS_ASSOCIATED];
 	uchar		name[RING_NAME_MAX_LENGTH];
 	uint32		ring_mem_allocated;
 } msgbuf_ring_t;
 
-#define DHD_RING_BGN_VA(ring)           ((ring)->dma_buf.va)
+#define DHD_RING_BGN_VA(ring)		((ring)->dma_buf.va)
 #define DHD_RING_END_VA(ring) \
 	((uint8 *)(DHD_RING_BGN_VA((ring))) + \
 	 (((ring)->max_items - 1) * (ring)->item_len))
@@ -377,7 +377,7 @@ typedef struct dhd_prot {
 
 	msgbuf_ring_t *h2d_flowrings_pool; /* Pool of preallocated flowings */
 	dhd_dma_buf_t flowrings_dma_buf; /* Contiguous DMA buffer for flowrings */
-	uint16        h2d_rings_total; /* total H2D (common rings + flowrings) */
+	uint16	      h2d_rings_total; /* total H2D (common rings + flowrings) */
 
 	uint32		rx_dataoffset;
 
@@ -396,8 +396,8 @@ typedef struct dhd_prot {
 	dhd_dma_buf_t	d2h_dma_scratch_buf;	/* For holding d2h scratch */
 
 	/* DMA-able arrays for holding WR and RD indices */
-	uint32          rw_index_sz; /* Size of a RD or WR index in dongle */
-	dhd_dma_buf_t   h2d_dma_indx_wr_buf;	/* Array of H2D WR indices */
+	uint32		rw_index_sz; /* Size of a RD or WR index in dongle */
+	dhd_dma_buf_t	h2d_dma_indx_wr_buf;	/* Array of H2D WR indices */
 	dhd_dma_buf_t	h2d_dma_indx_rd_buf;	/* Array of H2D RD indices */
 	dhd_dma_buf_t	d2h_dma_indx_wr_buf;	/* Array of D2H WR indices */
 	dhd_dma_buf_t	d2h_dma_indx_rd_buf;	/* Array of D2H RD indices */
@@ -405,7 +405,7 @@ typedef struct dhd_prot {
 
 	dhd_dma_buf_t	host_bus_throughput_buf; /* bus throughput measure buffer */
 
-	dhd_dma_buf_t   *flowring_buf;    /* pool of flow ring buf */
+	dhd_dma_buf_t	*flowring_buf;	  /* pool of flow ring buf */
 	uint32			flowring_num;
 
 	d2h_sync_cb_t d2h_sync_cb; /* Sync on D2H DMA done: SEQNUM or XORCSUM */
@@ -449,12 +449,12 @@ typedef struct dhd_prot {
 	dhd_dma_buf_t	fw_trap_buf; /* firmware trap buffer */
 
     uint32  host_ipc_version; /* Host sypported IPC rev */
-	uint32  device_ipc_version; /* FW supported IPC rev */
-	uint32  active_ipc_version; /* Host advertised IPC rev */
-	dhd_dma_buf_t   hostts_req_buf; /* For holding host timestamp request buf */
-	bool    hostts_req_buf_inuse;
-	bool    rx_ts_log_enabled;
-	bool    tx_ts_log_enabled;
+	uint32	device_ipc_version; /* FW supported IPC rev */
+	uint32	active_ipc_version; /* Host advertised IPC rev */
+	dhd_dma_buf_t	hostts_req_buf; /* For holding host timestamp request buf */
+	bool	hostts_req_buf_inuse;
+	bool	rx_ts_log_enabled;
+	bool	tx_ts_log_enabled;
 } dhd_prot_t;
 
 extern void dhd_schedule_dmaxfer_free(dhd_pub_t* dhdp, dmaxref_mem_map_t *dmmap);
@@ -660,13 +660,13 @@ static void dhd_prot_h2d_sync_init(dhd_pub_t *dhd);
  * bound that simply returns the msg_type.
  */
 static void dhd_prot_d2h_sync_livelock(dhd_pub_t *dhd, uint32 msg_seqnum, msgbuf_ring_t *ring,
-                                       uint32 tries, volatile uchar *msg, int msglen);
+				       uint32 tries, volatile uchar *msg, int msglen);
 static uint8 dhd_prot_d2h_sync_seqnum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                                      volatile cmn_msg_hdr_t *msg, int msglen);
+				      volatile cmn_msg_hdr_t *msg, int msglen);
 static uint8 dhd_prot_d2h_sync_xorcsum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                                       volatile cmn_msg_hdr_t *msg, int msglen);
+				       volatile cmn_msg_hdr_t *msg, int msglen);
 static uint8 dhd_prot_d2h_sync_none(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                                    volatile cmn_msg_hdr_t *msg, int msglen);
+				    volatile cmn_msg_hdr_t *msg, int msglen);
 static void dhd_prot_d2h_sync_init(dhd_pub_t *dhd);
 static int dhd_send_d2h_ringcreate(dhd_pub_t *dhd, msgbuf_ring_t *ring_to_create);
 static int dhd_send_h2d_ringcreate(dhd_pub_t *dhd, msgbuf_ring_t *ring_to_create);
@@ -713,7 +713,7 @@ dhd_prot_set_h2d_max_txpost(dhd_pub_t *dhd, uint16 max_txpost)
  */
 static void
 dhd_prot_d2h_sync_livelock(dhd_pub_t *dhd, uint32 msg_seqnum, msgbuf_ring_t *ring, uint32 tries,
-                           volatile uchar *msg, int msglen)
+			   volatile uchar *msg, int msglen)
 {
 	uint32 ring_seqnum = ring->seqnum;
 	DHD_ERROR((
@@ -752,7 +752,7 @@ dhd_prot_d2h_sync_livelock(dhd_pub_t *dhd, uint32 msg_seqnum, msgbuf_ring_t *rin
  */
 static uint8 BCMFASTPATH
 dhd_prot_d2h_sync_seqnum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                         volatile cmn_msg_hdr_t *msg, int msglen)
+			 volatile cmn_msg_hdr_t *msg, int msglen)
 {
 	uint32 tries;
 	uint32 ring_seqnum = ring->seqnum % D2H_EPOCH_MODULO;
@@ -825,7 +825,7 @@ dma_completed:
  */
 static uint8 BCMFASTPATH
 dhd_prot_d2h_sync_xorcsum(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                          volatile cmn_msg_hdr_t *msg, int msglen)
+			  volatile cmn_msg_hdr_t *msg, int msglen)
 {
 	uint32 tries;
 	uint32 prot_checksum = 0; /* computed checksum */
@@ -900,7 +900,7 @@ dma_completed:
  */
 static uint8 BCMFASTPATH
 dhd_prot_d2h_sync_none(dhd_pub_t *dhd, msgbuf_ring_t *ring,
-                       volatile cmn_msg_hdr_t *msg, int msglen)
+		       volatile cmn_msg_hdr_t *msg, int msglen)
 {
 	return msg->msg_type;
 }
@@ -1109,7 +1109,7 @@ dhd_dma_buf_init(dhd_pub_t *dhd, void *dhd_dma_buf,
 	(void)dhd_dma_buf_audit(dhd, dma_buf);
 }
 
-/* +------------------  End of PCIE DHD DMA BUF ADT ------------------------+ */
+/* +------------------	End of PCIE DHD DMA BUF ADT ------------------------+ */
 
 /*
  * +---------------------------------------------------------------------------+
@@ -1145,9 +1145,9 @@ typedef enum dhd_pkttype {
 	PKTTYPE_TSBUF_RX
 } dhd_pkttype_t;
 
-#define DHD_PKTID_INVALID               (0U)
-#define DHD_IOCTL_REQ_PKTID             (0xFFFE)
-#define DHD_FAKE_PKTID                  (0xFACE)
+#define DHD_PKTID_INVALID		(0U)
+#define DHD_IOCTL_REQ_PKTID		(0xFFFE)
+#define DHD_FAKE_PKTID			(0xFACE)
 #define DHD_H2D_DBGRING_REQ_PKTID	0xFFFD
 #define DHD_D2H_DBGRING_REQ_PKTID	0xFFFC
 #define DHD_H2D_HOSTTS_REQ_PKTID	0xFFFB
@@ -1219,41 +1219,41 @@ static void *dhd_pktid_map_free(dhd_pub_t *dhd, dhd_pktid_map_handle_t *map,
 #error "May only enabled audit of MAP or RING, at a time."
 #endif /* DHD_PKTID_AUDIT_MAP && DHD_PKTID_AUDIT_RING */
 
-#define DHD_DUPLICATE_ALLOC     1
-#define DHD_DUPLICATE_FREE      2
-#define DHD_TEST_IS_ALLOC       3
-#define DHD_TEST_IS_FREE        4
+#define DHD_DUPLICATE_ALLOC	1
+#define DHD_DUPLICATE_FREE	2
+#define DHD_TEST_IS_ALLOC	3
+#define DHD_TEST_IS_FREE	4
 
 #ifdef USE_DHD_PKTID_AUDIT_LOCK
-#define DHD_PKTID_AUDIT_LOCK_INIT(osh)          dhd_os_spin_lock_init(osh)
-#define DHD_PKTID_AUDIT_LOCK_DEINIT(osh, lock)  dhd_os_spin_lock_deinit(osh, lock)
-#define DHD_PKTID_AUDIT_LOCK(lock)              dhd_os_spin_lock(lock)
-#define DHD_PKTID_AUDIT_UNLOCK(lock, flags)     dhd_os_spin_unlock(lock, flags)
+#define DHD_PKTID_AUDIT_LOCK_INIT(osh)		dhd_os_spin_lock_init(osh)
+#define DHD_PKTID_AUDIT_LOCK_DEINIT(osh, lock)	dhd_os_spin_lock_deinit(osh, lock)
+#define DHD_PKTID_AUDIT_LOCK(lock)		dhd_os_spin_lock(lock)
+#define DHD_PKTID_AUDIT_UNLOCK(lock, flags)	dhd_os_spin_unlock(lock, flags)
 #else
-#define DHD_PKTID_AUDIT_LOCK_INIT(osh)          (void *)(1)
-#define DHD_PKTID_AUDIT_LOCK_DEINIT(osh, lock)  do { /* noop */ } while (0)
-#define DHD_PKTID_AUDIT_LOCK(lock)              0
-#define DHD_PKTID_AUDIT_UNLOCK(lock, flags)     do { /* noop */ } while (0)
+#define DHD_PKTID_AUDIT_LOCK_INIT(osh)		(void *)(1)
+#define DHD_PKTID_AUDIT_LOCK_DEINIT(osh, lock)	do { /* noop */ } while (0)
+#define DHD_PKTID_AUDIT_LOCK(lock)		0
+#define DHD_PKTID_AUDIT_UNLOCK(lock, flags)	do { /* noop */ } while (0)
 #endif /* !USE_DHD_PKTID_AUDIT_LOCK */
 
 #endif /* DHD_PKTID_AUDIT_ENABLED */
 
-/* #define USE_DHD_PKTID_LOCK   1 */
+/* #define USE_DHD_PKTID_LOCK	1 */
 
 #ifdef USE_DHD_PKTID_LOCK
-#define DHD_PKTID_LOCK_INIT(osh)                dhd_os_spin_lock_init(osh)
-#define DHD_PKTID_LOCK_DEINIT(osh, lock)        dhd_os_spin_lock_deinit(osh, lock)
-#define DHD_PKTID_LOCK(lock)                    dhd_os_spin_lock(lock)
-#define DHD_PKTID_UNLOCK(lock, flags)           dhd_os_spin_unlock(lock, flags)
+#define DHD_PKTID_LOCK_INIT(osh)		dhd_os_spin_lock_init(osh)
+#define DHD_PKTID_LOCK_DEINIT(osh, lock)	dhd_os_spin_lock_deinit(osh, lock)
+#define DHD_PKTID_LOCK(lock)			dhd_os_spin_lock(lock)
+#define DHD_PKTID_UNLOCK(lock, flags)		dhd_os_spin_unlock(lock, flags)
 #else
-#define DHD_PKTID_LOCK_INIT(osh)                (void *)(1)
+#define DHD_PKTID_LOCK_INIT(osh)		(void *)(1)
 #define DHD_PKTID_LOCK_DEINIT(osh, lock)	\
 	do { \
 		BCM_REFERENCE(osh); \
 		BCM_REFERENCE(lock); \
 	} while (0)
-#define DHD_PKTID_LOCK(lock)                    0
-#define DHD_PKTID_UNLOCK(lock, flags)           \
+#define DHD_PKTID_LOCK(lock)			0
+#define DHD_PKTID_UNLOCK(lock, flags)		\
 	do { \
 		BCM_REFERENCE(lock); \
 		BCM_REFERENCE(flags); \
@@ -1270,27 +1270,27 @@ typedef enum dhd_locker_state {
 
 typedef struct dhd_pktid_item {
 	dhd_locker_state_t state;  /* tag a locker to be free, busy or reserved */
-	uint8       dir;      /* dma map direction (Tx=flush or Rx=invalidate) */
+	uint8	    dir;      /* dma map direction (Tx=flush or Rx=invalidate) */
 	dhd_pkttype_t pkttype; /* pktlists are maintained based on pkttype */
-	uint16      len;      /* length of mapped packet's buffer */
-	void        *pkt;     /* opaque native pointer to a packet */
-	dmaaddr_t   pa;       /* physical address of mapped packet's buffer */
-	void        *dmah;    /* handle to OS specific DMA map */
+	uint16	    len;      /* length of mapped packet's buffer */
+	void	    *pkt;     /* opaque native pointer to a packet */
+	dmaaddr_t   pa;	      /* physical address of mapped packet's buffer */
+	void	    *dmah;    /* handle to OS specific DMA map */
 	void		*secdma;
 } dhd_pktid_item_t;
 
 typedef uint32 dhd_pktid_key_t;
 
 typedef struct dhd_pktid_map {
-	uint32      items;    /* total items in map */
-	uint32      avail;    /* total available items */
-	int         failures; /* lockers unavailable count */
+	uint32	    items;    /* total items in map */
+	uint32	    avail;    /* total available items */
+	int	    failures; /* lockers unavailable count */
 #if defined(DHD_PKTID_AUDIT_ENABLED)
 	void		*pktid_audit_lock;
 	struct bcm_mwbmap *pktid_audit; /* multi word bitmap based audit */
 #endif /* DHD_PKTID_AUDIT_ENABLED */
 	dhd_pktid_key_t	*keys; /* map_items +1 unique pkt ids */
-	dhd_pktid_item_t lockers[0];           /* metadata storage */
+	dhd_pktid_item_t lockers[0];	       /* metadata storage */
 } dhd_pktid_map_t;
 
 /*
@@ -1302,19 +1302,19 @@ typedef struct dhd_pktid_map {
  * Likewise, a caller must never free a pktid of value DHD_PKTID_INVALID.
  */
 
-#define DHD_PKTID_FREE_LOCKER           (FALSE)
-#define DHD_PKTID_RSV_LOCKER            (TRUE)
+#define DHD_PKTID_FREE_LOCKER		(FALSE)
+#define DHD_PKTID_RSV_LOCKER		(TRUE)
 
-#define DHD_PKTID_ITEM_SZ               (sizeof(dhd_pktid_item_t))
-#define DHD_PKIDMAP_ITEMS(items)        (items)
-#define DHD_PKTID_MAP_SZ(items)         (sizeof(dhd_pktid_map_t) + \
-	                                     (DHD_PKTID_ITEM_SZ * ((items) + 1)))
-#define DHD_PKTIDMAP_KEYS_SZ(items)     (sizeof(dhd_pktid_key_t) * ((items) + 1))
+#define DHD_PKTID_ITEM_SZ		(sizeof(dhd_pktid_item_t))
+#define DHD_PKIDMAP_ITEMS(items)	(items)
+#define DHD_PKTID_MAP_SZ(items)		(sizeof(dhd_pktid_map_t) + \
+					     (DHD_PKTID_ITEM_SZ * ((items) + 1)))
+#define DHD_PKTIDMAP_KEYS_SZ(items)	(sizeof(dhd_pktid_key_t) * ((items) + 1))
 
 #define DHD_NATIVE_TO_PKTID_RESET_IOCTL(dhd, map)  dhd_pktid_map_reset_ioctl((dhd), (map))
 
 /* Convert a packet to a pktid, and save pkt pointer in busy locker */
-#define DHD_NATIVE_TO_PKTID_RSV(dhd, map, pkt, pkttype)    \
+#define DHD_NATIVE_TO_PKTID_RSV(dhd, map, pkt, pkttype)	   \
 	dhd_pktid_map_reserve((dhd), (map), (pkt), (pkttype))
 /* Reuse a previously reserved locker to save packet params */
 #define DHD_NATIVE_TO_PKTID_SAVE(dhd, map, pkt, nkey, pa, len, dir, dmah, secdma, pkttype) \
@@ -1336,10 +1336,10 @@ typedef struct dhd_pktid_map {
 /* Convert the pktid to a packet, empty locker, but keep it reserved */
 #define DHD_PKTID_TO_NATIVE_RSV(dhd, map, pktid, pa, len, dmah, secdma, pkttype) \
 	dhd_pktid_map_free((dhd), (map), (uint32)(pktid), \
-	                   (dmaaddr_t *)&(pa), (uint32 *)&(len), (void **)&(dmah), \
-	                   (void **)&(secdma), (dhd_pkttype_t)(pkttype), DHD_PKTID_RSV_LOCKER)
+			   (dmaaddr_t *)&(pa), (uint32 *)&(len), (void **)&(dmah), \
+			   (void **)&(secdma), (dhd_pkttype_t)(pkttype), DHD_PKTID_RSV_LOCKER)
 
-#define DHD_PKTID_AVAIL(map)                 dhd_pktid_map_avail_cnt(map)
+#define DHD_PKTID_AVAIL(map)		     dhd_pktid_map_avail_cnt(map)
 
 #if defined(DHD_PKTID_AUDIT_ENABLED)
 /**
@@ -1386,7 +1386,7 @@ dhd_pktid_audit(dhd_pub_t *dhd, dhd_pktid_map_t *pktid_map, uint32 pktid,
 		case DHD_DUPLICATE_ALLOC:
 			if (!bcm_mwbmap_isfree(handle, pktid)) {
 				DHD_ERROR((DHD_PKT_AUDIT_STR "PktId<%d> alloc duplicate\n",
-				           errmsg, pktid));
+					   errmsg, pktid));
 				goto error;
 			}
 			bcm_mwbmap_force(handle, pktid);
@@ -1395,7 +1395,7 @@ dhd_pktid_audit(dhd_pub_t *dhd, dhd_pktid_map_t *pktid_map, uint32 pktid,
 		case DHD_DUPLICATE_FREE:
 			if (bcm_mwbmap_isfree(handle, pktid)) {
 				DHD_ERROR((DHD_PKT_AUDIT_STR "PktId<%d> free duplicate\n",
-				           errmsg, pktid));
+					   errmsg, pktid));
 				goto error;
 			}
 			bcm_mwbmap_free(handle, pktid);
@@ -1404,7 +1404,7 @@ dhd_pktid_audit(dhd_pub_t *dhd, dhd_pktid_map_t *pktid_map, uint32 pktid,
 		case DHD_TEST_IS_ALLOC:
 			if (bcm_mwbmap_isfree(handle, pktid)) {
 				DHD_ERROR((DHD_PKT_AUDIT_STR "PktId<%d> is not allocated\n",
-				           errmsg, pktid));
+					   errmsg, pktid));
 				goto error;
 			}
 			break;
@@ -1412,7 +1412,7 @@ dhd_pktid_audit(dhd_pub_t *dhd, dhd_pktid_map_t *pktid_map, uint32 pktid,
 		case DHD_TEST_IS_FREE:
 			if (!bcm_mwbmap_isfree(handle, pktid)) {
 				DHD_ERROR((DHD_PKT_AUDIT_STR "PktId<%d> is not free",
-				           errmsg, pktid));
+					   errmsg, pktid));
 				goto error;
 			}
 			break;
@@ -1526,8 +1526,8 @@ dhd_pktid_map_init(dhd_pub_t *dhd, uint32 num_items)
 	for (nkey = 1; nkey <= map_items; nkey++) { /* locker #0 is reserved */
 		map->keys[nkey] = nkey; /* populate with unique keys */
 		map->lockers[nkey].state = LOCKER_IS_FREE;
-		map->lockers[nkey].pkt   = NULL; /* bzero: redundant */
-		map->lockers[nkey].len   = 0;
+		map->lockers[nkey].pkt	 = NULL; /* bzero: redundant */
+		map->lockers[nkey].len	 = 0;
 	}
 
 	/* Reserve pktid #0, i.e. DHD_PKTID_INVALID to be inuse */
@@ -1880,7 +1880,7 @@ dhd_pktid_map_free(dhd_pub_t *dhd, dhd_pktid_map_handle_t *handle, uint32 nkey,
 
 	if ((nkey == DHD_PKTID_INVALID) || (nkey > DHD_PKIDMAP_ITEMS(map->items))) {
 		DHD_ERROR(("%s:%d: Error! Try to free invalid pktid<%u>, pkttype<%d>\n",
-		           __FUNCTION__, __LINE__, nkey, pkttype));
+			   __FUNCTION__, __LINE__, nkey, pkttype));
 #ifdef DHD_FW_COREDUMP
 		if (dhd->memdump_enabled) {
 			/* collect core dump */
@@ -1902,7 +1902,7 @@ dhd_pktid_map_free(dhd_pub_t *dhd, dhd_pktid_map_handle_t *handle, uint32 nkey,
 	/* Debug check for cloned numbered key */
 	if (locker->state == LOCKER_IS_FREE) {
 		DHD_ERROR(("%s:%d: Error! freeing already freed invalid pktid<%u>\n",
-		           __FUNCTION__, __LINE__, nkey));
+			   __FUNCTION__, __LINE__, nkey));
 #ifdef DHD_FW_COREDUMP
 		if (dhd->memdump_enabled) {
 			/* collect core dump */
@@ -2006,25 +2006,25 @@ dhd_pktid_map_init(dhd_pub_t *dhd, uint32 num_items)
 
 	if ((handle = (pktlists_t *) MALLOCZ(osh, sizeof(pktlists_t))) == NULL) {
 		DHD_ERROR(("%s:%d: MALLOC failed for lists allocation, size=%d\n",
-		           __FUNCTION__, __LINE__, sizeof(pktlists_t)));
+			   __FUNCTION__, __LINE__, sizeof(pktlists_t)));
 		goto error_done;
 	}
 
 	if ((handle->tx_pkt_list = (PKT_LIST *) MALLOC(osh, sizeof(PKT_LIST))) == NULL) {
 		DHD_ERROR(("%s:%d: MALLOC failed for list allocation, size=%d\n",
-		           __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
+			   __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
 		goto error;
 	}
 
 	if ((handle->rx_pkt_list = (PKT_LIST *) MALLOC(osh, sizeof(PKT_LIST))) == NULL) {
 		DHD_ERROR(("%s:%d: MALLOC failed for list allocation, size=%d\n",
-		           __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
+			   __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
 		goto error;
 	}
 
 	if ((handle->ctrl_pkt_list = (PKT_LIST *) MALLOC(osh, sizeof(PKT_LIST))) == NULL) {
 		DHD_ERROR(("%s:%d: MALLOC failed for list allocation, size=%d\n",
-		           __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
+			   __FUNCTION__, __LINE__, sizeof(PKT_LIST)));
 		goto error;
 	}
 
@@ -2136,7 +2136,7 @@ dhd_pktid_to_native(dhd_pktid_map_handle_t *map, uint32 pktid32,
 	return pktptr32;
 }
 
-#define DHD_NATIVE_TO_PKTID_RSV(dhd, map, pkt, pkttype)  DHD_PKTID32(pkt)
+#define DHD_NATIVE_TO_PKTID_RSV(dhd, map, pkt, pkttype)	 DHD_PKTID32(pkt)
 
 #define DHD_NATIVE_TO_PKTID_SAVE(dhd, map, pkt, nkey, pa, len, dma_dir, dmah, secdma, pkttype) \
 	({ BCM_REFERENCE(dhd); BCM_REFERENCE(nkey); BCM_REFERENCE(dma_dir); \
@@ -2212,47 +2212,47 @@ dhd_prot_attach(dhd_pub_t *dhd)
 
 	/* Common Ring Allocations */
 
-	/* Ring  0: H2D Control Submission */
+	/* Ring	 0: H2D Control Submission */
 	if (dhd_prot_ring_attach(dhd, &prot->h2dring_ctrl_subn, "h2dctrl",
-	        H2DRING_CTRL_SUB_MAX_ITEM, H2DRING_CTRL_SUB_ITEMSIZE,
-	        BCMPCIE_H2D_MSGRING_CONTROL_SUBMIT) != BCME_OK) {
+		H2DRING_CTRL_SUB_MAX_ITEM, H2DRING_CTRL_SUB_ITEMSIZE,
+		BCMPCIE_H2D_MSGRING_CONTROL_SUBMIT) != BCME_OK) {
 		DHD_ERROR(("%s: dhd_prot_ring_attach H2D Ctrl Submission failed\n",
 			__FUNCTION__));
 		goto fail;
 	}
 
-	/* Ring  1: H2D Receive Buffer Post */
+	/* Ring	 1: H2D Receive Buffer Post */
 	if (dhd_prot_ring_attach(dhd, &prot->h2dring_rxp_subn, "h2drxp",
-	        H2DRING_RXPOST_MAX_ITEM, H2DRING_RXPOST_ITEMSIZE,
-	        BCMPCIE_H2D_MSGRING_RXPOST_SUBMIT) != BCME_OK) {
+		H2DRING_RXPOST_MAX_ITEM, H2DRING_RXPOST_ITEMSIZE,
+		BCMPCIE_H2D_MSGRING_RXPOST_SUBMIT) != BCME_OK) {
 		DHD_ERROR(("%s: dhd_prot_ring_attach H2D RxPost failed\n",
 			__FUNCTION__));
 		goto fail;
 	}
 
-	/* Ring  2: D2H Control Completion */
+	/* Ring	 2: D2H Control Completion */
 	if (dhd_prot_ring_attach(dhd, &prot->d2hring_ctrl_cpln, "d2hctrl",
-	        D2HRING_CTRL_CMPLT_MAX_ITEM, D2HRING_CTRL_CMPLT_ITEMSIZE,
-	        BCMPCIE_D2H_MSGRING_CONTROL_COMPLETE) != BCME_OK) {
+		D2HRING_CTRL_CMPLT_MAX_ITEM, D2HRING_CTRL_CMPLT_ITEMSIZE,
+		BCMPCIE_D2H_MSGRING_CONTROL_COMPLETE) != BCME_OK) {
 		DHD_ERROR(("%s: dhd_prot_ring_attach D2H Ctrl Completion failed\n",
 			__FUNCTION__));
 		goto fail;
 	}
 
-	/* Ring  3: D2H Transmit Complete */
+	/* Ring	 3: D2H Transmit Complete */
 	if (dhd_prot_ring_attach(dhd, &prot->d2hring_tx_cpln, "d2htxcpl",
-	        D2HRING_TXCMPLT_MAX_ITEM, D2HRING_TXCMPLT_ITEMSIZE,
-	        BCMPCIE_D2H_MSGRING_TX_COMPLETE) != BCME_OK) {
+		D2HRING_TXCMPLT_MAX_ITEM, D2HRING_TXCMPLT_ITEMSIZE,
+		BCMPCIE_D2H_MSGRING_TX_COMPLETE) != BCME_OK) {
 		DHD_ERROR(("%s: dhd_prot_ring_attach D2H Tx Completion failed\n",
 			__FUNCTION__));
 		goto fail;
 
 	}
 
-	/* Ring  4: D2H Receive Complete */
+	/* Ring	 4: D2H Receive Complete */
 	if (dhd_prot_ring_attach(dhd, &prot->d2hring_rx_cpln, "d2hrxcpl",
-	        D2HRING_RXCMPLT_MAX_ITEM, D2HRING_RXCMPLT_ITEMSIZE,
-	        BCMPCIE_D2H_MSGRING_RX_COMPLETE) != BCME_OK) {
+		D2HRING_RXCMPLT_MAX_ITEM, D2HRING_RXCMPLT_ITEMSIZE,
+		BCMPCIE_D2H_MSGRING_RX_COMPLETE) != BCME_OK) {
 		DHD_ERROR(("%s: dhd_prot_ring_attach D2H Rx Completion failed\n",
 			__FUNCTION__));
 		goto fail;
@@ -2488,7 +2488,7 @@ dhd_prot_init(dhd_pub_t *dhd)
 	}
 	DHD_INFO(("%s:%d: MAX_RXBUFPOST = %d\n", __FUNCTION__, __LINE__, prot->max_rxbufpost));
 
-	/* Initialize.  bzero() would blow away the dma pointers. */
+	/* Initialize.	bzero() would blow away the dma pointers. */
 	prot->max_eventbufpost = DHD_FLOWRING_MAX_EVENTBUF_POST;
 	prot->max_ioctlrespbufpost = DHD_FLOWRING_MAX_IOCTLRESPBUF_POST;
 	prot->max_infobufpost = DHD_H2D_INFORING_MAX_BUF_POST;
@@ -3531,11 +3531,11 @@ alloc_pkt_id:
 		if (prot->rx_metadata_offset) {
 			rxbuf_post->metadata_buf_len = prot->rx_metadata_offset;
 			rxbuf_post->metadata_buf_addr.high_addr = htol32(PHYSADDRHI(pa));
-			rxbuf_post->metadata_buf_addr.low_addr  = htol32(PHYSADDRLO(pa));
+			rxbuf_post->metadata_buf_addr.low_addr	= htol32(PHYSADDRLO(pa));
 		} else {
 			rxbuf_post->metadata_buf_len = 0;
 			rxbuf_post->metadata_buf_addr.high_addr = 0;
-			rxbuf_post->metadata_buf_addr.low_addr  = 0;
+			rxbuf_post->metadata_buf_addr.low_addr	= 0;
 		}
 
 #ifdef DHD_PKTID_AUDIT_RING
@@ -4079,7 +4079,7 @@ dhd_msgbuf_rxbuf_post_ctrlpath(dhd_pub_t *dhd, uint8 msg_type, uint32 max_to_pos
 	}
 
 	while (i < max_to_post) {
-		ret_val  = dhd_prot_rxbufpost_ctrl(dhd, msg_type);
+		ret_val	 = dhd_prot_rxbufpost_ctrl(dhd, msg_type);
 		if (ret_val < 0)
 			break;
 		i++;
@@ -4281,7 +4281,7 @@ dhd_prot_process_msgbuf_rxcpl(dhd_pub_t *dhd, uint bound)
 #endif /* DHD_PKTID_AUDIT_RING */
 
 			pkt = DHD_PKTID_TO_NATIVE(dhd, prot->pktid_rx_map, pktid, pa,
-			        len, dmah, secdma, PKTTYPE_DATA_RX);
+				len, dmah, secdma, PKTTYPE_DATA_RX);
 			if (!pkt) {
 				msg_len -= item_len;
 				msg_addr += item_len;
@@ -4312,7 +4312,7 @@ dhd_prot_process_msgbuf_rxcpl(dhd_pub_t *dhd, uint bound)
 
 #if DHD_DBG_SHOW_METADATA
 			if (prot->metadata_dbg && prot->rx_metadata_offset &&
-			        msg->metadata_len) {
+				msg->metadata_len) {
 				uchar *ptr;
 				ptr = PKTDATA(dhd->osh, pkt) - (prot->rx_metadata_offset);
 				/* header followed by data */
@@ -4431,7 +4431,7 @@ dhd_prot_update_txflowring(dhd_pub_t *dhd, uint16 flowid, void *msgring)
 	msgbuf_ring_t *ring = (msgbuf_ring_t *)msgring;
 
 	if (ring == NULL) {
-		DHD_ERROR(("%s: NULL txflowring. exiting...\n",  __FUNCTION__));
+		DHD_ERROR(("%s: NULL txflowring. exiting...\n",	 __FUNCTION__));
 		return;
 	}
 	/* Update read pointer */
@@ -5161,7 +5161,7 @@ dhd_prot_process_infobuf_complete(dhd_pub_t *dhd, void* buf)
 	PKTSETLEN(dhd->osh, pkt, buflen);
 
 	/* info ring "debug" data, which is not a 802.3 frame, is sent/hacked with a
-	 * special ifidx of -1.  This is just internal to dhd to get the data to
+	 * special ifidx of -1.	 This is just internal to dhd to get the data to
 	 * dhd_linux.c:dhd_rx_frame() from here (dhd_prot_infobuf_cmplt_process).
 	 */
 	dhd_bus_rx_frame(dhd->bus, pkt, DHD_EVENT_IF /* ifidx HACK */, 1);
@@ -5267,7 +5267,7 @@ dhd_prot_txdata(dhd_pub_t *dhd, void *PKTBUF, uint8 ifidx)
 
 	/* Extract the data pointer and length information */
 	pktdata = PKTDATA(dhd->osh, PKTBUF);
-	pktlen  = PKTLEN(dhd->osh, PKTBUF);
+	pktlen	= PKTLEN(dhd->osh, PKTBUF);
 
 	/* Ethernet header: Copy before we cache flush packet using DMA_MAP */
 	bcopy(pktdata, txdesc->txhdr, ETHER_HDR_LEN);
@@ -5329,7 +5329,7 @@ dhd_prot_txdata(dhd_pub_t *dhd, void *PKTBUF, uint8 ifidx)
 
 	txdesc->data_len = htol16((uint16) pktlen);
 	txdesc->data_buf_addr.high_addr = htol32(PHYSADDRHI(pa));
-	txdesc->data_buf_addr.low_addr  = htol32(PHYSADDRLO(pa));
+	txdesc->data_buf_addr.low_addr	= htol32(PHYSADDRLO(pa));
 
 	/* Move data pointer to keep ether header in local PKTBUF for later reference */
 	PKTPUSH(dhd->osh, PKTBUF, ETHER_HDR_LEN);
@@ -5817,12 +5817,12 @@ dhd_msgbuf_dmaxfer_process(dhd_pub_t *dhd, void *msg)
 	OSL_CACHE_INV(prot->dmaxfer.dstmem.va, prot->dmaxfer.len);
 	if (prot->dmaxfer.srcmem.va && prot->dmaxfer.dstmem.va) {
 		if (memcmp(prot->dmaxfer.srcmem.va,
-		        prot->dmaxfer.dstmem.va, prot->dmaxfer.len)) {
+			prot->dmaxfer.dstmem.va, prot->dmaxfer.len)) {
 			prhex("XFER SRC: ",
 			    prot->dmaxfer.srcmem.va, prot->dmaxfer.len);
 			prhex("XFER DST: ",
 			    prot->dmaxfer.dstmem.va, prot->dmaxfer.len);
-		        DHD_ERROR(("DMA failed\n"));
+			DHD_ERROR(("DMA failed\n"));
 		}
 		else {
 			if (prot->dmaxfer.d11_lpbk) {
@@ -5864,7 +5864,7 @@ dhdmsgbuf_dmaxfer_req(dhd_pub_t *dhd, uint len, uint srcdelay, uint destdelay, u
 
 	prot->dmaxfer.in_progress = TRUE;
 	if ((ret = dmaxfer_prepare_dmaaddr(dhd, xferlen, srcdelay, destdelay,
-	        &prot->dmaxfer)) != BCME_OK) {
+		&prot->dmaxfer)) != BCME_OK) {
 		prot->dmaxfer.in_progress = FALSE;
 		return ret;
 	}
@@ -6217,7 +6217,7 @@ int dhd_prot_ctl_complete(dhd_pub_t *dhd)
 
 /** Called by upper DHD layer. Check for and handle local prot-specific iovar commands */
 int dhd_prot_iovar_op(dhd_pub_t *dhd, const char *name,
-                             void *params, int plen, void *arg, int len, bool set)
+			     void *params, int plen, void *arg, int len, bool set)
 {
 	return BCME_UNSUPPORTED;
 }
@@ -6340,7 +6340,7 @@ dhd_prot_alloc_ring_space(dhd_pub_t *dhd, msgbuf_ring_t *ring,
 		ret_buf = dhd_prot_get_ring_space(ring, nitems, alloced, exactly_nitems);
 
 		if (ret_buf == NULL) {
-			DHD_INFO(("%s: Ring space not available  \n", ring->name));
+			DHD_INFO(("%s: Ring space not available	 \n", ring->name));
 			return NULL;
 		}
 	}
@@ -6366,7 +6366,7 @@ dhd_fillup_ioct_reqst(dhd_pub_t *dhd, uint16 len, uint cmd, void* buf, int ifidx
 	dhd_prot_t *prot = dhd->prot;
 	ioctl_req_msg_t *ioct_rqst;
 	void * ioct_buf;	/* For ioctl payload */
-	uint16  rqstlen, resplen;
+	uint16	rqstlen, resplen;
 	unsigned long flags;
 	uint16 alloced = 0;
 	msgbuf_ring_t *ring = &prot->h2dring_ctrl_subn;
@@ -6516,7 +6516,7 @@ dhd_prot_ring_attach(dhd_pub_t *dhd, msgbuf_ring_t *ring, const char *name,
 		/* On 64bit, contiguous space may not span across 0x00000000FFFFFFFF */
 		ASSERT(PHYSADDRLO(dma_buf->pa) >= PHYSADDRLO(rsv_buf->pa));
 
-		dma_buf->dmah   = rsv_buf->dmah;
+		dma_buf->dmah	= rsv_buf->dmah;
 		dma_buf->secdma = rsv_buf->secdma;
 
 		(void)dhd_dma_buf_audit(dhd, &ring->dma_buf);
@@ -6777,8 +6777,8 @@ dhd_prot_flowrings_pool_attach(dhd_pub_t *dhd)
 	FOREACH_RING_IN_FLOWRINGS_POOL(prot, ring, flowid, h2d_flowrings_total) {
 		snprintf(ring_name, sizeof(ring_name), "h2dflr_%03u", flowid);
 		if (dhd_prot_ring_attach(dhd, ring, ring_name,
-		        prot->h2d_max_txpost, H2DRING_TXPOST_ITEMSIZE,
-		        DHD_FLOWID_TO_RINGID(flowid)) != BCME_OK) {
+			prot->h2d_max_txpost, H2DRING_TXPOST_ITEMSIZE,
+			DHD_FLOWID_TO_RINGID(flowid)) != BCME_OK) {
 			goto attach_fail;
 		}
 	}
@@ -7000,7 +7000,7 @@ dhd_prot_ring_write_complete(dhd_pub_t *dhd, msgbuf_ring_t * ring, void* p,
 			sizeof(uint16), RING_WR_UPD, ring->idx);
 	} else if (IDMA_ACTIVE(dhd) || dhd->dma_h2d_ring_upd_support) {
 			dhd_prot_dma_indx_set(dhd, ring->wr,
-			                      H2D_DMA_INDX_WR_UPD, ring->idx);
+					      H2D_DMA_INDX_WR_UPD, ring->idx);
 	} else if (IFRM_ACTIVE(dhd) && DHD_IS_FLOWRING(ring->idx, max_flowrings)) {
 			dhd_prot_dma_indx_set(dhd, ring->wr,
 			H2D_IFRM_INDX_WR_UPD, ring->idx);
@@ -7041,7 +7041,7 @@ dhd_prot_upd_read_idx(dhd_pub_t *dhd, msgbuf_ring_t * ring)
 	 */
 	if (IDMA_ACTIVE(dhd)) {
 		dhd_prot_dma_indx_set(dhd, ring->rd,
-		                      D2H_DMA_INDX_RD_UPD, ring->idx);
+				      D2H_DMA_INDX_RD_UPD, ring->idx);
 		if (IDMA_DS_ACTIVE(dhd)) {
 			dhd_bus_cmn_writeshared(dhd->bus, &(ring->rd),
 				sizeof(uint16), RING_RD_UPD, ring->idx);
@@ -7051,7 +7051,7 @@ dhd_prot_upd_read_idx(dhd_pub_t *dhd, msgbuf_ring_t * ring)
 		}
 	} else if (dhd->dma_h2d_ring_upd_support) {
 		dhd_prot_dma_indx_set(dhd, ring->rd,
-		                      D2H_DMA_INDX_RD_UPD, ring->idx);
+				      D2H_DMA_INDX_RD_UPD, ring->idx);
 	} else {
 		dhd_bus_cmn_writeshared(dhd->bus, &(ring->rd),
 			sizeof(uint16), RING_RD_UPD, ring->idx);
@@ -7450,7 +7450,7 @@ dhd_prot_get_read_addr(dhd_pub_t *dhd, msgbuf_ring_t *ring, uint32 *available_le
 		DHD_ERROR(("\r\n======================= \r\n"));
 		DHD_ERROR(("%s(): ring %p, ring->name %s, ring->max_items %d, items %d \r\n",
 			__FUNCTION__, ring, ring->name, ring->max_items, items));
-		DHD_ERROR(("wr: %d,  rd: %d,  depth: %d  \r\n", wr, rd, depth));
+		DHD_ERROR(("wr: %d,  rd: %d,  depth: %d	 \r\n", wr, rd, depth));
 		DHD_ERROR(("dhd->busstate %d bus->wait_for_d3_ack %d \r\n",
 			dhd->busstate, dhd->bus->wait_for_d3_ack));
 		DHD_ERROR(("\r\n======================= \r\n"));
@@ -7649,7 +7649,7 @@ dhd_prot_flow_ring_create(dhd_pub_t *dhd, flow_ring_node_t *flow_ring_node)
 	/* Update the flow_ring's WRITE index */
 	if (IDMA_ACTIVE(dhd) || dhd->dma_h2d_ring_upd_support) {
 		dhd_prot_dma_indx_set(dhd, flow_ring->wr,
-		                      H2D_DMA_INDX_WR_UPD, flow_ring->idx);
+				      H2D_DMA_INDX_WR_UPD, flow_ring->idx);
 	} else if (IFRM_ACTIVE(dhd) && DHD_IS_FLOWRING(flow_ring->idx, max_flowrings)) {
 		dhd_prot_dma_indx_set(dhd, flow_ring->wr,
 			H2D_IFRM_INDX_WR_UPD, flow_ring->idx);
@@ -8141,20 +8141,20 @@ dhd_prot_debug_dma_info_print(dhd_pub_t *dhd)
 	DHD_ERROR(("HostToDev TX: XmtCtrl=0x%08x XmtPtr=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x200, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x204, 0, 0)));
-	DHD_ERROR(("            : XmtAddrLow=0x%08x XmtAddrHigh=0x%08x\n",
+	DHD_ERROR(("		: XmtAddrLow=0x%08x XmtAddrHigh=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x208, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x20C, 0, 0)));
-	DHD_ERROR(("            : XmtStatus0=0x%08x XmtStatus1=0x%08x\n",
+	DHD_ERROR(("		: XmtStatus0=0x%08x XmtStatus1=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x210, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x214, 0, 0)));
 
 	DHD_ERROR(("HostToDev RX: RcvCtrl=0x%08x RcvPtr=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x220, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x224, 0, 0)));
-	DHD_ERROR(("            : RcvAddrLow=0x%08x RcvAddrHigh=0x%08x\n",
+	DHD_ERROR(("		: RcvAddrLow=0x%08x RcvAddrHigh=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x228, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x22C, 0, 0)));
-	DHD_ERROR(("            : RcvStatus0=0x%08x RcvStatus1=0x%08x\n",
+	DHD_ERROR(("		: RcvStatus0=0x%08x RcvStatus1=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x230, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x234, 0, 0)));
 
@@ -8162,20 +8162,20 @@ dhd_prot_debug_dma_info_print(dhd_pub_t *dhd)
 	DHD_ERROR(("DevToHost TX: XmtCtrl=0x%08x XmtPtr=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x240, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x244, 0, 0)));
-	DHD_ERROR(("            : XmtAddrLow=0x%08x XmtAddrHigh=0x%08x\n",
+	DHD_ERROR(("		: XmtAddrLow=0x%08x XmtAddrHigh=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x248, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x24C, 0, 0)));
-	DHD_ERROR(("            : XmtStatus0=0x%08x XmtStatus1=0x%08x\n",
+	DHD_ERROR(("		: XmtStatus0=0x%08x XmtStatus1=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x250, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x254, 0, 0)));
 
 	DHD_ERROR(("DevToHost RX: RcvCtrl=0x%08x RcvPtr=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x260, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x264, 0, 0)));
-	DHD_ERROR(("            : RcvAddrLow=0x%08x RcvAddrHigh=0x%08x\n",
+	DHD_ERROR(("		: RcvAddrLow=0x%08x RcvAddrHigh=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x268, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x26C, 0, 0)));
-	DHD_ERROR(("            : RcvStatus0=0x%08x RcvStatus1=0x%08x\n",
+	DHD_ERROR(("		: RcvStatus0=0x%08x RcvStatus1=0x%08x\n",
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x270, 0, 0),
 		si_corereg(dhd->bus->sih, dhd->bus->sih->buscoreidx, 0x274, 0, 0)));
 
@@ -8583,7 +8583,7 @@ dhd_prot_flow_ring_resume(dhd_pub_t *dhd, flow_ring_node_t *flow_ring_node)
 	/* Update the flow_ring's WRITE index */
 	if (IDMA_ACTIVE(dhd) || dhd->dma_h2d_ring_upd_support) {
 		dhd_prot_dma_indx_set(dhd, flow_ring->wr,
-		                      H2D_DMA_INDX_WR_UPD, flow_ring->idx);
+				      H2D_DMA_INDX_WR_UPD, flow_ring->idx);
 	} else if (IFRM_ACTIVE(dhd) && (flow_ring->idx >= BCMPCIE_H2D_MSGRING_TXFLOW_IDX_START)) {
 		dhd_prot_dma_indx_set(dhd, flow_ring->wr,
 			H2D_IFRM_INDX_WR_UPD,
@@ -8847,7 +8847,7 @@ dhd_prot_send_host_timestamp(dhd_pub_t *dhdp, uchar *tlvs, uint16 tlv_len,
 
 
 bool
-dhd_prot_data_path_tx_timestamp_logging(dhd_pub_t *dhd,  bool enable, bool set)
+dhd_prot_data_path_tx_timestamp_logging(dhd_pub_t *dhd,	 bool enable, bool set)
 {
 	if (set)
 		dhd->prot->tx_ts_log_enabled = enable;
@@ -8856,7 +8856,7 @@ dhd_prot_data_path_tx_timestamp_logging(dhd_pub_t *dhd,  bool enable, bool set)
 }
 
 bool
-dhd_prot_data_path_rx_timestamp_logging(dhd_pub_t *dhd,  bool enable, bool set)
+dhd_prot_data_path_rx_timestamp_logging(dhd_pub_t *dhd,	 bool enable, bool set)
 {
 	if (set)
 		dhd->prot->rx_ts_log_enabled = enable;

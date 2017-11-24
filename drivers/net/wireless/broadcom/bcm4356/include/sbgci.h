@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -107,20 +107,20 @@ typedef volatile struct {
 	uint32	gci_secimsr;		/* 0x1f4 */
 	uint32	gci_baudadj;		/* 0x1f8 */
 	uint32	gci_inbandintmask;	/* 0x1fc */
-	uint32  gci_chipctrl;		/* 0x200 */
-	uint32  gci_chipsts; 		/* 0x204 */
-	uint32	gci_gpioout; 		/* 0x208 */
-	uint32	gci_gpioout_read; 	/* 0x20C */
-	uint32	gci_mpwaketx; 		/* 0x210 */
-	uint32	gci_mpwakedetect; 	/* 0x214 */
-	uint32	gci_seciin_ctrl; 	/* 0x218 */
-	uint32	gci_seciout_ctrl; 	/* 0x21C */
-	uint32	gci_seciin_auxfifo_en; 	/* 0x220 */
-	uint32	gci_seciout_txen_txbr; 	/* 0x224 */
-	uint32	gci_seciin_rxbrstatus; 	/* 0x228 */
+	uint32	gci_chipctrl;		/* 0x200 */
+	uint32	gci_chipsts;		/* 0x204 */
+	uint32	gci_gpioout;		/* 0x208 */
+	uint32	gci_gpioout_read;	/* 0x20C */
+	uint32	gci_mpwaketx;		/* 0x210 */
+	uint32	gci_mpwakedetect;	/* 0x214 */
+	uint32	gci_seciin_ctrl;	/* 0x218 */
+	uint32	gci_seciout_ctrl;	/* 0x21C */
+	uint32	gci_seciin_auxfifo_en;	/* 0x220 */
+	uint32	gci_seciout_txen_txbr;	/* 0x224 */
+	uint32	gci_seciin_rxbrstatus;	/* 0x228 */
 	uint32	gci_seciin_rxerrstatus; /* 0x22C */
-	uint32	gci_seciin_fcstatus; 	/* 0x230 */
-	uint32	gci_seciout_txstatus; 	/* 0x234 */
+	uint32	gci_seciin_fcstatus;	/* 0x230 */
+	uint32	gci_seciout_txstatus;	/* 0x234 */
 	uint32	gci_seciout_txbrstatus; /* 0x238 */
 	uint32	wlan_mem_info;				/* 0x23C */
 	uint32	wlan_bankxinfo;				/* 0x240 */

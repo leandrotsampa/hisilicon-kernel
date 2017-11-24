@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -141,14 +141,14 @@ extern bool softap_enabled;
 
 #ifdef REPORT_FATAL_TIMEOUTS
 /* Default timeout value in ms */
-#define SCAN_TIMEOUT_DEFAULT    1
-#define JOIN_TIMEOUT_DEFAULT    7500
+#define SCAN_TIMEOUT_DEFAULT	1
+#define JOIN_TIMEOUT_DEFAULT	7500
 #ifdef DHD_EFI
-#define BUS_TIMEOUT_DEFAULT     8000000  /* 800ms, in units of 100ns */
-#define CMD_TIMEOUT_DEFAULT     15000000 /* 1.5sec, in units of 100ns */
+#define BUS_TIMEOUT_DEFAULT	8000000	 /* 800ms, in units of 100ns */
+#define CMD_TIMEOUT_DEFAULT	15000000 /* 1.5sec, in units of 100ns */
 #else
-#define BUS_TIMEOUT_DEFAULT     800
-#define CMD_TIMEOUT_DEFAULT     1200
+#define BUS_TIMEOUT_DEFAULT	800
+#define CMD_TIMEOUT_DEFAULT	1200
 #endif /* DHD_EFI */
 #endif /* REPORT_FATAL_TIMEOUTS */
 
@@ -197,7 +197,7 @@ bool ap_fw_loaded = FALSE;
 /* Version string to report */
 #ifdef DHD_DEBUG
 #ifndef SRCBASE
-#define SRCBASE        "drivers/net/wireless/bcmdhd"
+#define SRCBASE	       "drivers/net/wireless/bcmdhd"
 #endif
 #define DHD_COMPILED "\nCompiled in " SRCBASE
 #endif /* DHD_DEBUG */
@@ -322,7 +322,7 @@ const bcm_iovar_t dhd_iovars[] = {
 	{"wlmsglevel",	IOV_WLMSGLEVEL,	0,	0,	IOVT_UINT32,	0 },
 #ifdef DHD_DEBUG
 	{"msglevel",	IOV_MSGLEVEL,	0,	0,	IOVT_UINT32,	0 },
-	{"mem_debug",   IOV_MEM_DEBUG,  0,      0,      IOVT_BUFFER,    0 },
+	{"mem_debug",	IOV_MEM_DEBUG,	0,	0,	IOVT_BUFFER,	0 },
 #endif /* DHD_DEBUG */
 	{"bcmerrorstr", IOV_BCMERRORSTR, 0, 0,	IOVT_BUFFER,	BCME_STRLEN },
 	{"bcmerror",	IOV_BCMERROR,	0,	0,	IOVT_INT8,	0 },
@@ -671,35 +671,35 @@ dhd_dump(dhd_pub_t *dhdp, char *buf, int buflen)
 	bcm_bprintf(strbuf, "%s\n", dhd_version);
 	bcm_bprintf(strbuf, "\n");
 	bcm_bprintf(strbuf, "pub.up %d pub.txoff %d pub.busstate %d\n",
-	            dhdp->up, dhdp->txoff, dhdp->busstate);
+		    dhdp->up, dhdp->txoff, dhdp->busstate);
 	bcm_bprintf(strbuf, "pub.hdrlen %u pub.maxctl %u pub.rxsz %u\n",
-	            dhdp->hdrlen, dhdp->maxctl, dhdp->rxsz);
+		    dhdp->hdrlen, dhdp->maxctl, dhdp->rxsz);
 	bcm_bprintf(strbuf, "pub.iswl %d pub.drv_version %ld pub.mac %s\n",
-	            dhdp->iswl, dhdp->drv_version, bcm_ether_ntoa(&dhdp->mac, eabuf));
+		    dhdp->iswl, dhdp->drv_version, bcm_ether_ntoa(&dhdp->mac, eabuf));
 	bcm_bprintf(strbuf, "pub.bcmerror %d tickcnt %u\n", dhdp->bcmerror, dhdp->tickcnt);
 
 	bcm_bprintf(strbuf, "dongle stats:\n");
 	bcm_bprintf(strbuf, "tx_packets %lu tx_bytes %lu tx_errors %lu tx_dropped %lu\n",
-	            dhdp->dstats.tx_packets, dhdp->dstats.tx_bytes,
-	            dhdp->dstats.tx_errors, dhdp->dstats.tx_dropped);
+		    dhdp->dstats.tx_packets, dhdp->dstats.tx_bytes,
+		    dhdp->dstats.tx_errors, dhdp->dstats.tx_dropped);
 	bcm_bprintf(strbuf, "rx_packets %lu rx_bytes %lu rx_errors %lu rx_dropped %lu\n",
-	            dhdp->dstats.rx_packets, dhdp->dstats.rx_bytes,
-	            dhdp->dstats.rx_errors, dhdp->dstats.rx_dropped);
+		    dhdp->dstats.rx_packets, dhdp->dstats.rx_bytes,
+		    dhdp->dstats.rx_errors, dhdp->dstats.rx_dropped);
 	bcm_bprintf(strbuf, "multicast %lu\n", dhdp->dstats.multicast);
 
 	bcm_bprintf(strbuf, "bus stats:\n");
 	bcm_bprintf(strbuf, "tx_packets %lu  tx_dropped %lu tx_multicast %lu tx_errors %lu\n",
-	            dhdp->tx_packets, dhdp->tx_dropped, dhdp->tx_multicast, dhdp->tx_errors);
+		    dhdp->tx_packets, dhdp->tx_dropped, dhdp->tx_multicast, dhdp->tx_errors);
 	bcm_bprintf(strbuf, "tx_ctlpkts %lu tx_ctlerrs %lu\n",
-	            dhdp->tx_ctlpkts, dhdp->tx_ctlerrs);
+		    dhdp->tx_ctlpkts, dhdp->tx_ctlerrs);
 	bcm_bprintf(strbuf, "rx_packets %lu rx_multicast %lu rx_errors %lu \n",
-	            dhdp->rx_packets, dhdp->rx_multicast, dhdp->rx_errors);
+		    dhdp->rx_packets, dhdp->rx_multicast, dhdp->rx_errors);
 	bcm_bprintf(strbuf, "rx_ctlpkts %lu rx_ctlerrs %lu rx_dropped %lu\n",
-	            dhdp->rx_ctlpkts, dhdp->rx_ctlerrs, dhdp->rx_dropped);
+		    dhdp->rx_ctlpkts, dhdp->rx_ctlerrs, dhdp->rx_dropped);
 	bcm_bprintf(strbuf, "rx_readahead_cnt %lu tx_realloc %lu\n",
-	            dhdp->rx_readahead_cnt, dhdp->tx_realloc);
+		    dhdp->rx_readahead_cnt, dhdp->tx_realloc);
 	bcm_bprintf(strbuf, "tx_pktgetfail %lu rx_pktgetfail %lu\n",
-	            dhdp->tx_pktgetfail, dhdp->rx_pktgetfail);
+		    dhdp->tx_pktgetfail, dhdp->rx_pktgetfail);
 	bcm_bprintf(strbuf, "\n");
 
 #ifdef DMAMAP_STATS
@@ -1174,7 +1174,7 @@ extern void dhdsdio_txpktstatics(void);
 
 static int
 dhd_doiovar(dhd_pub_t *dhd_pub, const bcm_iovar_t *vi, uint32 actionid, const char *name,
-            void *params, int plen, void *arg, int len, int val_size)
+	    void *params, int plen, void *arg, int len, int val_size)
 {
 	int bcmerror = 0;
 	int32 int_val = 0;
@@ -1422,7 +1422,7 @@ dhd_doiovar(dhd_pub_t *dhd_pub, const bcm_iovar_t *vi, uint32 actionid, const ch
 #endif /* PROP_TXSTATUS */
 
 	case IOV_GVAL(IOV_BUS_TYPE):
-		/* The dhd application queries the driver to check if its usb or sdio.  */
+		/* The dhd application queries the driver to check if its usb or sdio.	*/
 #ifdef BCMDHDUSB
 		int_val = BUS_TYPE_USB;
 #endif
@@ -1621,7 +1621,7 @@ dhd_doiovar(dhd_pub_t *dhd_pub, const bcm_iovar_t *vi, uint32 actionid, const ch
 
 #if defined(TRAFFIC_MGMT_DWM)
 	case IOV_SVAL(IOV_TRAFFIC_MGMT_DWM): {
-			trf_mgmt_filter_list_t   *trf_mgmt_filter_list =
+			trf_mgmt_filter_list_t	 *trf_mgmt_filter_list =
 				(trf_mgmt_filter_list_t *)(arg);
 			bcmerror = traffic_mgmt_add_dwm_filter(dhd_pub, trf_mgmt_filter_list, len);
 		}
@@ -2448,12 +2448,12 @@ wl_show_host_event(dhd_pub_t *dhd_pub, wl_event_msg_t *event, void *event_data,
 
 	/* debug dump of event messages */
 	snprintf(eabuf, sizeof(eabuf), "%02x:%02x:%02x:%02x:%02x:%02x",
-	        (uchar)event->addr.octet[0]&0xff,
-	        (uchar)event->addr.octet[1]&0xff,
-	        (uchar)event->addr.octet[2]&0xff,
-	        (uchar)event->addr.octet[3]&0xff,
-	        (uchar)event->addr.octet[4]&0xff,
-	        (uchar)event->addr.octet[5]&0xff);
+		(uchar)event->addr.octet[0]&0xff,
+		(uchar)event->addr.octet[1]&0xff,
+		(uchar)event->addr.octet[2]&0xff,
+		(uchar)event->addr.octet[3]&0xff,
+		(uchar)event->addr.octet[4]&0xff,
+		(uchar)event->addr.octet[5]&0xff);
 
 	event_name = bcmevent_get_name(event_type);
 	BCM_REFERENCE(event_name);
@@ -2607,7 +2607,7 @@ wl_show_host_event(dhd_pub_t *dhd_pub, wl_event_msg_t *event, void *event_data,
 	case WLC_E_PSK_SUP:
 	case WLC_E_PRUNE:
 		DHD_EVENT(("MACEVENT: %s, status %d, reason %d\n",
-		           event_name, (int)status, (int)reason));
+			   event_name, (int)status, (int)reason));
 #ifdef REPORT_FATAL_TIMEOUTS
 		if ((status == WLC_E_STATUS_SUCCESS || status == WLC_E_STATUS_UNSOLICITED) &&
 				(reason == WLC_E_SUP_OTHER)) {
@@ -3391,12 +3391,12 @@ wl_pkt_filter_base_parse(char *name)
 void
 dhd_pktfilter_offload_set(dhd_pub_t * dhd, char *arg)
 {
-	const char 			*str;
+	const char			*str;
 	wl_pkt_filter_t		pkt_filter;
 	wl_pkt_filter_t		*pkt_filterp;
 	int					buf_len;
 	int					str_len;
-	int 				rc;
+	int				rc;
 	uint32				mask_size;
 	uint32				pattern_size;
 	char				*argv[16], * buf = 0;
@@ -4282,7 +4282,7 @@ exit:
 bool dhd_support_sta_mode(dhd_pub_t *dhd)
 {
 
-#ifdef  WL_CFG80211
+#ifdef	WL_CFG80211
 	if (!(dhd->op_mode & DHD_FLAG_STA_MODE))
 		return FALSE;
 	else
@@ -4414,7 +4414,7 @@ wl_parse_ssid_list_tlv(char** list_str, wlc_ssid_ext_t* ssid, int max, int *byte
 */
 int
 wl_iw_parse_data_tlv(char** list_str, void *dst, int dst_size, const char token,
-                     int input_size, int *bytes_left)
+		     int input_size, int *bytes_left)
 {
 	char* str;
 	uint16 short_temp;
@@ -4464,7 +4464,7 @@ wl_iw_parse_data_tlv(char** list_str, void *dst, int dst_size, const char token,
 */
 int
 wl_iw_parse_channel_list_tlv(char** list_str, uint16* channel_list,
-                             int channel_num, int *bytes_left)
+			     int channel_num, int *bytes_left)
 {
 	char* str;
 	int idx = 0;
@@ -4508,7 +4508,7 @@ wl_iw_parse_channel_list_tlv(char** list_str, uint16* channel_list,
 }
 
 /* Parse a comma-separated list from list_str into ssid array, starting
- * at index idx.  Max specifies size of the ssid array.  Parses ssids
+ * at index idx.  Max specifies size of the ssid array.	 Parses ssids
  * and returns updated idx; if idx >= max not all fit, the excess have
  * not been copied.  Returns -1 on empty string, or on ssid too long.
  */
@@ -4595,11 +4595,11 @@ static int traffic_mgmt_add_dwm_filter(dhd_pub_t *dhd,
 	trf_mgmt_filter_list_t * trf_mgmt_filter_list, int len)
 {
 	int ret = 0;
-	uint32              i;
+	uint32		    i;
 	trf_mgmt_filter_t   *trf_mgmt_filter;
-	uint8               dwm_tbl_entry;
-	uint32              dscp = 0;
-	uint16              dwm_filter_enabled = 0;
+	uint8		    dwm_tbl_entry;
+	uint32		    dscp = 0;
+	uint16		    dwm_filter_enabled = 0;
 
 
 	/* Check parameter length is adequate */
@@ -4633,7 +4633,7 @@ static int traffic_mgmt_add_dwm_filter(dhd_pub_t *dhd,
 		if (trf_mgmt_filter->flags & TRF_FILTER_FAVORED)
 			DHD_TRF_MGMT_DWM_SET_FAVORED(dwm_tbl_entry);
 
-		dhd->dhd_tm_dwm_tbl.dhd_dwm_tbl[dscp] =  dwm_tbl_entry;
+		dhd->dhd_tm_dwm_tbl.dhd_dwm_tbl[dscp] =	 dwm_tbl_entry;
 	}
 	return ret;
 }
@@ -4773,7 +4773,7 @@ dhd_download_2_dongle(dhd_pub_t	*dhd, char *iovar, uint16 flag, uint16 dload_typ
 		(uint)len, iovar_buf, sizeof(iovar_buf));
 	if (iovar_len == 0) {
 		DHD_ERROR(("%s: insufficient buffer space passed to bcm_mkiovar for '%s' \n",
-		           __FUNCTION__, iovar));
+			   __FUNCTION__, iovar));
 		return BCME_BUFTOOSHORT;
 	}
 
@@ -5019,13 +5019,13 @@ dhd_dump_eapol_4way_message(char *ifname, char *dump_data, bool direction)
 		}
 	} else if (type == 3 && dump_data[18] == 2) {
 		us_tmp = (dump_data[19] << 8) | dump_data[20];
-		pair =  0 != (us_tmp & 0x08);
-		ack = 0  != (us_tmp & 0x80);
-		mic = 0  != (us_tmp & 0x100);
-		kerr =  0 != (us_tmp & 0x400);
-		req = 0  != (us_tmp & 0x800);
-		sec = 0  != (us_tmp & 0x200);
-		install  = 0 != (us_tmp & 0x40);
+		pair =	0 != (us_tmp & 0x08);
+		ack = 0	 != (us_tmp & 0x80);
+		mic = 0	 != (us_tmp & 0x100);
+		kerr =	0 != (us_tmp & 0x400);
+		req = 0	 != (us_tmp & 0x800);
+		sec = 0	 != (us_tmp & 0x200);
+		install	 = 0 != (us_tmp & 0x40);
 
 		if (!sec && !mic && ack && !install && pair && !kerr && !req) {
 			EAP_PRINT("EAPOL Packet, 4-way handshake, M1");
@@ -5720,7 +5720,7 @@ dhd_parse_logstrs_file(osl_t *osh, char *raw_fmts, int logstrs_size,
 		DHD_ERROR(("%s: Failed to allocate fmts memory\n", __FUNCTION__));
 		return BCME_ERROR;
 	}
-	event_log->fmts_size = num_fmts  * sizeof(char *);
+	event_log->fmts_size = num_fmts	 * sizeof(char *);
 
 	for (i = 0; i < num_fmts; i++) {
 		/* ROM lognums index into logstrs using 'rom_logstrs_offset' as a base
@@ -5763,7 +5763,7 @@ int dhd_parse_map_file(osl_t *osh, void *file, uint32 *ramstart, uint32 *rodata_
 		goto fail;
 	}
 
-	/* read ram start, rodata_start and rodata_end values from map  file */
+	/* read ram start, rodata_start and rodata_end values from map	file */
 	while (count != ALL_MAP_VAL)
 	{
 		error = dhd_os_read_file(file, raw_fmts, read_size);

@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -38,10 +38,10 @@
 #include <packed_section_start.h>
 
 /* WiFi NAN OUI values */
-#define NAN_OUI			WFA_OUI     /* WiFi OUI */
+#define NAN_OUI			WFA_OUI	    /* WiFi OUI */
 /* For oui_type field identifying the type and version of the NAN IE. */
-#define NAN_OUI_TYPE		0x13        /* Type/Version */
-#define NAN_AF_OUI_TYPE		0x18        /* Type/Version */
+#define NAN_OUI_TYPE		0x13	    /* Type/Version */
+#define NAN_AF_OUI_TYPE		0x18	    /* Type/Version */
 /* IEEE 802.11 vendor specific information element. (Same as P2P_IE_ID.) */
 #define NAN_IE_ID		0xdd
 
@@ -56,7 +56,7 @@
 /* Size of fixed length part of nan_pub_act_frame_t before attributes. */
 #define NAN_PUB_ACT_FRAME_FIXED_LEN 6
 /* Number of octents in master rank value. */
-#define NAN_MASTER_RANK_LEN     8
+#define NAN_MASTER_RANK_LEN	8
 /* NAN public action frame header size */
 #define NAN_PUB_ACT_FRAME_HDR_SIZE (OFFSETOF(nan_pub_act_frame_t, data))
 /* NAN network ID */
@@ -83,10 +83,10 @@
 #define NAN_ATTR_ID_LEN		 1u	/* ID field length */
 #define NAN_ATTR_LEN_LEN	 2u	/* Length field length */
 #define NAN_ATTR_HDR_LEN	 (NAN_ATTR_ID_LEN + NAN_ATTR_LEN_LEN)
-#define NAN_ENTRY_CTRL_LEN       1      /* Entry control field length from FAM attribute */
-#define NAN_MAP_ID_LEN           1	/* MAP ID length to signify band */
-#define NAN_OPERATING_CLASS_LEN  1	/* operating class field length from NAN FAM */
-#define NAN_CHANNEL_NUM_LEN      1	/* channel number field length 1 byte */
+#define NAN_ENTRY_CTRL_LEN	 1	/* Entry control field length from FAM attribute */
+#define NAN_MAP_ID_LEN		 1	/* MAP ID length to signify band */
+#define NAN_OPERATING_CLASS_LEN	 1	/* operating class field length from NAN FAM */
+#define NAN_CHANNEL_NUM_LEN	 1	/* channel number field length 1 byte */
 
 /* NAN slot duration / period */
 #define NAN_MIN_TU		16
@@ -106,16 +106,16 @@
 #define NAN_SLOT_DUR_4096TU	4096
 #define NAN_SLOT_DUR_8192TU	8192
 
-#define NAN_MAP_ID_2G   2  /* NAN Further Avail Map ID for band 2.4G */
-#define NAN_MAP_ID_5G   5  /* NAN Further Avail Map ID for band 5G */
+#define NAN_MAP_ID_2G	2  /* NAN Further Avail Map ID for band 2.4G */
+#define NAN_MAP_ID_5G	5  /* NAN Further Avail Map ID for band 5G */
 #define NAN_MAP_NUM_IDS 2  /* Max number of NAN Further Avail Map IDs supported */
 
 /* size of ndc id */
 #define NAN_DATA_NDC_ID_SIZE 6
 
-#define NAN_AVAIL_ENTRY_LEN_RES0 7      /* Avail entry len in FAM attribute for resolution 16TU */
-#define NAN_AVAIL_ENTRY_LEN_RES1 5      /* Avail entry len in FAM attribute for resolution 32TU */
-#define NAN_AVAIL_ENTRY_LEN_RES2 4      /* Avail entry len in FAM attribute for resolution 64TU */
+#define NAN_AVAIL_ENTRY_LEN_RES0 7	/* Avail entry len in FAM attribute for resolution 16TU */
+#define NAN_AVAIL_ENTRY_LEN_RES1 5	/* Avail entry len in FAM attribute for resolution 32TU */
+#define NAN_AVAIL_ENTRY_LEN_RES2 4	/* Avail entry len in FAM attribute for resolution 64TU */
 
 /* Vendor-specific public action frame for NAN */
 typedef BWL_PRE_PACKED_STRUCT struct nan_pub_act_frame_s {
@@ -135,9 +135,9 @@ typedef BWL_PRE_PACKED_STRUCT struct nan_pub_act_frame_s {
 enum {
 	NAN_ATTR_MASTER_IND	= 0,
 	NAN_ATTR_CLUSTER	= 1,
-	NAN_ATTR_SVC_ID_LIST    = 2,
+	NAN_ATTR_SVC_ID_LIST	= 2,
 	NAN_ATTR_SVC_DESCRIPTOR = 3,
-	NAN_ATTR_CONN_CAP       = 4,
+	NAN_ATTR_CONN_CAP	= 4,
 	NAN_ATTR_INFRA		= 5,
 	NAN_ATTR_P2P		= 6,
 	NAN_ATTR_IBSS		= 7,
@@ -208,14 +208,14 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_master_ind_attr_s {
 	uint8	random_factor;
 } BWL_POST_PACKED_STRUCT wifi_nan_master_ind_attr_t;
 
-/* cluster attr record  */
+/* cluster attr record	*/
 typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_cluster_attr_s {
 	uint8	id;
 	uint16	len;
-	uint8   amr[NAN_MASTER_RANK_LEN];
-	uint8   hop_count;
+	uint8	amr[NAN_MASTER_RANK_LEN];
+	uint8	hop_count;
 	/* Anchor Master Beacon Transmission Time */
-	uint32  ambtt;
+	uint32	ambtt;
 } BWL_POST_PACKED_STRUCT wifi_nan_cluster_attr_t;
 
 /*  container for service ID records  */
@@ -648,11 +648,11 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_band_entry_s {
 } BWL_POST_PACKED_STRUCT wifi_nan_band_entry_t;
 
 /* Type of  Availability: committed */
-#define NAN_ENTRY_CNTRL_TYPE_COMM_AVAIL	        0x1
+#define NAN_ENTRY_CNTRL_TYPE_COMM_AVAIL		0x1
 /* Type of  Availability: potential */
 #define NAN_ENTRY_CNTRL_TYPE_POTEN_AVAIL	0x2
 /* Type of  Availability: conditional */
-#define NAN_ENTRY_CNTRL_TYPE_COND_AVAIL	        0x4
+#define NAN_ENTRY_CNTRL_TYPE_COND_AVAIL		0x4
 /* Committed + Potential */
 #define NAN_ENTRY_CNTRL_TYPE_COMM_POTEN \
 	(NAN_ENTRY_CNTRL_TYPE_COMM_AVAIL | NAN_ENTRY_CNTRL_TYPE_POTEN_AVAIL)
@@ -1276,7 +1276,7 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ctx_id_field_s {
 typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ctx_id_info_attr_s {
 	uint8 attr_id;	/* 0x23 - NAN_ATTR_SEC_CTX_ID_INFO */
 	uint16 len;
-	uint8 var[];	/* security context identifier  list */
+	uint8 var[];	/* security context identifier	list */
 } BWL_POST_PACKED_STRUCT wifi_nan_sec_ctx_id_info_attr_t;
 
 /*
@@ -1291,7 +1291,7 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ctx_id_info_attr_s {
 typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ncssk_key_desc_attr_s {
 	uint8 attr_id;	/* 0x24 - NAN_ATTR_SHARED_KEY_DESC */
 	uint16 len;
-	uint8 inst_id;  /* Publish service instance ID */
+	uint8 inst_id;	/* Publish service instance ID */
 	uint8 desc_type;
 	uint16 key_info;
 	uint16 key_len;
@@ -1397,7 +1397,7 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ncssk_key_desc_attr_s {
 
 /* NAN Multicast service group(NMSG) definitions */
 /* Length of NMSG_ID -- (NDI * 2^16 + pub_id * 2^8 + Random_factor) */
-#define NAN_NMSG_ID_LEN                         8
+#define NAN_NMSG_ID_LEN				8
 
 #define NAN_NMSG_TYPE_MASK			0x0F
 #define NMSG_ATTR_TYPE_STATUS_REQUEST		0x00
@@ -1407,15 +1407,15 @@ typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_sec_ncssk_key_desc_attr_s {
 #define NMSG_ATTR_TYPE_STATUS_TERMINATE		0x04
 #define NMSG_ATTR_TYPE_STATUS_IMPLICIT_ENROL	0x05
 
-#define NMSG_ATTR_TYPE_STATUS_CONTINUED	        0x00
-#define NMSG_ATTR_TYPE_STATUS_ACCEPTED	        0x10
-#define NMSG_ATTR_TYPE_STATUS_REJECTED	        0x20
+#define NMSG_ATTR_TYPE_STATUS_CONTINUED		0x00
+#define NMSG_ATTR_TYPE_STATUS_ACCEPTED		0x10
+#define NMSG_ATTR_TYPE_STATUS_REJECTED		0x20
 
-#define NMSG_CTRL_PUB_ID_PRESENT                0x0001
-#define NMSG_CTRL_NMSG_ID_PRESENT               0x0002
-#define NMSG_CTRL_SECURITY_PRESENT              0x0004
-#define NMSG_CTRL_MANY_TO_MANY_PRESENT          0x0008
-#define NMSG_CTRL_SVC_INFO_PRESENT              0x0010
+#define NMSG_CTRL_PUB_ID_PRESENT		0x0001
+#define NMSG_CTRL_NMSG_ID_PRESENT		0x0002
+#define NMSG_CTRL_SECURITY_PRESENT		0x0004
+#define NMSG_CTRL_MANY_TO_MANY_PRESENT		0x0008
+#define NMSG_CTRL_SVC_INFO_PRESENT		0x0010
 
 /* NMSG attribute */
 typedef BWL_PRE_PACKED_STRUCT struct wifi_nan_nmsg_attr_s {

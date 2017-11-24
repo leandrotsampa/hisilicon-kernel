@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -97,8 +97,8 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define CMD_BTCOEXSCAN_STOP	"BTCOEXSCAN-STOP"
 #define CMD_BTCOEXMODE		"BTCOEXMODE"
 #define CMD_SETSUSPENDOPT	"SETSUSPENDOPT"
-#define CMD_SETSUSPENDMODE      "SETSUSPENDMODE"
-#define CMD_MAXDTIM_IN_SUSPEND  "MAX_DTIM_IN_SUSPEND"
+#define CMD_SETSUSPENDMODE	"SETSUSPENDMODE"
+#define CMD_MAXDTIM_IN_SUSPEND	"MAX_DTIM_IN_SUSPEND"
 #define CMD_P2P_DEV_ADDR	"P2P_DEV_ADDR"
 #define CMD_SETFWPATH		"SETFWPATH"
 #define CMD_SETBAND		"SETBAND"
@@ -113,8 +113,8 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define CMD_P2P_SET_PS		"P2P_SET_PS"
 #define CMD_P2P_ECSA		"P2P_ECSA"
 #define CMD_P2P_INC_BW		"P2P_INCREASE_BW"
-#define CMD_SET_AP_WPS_P2P_IE 		"SET_AP_WPS_P2P_IE"
-#define CMD_SETROAMMODE 	"SETROAMMODE"
+#define CMD_SET_AP_WPS_P2P_IE		"SET_AP_WPS_P2P_IE"
+#define CMD_SETROAMMODE		"SETROAMMODE"
 #define CMD_SETIBSSBEACONOUIDATA	"SETIBSSBEACONOUIDATA"
 #define CMD_MIRACAST		"MIRACAST"
 #define CMD_COUNTRY_DELIMITER "/"
@@ -127,11 +127,11 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define CMD_GET_BEST_CHANNELS	"GET_BEST_CHANNELS"
 #endif /* WL_SUPPORT_AUTO_CHANNEL */
 
-#define CMD_80211_MODE    "MODE"  /* 802.11 mode a/b/g/n/ac */
-#define CMD_CHANSPEC      "CHANSPEC"
-#define CMD_DATARATE      "DATARATE"
+#define CMD_80211_MODE	  "MODE"  /* 802.11 mode a/b/g/n/ac */
+#define CMD_CHANSPEC	  "CHANSPEC"
+#define CMD_DATARATE	  "DATARATE"
 #define CMD_ASSOC_CLIENTS "ASSOCLIST"
-#define CMD_SET_CSA       "SETCSA"
+#define CMD_SET_CSA	  "SETCSA"
 #ifdef WL_SUPPORT_AUTO_CHANNEL
 #define CMD_SET_HAPD_AUTO_CHANNEL	"HAPD_AUTO_CHANNEL"
 #endif /* WL_SUPPORT_AUTO_CHANNEL */
@@ -170,8 +170,8 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #endif /* SUPPORT_RANDOM_MAC_SCAN */
 
 
-#define CMD_CHANGE_RL 	"CHANGE_RL"
-#define CMD_RESTORE_RL  "RESTORE_RL"
+#define CMD_CHANGE_RL	"CHANGE_RL"
+#define CMD_RESTORE_RL	"RESTORE_RL"
 
 #define CMD_SET_RMC_ENABLE			"SETRMCENABLE"
 #define CMD_SET_RMC_TXRATE			"SETRMCTXRATE"
@@ -205,7 +205,7 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define CMD_GET_LINK_STATUS			"GETLINKSTATUS"
 
 #if defined(DHD_ENABLE_BIGDATA_LOGGING)
-#define CMD_GET_BSS_INFO            "GETBSSINFO"
+#define CMD_GET_BSS_INFO	    "GETBSSINFO"
 #define CMD_GET_ASSOC_REJECT_INFO   "GETASSOCREJECTINFO"
 #endif /* DHD_ENABLE_BIGDATA_LOGGING */
 #define CMD_GET_STA_INFO   "GETSTAINFO"
@@ -217,8 +217,8 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #define WL_ANDROID_LINK_AP_MIMO_SUPPORT	0x08
 
 #ifdef P2PRESP_WFDIE_SRC
-#define CMD_P2P_SET_WFDIE_RESP      "P2P_SET_WFDIE_RESP"
-#define CMD_P2P_GET_WFDIE_RESP      "P2P_GET_WFDIE_RESP"
+#define CMD_P2P_SET_WFDIE_RESP	    "P2P_SET_WFDIE_RESP"
+#define CMD_P2P_GET_WFDIE_RESP	    "P2P_GET_WFDIE_RESP"
 #endif /* P2PRESP_WFDIE_SRC */
 
 #define CMD_DFS_AP_MOVE			"DFS_AP_MOVE"
@@ -274,11 +274,11 @@ uint android_msg_level = ANDROID_ERROR_LEVEL;
 #endif
 
 #ifndef MIRACAST_MCHAN_ALGO
-#define MIRACAST_MCHAN_ALGO     1
+#define MIRACAST_MCHAN_ALGO	1
 #endif
 
 #ifndef MIRACAST_MCHAN_BW
-#define MIRACAST_MCHAN_BW       25
+#define MIRACAST_MCHAN_BW	25
 #endif
 
 #ifdef CONNECTION_STATISTICS
@@ -344,7 +344,7 @@ struct io_cfg {
 #define JOIN_PREF_WPA_TUPLE_SIZE	12	/* Tuple size in bytes */
 #define JOIN_PREF_MAX_WPA_TUPLES	16
 #define MAX_BUF_SIZE		(JOIN_PREF_RSSI_SIZE + JOIN_PREF_WPA_HDR_SIZE +	\
-				           (JOIN_PREF_WPA_TUPLE_SIZE * JOIN_PREF_MAX_WPA_TUPLES))
+					   (JOIN_PREF_WPA_TUPLE_SIZE * JOIN_PREF_MAX_WPA_TUPLES))
 #endif /* BCMFW_ROAM_ENABLE */
 
 #ifdef WL_NATOE
@@ -355,8 +355,8 @@ struct io_cfg {
 
 /* natoe command info structure */
 typedef struct wl_natoe_cmd_info {
-	uint8  *command;        /* pointer to the actual command */
-	uint16 tot_len;        /* total length of the command */
+	uint8  *command;	/* pointer to the actual command */
+	uint16 tot_len;	       /* total length of the command */
 	uint16 bytes_written;  /* Bytes written for get response */
 } wl_natoe_cmd_info_t;
 
@@ -366,9 +366,9 @@ typedef int (natoe_cmd_handler_t)(struct net_device *dev,
 
 struct wl_natoe_sub_cmd {
 	char *name;
-	uint8  version;              /* cmd  version */
-	uint16 id;                   /* id for the dongle f/w switch/case */
-	uint16 type;                 /* base type of argument */
+	uint8  version;		     /* cmd  version */
+	uint16 id;		     /* id for the dongle f/w switch/case */
+	uint16 type;		     /* base type of argument */
 	natoe_cmd_handler_t *handler; /* cmd handler  */
 };
 
@@ -583,7 +583,7 @@ static int wl_android_get_rssi(struct net_device *net, char *command, int total_
 			ANDROID_ERROR(("%s:address err\n", __FUNCTION__));
 			return -1;
 		}
-	        scbval.val = htod32(0);
+		scbval.val = htod32(0);
 		ANDROID_TRACE(("%s: address:"MACDBG, __FUNCTION__, MAC2STRDBG(scbval.ea.octet)));
 #ifdef WL_VIRTUAL_APSTA
 		/* RSDB AP may have another virtual interface
@@ -876,7 +876,7 @@ static int wl_android_set_csa(struct net_device *dev, char *command, int total_l
 				ANDROID_ERROR(("Invalid hw channel\n"));
 				return -1;
 			}
-		} else  {
+		} else	{
 			ANDROID_ERROR(("does not support per_chan_info\n"));
 			return -1;
 		}
@@ -1794,16 +1794,16 @@ wl_android_get_connection_stats(struct net_device *dev, char *command, int total
 			goto error;
 		}
 
-		output->txframe   = dtoh32(wlc_cnt->txframe);
-		output->txbyte    = dtoh32(wlc_cnt->txbyte);
-		output->txerror   = dtoh32(wlc_cnt->txerror);
-		output->rxframe   = dtoh32(wlc_cnt->rxframe);
-		output->rxbyte    = dtoh32(wlc_cnt->rxbyte);
-		output->txfail    = dtoh32(wlc_cnt->txfail);
-		output->txretry   = dtoh32(wlc_cnt->txretry);
+		output->txframe	  = dtoh32(wlc_cnt->txframe);
+		output->txbyte	  = dtoh32(wlc_cnt->txbyte);
+		output->txerror	  = dtoh32(wlc_cnt->txerror);
+		output->rxframe	  = dtoh32(wlc_cnt->rxframe);
+		output->rxbyte	  = dtoh32(wlc_cnt->rxbyte);
+		output->txfail	  = dtoh32(wlc_cnt->txfail);
+		output->txretry	  = dtoh32(wlc_cnt->txretry);
 		output->txretrie  = dtoh32(wlc_cnt->txretrie);
-		output->txrts     = dtoh32(wlc_cnt->txrts);
-		output->txnocts   = dtoh32(wlc_cnt->txnocts);
+		output->txrts	  = dtoh32(wlc_cnt->txrts);
+		output->txnocts	  = dtoh32(wlc_cnt->txnocts);
 		output->txexptime = dtoh32(wlc_cnt->txexptime);
 #ifndef DISABLE_IF_COUNTERS
 	} else {
@@ -1814,22 +1814,22 @@ wl_android_get_connection_stats(struct net_device *dev, char *command, int total
 			goto error;
 		}
 
-		output->txframe   = (uint32)dtoh64(if_stats->txframe);
-		output->txbyte    = (uint32)dtoh64(if_stats->txbyte);
-		output->txerror   = (uint32)dtoh64(if_stats->txerror);
-		output->rxframe   = (uint32)dtoh64(if_stats->rxframe);
-		output->rxbyte    = (uint32)dtoh64(if_stats->rxbyte);
-		output->txfail    = (uint32)dtoh64(if_stats->txfail);
-		output->txretry   = (uint32)dtoh64(if_stats->txretry);
+		output->txframe	  = (uint32)dtoh64(if_stats->txframe);
+		output->txbyte	  = (uint32)dtoh64(if_stats->txbyte);
+		output->txerror	  = (uint32)dtoh64(if_stats->txerror);
+		output->rxframe	  = (uint32)dtoh64(if_stats->rxframe);
+		output->rxbyte	  = (uint32)dtoh64(if_stats->rxbyte);
+		output->txfail	  = (uint32)dtoh64(if_stats->txfail);
+		output->txretry	  = (uint32)dtoh64(if_stats->txretry);
 		output->txretrie  = (uint32)dtoh64(if_stats->txretrie);
 		if (dtoh16(if_stats->length) > OFFSETOF(wl_if_stats_t, txexptime)) {
 			output->txexptime = (uint32)dtoh64(if_stats->txexptime);
-			output->txrts     = (uint32)dtoh64(if_stats->txrts);
-			output->txnocts   = (uint32)dtoh64(if_stats->txnocts);
+			output->txrts	  = (uint32)dtoh64(if_stats->txrts);
+			output->txnocts	  = (uint32)dtoh64(if_stats->txnocts);
 		} else {
 			output->txexptime = 0;
-			output->txrts     = 0;
-			output->txnocts   = 0;
+			output->txrts	  = 0;
+			output->txnocts	  = 0;
 		}
 	}
 #endif /* DISABLE_IF_COUNTERS */
@@ -1842,7 +1842,7 @@ wl_android_get_connection_stats(struct net_device *dev, char *command, int total
 		goto error;
 	}
 
-	output->txrate    = link_speed;
+	output->txrate	  = link_speed;
 
 	/* Channel idle ratio. */
 	if (wl_chanim_stats(dev, &(output->chan_idle)) < 0) {
@@ -1886,7 +1886,7 @@ wl_android_process_natoe_cmd(struct net_device *dev, char *command, int total_le
 	str = bcmstrtok(&pcmd, " ", NULL);
 
 	while (natoe_cmd->name != NULL) {
-		if (strcmp(natoe_cmd->name, str) == 0)  {
+		if (strcmp(natoe_cmd->name, str) == 0)	{
 			/* dispacth cmd to appropriate handler */
 			if (natoe_cmd->handler) {
 				cmd_info.command = command;
@@ -2953,7 +2953,7 @@ int wl_android_set_ibss_beacon_ouidata(struct net_device *dev, char *command, in
 	while ((*pcmd != '\0') && (idx < VNDR_IE_MAX_LEN)) {
 		hex[0] = *pcmd++;
 		hex[1] = *pcmd++;
-		ie_buf[idx++] =  (uint8)simple_strtoul(hex, NULL, 16);
+		ie_buf[idx++] =	 (uint8)simple_strtoul(hex, NULL, 16);
 		datalen++;
 	}
 
@@ -3114,7 +3114,7 @@ wl_android_set_roampref(struct net_device *dev, char *command, int total_len)
 	 * Length : 1 byte (not used)
 	 * Value  : (variable length)
 	 *		reserved: 1 byte
-	 *      count	: 1 byte (no of tuples)
+	 *	count	: 1 byte (no of tuples)
 	 *		Tuple1	: 12 bytes
 	 *			akm[4]
 	 *			ucipher[4]
@@ -3394,7 +3394,7 @@ resume:
 }
 #endif
 
-#define NETLINK_OXYGEN     30
+#define NETLINK_OXYGEN	   30
 #define AIBSS_BEACON_TIMEOUT	10
 
 static struct sock *nl_sk = NULL;
@@ -4719,7 +4719,7 @@ wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
 
 	if (strnicmp(command, CMD_START, strlen(CMD_START)) == 0) {
 		ANDROID_INFO(("%s, Received regular START command\n", __FUNCTION__));
-#ifdef  BT_OVER_SDIO
+#ifdef	BT_OVER_SDIO
 		bytes_written = dhd_net_bus_get(net);
 #else
 		bytes_written = wl_android_wifi_on(net);
@@ -4736,7 +4736,7 @@ wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
 	}
 
 	if (strnicmp(command, CMD_STOP, strlen(CMD_STOP)) == 0) {
-#ifdef  BT_OVER_SDIO
+#ifdef	BT_OVER_SDIO
 		bytes_written = dhd_net_bus_put(net);
 #else
 		bytes_written = wl_android_wifi_off(net, FALSE);
@@ -4840,7 +4840,7 @@ wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
 			(strnicmp(rev_info_delim, CMD_COUNTRY_DELIMITER,
 			strlen(CMD_COUNTRY_DELIMITER)) == 0) &&
 			(rev_info_delim + 1)) {
-			revinfo  = bcm_atoi(rev_info_delim + 1);
+			revinfo	 = bcm_atoi(rev_info_delim + 1);
 		}
 		bytes_written = wldev_set_country(net, country_code, true, true, revinfo);
 #ifdef CUSTOMER_HW4_PRIVATE_CMD

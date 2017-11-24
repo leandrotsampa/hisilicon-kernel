@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -95,23 +95,23 @@
 #define SCAN_INTERVAL_PREFIX	"SCAN_INTERVAL="
 #define BCN_INTERVAL_PREFIX		"BCN_INTERVAL="
 
-#define NAN_EVENT_STR_STARTED               "NAN-STARTED"
-#define NAN_EVENT_STR_JOINED                "NAN-JOINED"
-#define NAN_EVENT_STR_ROLE_CHANGE           "NAN-ROLE-CHANGE"
-#define NAN_EVENT_STR_SCAN_COMPLETE         "NAN-SCAN-COMPLETE"
-#define NAN_EVENT_STR_SDF_RX                "NAN-SDF-RX"
-#define NAN_EVENT_STR_REPLIED               "NAN-REPLIED"
-#define NAN_EVENT_STR_TERMINATED            "NAN-TERMINATED"
-#define NAN_EVENT_STR_FOLLOWUP_RX           "NAN-FOLLOWUP-RX"
-#define NAN_EVENT_STR_STATUS_CHANGE         "NAN-STATUS-CHANGE"
-#define NAN_EVENT_STR_MERGED                "NAN-MERGED"
-#define NAN_EVENT_STR_STOPPED               "NAN-STOPPED"
-#define NAN_EVENT_STR_P2P_RX                "NAN-P2P-RX"
-#define NAN_EVENT_STR_WINDOW_BEGUN_P2P      "NAN-WINDOW-BEGUN-P2P"
-#define NAN_EVENT_STR_WINDOW_BEGUN_MESH     "NAN-WINDOW-BEGUN-MESH"
-#define NAN_EVENT_STR_WINDOW_BEGUN_IBSS     "NAN-WINDOW-BEGUN-IBSS"
+#define NAN_EVENT_STR_STARTED		    "NAN-STARTED"
+#define NAN_EVENT_STR_JOINED		    "NAN-JOINED"
+#define NAN_EVENT_STR_ROLE_CHANGE	    "NAN-ROLE-CHANGE"
+#define NAN_EVENT_STR_SCAN_COMPLETE	    "NAN-SCAN-COMPLETE"
+#define NAN_EVENT_STR_SDF_RX		    "NAN-SDF-RX"
+#define NAN_EVENT_STR_REPLIED		    "NAN-REPLIED"
+#define NAN_EVENT_STR_TERMINATED	    "NAN-TERMINATED"
+#define NAN_EVENT_STR_FOLLOWUP_RX	    "NAN-FOLLOWUP-RX"
+#define NAN_EVENT_STR_STATUS_CHANGE	    "NAN-STATUS-CHANGE"
+#define NAN_EVENT_STR_MERGED		    "NAN-MERGED"
+#define NAN_EVENT_STR_STOPPED		    "NAN-STOPPED"
+#define NAN_EVENT_STR_P2P_RX		    "NAN-P2P-RX"
+#define NAN_EVENT_STR_WINDOW_BEGUN_P2P	    "NAN-WINDOW-BEGUN-P2P"
+#define NAN_EVENT_STR_WINDOW_BEGUN_MESH	    "NAN-WINDOW-BEGUN-MESH"
+#define NAN_EVENT_STR_WINDOW_BEGUN_IBSS	    "NAN-WINDOW-BEGUN-IBSS"
 #define NAN_EVENT_STR_WINDOW_BEGUN_RANGING  "NAN-WINDOW-BEGUN-RANGING"
-#define NAN_EVENT_STR_INVALID               "NAN-INVALID"
+#define NAN_EVENT_STR_INVALID		    "NAN-INVALID"
 
 #ifdef NAN_DP
 enum nan_dp_states {
@@ -154,8 +154,8 @@ typedef struct nan_cmd_data {
 	struct ether_addr clus_id;		/* cluster id */
 	struct ether_addr if_addr;		/* if addr */
 	u32 beacon_int;					/* beacon interval */
-	u32 ttl;                      /* time to live */
-	u32 period;                   /* publish period */
+	u32 ttl;		      /* time to live */
+	u32 period;		      /* publish period */
 	u32 bmap;						/* bitmap */
 	u32 role;						/* role */
 	wl_nan_instance_id_t pub_id;	/* publisher id */
@@ -167,21 +167,21 @@ typedef struct nan_cmd_data {
 	u16 master_pref;				/* master preference */
 	chanspec_t chanspec;			/* channel */
 	u8 debug_flag;					/* debug enable/disable flag */
-	u8 life_count;             /* life count of the instance */
-	u8 srf_type;               /* SRF type */
-	u8 srf_include;            /* SRF include */
-	u8 use_srf;                /* use SRF */
+	u8 life_count;		   /* life count of the instance */
+	u8 srf_type;		   /* SRF type */
+	u8 srf_include;		   /* SRF include */
+	u8 use_srf;		   /* use SRF */
 	nan_str_data_t rx_match;	/* matching filter rx */
 	nan_str_data_t tx_match;	/* matching filter tx */
 	nan_mac_list_t mac_list;   /* mac list */
-	uint8 hop_count_limit;     /* hop count limit */
-	uint8 nan_band;            /* nan band <A/B/AUTO> */
-	uint8 support_5g;          /* To decide dual band support */
-	uint32 nan_oui;            /* configured nan oui */
+	uint8 hop_count_limit;	   /* hop count limit */
+	uint8 nan_band;		   /* nan band <A/B/AUTO> */
+	uint8 support_5g;	   /* To decide dual band support */
+	uint32 nan_oui;		   /* configured nan oui */
 #ifdef NAN_DP
 	struct ether_addr data_cluster_id;		/* data cluster id */
 #endif /* NAN_DP */
-	wl_nan_sid_beacon_ctrl_t sid_beacon;          /* sending service id in beacon */
+	wl_nan_sid_beacon_ctrl_t sid_beacon;	      /* sending service id in beacon */
 } nan_cmd_data_t;
 
 typedef int (nan_func_t)(struct net_device *ndev, struct bcm_cfg80211 *cfg,
@@ -218,7 +218,7 @@ typedef struct wl_nan_tlv_data {
 	u8 hop_count;						/* hop count */
 	u8 enabled;							/* nan status flag */
 	nan_scan_params_t scan_params;		/* scan_param */
-	int reason_code;              /* reason code */
+	int reason_code;	      /* reason code */
 } wl_nan_tlv_data_t;
 
 typedef struct _nan_de_event_data {
@@ -235,8 +235,8 @@ typedef struct _nan_hal_resp {
 
 #ifdef NAN_DP
 typedef struct nan_data_path_peer {
-	struct ether_addr addr;        /* peer mac address */
-	chanspec_t chanspec;           /* Channel Specification */
+	struct ether_addr addr;	       /* peer mac address */
+	chanspec_t chanspec;	       /* Channel Specification */
 } nan_data_path_peer_t;
 #endif /* NAN_DP */
 
@@ -347,12 +347,12 @@ typedef enum {
 	NAN_ATTRIBUTE_PEER_ID,
 	NAN_ATTRIBUTE_INST_ID,
 	NAN_ATTRIBUTE_OUI,
-	NAN_ATTRIBUTE_DATA_IF_ADD,       /* NAN DP Interface Address */
+	NAN_ATTRIBUTE_DATA_IF_ADD,	 /* NAN DP Interface Address */
 	NAN_ATTRIBUTE_STATUS,
 	NAN_ATTRIBUTE_DE_EVENT_TYPE
 } NAN_ATTRIBUTE;
 
-#define NAN_BLOOM_LENGTH_DEFAULT        240
+#define NAN_BLOOM_LENGTH_DEFAULT	240
 #define NAN_SRF_MAX_MAC (NAN_BLOOM_LENGTH_DEFAULT / ETHER_ADDR_LEN)
 
 #ifdef NAN_DP

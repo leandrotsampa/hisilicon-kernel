@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -59,15 +59,15 @@ extern void* osl_get_bus_handle(osl_t *osh);
 extern uint32 g_assert_type;
 
 #ifdef CONFIG_PHYS_ADDR_T_64BIT
-#define PRI_FMT_x       "llx"
-#define PRI_FMT_X       "llX"
-#define PRI_FMT_o       "llo"
-#define PRI_FMT_d       "lld"
+#define PRI_FMT_x	"llx"
+#define PRI_FMT_X	"llX"
+#define PRI_FMT_o	"llo"
+#define PRI_FMT_d	"lld"
 #else
-#define PRI_FMT_x       "x"
-#define PRI_FMT_X       "X"
-#define PRI_FMT_o       "o"
-#define PRI_FMT_d       "d"
+#define PRI_FMT_x	"x"
+#define PRI_FMT_X	"X"
+#define PRI_FMT_o	"o"
+#define PRI_FMT_d	"d"
 #endif /* CONFIG_PHYS_ADDR_T_64BIT */
 /* ASSERT */
 #if defined(BCMASSERT_LOG)
@@ -140,7 +140,7 @@ extern struct pci_dev *osl_pci_device(osl_t *osh);
 typedef struct {
 	bool pkttag;
 	bool mmbus;		/**< Bus supports memory-mapped register accesses */
-	pktfree_cb_fn_t tx_fn;  /**< Callback function for PKTFREE */
+	pktfree_cb_fn_t tx_fn;	/**< Callback function for PKTFREE */
 	void *tx_ctx;		/**< Context to the callback function */
 	void	*unused[3];
 } osl_pubinfo_t;
@@ -292,9 +292,9 @@ extern int osl_error(int bcmerror);
  * BINOSL selects the slightly slower function-call-based binary compatible osl.
  * Macros expand to calls to functions defined in linux_osl.c .
  */
-#include <linuxver.h>           /* use current 2.4.x calling conventions */
-#include <linux/kernel.h>       /* for vsn/printf's */
-#include <linux/string.h>       /* for mem*, str* */
+#include <linuxver.h>		/* use current 2.4.x calling conventions */
+#include <linux/kernel.h>	/* for vsn/printf's */
+#include <linux/string.h>	/* for mem*, str* */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 4, 29)
 extern uint64 osl_sysuptime_us(void);
 #define OSL_SYSUPTIME()		((uint32)jiffies_to_msecs(jiffies))
@@ -406,7 +406,7 @@ extern uint64 osl_sysuptime_us(void);
 #if !defined(CONFIG_MMC_MSM7X00A)
 #define	REG_MAP(pa, size)	ioremap_nocache((unsigned long)(pa), (unsigned long)(size))
 #else
-#define REG_MAP(pa, size)       (void *)(0)
+#define REG_MAP(pa, size)	(void *)(0)
 #endif /* !defined(CONFIG_MMC_MSM7X00A */
 #define	REG_UNMAP(va)		iounmap((va))
 
@@ -489,17 +489,17 @@ extern uint64 osl_sysuptime_us(void);
 #define	PKTTAG(skb)			((void*)(((struct sk_buff*)(skb))->cb))
 #define PKTSETPOOL(osh, skb, x, y)	BCM_REFERENCE(osh)
 #define	PKTPOOL(osh, skb)		({BCM_REFERENCE(osh); BCM_REFERENCE(skb); FALSE;})
-#define PKTFREELIST(skb)        PKTLINK(skb)
-#define PKTSETFREELIST(skb, x)  PKTSETLINK((skb), (x))
-#define PKTPTR(skb)             (skb)
-#define PKTID(skb)              ({BCM_REFERENCE(skb); 0;})
-#define PKTSETID(skb, id)       ({BCM_REFERENCE(skb); BCM_REFERENCE(id);})
+#define PKTFREELIST(skb)	PKTLINK(skb)
+#define PKTSETFREELIST(skb, x)	PKTSETLINK((skb), (x))
+#define PKTPTR(skb)		(skb)
+#define PKTID(skb)		({BCM_REFERENCE(skb); 0;})
+#define PKTSETID(skb, id)	({BCM_REFERENCE(skb); BCM_REFERENCE(id);})
 #define PKTSHRINK(osh, m)		({BCM_REFERENCE(osh); m;})
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)) && defined(TSQ_MULTIPLIER)
-#define PKTORPHAN(skb, tsq)          osl_pkt_orphan_partial(skb, tsq)
+#define PKTORPHAN(skb, tsq)	     osl_pkt_orphan_partial(skb, tsq)
 extern void osl_pkt_orphan_partial(struct sk_buff *skb, int tsq);
 #else
-#define PKTORPHAN(skb, tsq)          ({BCM_REFERENCE(skb); 0;})
+#define PKTORPHAN(skb, tsq)	     ({BCM_REFERENCE(skb); 0;})
 #endif /* LINUX VERSION >= 3.6 */
 
 
@@ -553,8 +553,8 @@ typedef struct ctfpool {
 	uint		obj_size;
 	uint		refills;
 	uint		fast_allocs;
-	uint 		fast_frees;
-	uint 		slow_allocs;
+	uint		fast_frees;
+	uint		slow_allocs;
 } ctfpool_t;
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
@@ -743,16 +743,16 @@ typedef struct ctf_mark {
 
 /* Account for packets delivered to downstream forwarder by GMAC interface. */
 extern void osl_pkt_tofwder(osl_t *osh, void *skbs, int skb_cnt);
-#define PKTTOFWDER(osh, skbs, skb_cnt)  \
+#define PKTTOFWDER(osh, skbs, skb_cnt)	\
 	osl_pkt_tofwder(((osl_t *)osh), (void *)(skbs), (skb_cnt))
 
 /* Account for packets received from downstream forwarder. */
 #if defined(BCMDBG_CTRACE) /* pkt logging */
 extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt,
-                             int line, char *file);
+			     int line, char *file);
 #define PKTFRMFWDER(osh, skbs, skb_cnt) \
 	osl_pkt_frmfwder(((osl_t *)osh), (void *)(skbs), (skb_cnt), \
-	                 __LINE__, __FILE__)
+			 __LINE__, __FILE__)
 #else  /* ! (BCMDBG_PKT || BCMDBG_CTRACE) */
 extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
 #define PKTFRMFWDER(osh, skbs, skb_cnt) \
@@ -771,7 +771,7 @@ extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
  */
 
 /** Forwarded packets, have a GMAC_FWDER_HWRXOFF sized rx header (etc.h) */
-#define FWDER_HWRXOFF       (18)
+#define FWDER_HWRXOFF	    (18)
 
 /** Maximum amount of a pkt data that a downstream forwarder (GMAC) may have
  * read into the L1 cache (not dirty). This may be used in reduced cache ops.
@@ -779,13 +779,13 @@ extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
  * Max 44: ET HWRXOFF[18] + BRCMHdr[4] + EtherHdr[14] + VlanHdr[4] + IP[4]
  * Min 32: GMAC_FWDER_HWRXOFF[18] + EtherHdr[14]
  */
-#define FWDER_MINMAPSZ      (FWDER_HWRXOFF + 14)
-#define FWDER_MAXMAPSZ      (FWDER_HWRXOFF + 4 + 14 + 4 + 4)
-#define FWDER_PKTMAPSZ      (FWDER_MINMAPSZ)
+#define FWDER_MINMAPSZ	    (FWDER_HWRXOFF + 14)
+#define FWDER_MAXMAPSZ	    (FWDER_HWRXOFF + 4 + 14 + 4 + 4)
+#define FWDER_PKTMAPSZ	    (FWDER_MINMAPSZ)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)
 
-#define FWDERBUF            (1 << 4)
+#define FWDERBUF	    (1 << 4)
 #define PKTSETFWDERBUF(osh, skb) \
 	({ \
 	 BCM_REFERENCE(osh); \
@@ -804,7 +804,7 @@ extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
 
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 22)
 
-#define FWDERBUF	        (1 << 20)
+#define FWDERBUF		(1 << 20)
 #define PKTSETFWDERBUF(osh, skb) \
 	({ \
 	 BCM_REFERENCE(osh); \
@@ -823,7 +823,7 @@ extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
 
 #else /* 2.6.22 */
 
-#define FWDERBUF            (1 << 4)
+#define FWDERBUF	    (1 << 4)
 #define PKTSETFWDERBUF(osh, skb)  \
 	({ \
 	 BCM_REFERENCE(osh); \
@@ -846,7 +846,7 @@ extern void osl_pkt_frmfwder(osl_t *osh, void *skbs, int skb_cnt);
 
 #define PKTSETFWDERBUF(osh, skb)  ({ BCM_REFERENCE(osh); BCM_REFERENCE(skb); })
 #define PKTCLRFWDERBUF(osh, skb)  ({ BCM_REFERENCE(osh); BCM_REFERENCE(skb); })
-#define PKTISFWDERBUF(osh, skb)   ({ BCM_REFERENCE(osh); BCM_REFERENCE(skb); FALSE;})
+#define PKTISFWDERBUF(osh, skb)	  ({ BCM_REFERENCE(osh); BCM_REFERENCE(skb); FALSE;})
 
 #endif /* ! BCM_GMAC3 */
 
@@ -944,7 +944,7 @@ extern void *osl_pkt_frmnative(osl_t *osh, void *skb);
 #endif /* BCMDBG_CTRACE */
 extern struct sk_buff *osl_pkt_tonative(osl_t *osh, void *pkt);
 #ifdef BCMDBG_CTRACE
-#define PKTFRMNATIVE(osh, skb)  osl_pkt_frmnative(((osl_t *)osh), \
+#define PKTFRMNATIVE(osh, skb)	osl_pkt_frmnative(((osl_t *)osh), \
 				(struct sk_buff*)(skb), __LINE__, __FILE__)
 #define	PKTISFRMNATIVE(osh, skb) osl_pkt_is_frmnative((osl_t *)(osh), (struct sk_buff *)(skb))
 #else
@@ -960,18 +960,18 @@ extern struct sk_buff *osl_pkt_tonative(osl_t *osh, void *pkt);
 #define PKTSETSUMGOOD(skb, x)		(((struct sk_buff*)(skb))->ip_summed = \
 						((x) ? CHECKSUM_UNNECESSARY : CHECKSUM_NONE))
 /* PKTSETSUMNEEDED and PKTSUMGOOD are not possible because skb->ip_summed is overloaded */
-#define PKTSHARED(skb)                  (((struct sk_buff*)(skb))->cloned)
+#define PKTSHARED(skb)			(((struct sk_buff*)(skb))->cloned)
 
 #ifdef CONFIG_NF_CONNTRACK_MARK
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0))
-#define PKTMARK(p)                     (((struct sk_buff *)(p))->mark)
-#define PKTSETMARK(p, m)               ((struct sk_buff *)(p))->mark = (m)
+#define PKTMARK(p)		       (((struct sk_buff *)(p))->mark)
+#define PKTSETMARK(p, m)	       ((struct sk_buff *)(p))->mark = (m)
 #else /* !2.6.0 */
-#define PKTMARK(p)                     (((struct sk_buff *)(p))->nfmark)
-#define PKTSETMARK(p, m)               ((struct sk_buff *)(p))->nfmark = (m)
+#define PKTMARK(p)		       (((struct sk_buff *)(p))->nfmark)
+#define PKTSETMARK(p, m)	       ((struct sk_buff *)(p))->nfmark = (m)
 #endif /* 2.6.0 */
 #else /* CONFIG_NF_CONNTRACK_MARK */
-#define PKTMARK(p)                     0
+#define PKTMARK(p)		       0
 #define PKTSETMARK(p, m)
 #endif /* CONFIG_NF_CONNTRACK_MARK */
 
@@ -996,11 +996,11 @@ struct chain_node {
 #define CHAIN_NODE(skb)		((struct chain_node*)(((struct sk_buff*)skb)->pktc_cb))
 
 #define	PKTCSETATTR(s, f, p, b)	({CHAIN_NODE(s)->flags = (f); CHAIN_NODE(s)->pkts = (p); \
-	                         CHAIN_NODE(s)->bytes = (b);})
+				 CHAIN_NODE(s)->bytes = (b);})
 #define	PKTCCLRATTR(s)		({CHAIN_NODE(s)->flags = CHAIN_NODE(s)->pkts = \
-	                         CHAIN_NODE(s)->bytes = 0;})
+				 CHAIN_NODE(s)->bytes = 0;})
 #define	PKTCGETATTR(s)		(CHAIN_NODE(s)->flags << 29 | CHAIN_NODE(s)->pkts << 20 | \
-	                         CHAIN_NODE(s)->bytes)
+				 CHAIN_NODE(s)->bytes)
 #define	PKTCCNT(skb)		(CHAIN_NODE(skb)->pkts)
 #define	PKTCLEN(skb)		(CHAIN_NODE(skb)->bytes)
 #define	PKTCGETFLAGS(skb)	(CHAIN_NODE(skb)->flags)
@@ -1118,10 +1118,10 @@ typedef struct sec_cma_info {
 typedef struct sec_mem_elem {
 	size_t			size;
 	int				direction;
-	phys_addr_t		pa_cma;     /**< physical  address */
-	void			*va;        /**< virtual address of driver pkt */
+	phys_addr_t		pa_cma;	    /**< physical  address */
+	void			*va;	    /**< virtual address of driver pkt */
 	dma_addr_t		dma_handle; /**< bus address assign by linux */
-	void			*vac;       /**< virtual address of cma buffer */
+	void			*vac;	    /**< virtual address of cma buffer */
 	struct page *pa_cma_page;	/* phys to page address */
 	struct	sec_mem_elem	*next;
 } sec_mem_elem_t;

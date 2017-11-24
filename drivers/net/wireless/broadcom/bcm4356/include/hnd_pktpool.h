@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -102,17 +102,17 @@ typedef struct {
 #endif /* BCMDBG_POOL */
 
 typedef struct pktpool {
-	bool inited;            /**< pktpool_init was successful */
-	uint8 type;             /**< type of lbuf: basic, frag, etc */
-	uint8 id;               /**< pktpool ID:  index in registry */
-	bool istx;              /**< direction: transmit or receive data path */
+	bool inited;		/**< pktpool_init was successful */
+	uint8 type;		/**< type of lbuf: basic, frag, etc */
+	uint8 id;		/**< pktpool ID:  index in registry */
+	bool istx;		/**< direction: transmit or receive data path */
 	HND_PKTPOOL_MUTEX_DECL(mutex)	/**< thread-safe mutex */
 
-	void * freelist;        /**< free list: see PKTNEXTFREE(), PKTSETNEXTFREE() */
-	uint16 avail;           /**< number of packets in pool's free list */
-	uint16 len;             /**< number of packets managed by pool */
-	uint16 maxlen;          /**< maximum size of pool <= PKTPOOL_LEN_MAX */
-	uint16 plen;            /**< size of pkt buffer in [bytes], excluding lbuf|lbuf_frag */
+	void * freelist;	/**< free list: see PKTNEXTFREE(), PKTSETNEXTFREE() */
+	uint16 avail;		/**< number of packets in pool's free list */
+	uint16 len;		/**< number of packets managed by pool */
+	uint16 maxlen;		/**< maximum size of pool <= PKTPOOL_LEN_MAX */
+	uint16 plen;		/**< size of pkt buffer in [bytes], excluding lbuf|lbuf_frag */
 
 	bool empty;
 	uint8 cbtoggle;
@@ -159,12 +159,12 @@ extern int pktpool_rxcplid_fill_register(pktpool_t *pktp, pktpool_cb_extn_t cb, 
 extern void pktpool_invoke_dmarxfill(pktpool_t *pktp);
 extern int pkpool_haddr_avail_register_cb(pktpool_t *pktp, pktpool_cb_t cb, void *arg);
 
-#define POOLPTR(pp)         ((pktpool_t *)(pp))
-#define POOLID(pp)          (POOLPTR(pp)->id)
+#define POOLPTR(pp)	    ((pktpool_t *)(pp))
+#define POOLID(pp)	    (POOLPTR(pp)->id)
 
 #define POOLSETID(pp, ppid) (POOLPTR(pp)->id = (ppid))
 
-#define pktpool_len(pp)     (POOLPTR(pp)->len)   /**< returns packet length in [bytes] */
+#define pktpool_len(pp)	    (POOLPTR(pp)->len)	 /**< returns packet length in [bytes] */
 #define pktpool_avail(pp)   (POOLPTR(pp)->avail)
 #define pktpool_plen(pp)    (POOLPTR(pp)->plen)
 #define pktpool_maxlen(pp)  (POOLPTR(pp)->maxlen)
@@ -183,13 +183,13 @@ extern int pkpool_haddr_avail_register_cb(pktpool_t *pktp, pktpool_cb_t cb, void
  * in place of a 32bit pool pointer in each packet.
  * ----------------------------------------------------------------------------
  */
-#define PKTPOOL_INVALID_ID          (0)
-#define PKTPOOL_MAXIMUM_ID          (15)
+#define PKTPOOL_INVALID_ID	    (0)
+#define PKTPOOL_MAXIMUM_ID	    (15)
 
 /* Registry of pktpool(s) */
 /* Pool ID to/from Pool Pointer converters */
-#define PKTPOOL_ID2PTR(id)          (get_pktpools_registry(id))
-#define PKTPOOL_PTR2ID(pp)          (POOLID(pp))
+#define PKTPOOL_ID2PTR(id)	    (get_pktpools_registry(id))
+#define PKTPOOL_PTR2ID(pp)	    (POOLID(pp))
 
 #ifdef BCMDBG_POOL
 extern int pktpool_dbg_register(pktpool_t *pktp, pktpool_cb_t cb, void *arg);

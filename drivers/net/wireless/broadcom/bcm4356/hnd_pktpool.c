@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -216,9 +216,9 @@ pktpool_deregister(pktpool_t * poolptr)
  * of packets to be allocated during pktpool_init and fill the pool up after
  * reclaim stage.
  *
- * @param pplen  Number of packets to be pre-filled into the pool
- * @param plen   The size of all packets in a pool must be the same, [bytes] units. E.g. PKTBUFSZ.
- * @param type   e.g. 'lbuf_frag'
+ * @param pplen	 Number of packets to be pre-filled into the pool
+ * @param plen	 The size of all packets in a pool must be the same, [bytes] units. E.g. PKTBUFSZ.
+ * @param type	 e.g. 'lbuf_frag'
  */
 int
 pktpool_init(osl_t *osh, pktpool_t *pktp, int *pplen, int plen, bool istx, uint8 type)
@@ -1073,7 +1073,7 @@ hnd_pktpool_init(osl_t *osh)
 	 */
 	n = 1;
 	if ((err = pktpool_init(osh, pktpool_shared,
-	                        &n, PKTBUFSZ, FALSE, lbuf_basic)) != BCME_OK) {
+				&n, PKTBUFSZ, FALSE, lbuf_basic)) != BCME_OK) {
 		ASSERT(0);
 		goto error4;
 	}
@@ -1082,7 +1082,7 @@ hnd_pktpool_init(osl_t *osh)
 #if defined(BCMFRAGPOOL) && !defined(BCMFRAGPOOL_DISABLED)
 	n = 1;
 	if ((err = pktpool_init(osh, pktpool_shared_lfrag,
-	                        &n, PKTFRAGSZ, TRUE, lbuf_frag)) != BCME_OK) {
+				&n, PKTFRAGSZ, TRUE, lbuf_frag)) != BCME_OK) {
 		ASSERT(0);
 		goto error5;
 	}
@@ -1091,7 +1091,7 @@ hnd_pktpool_init(osl_t *osh)
 #if defined(BCMRXFRAGPOOL) && !defined(BCMRXFRAGPOOL_DISABLED)
 	n = 1;
 	if ((err = pktpool_init(osh, pktpool_shared_rxlfrag,
-	                        &n, PKTRXFRAGSZ, TRUE, lbuf_rxfrag)) != BCME_OK) {
+				&n, PKTRXFRAGSZ, TRUE, lbuf_rxfrag)) != BCME_OK) {
 		ASSERT(0);
 		goto error6;
 	}

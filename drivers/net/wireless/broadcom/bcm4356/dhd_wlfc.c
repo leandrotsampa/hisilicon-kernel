@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -63,8 +63,8 @@
  */
 
 #if defined(DHD_WLFC_THREAD)
-#define WLFC_THREAD_QUICK_RETRY_WAIT_MS    10      /* 10 msec */
-#define WLFC_THREAD_RETRY_WAIT_MS          10000   /* 10 sec */
+#define WLFC_THREAD_QUICK_RETRY_WAIT_MS	   10	   /* 10 msec */
+#define WLFC_THREAD_RETRY_WAIT_MS	   10000   /* 10 sec */
 #endif /* defined (DHD_WLFC_THREAD) */
 
 
@@ -105,10 +105,10 @@ _dhd_wlfc_adjusted_seq(void* p, uint8 current_seq)
 /**
  * Enqueue a caller supplied packet on a caller supplied precedence queue, optionally reorder
  * suppressed packets.
- *    @param[in] pq       caller supplied packet queue to enqueue the packet on
- *    @param[in] prec     precedence of the to-be-queued packet
- *    @param[in] p        transmit packet to enqueue
- *    @param[in] qHead    if TRUE, enqueue to head instead of tail. Used to maintain d11 seq order.
+ *    @param[in] pq	  caller supplied packet queue to enqueue the packet on
+ *    @param[in] prec	  precedence of the to-be-queued packet
+ *    @param[in] p	  transmit packet to enqueue
+ *    @param[in] qHead	  if TRUE, enqueue to head instead of tail. Used to maintain d11 seq order.
  *    @param[in] current_seq
  *    @param[in] reOrder  reOrder on odd precedence (=suppress queue)
  */
@@ -518,7 +518,7 @@ _dhd_wlfc_deque_afq(athost_wl_status_info_t* ctx, uint16 hslot, uint8 hcnt, uint
  *     @param[in]     mac_handle
  *     @param[in]     htodtag
  *     @param[in]     htodseq d11 seqno for seqno reuse, only used if 'seq reuse' was agreed upon
- *                    earlier between host and firmware.
+ *		      earlier between host and firmware.
  *     @param[in]     skip_wlfc_hdr
  */
 static int
@@ -605,7 +605,7 @@ _dhd_wlfc_pullheader(athost_wl_status_info_t* ctx, void* pktbuf)
 
 	if (PKTLEN(ctx->osh, pktbuf) < BDC_HEADER_LEN) {
 		DHD_ERROR(("%s: rx data too short (%d < %d)\n", __FUNCTION__,
-		           PKTLEN(ctx->osh, pktbuf), BDC_HEADER_LEN));
+			   PKTLEN(ctx->osh, pktbuf), BDC_HEADER_LEN));
 		return BCME_ERROR;
 	}
 	h = (struct bdc_header *)PKTDATA(ctx->osh, pktbuf);
@@ -615,7 +615,7 @@ _dhd_wlfc_pullheader(athost_wl_status_info_t* ctx, void* pktbuf)
 
 	if (PKTLEN(ctx->osh, pktbuf) < (uint)(h->dataOffset << 2)) {
 		DHD_ERROR(("%s: rx data too short (%d < %d)\n", __FUNCTION__,
-		           PKTLEN(ctx->osh, pktbuf), (h->dataOffset << 2)));
+			   PKTLEN(ctx->osh, pktbuf), (h->dataOffset << 2)));
 		return BCME_ERROR;
 	}
 
@@ -955,7 +955,7 @@ _dhd_wlfc_flow_control_check(athost_wl_status_info_t* ctx, struct pktq* pq, uint
 		/* stop traffic */
 		ctx->hostif_flow_state[if_id] = ON;
 		/*
-		WLFC_DBGMESG(("qlen:%02d, if:%02d, ->ON, stop traffic   %s()\n",
+		WLFC_DBGMESG(("qlen:%02d, if:%02d, ->ON, stop traffic	%s()\n",
 		pq->len, if_id, __FUNCTION__));
 		*/
 		WLFC_DBGMESG(("N"));
@@ -1006,7 +1006,7 @@ _dhd_wlfc_send_signalonly_packet(athost_wl_status_info_t* ctx, wlfc_mac_descript
 		}
 	} else {
 		DHD_ERROR(("%s: couldn't allocate new %d-byte packet\n",
-		           __FUNCTION__, dummylen));
+			   __FUNCTION__, dummylen));
 		rc = BCME_NOMEM;
 		dhdp->tx_pktgetfail++;
 	}
@@ -1279,11 +1279,11 @@ _dhd_wlfc_is_destination_open(athost_wl_status_info_t* ctx,
 
 /**
  * Dequeues a suppressed or delayed packet from a queue
- *    @param[in/out] ctx          Driver specific flow control administration
- *    @param[in]  prec            Precedence of queue to dequeue from
+ *    @param[in/out] ctx	  Driver specific flow control administration
+ *    @param[in]  prec		  Precedence of queue to dequeue from
  *    @param[out] ac_credit_spent Boolean, returns 0 or 1
- *    @param[out] needs_hdr       Boolean, returns 0 or 1
- *    @param[out] entry_out       The remote MAC for which the packet is destined
+ *    @param[out] needs_hdr	  Boolean, returns 0 or 1
+ *    @param[out] entry_out	  The remote MAC for which the packet is destined
  *    @param[in]  only_no_credit  If TRUE, searches all entries instead of just the active ones
  *
  * Return value: the dequeued packet
@@ -2009,7 +2009,7 @@ _dhd_wlfc_FIFOcreditmap_update(void* state, uint8* credits)
  * the dongle (eg the DBUS layer). All transmit packets flow via this function to the next layer.
  *
  *     @param[in/out] ctx      Driver specific flow control administration
- *     @param[in] ac           Access Category (QoS) of called supplied packet
+ *     @param[in] ac	       Access Category (QoS) of called supplied packet
  *     @param[in] commit_info  Contains eg the packet to send
  *     @param[in] fcommit      Function pointer to transmit function of next software layer
  *     @param[in] commit_ctx   Opaque context used when calling next layer
@@ -3096,7 +3096,7 @@ dhd_wlfc_transfer_packets(void *data)
 {
 	dhd_pub_t *dhdp = (dhd_pub_t *)data;
 	int ac, single_ac = 0, rc = BCME_OK;
-	dhd_wlfc_commit_info_t  commit_info;
+	dhd_wlfc_commit_info_t	commit_info;
 	athost_wl_status_info_t* ctx;
 	int bus_retry_count = 0;
 	int pkt_send = 0;
@@ -3372,11 +3372,11 @@ exit:
 /**
  * Enqueues a transmit packet in the next layer towards the dongle, eg the DBUS layer. Called by
  * eg dhd_sendpkt().
- *     @param[in] dhdp                  Pointer to public DHD structure
- *     @param[in] fcommit               Pointer to transmit function of next layer
- *     @param[in] commit_ctx            Opaque context used when calling next layer
- *     @param[in] pktbuf                Packet to send
- *     @param[in] need_toggle_host_if   If TRUE, resets flag ctx->toggle_host_if
+ *     @param[in] dhdp			Pointer to public DHD structure
+ *     @param[in] fcommit		Pointer to transmit function of next layer
+ *     @param[in] commit_ctx		Opaque context used when calling next layer
+ *     @param[in] pktbuf		Packet to send
+ *     @param[in] need_toggle_host_if	If TRUE, resets flag ctx->toggle_host_if
  */
 int
 dhd_wlfc_commit_packets(dhd_pub_t *dhdp, f_commitpkt_t fcommit, void* commit_ctx, void *pktbuf,
@@ -3789,7 +3789,7 @@ dhd_wlfc_deinit(dhd_pub_t *dhd)
 
 /**
  * Called on an interface event (WLC_E_IF) indicated by firmware
- *     @param[in] dhdp   Pointer to public DHD structure
+ *     @param[in] dhdp	 Pointer to public DHD structure
  *     @param[in] action eg eWLFC_MAC_ENTRY_ACTION_UPDATE or eWLFC_MAC_ENTRY_ACTION_ADD
  */
 int dhd_wlfc_interface_event(dhd_pub_t *dhdp, uint8 action, uint8 ifid, uint8 iftype, uint8* ea)

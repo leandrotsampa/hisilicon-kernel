@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -72,8 +72,8 @@ struct wl_ibss;
 extern void dhd_log_dump_write(int type, const char *fmt, ...);
 extern char *dhd_log_dump_get_timestamp(void);
 #ifndef _DHD_LOG_DUMP_DEFINITIONS_
-#define DLD_BUF_TYPE_GENERAL    0
-#define DLD_BUF_TYPE_SPECIAL    1
+#define DLD_BUF_TYPE_GENERAL	0
+#define DLD_BUF_TYPE_SPECIAL	1
 #define DHD_LOG_DUMP_WRITE(fmt, ...)	dhd_log_dump_write(DLD_BUF_TYPE_GENERAL, fmt, ##__VA_ARGS__)
 #define DHD_LOG_DUMP_WRITE_EX(fmt, ...)	dhd_log_dump_write(DLD_BUF_TYPE_SPECIAL, fmt, ##__VA_ARGS__)
 #endif /* !_DHD_LOG_DUMP_DEFINITIONS_ */
@@ -180,7 +180,7 @@ do {										\
 	if (wl_dbg_level & WL_DBG_ERR) {				\
 			printk(KERN_INFO "CFG80211-TRACE) %s : ", __func__);	\
 			printk args;						\
-		} 								\
+		}								\
 } while (0)
 #else
 #define	WL_TRACE_HW4			WL_TRACE
@@ -208,14 +208,14 @@ do {									\
 
 #define WL_SCAN_RETRY_MAX	3
 #define WL_NUM_PMKIDS_MAX	MAXPMKID
-#define WL_SCAN_BUF_MAX 	(1024 * 8)
-#define WL_TLV_INFO_MAX 	1500
-#define WL_SCAN_IE_LEN_MAX      2048
+#define WL_SCAN_BUF_MAX		(1024 * 8)
+#define WL_TLV_INFO_MAX		1500
+#define WL_SCAN_IE_LEN_MAX	2048
 #define WL_BSS_INFO_MAX		2048
 #define WL_ASSOC_INFO_MAX	512
 #define WL_IOCTL_LEN_MAX	2048
 #define WL_EXTRA_BUF_MAX	2048
-#define WL_SCAN_ERSULTS_LAST 	(WL_SCAN_RESULTS_NO_MEM+1)
+#define WL_SCAN_ERSULTS_LAST	(WL_SCAN_RESULTS_NO_MEM+1)
 #define WL_AP_MAX			256
 #define WL_FILE_NAME_MAX	256
 #define WL_DWELL_TIME		200
@@ -233,8 +233,8 @@ do {									\
 #define WL_AF_TX_EXTRA_TIME_MAX		200
 
 #define WL_SCAN_TIMER_INTERVAL_MS	10000 /* Scan timeout */
-#define WL_CHANNEL_SYNC_RETRY 	5
-#define WL_INVALID 		-1
+#define WL_CHANNEL_SYNC_RETRY	5
+#define WL_INVALID		-1
 
 #ifdef DHD_LOSSLESS_ROAMING
 #define WL_ROAM_TIMEOUT_MS	1000 /* Roam timeout */
@@ -409,7 +409,7 @@ struct wl_conf {
 };
 
 typedef s32(*EVENT_HANDLER) (struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
-                            const wl_event_msg_t *e, void *data);
+			    const wl_event_msg_t *e, void *data);
 
 /* bss inform structure for cfg80211 interface */
 struct wl_cfg80211_bss_info {
@@ -597,16 +597,16 @@ struct parsed_ies {
 
 #ifdef P2P_LISTEN_OFFLOADING
 typedef struct {
-	uint16	period;                 /* listen offload period */
-	uint16	interval;               /* listen offload interval */
+	uint16	period;			/* listen offload period */
+	uint16	interval;		/* listen offload interval */
 	uint16	count;			/* listen offload count */
-	uint16	pad;                    /* pad for 32bit align */
+	uint16	pad;			/* pad for 32bit align */
 } wl_p2plo_listen_t;
 #endif /* P2P_LISTEN_OFFLOADING */
 
 #ifdef WL11U
 /* Max length of Interworking element */
-#define IW_IES_MAX_BUF_LEN 		9
+#define IW_IES_MAX_BUF_LEN		9
 #endif
 #define MAX_EVENT_BUF_NUM 16
 typedef struct wl_eventmsg_buf {
@@ -716,7 +716,7 @@ struct bcm_cfg80211 {
 	struct dentry		*debugfs;
 #endif /* DEBUGFS_CFG80211 */
 	struct wl_pmk_list *pmk_list;	/* wpa2 pmk list */
-	tsk_ctl_t event_tsk;  		/* task of main event handler thread */
+	tsk_ctl_t event_tsk;		/* task of main event handler thread */
 	dhd_pub_t *pub;
 	u32 iface_cnt;
 	u32 channel;		/* current channel */
@@ -726,7 +726,7 @@ struct bcm_cfg80211 {
 #ifdef WL_CFG80211_SYNC_GON
 	ulong af_tx_sent_jiffies;
 #endif /* WL_CFG80211_SYNC_GON */
-	struct escan_info escan_info;   /* escan information */
+	struct escan_info escan_info;	/* escan information */
 	bool active_scan;	/* current scan mode */
 	bool ibss_starter;	/* indicates this sta is ibss starter */
 	bool link_up;		/* link/connection up flag */
@@ -739,7 +739,7 @@ struct bcm_cfg80211 {
 	bool wlfc_on;
 #endif
 	bool vsdb_mode;
-#define WL_ROAM_OFF_ON_CONCURRENT 	0x0001
+#define WL_ROAM_OFF_ON_CONCURRENT	0x0001
 #define WL_ROAM_REVERT_STATUS		0x0002
 	u32 roam_flags;
 	u8 *ioctl_buf;		/* ioctl buffer */
@@ -760,7 +760,7 @@ struct bcm_cfg80211 {
 	struct p2p_info *p2p;
 	bool p2p_supported;
 	void *btcoex_info;
-	struct timer_list scan_timeout;   /* Timer for catch scan event timeout */
+	struct timer_list scan_timeout;	  /* Timer for catch scan event timeout */
 #if defined(P2P_IE_MISSING_FIX)
 	bool p2p_prb_noti;
 #endif
@@ -779,7 +779,7 @@ struct bcm_cfg80211 {
 	struct mutex event_sync;	/* maily for up/down synchronization */
 	bool disable_roam_event;
 	struct delayed_work pm_enable_work;
-	struct workqueue_struct *event_workq;   /* workqueue for event */
+	struct workqueue_struct *event_workq;	/* workqueue for event */
 	struct work_struct event_work;		/* work item for event */
 	struct mutex pm_sync;	/* mainly for pm work synchronization */
 
@@ -824,7 +824,7 @@ struct bcm_cfg80211 {
 	bool random_mac_enabled;
 #endif /* SUPPORT_RANDOM_MAC_SCAN */
 #ifdef DHD_LOSSLESS_ROAMING
-	struct timer_list roam_timeout;   /* Timer for catch roam timeout */
+	struct timer_list roam_timeout;	  /* Timer for catch roam timeout */
 #endif
 	uint16 escan_sync_id_cntr;
 #ifdef WLTDLS
@@ -1423,7 +1423,7 @@ extern s32 wl_cfg80211_attach(struct net_device *ndev, void *context);
 extern void wl_cfg80211_detach(struct bcm_cfg80211 *cfg);
 
 extern void wl_cfg80211_event(struct net_device *ndev, const wl_event_msg_t *e,
-            void *data);
+	    void *data);
 void wl_cfg80211_set_parent_dev(void *dev);
 struct device *wl_cfg80211_get_parent_dev(void);
 
@@ -1612,20 +1612,20 @@ extern s32 wl_cfg80211_p2plo_listen_start(struct net_device *dev, u8 *buf, int l
 extern s32 wl_cfg80211_p2plo_listen_stop(struct net_device *dev);
 #endif /* P2P_LISTEN_OFFLOADING */
 
-#define RETURN_EIO_IF_NOT_UP(wlpriv)                        \
-do {                                    \
-	struct net_device *checkSysUpNDev = bcmcfg_to_prmry_ndev(wlpriv);           \
+#define RETURN_EIO_IF_NOT_UP(wlpriv)			    \
+do {					\
+	struct net_device *checkSysUpNDev = bcmcfg_to_prmry_ndev(wlpriv);	    \
 	if (unlikely(!wl_get_drv_status(wlpriv, READY, checkSysUpNDev))) {  \
-		WL_INFORM(("device is not ready\n"));           \
-		return -EIO;                        \
-	}                               \
+		WL_INFORM(("device is not ready\n"));		\
+		return -EIO;			    \
+	}				\
 } while (0)
 
 #ifdef QOS_MAP_SET
 extern uint8 *wl_get_up_table(void);
 #endif /* QOS_MAP_SET */
 
-#define P2PO_COOKIE     65535
+#define P2PO_COOKIE	65535
 u64 wl_cfg80211_get_new_roc_id(struct bcm_cfg80211 *cfg);
 
 #if defined(SUPPORT_RANDOM_MAC_SCAN)

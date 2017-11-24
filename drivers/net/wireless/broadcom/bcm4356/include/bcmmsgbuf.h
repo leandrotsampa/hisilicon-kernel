@@ -6,21 +6,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -64,8 +64,8 @@
 #define D2HRING_TXCMPLT_MAX_ITEM		1024
 #define D2HRING_RXCMPLT_MAX_ITEM		512
 
-#define H2DRING_DYNAMIC_INFO_MAX_ITEM          32
-#define D2HRING_DYNAMIC_INFO_MAX_ITEM          32
+#define H2DRING_DYNAMIC_INFO_MAX_ITEM	       32
+#define D2HRING_DYNAMIC_INFO_MAX_ITEM	       32
 
 #define D2HRING_CTRL_CMPLT_MAX_ITEM		64
 
@@ -168,7 +168,7 @@ typedef enum bcmpcie_msgtype {
 	MSG_TYPE_TX_STATUS		= 0x10,
 	MSG_TYPE_RXBUF_POST		= 0x11,
 	MSG_TYPE_RX_CMPLT		= 0x12,
-	MSG_TYPE_LPBK_DMAXFER 		= 0x13,
+	MSG_TYPE_LPBK_DMAXFER		= 0x13,
 	MSG_TYPE_LPBK_DMAXFER_CMPLT	= 0x14,
 	MSG_TYPE_FLOW_RING_RESUME	 = 0x15,
 	MSG_TYPE_FLOW_RING_RESUME_CMPLT	= 0x16,
@@ -225,10 +225,10 @@ typedef enum bcmpcie_msgtype_u {
  * D2H_RING_CONFIG_SUBTYPE_SOFT_DOORBELL
  */
 typedef struct bcmpcie_soft_doorbell {
-	uint32	value;  /* host defined value to be written, eg HW threadid */
+	uint32	value;	/* host defined value to be written, eg HW threadid */
 	bcm_addr64_t haddr; /* host address, eg thread wakeup register address */
-	uint16	items;  /* interrupt coalescing: item count before wakeup */
-	uint16	msecs;  /* interrupt coalescing: timeout in millisecs */
+	uint16	items;	/* interrupt coalescing: item count before wakeup */
+	uint16	msecs;	/* interrupt coalescing: timeout in millisecs */
 } bcmpcie_soft_doorbell_t;
 
 /**
@@ -285,7 +285,7 @@ typedef struct bcmpcie_msi_offset_config {
 /* IOCTL request message */
 typedef struct ioctl_req_msg {
 	/** common message header */
-	cmn_msg_hdr_t 	cmn_hdr;
+	cmn_msg_hdr_t	cmn_hdr;
 	/** ioctl command type */
 	uint32		cmd;
 	/** ioctl transaction ID, to pair with a ioctl response */
@@ -320,7 +320,7 @@ typedef ioctl_resp_evt_buf_post_msg_t info_buf_post_msg_t;
 
 
 /* An infobuf host buffer starts with a 32 bit (LE) version. */
-#define PCIE_INFOBUF_V1                1
+#define PCIE_INFOBUF_V1		       1
 /* Infobuf v1 type MSGTRACE's data is exactly the same as the MSGTRACE data that
  * is wrapped previously/also in a WLC_E_TRACE event.  See structure
  * msgrace_hdr_t in msgtrace.h.
@@ -329,7 +329,7 @@ typedef ioctl_resp_evt_buf_post_msg_t info_buf_post_msg_t;
 
 /* Infobuf v1 type LOGTRACE data is exactly the same as the LOGTRACE data that
  * is wrapped previously/also in a WLC_E_TRACE event.  See structure
- * msgrace_hdr_t in msgtrace.h.  (The only difference between a MSGTRACE
+ * msgrace_hdr_t in msgtrace.h.	 (The only difference between a MSGTRACE
  * and a LOGTRACE is the "trace type" field.)
 */
 #define PCIE_INFOBUF_V1_TYPE_LOGTRACE  2
@@ -367,34 +367,34 @@ typedef struct pcie_dma_xfer_params {
 
 /** Complete msgbuf hdr for flow ring update from host to dongle */
 typedef struct tx_flowring_create_request {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint8	da[ETHER_ADDR_LEN];
 	uint8	sa[ETHER_ADDR_LEN];
 	uint8	tid;
-	uint8 	if_flags;
+	uint8	if_flags;
 	uint16	flow_ring_id;
-	uint8 	tc;
+	uint8	tc;
 	/* priority_ifrmmask is to define core mask in ifrm mode.
 	 * currently it is not used for priority. so uses solely for ifrm mask
 	 */
 	uint8	priority_ifrmmask;
-	uint16 	int_vector;
+	uint16	int_vector;
 	uint16	max_items;
 	uint16	len_item;
 	bcm_addr64_t flow_ring_ptr;
 } tx_flowring_create_request_t;
 
 typedef struct tx_flowring_delete_request {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	flow_ring_id;
-	uint16 	reason;
+	uint16	reason;
 	uint32	rsvd[7];
 } tx_flowring_delete_request_t;
 
 typedef struct tx_flowring_flush_request {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	flow_ring_id;
-	uint16 	reason;
+	uint16	reason;
 	uint32	rsvd[7];
 } tx_flowring_flush_request_t;
 
@@ -411,7 +411,7 @@ typedef struct ring_config_req {
 	uint16	ring_id;
 	uint32	rsvd;
 	union {
-		uint32  data[6];
+		uint32	data[6];
 		/** D2H_RING_CONFIG_SUBTYPE_SOFT_DOORBELL */
 		bcmpcie_soft_doorbell_t soft_doorbell;
 		/** D2H_RING_CONFIG_SUBTYPE_MSI_DOORBELL */
@@ -447,25 +447,25 @@ typedef struct h2d_ring_create_req {
 } h2d_ring_create_req_t;
 
 typedef struct d2h_ring_config_req {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	d2h_ring_config_subtype;
 	uint16	d2h_ring_id;
-	uint32  d2h_ring_config_data[4];
-	uint32  rsvd[3];
+	uint32	d2h_ring_config_data[4];
+	uint32	rsvd[3];
 } d2h_ring_config_req_t;
 
 typedef struct h2d_ring_config_req {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	h2d_ring_config_subtype;
 	uint16	h2d_ring_id;
-	uint32  h2d_ring_config_data;
-	uint32  rsvd[6];
+	uint32	h2d_ring_config_data;
+	uint32	rsvd[6];
 } h2d_ring_config_req_t;
 
 typedef struct h2d_mailbox_data {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint32	mail_box_data;
-	uint32  rsvd[7];
+	uint32	rsvd[7];
 } h2d_mailbox_data_t;
 typedef struct host_timestamp_msg {
 	cmn_msg_hdr_t	msg;
@@ -476,7 +476,7 @@ typedef struct host_timestamp_msg {
 	/* always align on 8 byte boundary */
 	bcm_addr64_t	host_buf_addr;
 	/* rsvd */
-	uint32      rsvd1[4];
+	uint32	    rsvd1[4];
 } host_timestamp_msg_t;
 
 /* buffer post message for timestamp events MSG_TYPE_TIMSTAMP_BUFPOST */
@@ -527,11 +527,11 @@ typedef struct ts_timestamp_srcid {
 		uint32	reserved; /* If timestamp not used */
 	};
 	union {
-		uint32  ts_high; /* time stamp high 28 bits */
+		uint32	ts_high; /* time stamp high 28 bits */
 		union {
-			uint32  ts_high_ext :28; /* time stamp high 28 bits */
-			uint32  clk_id_ext :3; /* clock ID source  */
-			uint32  phase :1; /* Phase bit */
+			uint32	ts_high_ext :28; /* time stamp high 28 bits */
+			uint32	clk_id_ext :3; /* clock ID source  */
+			uint32	phase :1; /* Phase bit */
 			dma_done_t	marker_ext;
 		};
 	};
@@ -589,7 +589,7 @@ typedef struct ioctl_req_ack_msg {
 	/** common message header */
 	cmn_msg_hdr_t		cmn_hdr;
 	/** completion message header */
-	compl_msg_hdr_t 	compl_hdr;
+	compl_msg_hdr_t		compl_hdr;
 	/** cmd id */
 	uint32			cmd;
 	uint32			rsvd;
@@ -650,7 +650,7 @@ typedef struct pcie_ring_status {
 
 typedef struct ring_create_response {
 	cmn_msg_hdr_t		cmn_hdr;
-	compl_msg_hdr_t 	cmplt;
+	compl_msg_hdr_t		cmplt;
 	uint32			rsvd[2];
 	/** XOR checksum or a magic number to audit DMA done */
 	dma_done_t		marker;
@@ -662,7 +662,7 @@ typedef ring_create_response_t d2h_ring_create_response_t;
 
 typedef struct tx_flowring_delete_response {
 	cmn_msg_hdr_t		msg;
-	compl_msg_hdr_t 	cmplt;
+	compl_msg_hdr_t		cmplt;
 	uint32			rsvd[2];
 	/** XOR checksum or a magic number to audit DMA done */
 	dma_done_t		marker;
@@ -670,7 +670,7 @@ typedef struct tx_flowring_delete_response {
 
 typedef struct tx_flowring_flush_response {
 	cmn_msg_hdr_t		msg;
-	compl_msg_hdr_t 	cmplt;
+	compl_msg_hdr_t		cmplt;
 	uint32			rsvd[2];
 	/** XOR checksum or a magic number to audit DMA done */
 	dma_done_t		marker;
@@ -679,22 +679,22 @@ typedef struct tx_flowring_flush_response {
 /** Common layout of all d2h control messages */
 typedef struct ctrl_compl_msg {
 	/** common message header */
-	cmn_msg_hdr_t       cmn_hdr;
+	cmn_msg_hdr_t	    cmn_hdr;
 	/** completion message header */
-	compl_msg_hdr_t     compl_hdr;
-	uint32          rsvd[2];
+	compl_msg_hdr_t	    compl_hdr;
+	uint32		rsvd[2];
 	/** XOR checksum or a magic number to audit DMA done */
-	dma_done_t      marker;
+	dma_done_t	marker;
 } ctrl_compl_msg_t;
 
 typedef struct ring_config_resp {
 	/** common message header */
-	cmn_msg_hdr_t       cmn_hdr;
+	cmn_msg_hdr_t	    cmn_hdr;
 	/** completion message header */
-	compl_msg_hdr_t     compl_hdr;
-	uint32          rsvd[2];
+	compl_msg_hdr_t	    compl_hdr;
+	uint32		rsvd[2];
 	/** XOR checksum or a magic number to audit DMA done */
-	dma_done_t      marker;
+	dma_done_t	marker;
 } ring_config_resp_t;
 
 typedef struct d2h_mailbox_data {
@@ -734,7 +734,7 @@ typedef struct host_timestamp_msg_cpl {
 	uint16			rsvd;
 	uint32			rsvd1;
 	/* XOR checksum or a magic number to audit DMA done */
-	dma_done_t      marker;
+	dma_done_t	marker;
 } host_timestamp_msg_cpl_t;
 
 typedef struct fw_timestamp_event_msg {
@@ -772,7 +772,7 @@ typedef union ctrl_completion_item {
 /** H2D Rxpost ring work items */
 typedef struct host_rxbuf_post {
 	/** common message header */
-	cmn_msg_hdr_t   cmn_hdr;
+	cmn_msg_hdr_t	cmn_hdr;
 	/** provided meta data buffer len */
 	uint16		metadata_buf_len;
 	/** provided data buffer len to receive data */
@@ -822,7 +822,7 @@ typedef union rxbuf_complete_item {
 
 typedef struct host_txbuf_post {
 	/** common message header */
-	cmn_msg_hdr_t   cmn_hdr;
+	cmn_msg_hdr_t	cmn_hdr;
 	/** eth header */
 	uint8		txhdr[ETHER_HDR_LEN];
 	/** flags */
@@ -912,15 +912,15 @@ typedef struct ret_buf_ptr {
 
 /* ioctl specific hdr */
 typedef struct ioctl_hdr {
-	uint16 		cmd;
+	uint16		cmd;
 	uint16		retbuf_len;
 	uint32		cmd_id;
 } ioctl_hdr_t;
 
 typedef struct ioctlptr_hdr {
-	uint16 		cmd;
+	uint16		cmd;
 	uint16		retbuf_len;
-	uint16 		buflen;
+	uint16		buflen;
 	uint16		rsvd;
 	uint32		cmd_id;
 } ioctlptr_hdr_t;
@@ -929,9 +929,9 @@ typedef struct ioctlptr_hdr {
 
 typedef struct ioctl_req_hdr {
 	uint32		pkt_id;	/**< Packet ID */
-	uint32 		cmd;	/**< IOCTL ID */
+	uint32		cmd;	/**< IOCTL ID */
 	uint16		retbuf_len;
-	uint16 		buflen;
+	uint16		buflen;
 	uint16		xt_id;	/**< transaction ID */
 	uint16		rsvd[1];
 } ioctl_req_hdr_t;
@@ -963,7 +963,7 @@ typedef struct ioctptr_reqst_hdr {
 
 /** ioctl response header */
 typedef struct ioct_resp_hdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 #ifdef PCIE_API_REV1
 	uint32	cmd_id;
 #else
@@ -971,7 +971,7 @@ typedef struct ioct_resp_hdr {
 #endif
 	uint32	status;
 	uint32	ret_len;
-	uint32  inline_data;
+	uint32	inline_data;
 #ifdef PCIE_API_REV1
 #else
 	uint16	xt_id;	/**< transaction ID */
@@ -988,7 +988,7 @@ typedef struct msgbuf_ioctl_resp {
 
 /** WL event hdr info */
 typedef struct wl_event_hdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16 event;
 	uint8 flags;
 	uint8 rsvd;
@@ -1008,7 +1008,7 @@ typedef struct txbatch_lenptr_tup {
 } txbatch_lenptr_tup_t;
 
 typedef struct txbatch_cmn_msghdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint8 priority;
 	uint8 hdrlen;
 	uint8 pktcnt;
@@ -1030,7 +1030,7 @@ typedef struct tx_lenptr_tup {
 } tx_lenptr_tup_t;
 
 typedef struct txdescr_cmn_msghdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint8 priority;
 	uint8 hdrlen;
 	uint8 descrcnt;
@@ -1047,7 +1047,7 @@ typedef struct txdescr_msghdr {
 
 /** Tx status header info */
 typedef struct txstatus_hdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint32 pktid;
 } txstatus_hdr_t;
 
@@ -1061,7 +1061,7 @@ typedef struct rx_lenptr_tup {
 
 /** Rx descr Post hdr info */
 typedef struct rxdesc_msghdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16 rsvd0;
 	uint8 rsvd1;
 	uint8 descnt;
@@ -1079,14 +1079,14 @@ typedef struct rxcmplt_tup {
 
 /** RX complete messge hdr */
 typedef struct rxcmplt_hdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16 rsvd0;
 	uint16 rxcmpltcnt;
 	rxcmplt_tup_t rx_tup[0];
 } rxcmplt_hdr_t;
 
 typedef struct hostevent_hdr {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint32 evnt_pyld;
 } hostevent_hdr_t;
 
@@ -1110,7 +1110,7 @@ enum {
 #define MAX_SUSPEND_REQ 15
 
 typedef struct tx_idle_flowring_suspend_request {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	ring_id[MAX_SUSPEND_REQ];      /* ring Id's */
 	uint16	num;	/* number of flowid's to suspend */
 } tx_idle_flowring_suspend_request_t;
@@ -1123,7 +1123,7 @@ typedef struct tx_idle_flowring_suspend_response {
 } tx_idle_flowring_suspend_response_t;
 
 typedef struct tx_idle_flowring_resume_request {
-	cmn_msg_hdr_t   msg;
+	cmn_msg_hdr_t	msg;
 	uint16	flow_ring_id;
 	uint16	reason;
 	uint32	rsvd[7];

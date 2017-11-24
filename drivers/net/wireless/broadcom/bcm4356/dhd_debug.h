@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -238,7 +238,7 @@ enum {
 	WIFI_TAG_EAPOL_MESSAGE_TYPE /* take an integer as parameter */
 };
 
-/* NAN  events */
+/* NAN	events */
 typedef enum {
 	NAN_EVENT_INVALID = 0,
 	NAN_EVENT_CLUSTER_STARTED = 1,
@@ -674,9 +674,9 @@ typedef struct dhd_dbg_pkt_mon
 } dhd_dbg_pkt_mon_t;
 
 enum dbg_ring_state {
-	RING_STOP       = 0,    /* ring is not initialized */
-	RING_ACTIVE,    /* ring is live and logging */
-	RING_SUSPEND    /* ring is initialized but not logging */
+	RING_STOP	= 0,	/* ring is not initialized */
+	RING_ACTIVE,	/* ring is live and logging */
+	RING_SUSPEND	/* ring is initialized but not logging */
 };
 
 struct ring_statistics {
@@ -689,17 +689,17 @@ struct ring_statistics {
 };
 
 typedef struct dhd_dbg_ring {
-	int     id;             /* ring id */
-	uint8   name[DBGRING_NAME_MAX]; /* name string */
-	uint32  ring_size;      /* numbers of item in ring */
-	uint32  wp;             /* write pointer */
-	uint32  rp;             /* read pointer */
-	uint32  log_level; /* log_level */
-	uint32  threshold; /* threshold bytes */
-	void *  ring_buf;       /* pointer of actually ring buffer */
-	void *  lock;           /* spin lock for ring access */
+	int	id;		/* ring id */
+	uint8	name[DBGRING_NAME_MAX]; /* name string */
+	uint32	ring_size;	/* numbers of item in ring */
+	uint32	wp;		/* write pointer */
+	uint32	rp;		/* read pointer */
+	uint32	log_level; /* log_level */
+	uint32	threshold; /* threshold bytes */
+	void *	ring_buf;	/* pointer of actually ring buffer */
+	void *	lock;		/* spin lock for ring access */
 	struct ring_statistics stat; /* statistics */
-	enum dbg_ring_state state;      /* ring state enum */
+	enum dbg_ring_state state;	/* ring state enum */
 	bool tail_padded;		/* writer does not have enough space */
 	uint32 rem_len;		/* number of bytes from wp_pad to end */
 	bool sched_pull;	/* schedule reader immediately */
@@ -707,7 +707,7 @@ typedef struct dhd_dbg_ring {
 
 typedef struct dhd_dbg {
 	dhd_dbg_ring_t dbg_rings[DEBUG_RING_ID_MAX];
-	void *private;          /* os private_data */
+	void *private;		/* os private_data */
 	dhd_dbg_pkt_mon_t pkt_mon;
 	void *pkt_mon_lock; /* spin lock for packet monitoring */
 	dbg_pullreq_t pullreq;

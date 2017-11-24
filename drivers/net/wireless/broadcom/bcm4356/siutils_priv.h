@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -72,16 +72,16 @@ typedef struct gci_gpio_item {
 	struct gci_gpio_item	*next;
 } gci_gpio_item_t;
 
-#define AI_SLAVE_WRAPPER        0
-#define AI_MASTER_WRAPPER       1
+#define AI_SLAVE_WRAPPER	0
+#define AI_MASTER_WRAPPER	1
 
 typedef struct axi_wrapper {
-	uint32  mfg;
-	uint32  cid;
-	uint32  rev;
-	uint32  wrapper_type;
-	uint32  wrapper_addr;
-	uint32  wrapper_size;
+	uint32	mfg;
+	uint32	cid;
+	uint32	rev;
+	uint32	wrapper_type;
+	uint32	wrapper_addr;
+	uint32	wrapper_size;
 } axi_wrapper_t;
 
 #define SI_MAX_AXI_WRAPPERS		32
@@ -89,10 +89,10 @@ typedef struct axi_wrapper {
 
 /* for some combo chips, BT side accesses chipcommon->0x190, as a 16 byte addr */
 /* register at 0x19C doesn't exist, so error is logged at the slave wrapper */
-#define BT_CC_SPROM_BADREG_LO   0x18000190
-#define BT_CC_SPROM_BADREG_HI   0
-#define BCM4350_BT_AXI_ID       6
-#define BCM4345_BT_AXI_ID       6
+#define BT_CC_SPROM_BADREG_LO	0x18000190
+#define BT_CC_SPROM_BADREG_HI	0
+#define BCM4350_BT_AXI_ID	6
+#define BCM4345_BT_AXI_ID	6
 
 typedef struct si_cores_info {
 	volatile void	*regs[SI_MAXCORES];	/* other regs va */
@@ -156,7 +156,7 @@ typedef struct si_info {
 	*/
 	bool	device_removed;
 	uint	axi_num_wrappers;
-	axi_wrapper_t   * axi_wrapper;
+	axi_wrapper_t	* axi_wrapper;
 } si_info_t;
 
 
@@ -262,7 +262,7 @@ extern uint sb_pcie_readreg(void *sih, uint addrtype, uint offset);
 
 /* AMBA Interconnect exported externs */
 extern si_t *ai_attach(uint pcidev, osl_t *osh, void *regs, uint bustype,
-                       void *sdh, char **vars, uint *varsz);
+		       void *sdh, char **vars, uint *varsz);
 extern si_t *ai_kattach(osl_t *osh);
 extern void ai_scan(si_t *sih, void *regs, uint devid);
 

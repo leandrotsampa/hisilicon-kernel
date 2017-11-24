@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -75,7 +75,7 @@ extern bool bcm_preattach_part_reclaimed;
 
 /* Relocate attach symbols to save-restore region to increase pre-reclaim heap size. */
 #define BCM_SRM_ATTACH_DATA(_data)    __attribute__ ((__section__ (".datasrm." #_data))) _data
-#define BCM_SRM_ATTACH_FN(_fn)        __attribute__ ((__section__ (".textsrm." #_fn), noinline)) _fn
+#define BCM_SRM_ATTACH_FN(_fn)	      __attribute__ ((__section__ (".textsrm." #_fn), noinline)) _fn
 
 #ifndef PREATTACH_NORECLAIM
 #define BCMPREATTACHDATA(_data)	__attribute__ ((__section__ (".dataini3." #_data))) _data
@@ -115,7 +115,7 @@ extern bool bcm_preattach_part_reclaimed;
 
 #else /* BCM_RECLAIM */
 
-#define bcm_reclaimed           	0
+#define bcm_reclaimed			0
 #define _data		_data
 #define _fn		_fn
 #define BCM_SRM_ATTACH_DATA(_data)	_data
@@ -240,11 +240,11 @@ extern bool bcm_preattach_part_reclaimed;
 #define DMADDR_MASK_26 0xFC000000	/* Address maks for 26-bits */
 #define DMADDR_MASK_0  0xffffffff	/* Address mask for 0-bits (hi-part) */
 
-#define	DMADDRWIDTH_26  26 /* 26-bit addressing capability */
-#define	DMADDRWIDTH_30  30 /* 30-bit addressing capability */
-#define	DMADDRWIDTH_32  32 /* 32-bit addressing capability */
-#define	DMADDRWIDTH_63  63 /* 64-bit addressing capability */
-#define	DMADDRWIDTH_64  64 /* 64-bit addressing capability */
+#define	DMADDRWIDTH_26	26 /* 26-bit addressing capability */
+#define	DMADDRWIDTH_30	30 /* 30-bit addressing capability */
+#define	DMADDRWIDTH_32	32 /* 32-bit addressing capability */
+#define	DMADDRWIDTH_63	63 /* 64-bit addressing capability */
+#define	DMADDRWIDTH_64	64 /* 64-bit addressing capability */
 
 typedef struct {
 	uint32 loaddr;
@@ -266,7 +266,7 @@ typedef struct {
 typedef dma64addr_t dmaaddr_t;
 #define PHYSADDRHI(_pa) PHYSADDR64HI(_pa)
 #define PHYSADDRHISET(_pa, _val) PHYSADDR64HISET(_pa, _val)
-#define PHYSADDRLO(_pa)  PHYSADDR64LO(_pa)
+#define PHYSADDRLO(_pa)	 PHYSADDR64LO(_pa)
 #define PHYSADDRLOSET(_pa, _val) PHYSADDR64LOSET(_pa, _val)
 #define PHYSADDRTOULONG(_pa, _ulong) \
 	do { \
@@ -286,7 +286,7 @@ typedef unsigned long dmaaddr_t;
 #define PHYSADDRISZERO(_pa) (PHYSADDRLO(_pa) == 0 && PHYSADDRHI(_pa) == 0)
 
 /* One physical DMA segment */
-typedef struct  {
+typedef struct	{
 	dmaaddr_t addr;
 	uint32	  length;
 } hnddma_seg_t;
@@ -303,13 +303,13 @@ typedef struct {
 
 
 /* packet headroom necessary to accommodate the largest header in the system, (i.e TXOFF).
- * By doing, we avoid the need  to allocate an extra buffer for the header when bridging to WL.
+ * By doing, we avoid the need	to allocate an extra buffer for the header when bridging to WL.
  * There is a compile time check in wlc.c which ensure that this value is at least as big
  * as TXOFF. This value is used in dma_rxfill (hnddma.c).
  */
 
 #if defined(BCM_RPC_NOCOPY) || defined(BCM_RCP_TXNOCOPY)
-/* add 40 bytes to allow for extra RPC header and info  */
+/* add 40 bytes to allow for extra RPC header and info	*/
 #define BCMEXTRAHDROOM 260
 #else /* BCM_RPC_NOCOPY || BCM_RPC_TXNOCOPY */
 #if defined(STB)
@@ -328,10 +328,10 @@ typedef struct {
 #define SDALIGN	32
 #endif
 
-/* Headroom required for dongle-to-host communication.  Packets allocated
+/* Headroom required for dongle-to-host communication.	Packets allocated
  * locally in the dongle (e.g. for CDC ioctls or RNDIS messages) should
  * leave this much room in front for low-level message headers which may
- * be needed to get across the dongle bus to the host.  (These messages
+ * be needed to get across the dongle bus to the host.	(These messages
  * don't go over the network, so room for the full WL header above would
  * be a waste.).
 */
@@ -394,7 +394,7 @@ typedef struct {
  */
 
 
-#ifdef BCMLFRAG /* BCMLFRAG support enab macros  */
+#ifdef BCMLFRAG /* BCMLFRAG support enab macros	 */
 	extern bool _bcmlfrag;
 	#if defined(WL_ENAB_RUNTIME_CHECK) || !defined(DONGLEBUILD)
 		#define BCMLFRAG_ENAB() (_bcmlfrag)
@@ -450,13 +450,13 @@ extern uint32 gFWID;
 
 /* Chip related dynamic cbuck mode mask */
 
-#define PMU_43012_VREG8_DYNAMIC_CBUCK_MODE_MASK  0xFFFFFC00
-#define PMU_43012_VREG9_DYNAMIC_CBUCK_MODE_MASK  0xFFFFFFFF
+#define PMU_43012_VREG8_DYNAMIC_CBUCK_MODE_MASK	 0xFFFFFC00
+#define PMU_43012_VREG9_DYNAMIC_CBUCK_MODE_MASK	 0xFFFFFFFF
 
 #ifndef PAD
-#define _PADLINE(line)  pad ## line
-#define _XSTR(line)     _PADLINE(line)
-#define PAD             _XSTR(__LINE__)
+#define _PADLINE(line)	pad ## line
+#define _XSTR(line)	_PADLINE(line)
+#define PAD		_XSTR(__LINE__)
 #endif
 
 #endif /* _bcmdefs_h_ */

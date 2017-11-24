@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -35,7 +35,7 @@
 #define TRX_MAGIC	0x30524448	/* "HDR0" */
 #define TRX_MAX_LEN	0x3B0000	/* Max length */
 #define TRX_NO_HEADER	1		/* Do not write TRX header */
-#define TRX_GZ_FILES	0x2     /* Contains up to TRX_MAX_OFFSET individual gzip files */
+#define TRX_GZ_FILES	0x2	/* Contains up to TRX_MAX_OFFSET individual gzip files */
 #define TRX_EMBED_UCODE	0x8	/* Trx contains embedded ucode image */
 #define TRX_ROMSIM_IMAGE	0x10	/* Trx contains ROM simulation image */
 #define TRX_UNCOMP_IMAGE	0x20	/* Trx contains uncompressed rtecdc.bin image */
@@ -71,7 +71,7 @@ struct trx_header {
 
 #ifdef BCMTRXV2
 #define TRX_VERSION		TRX_V2		/* Version 2 */
-#define TRX_MAX_OFFSET  TRX_V2_MAX_OFFSETS
+#define TRX_MAX_OFFSET	TRX_V2_MAX_OFFSETS
 
 #define TRX_V2		2
 /* V2: Max number of individual files

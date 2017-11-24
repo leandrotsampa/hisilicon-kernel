@@ -8,21 +8,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -41,25 +41,25 @@
 #define _dhd_flowrings_h_
 
 /* Max pkts held in a flow ring's backup queue */
-#define FLOW_RING_QUEUE_THRESHOLD       (2048)
+#define FLOW_RING_QUEUE_THRESHOLD	(2048)
 
 /* Number of H2D common rings */
-#define FLOW_RING_COMMON                BCMPCIE_H2D_COMMON_MSGRINGS
+#define FLOW_RING_COMMON		BCMPCIE_H2D_COMMON_MSGRINGS
 
-#define FLOWID_INVALID                  (ID16_INVALID)
-#define FLOWID_RESERVED                 (FLOW_RING_COMMON)
+#define FLOWID_INVALID			(ID16_INVALID)
+#define FLOWID_RESERVED			(FLOW_RING_COMMON)
 
-#define FLOW_RING_STATUS_OPEN           0
+#define FLOW_RING_STATUS_OPEN		0
 #define FLOW_RING_STATUS_CREATE_PENDING	1
-#define FLOW_RING_STATUS_CLOSED         2
+#define FLOW_RING_STATUS_CLOSED		2
 #define FLOW_RING_STATUS_DELETE_PENDING 3
-#define FLOW_RING_STATUS_FLUSH_PENDING  4
+#define FLOW_RING_STATUS_FLUSH_PENDING	4
 
 #ifdef IDLE_TX_FLOW_MGMT
 #define FLOW_RING_STATUS_SUSPENDED	5
 #define FLOW_RING_STATUS_RESUME_PENDING	6
 #endif /* IDLE_TX_FLOW_MGMT */
-#define FLOW_RING_STATUS_STA_FREEING    7
+#define FLOW_RING_STATUS_STA_FREEING	7
 
 #ifdef DHD_EFI
 #define DHD_FLOWRING_RX_BUFPOST_PKTSZ	1600
@@ -73,7 +73,7 @@
 #define DHD_FLOW_PRIO_LLR_MAP		2
 
 /* Hashing a MacAddress for lkup into a per interface flow hash table */
-#define DHD_FLOWRING_HASH_SIZE    256
+#define DHD_FLOWRING_HASH_SIZE	  256
 #define	DHD_FLOWRING_HASHINDEX(ea, prio) \
 	       ((((uint8 *)(ea))[3] ^ ((uint8 *)(ea))[4] ^ ((uint8 *)(ea))[5] ^ ((uint8)(prio))) \
 		% DHD_FLOWRING_HASH_SIZE)
@@ -98,28 +98,28 @@ typedef int (*flow_queue_cb_t)(struct flow_queue * queue, void * pkt);
  * flow ring are device owned.
  */
 typedef struct flow_queue {
-	dll_t  list;                /* manage a flowring queue in a double linked list */
-	void * head;                /* first packet in the queue */
-	void * tail;                /* last packet in the queue */
-	uint16 len;                 /* number of packets in the queue */
-	uint16 max;                 /* maximum or min budget (used in cumm) */
-	uint32 threshold;           /* parent's cummulative length threshold */
-	void * clen_ptr;            /* parent's cummulative length counter */
-	uint32 failures;            /* enqueue failures due to queue overflow */
-	flow_queue_cb_t cb;         /* callback invoked on threshold crossing */
-	uint32 l2threshold;         /* grandparent's (level 2) cummulative length threshold */
-	void * l2clen_ptr;          /* grandparent's (level 2) cummulative length counter */
+	dll_t  list;		    /* manage a flowring queue in a double linked list */
+	void * head;		    /* first packet in the queue */
+	void * tail;		    /* last packet in the queue */
+	uint16 len;		    /* number of packets in the queue */
+	uint16 max;		    /* maximum or min budget (used in cumm) */
+	uint32 threshold;	    /* parent's cummulative length threshold */
+	void * clen_ptr;	    /* parent's cummulative length counter */
+	uint32 failures;	    /* enqueue failures due to queue overflow */
+	flow_queue_cb_t cb;	    /* callback invoked on threshold crossing */
+	uint32 l2threshold;	    /* grandparent's (level 2) cummulative length threshold */
+	void * l2clen_ptr;	    /* grandparent's (level 2) cummulative length counter */
 } flow_queue_t;
 
-#define DHD_FLOW_QUEUE_LEN(queue)       ((int)(queue)->len)
-#define DHD_FLOW_QUEUE_MAX(queue)       ((int)(queue)->max)
+#define DHD_FLOW_QUEUE_LEN(queue)	((int)(queue)->len)
+#define DHD_FLOW_QUEUE_MAX(queue)	((int)(queue)->max)
 #define DHD_FLOW_QUEUE_THRESHOLD(queue) ((int)(queue)->threshold)
 #define DHD_FLOW_QUEUE_L2THRESHOLD(queue) ((int)(queue)->l2threshold)
-#define DHD_FLOW_QUEUE_EMPTY(queue)     ((queue)->len == 0)
-#define DHD_FLOW_QUEUE_FAILURES(queue)  ((queue)->failures)
+#define DHD_FLOW_QUEUE_EMPTY(queue)	((queue)->len == 0)
+#define DHD_FLOW_QUEUE_FAILURES(queue)	((queue)->failures)
 
-#define DHD_FLOW_QUEUE_AVAIL(queue)     ((int)((queue)->max - (queue)->len))
-#define DHD_FLOW_QUEUE_FULL(queue)      ((queue)->len >= (queue)->max)
+#define DHD_FLOW_QUEUE_AVAIL(queue)	((int)((queue)->max - (queue)->len))
+#define DHD_FLOW_QUEUE_FULL(queue)	((queue)->len >= (queue)->max)
 
 #define DHD_FLOW_QUEUE_OVFL(queue, budget)  \
 	(((queue)->len) > budget)
@@ -132,10 +132,10 @@ typedef struct flow_queue {
 	((queue)->threshold) = ((cumm_threshold) - 1)
 
 /* Queue's cummulative length object accessor. */
-#define DHD_FLOW_QUEUE_CLEN_PTR(queue)  ((queue)->clen_ptr)
+#define DHD_FLOW_QUEUE_CLEN_PTR(queue)	((queue)->clen_ptr)
 
 /* Set a queue's cumm_len point to a parent's cumm_ctr_t cummulative length */
-#define DHD_FLOW_QUEUE_SET_CLEN(queue, parent_clen_ptr)  \
+#define DHD_FLOW_QUEUE_SET_CLEN(queue, parent_clen_ptr)	 \
 	((queue)->clen_ptr) = (void *)(parent_clen_ptr)
 
 /* Queue's level 2 cummulative threshold. */
@@ -146,7 +146,7 @@ typedef struct flow_queue {
 #define DHD_FLOW_QUEUE_L2CLEN_PTR(queue)  ((queue)->l2clen_ptr)
 
 /* Set a queue's level 2 cumm_len point to a grandparent's cumm_ctr_t cummulative length */
-#define DHD_FLOW_QUEUE_SET_L2CLEN(queue, grandparent_clen_ptr)  \
+#define DHD_FLOW_QUEUE_SET_L2CLEN(queue, grandparent_clen_ptr)	\
 	((queue)->l2clen_ptr) = (void *)(grandparent_clen_ptr)
 
 /*  see wlfc_proto.h for tx status details */
@@ -155,19 +155,19 @@ typedef struct flow_queue {
 
 /* Pkttag not compatible with PROP_TXSTATUS or WLFC */
 typedef struct dhd_pkttag_fr {
-	uint16  flowid;
-	uint16  ifid;
-	int     dataoff;
+	uint16	flowid;
+	uint16	ifid;
+	int	dataoff;
 	dmaaddr_t physaddr;
 	uint32 pa_len;
 } dhd_pkttag_fr_t;
 
-#define DHD_PKTTAG_SET_IFID(tag, idx)       ((tag)->ifid = (uint16)(idx))
-#define DHD_PKTTAG_SET_PA(tag, pa)          ((tag)->physaddr = (pa))
+#define DHD_PKTTAG_SET_IFID(tag, idx)	    ((tag)->ifid = (uint16)(idx))
+#define DHD_PKTTAG_SET_PA(tag, pa)	    ((tag)->physaddr = (pa))
 #define DHD_PKTTAG_SET_PA_LEN(tag, palen)   ((tag)->pa_len = (palen))
-#define DHD_PKTTAG_IFID(tag)                ((tag)->ifid)
-#define DHD_PKTTAG_PA(tag)                  ((tag)->physaddr)
-#define DHD_PKTTAG_PA_LEN(tag)              ((tag)->pa_len)
+#define DHD_PKTTAG_IFID(tag)		    ((tag)->ifid)
+#define DHD_PKTTAG_PA(tag)		    ((tag)->physaddr)
+#define DHD_PKTTAG_PA_LEN(tag)		    ((tag)->pa_len)
 
 
 /** each flow ring is dedicated to a tid/sa/da combination */
@@ -244,14 +244,14 @@ extern void * dhd_flow_queue_dequeue(dhd_pub_t *dhdp, flow_queue_t *queue);
 extern void dhd_flow_queue_reinsert(dhd_pub_t *dhdp, flow_queue_t *queue, void *pkt);
 
 extern void dhd_flow_ring_config_thresholds(dhd_pub_t *dhdp, uint16 flowid,
-                          int queue_budget, int cumm_threshold, void *cumm_ctr,
-                          int l2cumm_threshold, void *l2cumm_ctr);
+			  int queue_budget, int cumm_threshold, void *cumm_ctr,
+			  int l2cumm_threshold, void *l2cumm_ctr);
 extern int  dhd_flow_rings_init(dhd_pub_t *dhdp, uint32 num_flow_rings);
 
 extern void dhd_flow_rings_deinit(dhd_pub_t *dhdp);
 
 extern int dhd_flowid_update(dhd_pub_t *dhdp, uint8 ifindex, uint8 prio,
-                void *pktbuf);
+		void *pktbuf);
 
 extern void dhd_flowid_free(dhd_pub_t *dhdp, uint8 ifindex, uint16 flowid);
 
@@ -259,15 +259,15 @@ extern void dhd_flow_rings_delete(dhd_pub_t *dhdp, uint8 ifindex);
 extern void dhd_flow_rings_flush(dhd_pub_t *dhdp, uint8 ifindex);
 
 extern void dhd_flow_rings_delete_for_peer(dhd_pub_t *dhdp, uint8 ifindex,
-                char *addr);
+		char *addr);
 
 /* Handle Interface ADD, DEL operations */
 extern void dhd_update_interface_flow_info(dhd_pub_t *dhdp, uint8 ifindex,
-                uint8 op, uint8 role);
+		uint8 op, uint8 role);
 
 /* Handle a STA interface link status update */
 extern int dhd_update_interface_link_status(dhd_pub_t *dhdp, uint8 ifindex,
-                uint8 status);
+		uint8 status);
 extern int dhd_flow_prio_map(dhd_pub_t *dhd, uint8 *map, bool set);
 extern int dhd_update_flow_prio_map(dhd_pub_t *dhdp, uint8 map);
 

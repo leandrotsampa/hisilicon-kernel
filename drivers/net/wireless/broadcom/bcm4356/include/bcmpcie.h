@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -36,8 +36,8 @@
 #include <bcmutils.h>
 
 #define ADDR_64(x)			(x.addr)
-#define HIGH_ADDR_32(x)     ((uint32) (((sh_addr_t) x).high_addr))
-#define LOW_ADDR_32(x)      ((uint32) (((sh_addr_t) x).low_addr))
+#define HIGH_ADDR_32(x)	    ((uint32) (((sh_addr_t) x).high_addr))
+#define LOW_ADDR_32(x)	    ((uint32) (((sh_addr_t) x).low_addr))
 
 typedef struct {
 	uint32 low_addr;
@@ -81,12 +81,12 @@ typedef struct {
  * avoid the condition, but to detect the condition instead and act on it.
  * D2H M2M DMA Complete Sync mechanism: Modulo-253-SeqNum or XORCSUM
  */
-#define PCIE_SHARED_D2H_SYNC_SEQNUM     0x20000
-#define PCIE_SHARED_D2H_SYNC_XORCSUM    0x40000
+#define PCIE_SHARED_D2H_SYNC_SEQNUM	0x20000
+#define PCIE_SHARED_D2H_SYNC_XORCSUM	0x40000
 #define PCIE_SHARED_D2H_SYNC_MODE_MASK \
 	(PCIE_SHARED_D2H_SYNC_SEQNUM | PCIE_SHARED_D2H_SYNC_XORCSUM)
 #define PCIE_SHARED_IDLE_FLOW_RING		0x80000
-#define PCIE_SHARED_2BYTE_INDICES       0x100000
+#define PCIE_SHARED_2BYTE_INDICES	0x100000
 
 #define PCIE_SHARED2_EXTENDED_TRAP_DATA	0x00000001	/* using flags2 in shared area */
 
@@ -97,7 +97,7 @@ typedef struct {
 #define PCIE_SHARED_IDMA		0x400000
 
 /* MSI support */
-#define PCIE_SHARED_D2H_MSI_MULTI_MSG   0x800000
+#define PCIE_SHARED_D2H_MSI_MULTI_MSG	0x800000
 
 /* IFRM with corerev 19 and after */
 #define PCIE_SHARED_IFRM		0x1000000
@@ -237,7 +237,7 @@ enum d2hring_idx {
  * both in host as well as device memory.
  */
 typedef struct ring_mem {
-	uint16		idx;       /* ring id */
+	uint16		idx;	   /* ring id */
 	uint8		type;
 	uint8		rsvd;
 	uint16		max_item;  /* Max number of items in flow ring */
@@ -291,25 +291,25 @@ typedef struct {
 	/** shared area version captured at flags 7:0 */
 	uint32	flags;
 
-	uint32  trap_addr;
-	uint32  assert_exp_addr;
-	uint32  assert_file_addr;
-	uint32  assert_line;
+	uint32	trap_addr;
+	uint32	assert_exp_addr;
+	uint32	assert_file_addr;
+	uint32	assert_line;
 	uint32	console_addr;		/**< Address of hnd_cons_t */
 
-	uint32  msgtrace_addr;
+	uint32	msgtrace_addr;
 
-	uint32  fwid;
+	uint32	fwid;
 
 	/* Used for debug/flow control */
-	uint16  total_lfrag_pkt_cnt;
-	uint16  max_host_rxbufs; /* rsvd in spec */
+	uint16	total_lfrag_pkt_cnt;
+	uint16	max_host_rxbufs; /* rsvd in spec */
 
 	uint32 dma_rxoffset; /* rsvd in spec */
 
 	/** these will be used for sleep request/ack, d3 req/ack */
-	uint32  h2d_mb_data_ptr;
-	uint32  d2h_mb_data_ptr;
+	uint32	h2d_mb_data_ptr;
+	uint32	d2h_mb_data_ptr;
 
 	/* information pertinent to host IPC/msgbuf channels */
 	/** location in the TCM memory which has the ring_info */
@@ -326,14 +326,14 @@ typedef struct {
 	uint32	buzz_dbg_ptr;	/* BUZZZ state format strings and trace buffer */
 
 	/* rev6 compatible changes */
-	uint32          flags2;
-	uint32          host_cap;
+	uint32		flags2;
+	uint32		host_cap;
 
 	/* location in the host address space to write trap indication.
 	* At this point for the current rev of the spec, firmware will
 	* support only indications to 32 bit host addresses.
 	*/
-	sh_addr_t       host_trap_addr;
+	sh_addr_t	host_trap_addr;
 
 	/* location for host fatal error log buffer start address */
 	uint32		device_fatal_logbuf_start;
@@ -375,12 +375,12 @@ extern pciedev_shared_t pciedev_shared;
 #define H2DMB_DS_HOST_SLEEP_INFORM H2D_HOST_D3_INFORM
 #define H2DMB_DS_DEVICE_SLEEP_ACK  H2D_HOST_DS_ACK
 #define H2DMB_DS_DEVICE_SLEEP_NAK  H2D_HOST_DS_NAK
-#define H2DMB_D0_INFORM_IN_USE     H2D_HOST_D0_INFORM_IN_USE
-#define H2DMB_D0_INFORM            H2D_HOST_D0_INFORM
-#define H2DMB_DS_ACTIVE            0x00000020
-#define H2DMB_DS_DEVICE_WAKE       0x00000040
-#define H2DMB_FW_TRAP              H2D_FW_TRAP
-#define H2DMB_HOST_CONS_INT        H2D_HOST_CONS_INT
+#define H2DMB_D0_INFORM_IN_USE	   H2D_HOST_D0_INFORM_IN_USE
+#define H2DMB_D0_INFORM		   H2D_HOST_D0_INFORM
+#define H2DMB_DS_ACTIVE		   0x00000020
+#define H2DMB_DS_DEVICE_WAKE	   0x00000040
+#define H2DMB_FW_TRAP		   H2D_FW_TRAP
+#define H2DMB_HOST_CONS_INT	   H2D_HOST_CONS_INT
 #define H2DMB_DS_DEVICE_WAKE_ASSERT		H2DMB_DS_DEVICE_WAKE
 #define H2DMB_DS_DEVICE_WAKE_DEASSERT	H2DMB_DS_ACTIVE
 
@@ -389,14 +389,14 @@ extern pciedev_shared_t pciedev_shared;
 #define D2H_DEV_DS_ENTER_REQ	0x00000002
 #define D2H_DEV_DS_EXIT_NOTE	0x00000004
 #define D2H_DEV_FWHALT		0x10000000
-#define D2H_DEV_EXT_TRAP_DATA   0x20000000
+#define D2H_DEV_EXT_TRAP_DATA	0x20000000
 #define D2H_DEV_IDMA_INITED	0x00000010
 #define D2H_FWTRAP_MASK		0x0000001F	/* Adding maskbits for TRAP information */
-#define D2HMB_DS_HOST_SLEEP_ACK         D2H_DEV_D3_ACK
+#define D2HMB_DS_HOST_SLEEP_ACK		D2H_DEV_D3_ACK
 #define D2HMB_DS_DEVICE_SLEEP_ENTER_REQ D2H_DEV_DS_ENTER_REQ
-#define D2HMB_DS_DEVICE_SLEEP_EXIT      D2H_DEV_DS_EXIT_NOTE
-#define D2HMB_DS_HOST_SLEEP_EXIT_ACK    0x00000008
-#define D2HMB_FWHALT                    D2H_DEV_FWHALT
+#define D2HMB_DS_DEVICE_SLEEP_EXIT	D2H_DEV_DS_EXIT_NOTE
+#define D2HMB_DS_HOST_SLEEP_EXIT_ACK	0x00000008
+#define D2HMB_FWHALT			D2H_DEV_FWHALT
 #define D2H_DEV_MB_MASK		(D2H_DEV_D3_ACK | D2H_DEV_DS_ENTER_REQ | \
 				D2H_DEV_DS_EXIT_NOTE | D2H_DEV_IDMA_INITED | D2H_DEV_FWHALT | \
 				D2H_FWTRAP_MASK | D2H_DEV_EXT_TRAP_DATA)
@@ -404,9 +404,9 @@ extern pciedev_shared_t pciedev_shared;
 
 
 /** These macro's operate on type 'inuse_lclbuf_pool_t' and are used by firmware only */
-#define NEXTTXP(i, d)           ((((i)+1) >= (d)) ? 0 : ((i)+1))
-#define NTXPACTIVE(r, w, d)     (((r) <= (w)) ? ((w)-(r)) : ((d)-(r)+(w)))
-#define NTXPAVAIL(r, w, d)      (((d) - NTXPACTIVE((r), (w), (d))) > 1)
+#define NEXTTXP(i, d)		((((i)+1) >= (d)) ? 0 : ((i)+1))
+#define NTXPACTIVE(r, w, d)	(((r) <= (w)) ? ((w)-(r)) : ((d)-(r)+(w)))
+#define NTXPAVAIL(r, w, d)	(((d) - NTXPACTIVE((r), (w), (d))) > 1)
 
 /* Function can be used to notify host of FW halt */
 #define READ_AVAIL_SPACE(w, r, d)		\
@@ -429,11 +429,11 @@ extern pciedev_shared_t pciedev_shared;
 
 #define MODULO_RING_IDX(x, y)	((x) % (y)->bitmap_size)
 
-#define  RING_READ_PTR(x)	((x)->ringstate->r_offset)
-#define  RING_WRITE_PTR(x)	((x)->ringstate->w_offset)
-#define  RING_START_PTR(x)	((x)->ringmem->base_addr.low_addr)
-#define  RING_MAX_ITEM(x)	((x)->ringmem->max_item)
-#define  RING_LEN_ITEMS(x)	((x)->ringmem->len_items)
+#define	 RING_READ_PTR(x)	((x)->ringstate->r_offset)
+#define	 RING_WRITE_PTR(x)	((x)->ringstate->w_offset)
+#define	 RING_START_PTR(x)	((x)->ringmem->base_addr.low_addr)
+#define	 RING_MAX_ITEM(x)	((x)->ringmem->max_item)
+#define	 RING_LEN_ITEMS(x)	((x)->ringmem->len_items)
 #define	 HOST_RING_BASE(x)	((x)->dma_buf.va)
 #define	 HOST_RING_END(x)	((uint8 *)HOST_RING_BASE((x)) + \
 					((RING_MAX_ITEM((x))-1)*RING_LEN_ITEMS((x))))

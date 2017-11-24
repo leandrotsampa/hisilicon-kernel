@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -72,11 +72,11 @@ struct si_pub {
 	uint	buscoreidx;		/**< buscore index */
 	int	ccrev;			/**< chip common core rev */
 	uint32	cccaps;			/**< chip common capabilities */
-	uint32  cccaps_ext;			/**< chip common capabilities extension */
+	uint32	cccaps_ext;			/**< chip common capabilities extension */
 	int	pmurev;			/**< pmu core rev */
 	uint32	pmucaps;		/**< pmu capabilities */
 	uint	boardtype;		/**< board type */
-	uint    boardrev;               /* board rev */
+	uint	boardrev;		/* board rev */
 	uint	boardvendor;		/**< board vendor */
 	uint	boardflags;		/**< board flags */
 	uint	boardflags2;		/**< board flags2 */
@@ -85,7 +85,7 @@ struct si_pub {
 	uint	chippkg;		/**< chip package option */
 	uint32	chipst;			/**< chip status */
 	bool	issim;			/**< chip is in simulation or emulation */
-	uint    socirev;		/**< SOC interconnect rev */
+	uint	socirev;		/**< SOC interconnect rev */
 	bool	pci_pr32414;
 	int	gcirev;			/**< gci core rev */
 #ifdef BCM_BACKPLANE_TIMEOUT
@@ -214,7 +214,7 @@ typedef void (*gci_gpio_handler_t)(uint32 stat, void *arg);
 #include <osl_decl.h>
 /* === exported functions === */
 extern si_t *si_attach(uint pcidev, osl_t *osh, volatile void *regs, uint bustype,
-                       void *sdh, char **vars, uint *varsz);
+		       void *sdh, char **vars, uint *varsz);
 extern si_t *si_kattach(osl_t *osh);
 extern void si_detach(si_t *sih);
 extern bool si_pci_war16165(si_t *sih);
@@ -546,13 +546,13 @@ extern void set_secondary_d11_core(si_t *sih, void **secmap, void **secwrap);
 
 
 /* Macro to enable clock gating changes in different cores */
-#define MEM_CLK_GATE_BIT 	5
-#define GCI_CLK_GATE_BIT 	18
+#define MEM_CLK_GATE_BIT	5
+#define GCI_CLK_GATE_BIT	18
 
 #define USBAPP_CLK_BIT		0
 #define PCIE_CLK_BIT		3
 #define ARMCR4_DBG_CLK_BIT	4
-#define SAMPLE_SYNC_CLK_BIT 	17
+#define SAMPLE_SYNC_CLK_BIT	17
 #define PCIE_TL_CLK_BIT		18
 #define HQ_REQ_BIT		24
 #define PLL_DIV2_BIT_START	9
@@ -668,13 +668,13 @@ extern void set_secondary_d11_core(si_t *sih, void **secmap, void **secwrap);
 /* End - GCI Macros */
 
 #ifdef REROUTE_OOBINT
-#define CC_OOB          0x0
-#define M2MDMA_OOB      0x1
-#define PMU_OOB         0x2
-#define D11_OOB         0x3
-#define SDIOD_OOB       0x4
+#define CC_OOB		0x0
+#define M2MDMA_OOB	0x1
+#define PMU_OOB		0x2
+#define D11_OOB		0x3
+#define SDIOD_OOB	0x4
 #define WLAN_OOB	0x5
-#define PMU_OOB_BIT     0x12
+#define PMU_OOB_BIT	0x12
 #endif /* REROUTE_OOBINT */
 
 #define GCI_REG(si, offset, mask, val) \
@@ -709,21 +709,21 @@ extern uint32 si_srpwr_domain(si_t *sih);
 /* SR Power Control */
 #ifdef BCMSRPWR
 	/* No capabilities bit so using chipid for now */
-	#define SRPWR_CAP(sih)  (\
+	#define SRPWR_CAP(sih)	(\
 		(CHIPID(sih->chip) == BCM4347_CHIP_ID) || \
 		(0))
 
 	extern bool _bcmsrpwr;
 	#if defined(WL_ENAB_RUNTIME_CHECK) || !defined(DONGLEBUILD)
-		#define SRPWR_ENAB()    (_bcmsrpwr)
+		#define SRPWR_ENAB()	(_bcmsrpwr)
 	#elif defined(BCMSRPWR_DISABLED)
-		#define SRPWR_ENAB()    (0)
+		#define SRPWR_ENAB()	(0)
 	#else
-		#define SRPWR_ENAB()    (1)
+		#define SRPWR_ENAB()	(1)
 	#endif
 #else
-	#define SRPWR_CAP(sih)          (0)
-	#define SRPWR_ENAB()            (0)
+	#define SRPWR_CAP(sih)		(0)
+	#define SRPWR_ENAB()		(0)
 #endif /* BCMSRPWR */
 
 #endif	/* _siutils_h_ */

@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -53,19 +53,19 @@
 #define IP_PROT_TCP		0x6	/* TCP protocol */
 #define IP_PROT_UDP		0x11	/* UDP protocol type */
 #define IP_PROT_GRE		0x2f	/* GRE protocol type */
-#define IP_PROT_ICMP6           0x3a    /* ICMPv6 protocol type */
+#define IP_PROT_ICMP6		0x3a	/* ICMPv6 protocol type */
 
 /* IPV4 field offsets */
-#define IPV4_VER_HL_OFFSET      0       /* version and ihl byte offset */
-#define IPV4_TOS_OFFSET         1       /* type of service offset */
-#define IPV4_PKTLEN_OFFSET      2       /* packet length offset */
-#define IPV4_PKTFLAG_OFFSET     6       /* more-frag,dont-frag flag offset */
-#define IPV4_PROT_OFFSET        9       /* protocol type offset */
-#define IPV4_CHKSUM_OFFSET      10      /* IP header checksum offset */
-#define IPV4_SRC_IP_OFFSET      12      /* src IP addr offset */
-#define IPV4_DEST_IP_OFFSET     16      /* dest IP addr offset */
-#define IPV4_OPTIONS_OFFSET     20      /* IP options offset */
-#define IPV4_MIN_HEADER_LEN     20      /* Minimum size for an IP header (no options) */
+#define IPV4_VER_HL_OFFSET	0	/* version and ihl byte offset */
+#define IPV4_TOS_OFFSET		1	/* type of service offset */
+#define IPV4_PKTLEN_OFFSET	2	/* packet length offset */
+#define IPV4_PKTFLAG_OFFSET	6	/* more-frag,dont-frag flag offset */
+#define IPV4_PROT_OFFSET	9	/* protocol type offset */
+#define IPV4_CHKSUM_OFFSET	10	/* IP header checksum offset */
+#define IPV4_SRC_IP_OFFSET	12	/* src IP addr offset */
+#define IPV4_DEST_IP_OFFSET	16	/* dest IP addr offset */
+#define IPV4_OPTIONS_OFFSET	20	/* IP options offset */
+#define IPV4_MIN_HEADER_LEN	20	/* Minimum size for an IP header (no options) */
 
 /* IPV4 field decodes */
 #define IPV4_VER_MASK		0xf0	/* IPV4 version mask */
@@ -94,14 +94,14 @@
 #define IPV4_TOS_THROUGHPUT	0x8	/* Best throughput requested */
 #define IPV4_TOS_RELIABILITY	0x4	/* Most reliable delivery requested */
 
-#define IPV4_TOS_ROUTINE        0
-#define IPV4_TOS_PRIORITY       1
-#define IPV4_TOS_IMMEDIATE      2
-#define IPV4_TOS_FLASH          3
-#define IPV4_TOS_FLASHOVERRIDE  4
-#define IPV4_TOS_CRITICAL       5
-#define IPV4_TOS_INETWORK_CTRL  6
-#define IPV4_TOS_NETWORK_CTRL   7
+#define IPV4_TOS_ROUTINE	0
+#define IPV4_TOS_PRIORITY	1
+#define IPV4_TOS_IMMEDIATE	2
+#define IPV4_TOS_FLASH		3
+#define IPV4_TOS_FLASHOVERRIDE	4
+#define IPV4_TOS_CRITICAL	5
+#define IPV4_TOS_INETWORK_CTRL	6
+#define IPV4_TOS_NETWORK_CTRL	7
 
 #define IPV4_PROT(ipv4_body)	(((uint8 *)(ipv4_body))[IPV4_PROT_OFFSET])
 
@@ -179,13 +179,13 @@ BWL_PRE_PACKED_STRUCT struct ipv4_hdr {
 #define IPV6_EXTHDR_DEST	60
 
 #define IPV6_EXTHDR(prot)	(((prot) == IPV6_EXTHDR_HOP) || \
-	                         ((prot) == IPV6_EXTHDR_ROUTING) || \
-	                         ((prot) == IPV6_EXTHDR_FRAGMENT) || \
-	                         ((prot) == IPV6_EXTHDR_AUTH) || \
-	                         ((prot) == IPV6_EXTHDR_NONE) || \
-	                         ((prot) == IPV6_EXTHDR_DEST))
+				 ((prot) == IPV6_EXTHDR_ROUTING) || \
+				 ((prot) == IPV6_EXTHDR_FRAGMENT) || \
+				 ((prot) == IPV6_EXTHDR_AUTH) || \
+				 ((prot) == IPV6_EXTHDR_NONE) || \
+				 ((prot) == IPV6_EXTHDR_DEST))
 
-#define IPV6_MIN_HLEN 		40
+#define IPV6_MIN_HLEN		40
 
 #define IPV6_EXTHDR_LEN(eh)	((((struct ipv6_exthdr *)(eh))->hdrlen + 1) << 3)
 

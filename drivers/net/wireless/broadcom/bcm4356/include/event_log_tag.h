@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -74,7 +74,7 @@
 #define EVENT_LOG_TAG_PCI_WARN	50
 #define EVENT_LOG_TAG_PCI_INFO	51
 #define EVENT_LOG_TAG_PCI_DBG	52
-#define EVENT_LOG_TAG_PCI_DATA  53
+#define EVENT_LOG_TAG_PCI_DATA	53
 #define EVENT_LOG_TAG_PCI_RING	54
 /* EVENT_LOG_TAG_AWDL_TRACE_RANGING will be removed after wlc_ranging merge from IGUANA
  * keeping it here to avoid compilation error on trunk
@@ -110,10 +110,10 @@
 #define EVENT_LOG_TAG_ECOUNTERS_ERROR	82
 #define EVENT_LOG_TAG_WL_COUNTERS	83
 #define EVENT_LOG_TAG_ECOUNTERS_IPCSTATS	84
-#define EVENT_LOG_TAG_WL_P2P_LOG            85
+#define EVENT_LOG_TAG_WL_P2P_LOG	    85
 #define EVENT_LOG_TAG_SDIO_ERROR		86
 #define EVENT_LOG_TAG_SDIO_TRACE		87
-#define EVENT_LOG_TAG_SDIO_DBG          88
+#define EVENT_LOG_TAG_SDIO_DBG		88
 #define EVENT_LOG_TAG_SDIO_PRHDRS		89
 #define EVENT_LOG_TAG_SDIO_PRPKT		90
 #define EVENT_LOG_TAG_SDIO_INFORM		91
@@ -143,10 +143,10 @@
 #define EVENT_LOG_TAG_OCL_INFO			115
 #define EVENT_LOG_TAG_RSDB_PMGR_DEBUG		116
 #define EVENT_LOG_TAG_RSDB_PMGR_ERR		117
-#define EVENT_LOG_TAG_NAT_ERR                   118
-#define EVENT_LOG_TAG_NAT_WARN                  119
-#define EVENT_LOG_TAG_NAT_INFO                  120
-#define EVENT_LOG_TAG_NAT_DEBUG                 121
+#define EVENT_LOG_TAG_NAT_ERR			118
+#define EVENT_LOG_TAG_NAT_WARN			119
+#define EVENT_LOG_TAG_NAT_INFO			120
+#define EVENT_LOG_TAG_NAT_DEBUG			121
 #define EVENT_LOG_TAG_STA_INFO			122
 #define EVENT_LOG_TAG_PROXD_ERROR		123
 #define EVENT_LOG_TAG_PROXD_TRACE		124

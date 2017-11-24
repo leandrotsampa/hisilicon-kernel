@@ -6,21 +6,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -100,7 +100,7 @@ extern void dhd_bus_isr(bool * InterruptRecognized, bool * QueueMiniportHandleIn
 
 /* Check for and handle local prot-specific iovar commands */
 extern int dhd_bus_iovar_op(dhd_pub_t *dhdp, const char *name,
-                            void *params, int plen, void *arg, int len, bool set);
+			    void *params, int plen, void *arg, int len, bool set);
 
 /* Add bus dump output to a buffer */
 extern void dhd_bus_dump(dhd_pub_t *dhdp, struct bcmstrbuf *strbuf);
@@ -173,13 +173,13 @@ enum {
 	D2H_MB_DATA,
 
 	/* (Common) MsgBuf Ring configuration update */
-	RING_BUF_ADDR,       /* update ring base address to dongle */
-	RING_ITEM_LEN,       /* update ring item size to dongle */
-	RING_MAX_ITEMS,      /* update ring max items to dongle */
+	RING_BUF_ADDR,	     /* update ring base address to dongle */
+	RING_ITEM_LEN,	     /* update ring item size to dongle */
+	RING_MAX_ITEMS,	     /* update ring max items to dongle */
 
 	/* Update of WR or RD index, for a MsgBuf Ring */
-	RING_RD_UPD,         /* update ring read index from/to dongle */
-	RING_WR_UPD,         /* update ring write index from/to dongle */
+	RING_RD_UPD,	     /* update ring read index from/to dongle */
+	RING_WR_UPD,	     /* update ring write index from/to dongle */
 
 	TOTAL_LFRAG_PACKET_CNT,
 	MAX_HOST_RXBUFS,

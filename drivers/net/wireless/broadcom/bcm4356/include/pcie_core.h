@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -40,13 +40,13 @@
 #endif
 
 /* PCIE Enumeration space offsets */
-#define  PCIE_CORE_CONFIG_OFFSET	0x0
-#define  PCIE_FUNC0_CONFIG_OFFSET	0x400
-#define  PCIE_FUNC1_CONFIG_OFFSET	0x500
-#define  PCIE_FUNC2_CONFIG_OFFSET	0x600
-#define  PCIE_FUNC3_CONFIG_OFFSET	0x700
-#define  PCIE_SPROM_SHADOW_OFFSET	0x800
-#define  PCIE_SBCONFIG_OFFSET		0xE00
+#define	 PCIE_CORE_CONFIG_OFFSET	0x0
+#define	 PCIE_FUNC0_CONFIG_OFFSET	0x400
+#define	 PCIE_FUNC1_CONFIG_OFFSET	0x500
+#define	 PCIE_FUNC2_CONFIG_OFFSET	0x600
+#define	 PCIE_FUNC3_CONFIG_OFFSET	0x700
+#define	 PCIE_SPROM_SHADOW_OFFSET	0x800
+#define	 PCIE_SBCONFIG_OFFSET		0xE00
 
 
 #define PCIEDEV_MAX_DMAS			4
@@ -208,17 +208,17 @@ typedef volatile struct sbpcieregs {
 			uint32 mdiocontrol;	/* controls the mdio access: 0x128 */
 			uint32 mdiowrdata;	/* write data to mdio 0x12C */
 			uint32 mdiorddata;	/* read data to mdio 0x130 */
-			uint32	PAD[3]; 	/* 0x134-0x138-0x13c */
+			uint32	PAD[3];		/* 0x134-0x138-0x13c */
 			/* door bell registers available from gen2 rev5 onwards */
 			pcie_doorbell_t	   dbls[PCIEDEV_MAX_DMAS]; /* 0x140 - 0x17F */
 			uint32	dataintf;	/* 0x180 */
-			uint32  PAD[1];		/* 0x184 */
+			uint32	PAD[1];		/* 0x184 */
 			uint32	d2h_intrlazy_0; /* 0x188 */
 			uint32	h2d_intrlazy_0; /* 0x18c */
-			uint32  h2d_intstat_0;  /* 0x190 */
-			uint32  h2d_intmask_0;	/* 0x194 */
-			uint32  d2h_intstat_0;  /* 0x198 */
-			uint32  d2h_intmask_0;  /* 0x19c */
+			uint32	h2d_intstat_0;	/* 0x190 */
+			uint32	h2d_intmask_0;	/* 0x194 */
+			uint32	d2h_intstat_0;	/* 0x198 */
+			uint32	d2h_intmask_0;	/* 0x19c */
 			uint32	ltr_state;	/* 0x1A0 */
 			uint32	pwr_int_status;	/* 0x1A4 */
 			uint32	pwr_int_mask;	/* 0x1A8 */
@@ -228,11 +228,11 @@ typedef volatile struct sbpcieregs {
 			uint32	err_hdr_logreg3; /* 0x1B8 */
 			uint32	err_hdr_logreg4; /* 0x1BC */
 			uint32	err_code_logreg; /* 0x1C0 */
-			uint32  PAD[7]; /* 0x1C4 - 0x1DF */
-			uint32  clk_ctl_st;	/* 0x1E0 */
-			uint32  PAD[1];		/* 0x1E4 */
+			uint32	PAD[7]; /* 0x1C4 - 0x1DF */
+			uint32	clk_ctl_st;	/* 0x1E0 */
+			uint32	PAD[1];		/* 0x1E4 */
 			uint32	powerctl;	/* 0x1E8 */
-			uint32  PAD[5];		/* 0x1EC - 0x1FF */
+			uint32	PAD[5];		/* 0x1EC - 0x1FF */
 			pcie_devdmaregs_t  h2d0_dmaregs; /* 0x200 - 0x23c */
 			pcie_devdmaregs_t  d2h0_dmaregs; /* 0x240 - 0x27c */
 			pcie_devdmaregs_t  h2d1_dmaregs; /* 0x280 - 0x2bc */
@@ -328,22 +328,22 @@ typedef volatile struct sbpcieregs {
 #define MSIVEC_D2H0_DB1	(0x1 << 4) /* MSI Vector offset for interface0 door bell 1 is 5 */
 
 /* PCIE MailboxInt/MailboxIntMask register */
-#define PCIE_MB_TOSB_FN0_0   	0x0001 /* write to assert PCIEtoSB Mailbox interrupt */
-#define PCIE_MB_TOSB_FN0_1   	0x0002
-#define PCIE_MB_TOSB_FN1_0   	0x0004
-#define PCIE_MB_TOSB_FN1_1   	0x0008
-#define PCIE_MB_TOSB_FN2_0   	0x0010
-#define PCIE_MB_TOSB_FN2_1   	0x0020
-#define PCIE_MB_TOSB_FN3_0   	0x0040
-#define PCIE_MB_TOSB_FN3_1   	0x0080
-#define PCIE_MB_TOPCIE_FN0_0 	0x0100 /* int status/mask for SBtoPCIE Mailbox interrupts */
-#define PCIE_MB_TOPCIE_FN0_1 	0x0200
-#define PCIE_MB_TOPCIE_FN1_0 	0x0400
-#define PCIE_MB_TOPCIE_FN1_1 	0x0800
-#define PCIE_MB_TOPCIE_FN2_0 	0x1000
-#define PCIE_MB_TOPCIE_FN2_1 	0x2000
-#define PCIE_MB_TOPCIE_FN3_0 	0x4000
-#define PCIE_MB_TOPCIE_FN3_1 	0x8000
+#define PCIE_MB_TOSB_FN0_0	0x0001 /* write to assert PCIEtoSB Mailbox interrupt */
+#define PCIE_MB_TOSB_FN0_1	0x0002
+#define PCIE_MB_TOSB_FN1_0	0x0004
+#define PCIE_MB_TOSB_FN1_1	0x0008
+#define PCIE_MB_TOSB_FN2_0	0x0010
+#define PCIE_MB_TOSB_FN2_1	0x0020
+#define PCIE_MB_TOSB_FN3_0	0x0040
+#define PCIE_MB_TOSB_FN3_1	0x0080
+#define PCIE_MB_TOPCIE_FN0_0	0x0100 /* int status/mask for SBtoPCIE Mailbox interrupts */
+#define PCIE_MB_TOPCIE_FN0_1	0x0200
+#define PCIE_MB_TOPCIE_FN1_0	0x0400
+#define PCIE_MB_TOPCIE_FN1_1	0x0800
+#define PCIE_MB_TOPCIE_FN2_0	0x1000
+#define PCIE_MB_TOPCIE_FN2_1	0x2000
+#define PCIE_MB_TOPCIE_FN3_0	0x4000
+#define PCIE_MB_TOPCIE_FN3_1	0x8000
 #define	PCIE_MB_TOPCIE_D2H0_DB0	0x10000
 #define	PCIE_MB_TOPCIE_D2H0_DB1	0x20000
 #define	PCIE_MB_TOPCIE_D2H1_DB0	0x40000
@@ -355,9 +355,9 @@ typedef volatile struct sbpcieregs {
 
 #define PCIE_MB_D2H_MB_MASK		\
 	(PCIE_MB_TOPCIE_D2H0_DB0 | PCIE_MB_TOPCIE_D2H0_DB1 |	\
-	PCIE_MB_TOPCIE_D2H1_DB0  | PCIE_MB_TOPCIE_D2H1_DB1 |	\
-	PCIE_MB_TOPCIE_D2H2_DB0  | PCIE_MB_TOPCIE_D2H2_DB1 |	\
-	PCIE_MB_TOPCIE_D2H3_DB0  | PCIE_MB_TOPCIE_D2H3_DB1)
+	PCIE_MB_TOPCIE_D2H1_DB0	 | PCIE_MB_TOPCIE_D2H1_DB1 |	\
+	PCIE_MB_TOPCIE_D2H2_DB0	 | PCIE_MB_TOPCIE_D2H2_DB1 |	\
+	PCIE_MB_TOPCIE_D2H3_DB0	 | PCIE_MB_TOPCIE_D2H3_DB1)
 
 #define SBTOPCIE0_BASE 0x08000000
 #define SBTOPCIE1_BASE 0x0c000000
@@ -390,7 +390,7 @@ typedef volatile struct sbpcieregs {
 #define CONFIGADDR_REG_SHF	0
 
 #define PCIE_CONFIG_INDADDR(f, r)	((((f) & CONFIGADDR_FUNC_MASK) << CONFIGADDR_FUNC_SHF) | \
-			                 (((r) & CONFIGADDR_REG_MASK) << CONFIGADDR_REG_SHF))
+					 (((r) & CONFIGADDR_REG_MASK) << CONFIGADDR_REG_SHF))
 
 /* PCIE protocol regs Indirect Address */
 #define PCIEADDR_PROT_MASK	0x300
@@ -399,39 +399,39 @@ typedef volatile struct sbpcieregs {
 #define PCIEADDR_PL_DLLP	1
 #define PCIEADDR_PL_PLP		2
 
-#define	PCIE_CORE_REG_CONTROL		0x00u   /* Control     */
-#define	PCIE_CORE_REG_IOSTATUS		0x04u   /* IO status   */
-#define	PCIE_CORE_REG_BITSTATUS		0x0Cu   /* bitstatus   */
-#define	PCIE_CORE_REG_GPIO_SEL		0x10u   /* gpio sel    */
-#define	PCIE_CORE_REG_GPIO_OUT_EN	0x14u   /* gpio out en */
-#define	PCIE_CORE_REG_INT_STATUS	0x20u   /* int status  */
-#define	PCIE_CORE_REG_INT_MASK		0x24u   /* int mask    */
-#define	PCIE_CORE_REG_SB_PCIE_MB	0x28u   /* sbpcie mb   */
-#define	PCIE_CORE_REG_ERRLOG		0x40u   /* errlog      */
-#define	PCIE_CORE_REG_ERR_ADDR		0x44u   /* errlog addr */
-#define	PCIE_CORE_REG_MB_INTR		0x48u   /* MB intr     */
-#define	PCIE_CORE_REG_SB_PCIE_0		0x100u  /* sbpcie0 map */
-#define	PCIE_CORE_REG_SB_PCIE_1		0x104u  /* sbpcie1 map */
-#define	PCIE_CORE_REG_SB_PCIE_2		0x108u  /* sbpcie2 map */
+#define	PCIE_CORE_REG_CONTROL		0x00u	/* Control     */
+#define	PCIE_CORE_REG_IOSTATUS		0x04u	/* IO status   */
+#define	PCIE_CORE_REG_BITSTATUS		0x0Cu	/* bitstatus   */
+#define	PCIE_CORE_REG_GPIO_SEL		0x10u	/* gpio sel    */
+#define	PCIE_CORE_REG_GPIO_OUT_EN	0x14u	/* gpio out en */
+#define	PCIE_CORE_REG_INT_STATUS	0x20u	/* int status  */
+#define	PCIE_CORE_REG_INT_MASK		0x24u	/* int mask    */
+#define	PCIE_CORE_REG_SB_PCIE_MB	0x28u	/* sbpcie mb   */
+#define	PCIE_CORE_REG_ERRLOG		0x40u	/* errlog      */
+#define	PCIE_CORE_REG_ERR_ADDR		0x44u	/* errlog addr */
+#define	PCIE_CORE_REG_MB_INTR		0x48u	/* MB intr     */
+#define	PCIE_CORE_REG_SB_PCIE_0		0x100u	/* sbpcie0 map */
+#define	PCIE_CORE_REG_SB_PCIE_1		0x104u	/* sbpcie1 map */
+#define	PCIE_CORE_REG_SB_PCIE_2		0x108u	/* sbpcie2 map */
 
 /* PCIE Config registers */
 #define	PCIE_CFG_DEV_STS_CTRL_2		0x0d4u	/* "dev_sts_control_2  */
-#define	PCIE_CFG_ADV_ERR_CAP		0x100u	/* adv_err_cap         */
+#define	PCIE_CFG_ADV_ERR_CAP		0x100u	/* adv_err_cap	       */
 #define	PCIE_CFG_UC_ERR_STS		0x104u	/* uc_err_status       */
 #define	PCIE_CFG_UC_ERR_MASK		0x108u	/* ucorr_err_mask      */
 #define	PCIE_CFG_UNCOR_ERR_SERV		0x10cu	/* ucorr_err_sevr      */
 #define	PCIE_CFG_CORR_ERR_STS		0x110u	/* corr_err_status     */
 #define	PCIE_CFG_CORR_ERR_MASK		0x114u	/* corr_err_mask       */
 #define	PCIE_CFG_ADV_ERR_CTRL		0x118u	/* adv_err_cap_control */
-#define	PCIE_CFG_HDR_LOG1		0x11Cu	/* header_log1         */
-#define	PCIE_CFG_HDR_LOG2		0x120u	/* header_log2         */
-#define	PCIE_CFG_HDR_LOG3		0x124u	/* header_log3         */
-#define	PCIE_CFG_HDR_LOG4		0x128u	/* header_log4         */
+#define	PCIE_CFG_HDR_LOG1		0x11Cu	/* header_log1	       */
+#define	PCIE_CFG_HDR_LOG2		0x120u	/* header_log2	       */
+#define	PCIE_CFG_HDR_LOG3		0x124u	/* header_log3	       */
+#define	PCIE_CFG_HDR_LOG4		0x128u	/* header_log4	       */
 #define	PCIE_CFG_PML1_SUB_CAP_ID	0x240u	/* PML1sub_capID       */
 #define	PCIE_CFG_PML1_SUB_CAP_REG	0x244u	/* PML1_sub_Cap_reg    */
 #define	PCIE_CFG_PML1_SUB_CTRL1		0x248u	/* PML1_sub_control1   */
 #define	PCIE_CFG_PML1_SUB_CTRL3		0x24Cu	/* PML1_sub_control2   */
-#define	PCIE_CFG_TL_CTRL_5		0x814u	/* tl_control_5        */
+#define	PCIE_CFG_TL_CTRL_5		0x814u	/* tl_control_5	       */
 #define	PCIE_CFG_PHY_ERR_ATT_VEC	0x1820u	/* phy_err_attn_vec    */
 #define	PCIE_CFG_PHY_ERR_ATT_MASK	0x1824u	/* phy_err_attn_mask   */
 
@@ -522,7 +522,7 @@ typedef volatile struct sbpcieregs {
 #define MDIOCTL_DIVISOR_MASK		0x7fu	/* clock to be used on MDIO */
 #define MDIOCTL_DIVISOR_VAL		0x2u
 #define MDIOCTL_PREAM_EN		0x80u	/* Enable preamble sequnce */
-#define MDIOCTL_ACCESS_DONE		0x100u   /* Tranaction complete */
+#define MDIOCTL_ACCESS_DONE		0x100u	 /* Tranaction complete */
 
 /* MDIO Data */
 #define MDIODATA_MASK			0x0000ffff	/* data 2 bytes */
@@ -582,9 +582,9 @@ typedef volatile struct sbpcieregs {
 #define BLK1_PWR_MGMT4		0x1A
 
 /* serdes regs (rev < 10) */
-#define MDIODATA_DEV_PLL       		0x1d	/* SERDES PLL Dev */
-#define MDIODATA_DEV_TX        		0x1e	/* SERDES TX Dev */
-#define MDIODATA_DEV_RX        		0x1f	/* SERDES RX Dev */
+#define MDIODATA_DEV_PLL		0x1d	/* SERDES PLL Dev */
+#define MDIODATA_DEV_TX			0x1e	/* SERDES TX Dev */
+#define MDIODATA_DEV_RX			0x1f	/* SERDES RX Dev */
 	/* SERDES RX registers */
 #define SERDES_RX_CTRL			1	/* Rx cntrl */
 #define SERDES_RX_TIMER1		2	/* Rx Timer1 */
@@ -596,14 +596,14 @@ typedef volatile struct sbpcieregs {
 #define SERDES_RX_CTRL_POLARITY		0x40	/* rxpolarity_value */
 
 	/* SERDES PLL registers */
-#define SERDES_PLL_CTRL                 1       /* PLL control reg */
-#define PLL_CTRL_FREQDET_EN             0x4000  /* bit 14 is FREQDET on */
+#define SERDES_PLL_CTRL			1	/* PLL control reg */
+#define PLL_CTRL_FREQDET_EN		0x4000	/* bit 14 is FREQDET on */
 
 /* Power management threshold */
-#define PCIE_L0THRESHOLDTIME_MASK       0xFF00u	/* bits 0 - 7 */
-#define PCIE_L1THRESHOLDTIME_MASK       0xFF00u	/* bits 8 - 15 */
-#define PCIE_L1THRESHOLDTIME_SHIFT      8	/* PCIE_L1THRESHOLDTIME_SHIFT */
-#define PCIE_L1THRESHOLD_WARVAL         0x72	/* WAR value */
+#define PCIE_L0THRESHOLDTIME_MASK	0xFF00u	/* bits 0 - 7 */
+#define PCIE_L1THRESHOLDTIME_MASK	0xFF00u	/* bits 8 - 15 */
+#define PCIE_L1THRESHOLDTIME_SHIFT	8	/* PCIE_L1THRESHOLDTIME_SHIFT */
+#define PCIE_L1THRESHOLD_WARVAL		0x72	/* WAR value */
 #define PCIE_ASPMTIMER_EXTEND		0x01000000	/* > rev7: enable extend ASPM timer */
 
 /* SPROM offsets */
@@ -616,59 +616,59 @@ typedef volatile struct sbpcieregs {
 #define SRSH_CLKREQ_OFFSET_REV5		20	/* word 20 for srom rev <= 5 */
 #define SRSH_CLKREQ_OFFSET_REV8		52	/* word 52 for srom rev 8 */
 #define SRSH_CLKREQ_ENB			0x0800	/* bit 11 */
-#define SRSH_BD_OFFSET                  6       /* word 6 */
-#define SRSH_AUTOINIT_OFFSET            18      /* auto initialization enable */
+#define SRSH_BD_OFFSET			6	/* word 6 */
+#define SRSH_AUTOINIT_OFFSET		18	/* auto initialization enable */
 
 /* PCI Capability ID's
  * Reference include/linux/pci_regs.h
- * #define  PCI_CAP_LIST_ID	0       // Capability ID
- * #define  PCI_CAP_ID_PM		0x01    // Power Management
- * #define  PCI_CAP_ID_AGP		0x02    // Accelerated Graphics Port
- * #define  PCI_CAP_ID_VPD		0x03    // Vital Product Data
- * #define  PCI_CAP_ID_SLOTID	0x04    // Slot Identification
- * #define  PCI_CAP_ID_MSI		0x05    // Message Signalled Interrupts
- * #define  PCI_CAP_ID_CHSWP       0x06    // CompactPCI HotSwap
- * #define  PCI_CAP_ID_PCIX        0x07    // PCI-X
- * #define  PCI_CAP_ID_HT          0x08    // HyperTransport
- * #define  PCI_CAP_ID_VNDR        0x09    // Vendor-Specific
- * #define  PCI_CAP_ID_DBG         0x0A    // Debug port
- * #define  PCI_CAP_ID_CCRC        0x0B    // CompactPCI Central Resource Control
- * #define  PCI_CAP_ID_SHPC        0x0C    // PCI Standard Hot-Plug Controller
- * #define  PCI_CAP_ID_SSVID       0x0D    // Bridge subsystem vendor/device ID
- * #define  PCI_CAP_ID_AGP3        0x0E    // AGP Target PCI-PCI bridge
- * #define  PCI_CAP_ID_SECDEV      0x0F    // Secure Device
- * #define  PCI_CAP_ID_MSIX        0x11    // MSI-X
- * #define  PCI_CAP_ID_SATA        0x12    // SATA Data/Index Conf.
- * #define  PCI_CAP_ID_AF          0x13    // PCI Advanced Features
- * #define  PCI_CAP_ID_EA          0x14    // PCI Enhanced Allocation
- * #define  PCI_CAP_ID_MAX         PCI_CAP_ID_EA
+ * #define  PCI_CAP_LIST_ID	0	// Capability ID
+ * #define  PCI_CAP_ID_PM		0x01	// Power Management
+ * #define  PCI_CAP_ID_AGP		0x02	// Accelerated Graphics Port
+ * #define  PCI_CAP_ID_VPD		0x03	// Vital Product Data
+ * #define  PCI_CAP_ID_SLOTID	0x04	// Slot Identification
+ * #define  PCI_CAP_ID_MSI		0x05	// Message Signalled Interrupts
+ * #define  PCI_CAP_ID_CHSWP	   0x06	   // CompactPCI HotSwap
+ * #define  PCI_CAP_ID_PCIX	   0x07	   // PCI-X
+ * #define  PCI_CAP_ID_HT	   0x08	   // HyperTransport
+ * #define  PCI_CAP_ID_VNDR	   0x09	   // Vendor-Specific
+ * #define  PCI_CAP_ID_DBG	   0x0A	   // Debug port
+ * #define  PCI_CAP_ID_CCRC	   0x0B	   // CompactPCI Central Resource Control
+ * #define  PCI_CAP_ID_SHPC	   0x0C	   // PCI Standard Hot-Plug Controller
+ * #define  PCI_CAP_ID_SSVID	   0x0D	   // Bridge subsystem vendor/device ID
+ * #define  PCI_CAP_ID_AGP3	   0x0E	   // AGP Target PCI-PCI bridge
+ * #define  PCI_CAP_ID_SECDEV	   0x0F	   // Secure Device
+ * #define  PCI_CAP_ID_MSIX	   0x11	   // MSI-X
+ * #define  PCI_CAP_ID_SATA	   0x12	   // SATA Data/Index Conf.
+ * #define  PCI_CAP_ID_AF	   0x13	   // PCI Advanced Features
+ * #define  PCI_CAP_ID_EA	   0x14	   // PCI Enhanced Allocation
+ * #define  PCI_CAP_ID_MAX	   PCI_CAP_ID_EA
  */
 
-#define  PCIE_CAP_ID_EXP         0x10    // PCI Express
+#define	 PCIE_CAP_ID_EXP	 0x10	 // PCI Express
 
 /* PCIe Capabilities Offsets
  * Reference include/linux/pci_regs.h
- * #define PCIE_CAP_FLAGS           2       // Capabilities register
- * #define PCIE_CAP_DEVCAP          4       // Device capabilities
- * #define PCIE_CAP_DEVCTL          8       // Device Control
- * #define PCIE_CAP_DEVSTA          10      // Device Status
- * #define PCIE_CAP_LNKCAP          12      // Link Capabilities
- * #define PCIE_CAP_LNKCTL          16      // Link Control
- * #define PCIE_CAP_LNKSTA          18      // Link Status
- * #define PCI_CAP_EXP_ENDPOINT_SIZEOF_V1  20      // v1 endpoints end here
- * #define PCIE_CAP_SLTCAP          20      // Slot Capabilities
- * #define PCIE_CAP_SLTCTL          24      // Slot Control
- * #define PCIE_CAP_SLTSTA          26      // Slot Status
- * #define PCIE_CAP_RTCTL           28      // Root Control
- * #define PCIE_CAP_RTCAP           30      // Root Capabilities
- * #define PCIE_CAP_RTSTA           32      // Root Status
+ * #define PCIE_CAP_FLAGS	    2	    // Capabilities register
+ * #define PCIE_CAP_DEVCAP	    4	    // Device capabilities
+ * #define PCIE_CAP_DEVCTL	    8	    // Device Control
+ * #define PCIE_CAP_DEVSTA	    10	    // Device Status
+ * #define PCIE_CAP_LNKCAP	    12	    // Link Capabilities
+ * #define PCIE_CAP_LNKCTL	    16	    // Link Control
+ * #define PCIE_CAP_LNKSTA	    18	    // Link Status
+ * #define PCI_CAP_EXP_ENDPOINT_SIZEOF_V1  20	   // v1 endpoints end here
+ * #define PCIE_CAP_SLTCAP	    20	    // Slot Capabilities
+ * #define PCIE_CAP_SLTCTL	    24	    // Slot Control
+ * #define PCIE_CAP_SLTSTA	    26	    // Slot Status
+ * #define PCIE_CAP_RTCTL	    28	    // Root Control
+ * #define PCIE_CAP_RTCAP	    30	    // Root Capabilities
+ * #define PCIE_CAP_RTSTA	    32	    // Root Status
  */
 
 
 /* Linkcapability reg offset in PCIE Cap */
-#define PCIE_CAP_LINKCAP_OFFSET         12      /* linkcap offset in pcie cap */
-#define PCIE_CAP_LINKCAP_LNKSPEED_MASK	0xf     /* Supported Link Speeds */
-#define PCIE_CAP_LINKCAP_GEN2           0x2     /* Value for GEN2 */
+#define PCIE_CAP_LINKCAP_OFFSET		12	/* linkcap offset in pcie cap */
+#define PCIE_CAP_LINKCAP_LNKSPEED_MASK	0xf	/* Supported Link Speeds */
+#define PCIE_CAP_LINKCAP_GEN2		0x2	/* Value for GEN2 */
 
 /* Uc_Err reg offset in AER Cap */
 #define PCIE_EXTCAP_ID_ERR		0x01	/* Advanced Error Reporting */
@@ -789,9 +789,9 @@ typedef volatile struct sbpcieregs {
 #define ASPM_L1_1_ENA_MASK		0x00000008	/* ASPM L1.1 Enabled */
 
 /* PCIe gen2 mailbox interrupt masks */
-#define I_MB    0x3
-#define I_BIT0  0x1
-#define I_BIT1  0x2
+#define I_MB	0x3
+#define I_BIT0	0x1
+#define I_BIT1	0x2
 
 /* PCIE gen2 config regs */
 #define PCIIntstatus	0x090
@@ -799,9 +799,9 @@ typedef volatile struct sbpcieregs {
 #define PCISBMbx	0x98
 
 /* enumeration Core regs */
-#define PCIH2D_MailBox  0x140
+#define PCIH2D_MailBox	0x140
 #define PCIH2D_DB1		0x144
-#define PCID2H_MailBox  0x148
+#define PCID2H_MailBox	0x148
 #define PCIH2D_MailBox_1	0x150  /* for dma channel1 */
 #define PCIH2D_DB1_1		0x154
 #define PCID2H_MailBox_1	0x158
@@ -813,8 +813,8 @@ typedef volatile struct sbpcieregs {
 #define PCIMailBoxMask	0x4C
 #define PCIMSIVecAssign	0x58
 
-#define I_F0_B0         (0x1 << 8) /* Mail box interrupt Function 0 interrupt, bit 0 */
-#define I_F0_B1         (0x1 << 9) /* Mail box interrupt Function 0 interrupt, bit 1 */
+#define I_F0_B0		(0x1 << 8) /* Mail box interrupt Function 0 interrupt, bit 0 */
+#define I_F0_B1		(0x1 << 9) /* Mail box interrupt Function 0 interrupt, bit 1 */
 
 #define PCIECFGREG_DEVCONTROL	0xB4
 #define PCIECFGREG_BASEADDR0	0x10

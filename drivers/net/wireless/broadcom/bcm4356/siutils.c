@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -93,7 +93,7 @@ static bool force_seci_clk = 0;
 
 /* local prototypes */
 static si_info_t *si_doattach(si_info_t *sii, uint devid, osl_t *osh, volatile void *regs,
-                              uint bustype, void *sdh, char **vars, uint *varsz);
+			      uint bustype, void *sdh, char **vars, uint *varsz);
 static bool si_buscore_prep(si_info_t *sii, uint bustype, uint devid, void *sdh);
 static bool si_buscore_setup(si_info_t *sii, chipcregs_t *cc, uint bustype, uint32 savewin,
 	uint *origidx, volatile void *regs);
@@ -140,12 +140,12 @@ static const char rstr_rmax[] = "rmax";
  * regs - virtual address of initial core registers
  * bustype - pci/pcmcia/sb/sdio/etc
  * vars - pointer to a to-be created pointer area for "environment" variables. Some callers of this
- *        function set 'vars' to NULL, making dereferencing of this parameter undesired.
+ *	  function set 'vars' to NULL, making dereferencing of this parameter undesired.
  * varsz - pointer to int to return the size of the vars
  */
 si_t *
 si_attach(uint devid, osl_t *osh, volatile void *regs,
-                       uint bustype, void *sdh, char **vars, uint *varsz)
+		       uint bustype, void *sdh, char **vars, uint *varsz)
 {
 	si_info_t *sii;
 	si_cores_info_t *cores_info;
@@ -192,9 +192,9 @@ si_kattach(osl_t *osh)
 
 		ASSERT(osh);
 		if (si_doattach(&ksii, BCM4710_DEVICE_ID, osh, regs,
-		                SI_BUS, NULL,
-		                osh != SI_OSH ? &(ksii.vars) : NULL,
-		                osh != SI_OSH ? &(ksii.varsz) : NULL) == NULL) {
+				SI_BUS, NULL,
+				osh != SI_OSH ? &(ksii.vars) : NULL,
+				osh != SI_OSH ? &(ksii.varsz) : NULL) == NULL) {
 			SI_ERROR(("si_kattach: si_doattach failed\n"));
 			REG_UNMAP(regs);
 			return NULL;
@@ -213,7 +213,7 @@ si_kattach(osl_t *osh)
 
 		ksii_attached = TRUE;
 		SI_MSG(("si_kattach done. ccrev = %d, wd_msticks = %d\n",
-		        CCREV(ksii.pub.ccrev), wd_msticks));
+			CCREV(ksii.pub.ccrev), wd_msticks));
 	}
 
 	return &ksii.pub;
@@ -408,16 +408,16 @@ si_buscore_setup(si_info_t *sii, chipcregs_t *cc, uint bustype, uint32 savewin,
 					pcie_gen2 = TRUE;
 			}
 		} else if ((BUSTYPE(bustype) == PCMCIA_BUS) &&
-		           (cid == PCMCIA_CORE_ID)) {
+			   (cid == PCMCIA_CORE_ID)) {
 			sii->pub.buscorerev = crev;
 			sii->pub.buscoretype = cid;
 			sii->pub.buscoreidx = i;
 		}
 #ifdef BCMSDIO
 		else if (((BUSTYPE(bustype) == SDIO_BUS) ||
-		          (BUSTYPE(bustype) == SPI_BUS)) &&
-		         ((cid == PCMCIA_CORE_ID) ||
-		          (cid == SDIOD_CORE_ID))) {
+			  (BUSTYPE(bustype) == SPI_BUS)) &&
+			 ((cid == PCMCIA_CORE_ID) ||
+			  (cid == SDIOD_CORE_ID))) {
 			sii->pub.buscorerev = crev;
 			sii->pub.buscoretype = cid;
 			sii->pub.buscoreidx = i;
@@ -459,7 +459,7 @@ si_buscore_setup(si_info_t *sii, chipcregs_t *cc, uint bustype, uint32 savewin,
 #endif /* defined(PCIE_FULL_DONGLE) */
 
 	SI_VMSG(("Buscore id/type/rev %d/0x%x/%d\n", sii->pub.buscoreidx, sii->pub.buscoretype,
-	         sii->pub.buscorerev));
+		 sii->pub.buscorerev));
 
 
 #if defined(BCMSDIO)
@@ -542,11 +542,11 @@ si_check_boot_type(si_t *sih, osl_t *osh)
  * Allocate an si handle. This function may be called multiple times.
  *
  * vars - pointer to a to-be created pointer area for "environment" variables. Some callers of this
- *        function set 'vars' to NULL.
+ *	  function set 'vars' to NULL.
  */
 static si_info_t *
 si_doattach(si_info_t *sii, uint devid, osl_t *osh, volatile void *regs,
-                       uint bustype, void *sdh, char **vars, uint *varsz)
+		       uint bustype, void *sdh, char **vars, uint *varsz)
 {
 	struct si_pub *sih = &sii->pub;
 	uint32 w, savewin;
@@ -582,7 +582,7 @@ si_doattach(si_info_t *sii, uint devid, osl_t *osh, volatile void *regs,
 	if ((bustype == PCI_BUS) &&
 	    (OSL_PCI_READ_CONFIG(sii->osh, PCI_SPROM_CONTROL, sizeof(uint32)) == 0xffffffff)) {
 		SI_ERROR(("%s: incoming bus is PCI but it's a lie, switching to SI "
-		          "devid:0x%x\n", __FUNCTION__, devid));
+			  "devid:0x%x\n", __FUNCTION__, devid));
 		bustype = SI_BUS;
 	}
 
@@ -694,10 +694,10 @@ si_doattach(si_info_t *sii, uint devid, osl_t *osh, volatile void *regs,
 #if !defined(_CFEZ_) || defined(CFG_WL)
 	/* assume current core is CC */
 	if ((CCREV(sii->pub.ccrev) == 0x25) && ((CHIPID(sih->chip) == BCM43236_CHIP_ID ||
-	                                  CHIPID(sih->chip) == BCM43235_CHIP_ID ||
-	                                  CHIPID(sih->chip) == BCM43234_CHIP_ID ||
-	                                  CHIPID(sih->chip) == BCM43238_CHIP_ID) &&
-	                                 (CHIPREV(sii->pub.chiprev) <= 2))) {
+					  CHIPID(sih->chip) == BCM43235_CHIP_ID ||
+					  CHIPID(sih->chip) == BCM43234_CHIP_ID ||
+					  CHIPID(sih->chip) == BCM43238_CHIP_ID) &&
+					 (CHIPREV(sii->pub.chiprev) <= 2))) {
 
 		if ((cc->chipstatus & CST43236_BP_CLK) != 0) {
 			uint clkdiv;
@@ -843,7 +843,7 @@ si_setosh(si_t *sih, osl_t *osh)
 /** register driver interrupt disabling and restoring callback functions */
 void
 si_register_intr_callback(si_t *sih, void *intrsoff_fn, void *intrsrestore_fn,
-                          void *intrsenabled_fn, void *intr_arg)
+			  void *intrsenabled_fn, void *intr_arg)
 {
 	si_info_t *sii = SI_INFO(sih);
 	si_cores_info_t *cores_info = (si_cores_info_t *)sii->cores_info;
@@ -944,7 +944,7 @@ si_coreidx(si_t *sih)
 volatile void *
 si_d11_switch_addrbase(si_t *sih, uint coreunit)
 {
-	return si_setcore(sih,  D11_CORE_ID, coreunit);
+	return si_setcore(sih,	D11_CORE_ID, coreunit);
 }
 
 /** return the core-type instantiation # of the current core */
@@ -1338,7 +1338,7 @@ si_wrapperreg(si_t *sih, uint32 offset, uint32 mask, uint32 val)
  *	4. BT area
  * For accessing any 32 bit backplane address, [31 : 12] of backplane should be given in "region"
  * [11 : 0] should be the "regoff"
- * for reading  4 bytes from reg 0x200 of d11 core use it like below
+ * for reading	4 bytes from reg 0x200 of d11 core use it like below
  * : si_backplane_access(sih, 0x18001000, 0x200, 4, 0, TRUE)
  */
 static int si_backplane_addr_sane(uint addr, uint size)
@@ -1395,13 +1395,13 @@ si_backplane_access(si_t *sih, uint addr, uint size, uint *val, bool read)
 	}
 
 	/* Estimate effective address
-	 * sii->curmap   : bar-0 virtual address
+	 * sii->curmap	 : bar-0 virtual address
 	 * PCI_SECOND_BAR0_OFFSET  : secondar bar-0 offset
 	 * regoff : actual reg offset
 	 */
 	r = (volatile uint32 *)((volatile char *)sii->curmap + PCI_SECOND_BAR0_OFFSET + addr);
 
-	SI_VMSG(("si curmap %p  region %x regaddr %x effective addr %p READ %d\n",
+	SI_VMSG(("si curmap %p	region %x regaddr %x effective addr %p READ %d\n",
 		(volatile char*)sii->curmap, region, addr, r, read));
 
 	switch (size) {
@@ -1638,9 +1638,9 @@ si_clock_rate(uint32 pll_type, uint32 n, uint32 m)
 		else
 			return CC_T6_M0;
 	} else if ((pll_type == PLL_TYPE1) ||
-	           (pll_type == PLL_TYPE3) ||
-	           (pll_type == PLL_TYPE4) ||
-	           (pll_type == PLL_TYPE7)) {
+		   (pll_type == PLL_TYPE3) ||
+		   (pll_type == PLL_TYPE4) ||
+		   (pll_type == PLL_TYPE7)) {
 		n1 = factor6(n1);
 		n2 += CC_F5_BIAS;
 	} else if (pll_type == PLL_TYPE2) {
@@ -1905,7 +1905,7 @@ si_slowclk_freq(si_info_t *sii, bool max_freq, chipcregs_t *cc)
 			return (max_freq ? (XTALMAXFREQ / 32) : (XTALMINFREQ / 32));
 	} else if (CCREV(sii->pub.ccrev) < 10) {
 		div = 4 *
-		        (((R_REG(sii->osh, &cc->slow_clk_ctl) & SCC_CD_MASK) >> SCC_CD_SHIFT) + 1);
+			(((R_REG(sii->osh, &cc->slow_clk_ctl) & SCC_CD_MASK) >> SCC_CD_SHIFT) + 1);
 		if (slowclk == SCC_SS_LPO)
 			return (max_freq ? LPOMAXFREQ : LPOMINFREQ);
 		else if (slowclk == SCC_SS_XTAL)
@@ -1975,7 +1975,7 @@ si_clkctl_init(si_t *sih)
 	/* set all Instaclk chip ILP to 1 MHz */
 	if (CCREV(sih->ccrev) >= 10)
 		SET_REG(sii->osh, &cc->system_clk_ctl, SYCC_CD_MASK,
-		        (ILP_DIV_1MHZ << SYCC_CD_SHIFT));
+			(ILP_DIV_1MHZ << SYCC_CD_SHIFT));
 
 	si_clkctl_setdelay(sii, (void *)(uintptr)cc);
 
@@ -3509,7 +3509,7 @@ si_slave_wrapper_add(si_t *sih)
 
 	/* All required slave wrappers are added in ai_scan */
 	ai_enable_backplane_timeouts(sih);
-#endif /* AXI_TIMEOUTS  || BCM_BACKPLANE_TIMEOUT */
+#endif /* AXI_TIMEOUTS	|| BCM_BACKPLANE_TIMEOUT */
 }
 
 

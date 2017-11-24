@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -167,7 +167,7 @@ sdioh_sdmmc_card_enablefuncs(sdioh_info_t *sd)
 	     func <= sd->num_funcs; func++, fbraddr += SDIOD_FBR_SIZE) {
 		sd->func_cis_ptr[func] = sdioh_sdmmc_get_cisaddr(sd, SDIOD_FBR_CISPTR_0 + fbraddr);
 		sd_info(("%s: Function %d CIS Ptr = 0x%x\n",
-		         __FUNCTION__, func, sd->func_cis_ptr[func]));
+			 __FUNCTION__, func, sd->func_cis_ptr[func]));
 	}
 
 	sd->func_cis_ptr[0] = sd->com_cis_ptr;
@@ -490,13 +490,13 @@ const bcm_iovar_t sdioh_iovars[] = {
 	{"sd_clock",	IOV_CLOCK,	0, 0,	IOVT_UINT32,	0 },
 	{"sd_mode",	IOV_SDMODE,	0, 0,	IOVT_UINT32,	100},
 	{"sd_highspeed", IOV_HISPEED,	0, 0,	IOVT_UINT32,	0 },
-	{"sd_rxchain",  IOV_RXCHAIN,    0, 0, 	IOVT_BOOL,	0 },
+	{"sd_rxchain",	IOV_RXCHAIN,	0, 0,	IOVT_BOOL,	0 },
 	{NULL, 0, 0, 0, 0, 0 }
 };
 
 int
 sdioh_iovar_op(sdioh_info_t *si, const char *name,
-                           void *params, int plen, void *arg, int len, bool set)
+			   void *params, int plen, void *arg, int len, bool set)
 {
 	const bcm_iovar_t *vi = NULL;
 	int bcmerror = 0;
@@ -1002,7 +1002,7 @@ sdioh_set_mode(sdioh_info_t *sd, uint mode)
 
 extern SDIOH_API_RC
 sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint addr,
-                                   uint32 *word, uint nbytes)
+				   uint32 *word, uint nbytes)
 {
 	int err_ret = SDIOH_API_RC_FAIL;
 	int err_ret2 = SDIOH_API_RC_SUCCESS; // terence 20130621: prevent dhd_dpc in dead lock
@@ -1020,7 +1020,7 @@ sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint add
 	}
 
 	sd_info(("%s: cmd_type=%d, rw=%d, func=%d, addr=0x%05x, nbytes=%d\n",
-	         __FUNCTION__, cmd_type, rw, func, addr, nbytes));
+		 __FUNCTION__, cmd_type, rw, func, addr, nbytes));
 
 	DHD_PM_RESUME_WAIT(sdioh_request_word_wait);
 	DHD_PM_RESUME_RETURN_ERROR(SDIOH_API_RC_FAIL);
@@ -1085,7 +1085,7 @@ sdioh_request_word(sdioh_info_t *sd, uint cmd_type, uint rw, uint func, uint add
 
 static SDIOH_API_RC
 sdioh_request_packet_chain(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
-                     uint addr, void *pkt)
+		     uint addr, void *pkt)
 {
 	bool fifo = (fix_inc == SDIOH_DATA_FIX);
 	int err_ret = 0;
@@ -1303,7 +1303,7 @@ txglomfail:
 
 static SDIOH_API_RC
 sdioh_buffer_tofrom_bus(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
-                     uint addr, uint8 *buf, uint len)
+		     uint addr, uint8 *buf, uint len)
 {
 	bool fifo = (fix_inc == SDIOH_DATA_FIX);
 	int err_ret = 0;
@@ -1361,8 +1361,8 @@ sdioh_buffer_tofrom_bus(sdioh_info_t *sd, uint fix_inc, uint write, uint func,
  * end, a DMA-able packet is created.
  *
  * A buffer does not have an associated packet pointer, and may or may not be aligned.
- * A packet may consist of a single packet, or a packet chain.  If it is a packet chain,
- * then all the packets in the chain must be properly aligned.  If the packet data is not
+ * A packet may consist of a single packet, or a packet chain.	If it is a packet chain,
+ * then all the packets in the chain must be properly aligned.	If the packet data is not
  * aligned, then there may only be one packet, and in this case, it is copied to a new
  * aligned packet.
  *
@@ -1487,7 +1487,7 @@ sdioh_sdmmc_card_regread(sdioh_info_t *sd, int func, uint32 regaddr, int regsize
 		*data = temp;
 		*data &= 0xff;
 		sd_data(("%s: byte read data=0x%02x\n",
-		         __FUNCTION__, *data));
+			 __FUNCTION__, *data));
 	} else {
 		if (sdioh_request_word(sd, 0, SDIOH_READ, func, regaddr, data, regsize)) {
 			return BCME_SDIO_ERROR;
@@ -1497,7 +1497,7 @@ sdioh_sdmmc_card_regread(sdioh_info_t *sd, int func, uint32 regaddr, int regsize
 			*data &= 0xffff;
 
 		sd_data(("%s: word read data=0x%08x\n",
-		         __FUNCTION__, *data));
+			 __FUNCTION__, *data));
 	}
 
 	return SUCCESS;
@@ -1523,7 +1523,7 @@ static void IRQHandler(struct sdio_func *func)
 		sd_err(("bcmsdh_sdmmc: ***IRQHandler\n"));
 
 		sd_err(("%s: Not ready for intr: enabled %d, handler %p\n",
-		        __FUNCTION__, sd->client_intr_enabled, sd->intr_handler));
+			__FUNCTION__, sd->client_intr_enabled, sd->intr_handler));
 	}
 
 	sdio_claim_host(sd->func[0]);
@@ -1548,7 +1548,7 @@ sdioh_sdmmc_card_regwrite(sdioh_info_t *sd, int func, uint32 regaddr, int regsiz
 		temp = data & 0xff;
 		sdioh_request_byte(sd, SDIOH_READ, func, regaddr, &temp);
 		sd_data(("%s: byte write data=0x%02x\n",
-		         __FUNCTION__, data));
+			 __FUNCTION__, data));
 	} else {
 		if (regsize == 2)
 			data &= 0xffff;
@@ -1556,7 +1556,7 @@ sdioh_sdmmc_card_regwrite(sdioh_info_t *sd, int func, uint32 regaddr, int regsiz
 		sdioh_request_word(sd, 0, SDIOH_READ, func, regaddr, &data, regsize);
 
 		sd_data(("%s: word write data=0x%08x\n",
-		         __FUNCTION__, data));
+			 __FUNCTION__, data));
 	}
 
 	return SUCCESS;

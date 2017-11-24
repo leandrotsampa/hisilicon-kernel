@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -59,8 +59,8 @@
 	} while (0)
 
 #define BLOCK_SIZE_F1		64
-#define BLOCK_SIZE_F2 		2048
-#define BLOCK_SIZE_F3 		2048
+#define BLOCK_SIZE_F2		2048
+#define BLOCK_SIZE_F3		2048
 
 /* internal return code */
 #define SUCCESS	0
@@ -95,28 +95,28 @@ struct sdioh_info {
 	uint		irq;			/* Client irq */
 	uint32		intrcount;		/* Client interrupts */
 	uint32		local_intrcount;	/* Controller interrupts */
-	bool 		host_init_done;		/* Controller initted */
-	bool 		card_init_done;		/* Client SDIO interface initted */
-	bool 		polled_mode;		/* polling for command completion */
+	bool		host_init_done;		/* Controller initted */
+	bool		card_init_done;		/* Client SDIO interface initted */
+	bool		polled_mode;		/* polling for command completion */
 
 	bool		sd_use_dma;		/* DMA on CMD53 */
-	bool 		sd_blockmode;		/* sd_blockmode == FALSE => 64 Byte Cmd 53s. */
+	bool		sd_blockmode;		/* sd_blockmode == FALSE => 64 Byte Cmd 53s. */
 						/*  Must be on for sd_multiblock to be effective */
-	bool 		use_client_ints;	/* If this is false, make sure to restore */
+	bool		use_client_ints;	/* If this is false, make sure to restore */
 						/*  polling hack in wl_linux.c:wl_timer() */
-	int 		adapter_slot;		/* Maybe dealing with multiple slots/controllers */
-	int 		sd_mode;		/* SD1/SD4/SPI */
-	int 		client_block_size[SPI_MAX_IOFUNCS];		/* Blocksize */
-	uint32 		data_xfer_count;	/* Current transfer */
-	uint16 		card_rca;		/* Current Address */
-	uint8 		num_funcs;		/* Supported funcs on client */
-	uint32 		card_dstatus;		/* 32bit device status */
-	uint32 		com_cis_ptr;
-	uint32 		func_cis_ptr[SPI_MAX_IOFUNCS];
+	int		adapter_slot;		/* Maybe dealing with multiple slots/controllers */
+	int		sd_mode;		/* SD1/SD4/SPI */
+	int		client_block_size[SPI_MAX_IOFUNCS];		/* Blocksize */
+	uint32		data_xfer_count;	/* Current transfer */
+	uint16		card_rca;		/* Current Address */
+	uint8		num_funcs;		/* Supported funcs on client */
+	uint32		card_dstatus;		/* 32bit device status */
+	uint32		com_cis_ptr;
+	uint32		func_cis_ptr[SPI_MAX_IOFUNCS];
 	void		*dma_buf;
 	ulong		dma_phys;
-	int 		r_cnt;			/* rx count */
-	int 		t_cnt;			/* tx_count */
+	int		r_cnt;			/* rx count */
+	int		t_cnt;			/* tx_count */
 	uint32		wordlen;			/* host processor 16/32bits */
 	uint32		prev_fun;
 	uint32		chip;

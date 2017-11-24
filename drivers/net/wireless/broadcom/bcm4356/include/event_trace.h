@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -36,9 +36,9 @@
 #ifndef	_WL_DIAG_H
 #define	_WL_DIAG_H
 
-#define DIAG_MAJOR_VERSION      1	/* 4 bits */
-#define DIAG_MINOR_VERSION      0	/* 4 bits */
-#define DIAG_MICRO_VERSION      0	/* 4 bits */
+#define DIAG_MAJOR_VERSION	1	/* 4 bits */
+#define DIAG_MINOR_VERSION	0	/* 4 bits */
+#define DIAG_MICRO_VERSION	0	/* 4 bits */
 
 #define DIAG_VERSION		\
 	((DIAG_MICRO_VERSION&0xF) | (DIAG_MINOR_VERSION&0xF)<<4 | \
@@ -67,12 +67,12 @@
 #define TRACE_BT_COEX_BT_HID_STOP		0x800e
 #define TRACE_ROAM_AUTH_STARTED			0x800f
 /* Event ID for NAN, start from 0x9000 */
-#define TRACE_NAN_CLUSTER_STARTED               0x9000
-#define TRACE_NAN_CLUSTER_JOINED                0x9001
-#define TRACE_NAN_CLUSTER_MERGED                0x9002
-#define TRACE_NAN_ROLE_CHANGED                  0x9003
-#define TRACE_NAN_SCAN_COMPLETE                 0x9004
-#define TRACE_NAN_STATUS_CHNG                   0x9005
+#define TRACE_NAN_CLUSTER_STARTED		0x9000
+#define TRACE_NAN_CLUSTER_JOINED		0x9001
+#define TRACE_NAN_CLUSTER_MERGED		0x9002
+#define TRACE_NAN_ROLE_CHANGED			0x9003
+#define TRACE_NAN_SCAN_COMPLETE			0x9004
+#define TRACE_NAN_STATUS_CHNG			0x9005
 
 /* Parameters of wifi logger events are TLVs */
 /* Event parameters tags are defined as: */

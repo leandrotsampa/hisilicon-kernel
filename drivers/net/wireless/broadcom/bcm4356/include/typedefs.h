@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -98,8 +98,8 @@ typedef long unsigned int size_t;
 
 /*
  * If this is either a Linux hybrid build or the per-port code of a hybrid build
- * then use the Linux header files to get some of the typedefs.  Otherwise, define
- * them entirely in this file.  We can't always define the types because we get
+ * then use the Linux header files to get some of the typedefs.	 Otherwise, define
+ * them entirely in this file.	We can't always define the types because we get
  * a duplicate typedef error; there is no way to "undefine" a typedef.
  * We know when it's per-port code because each file defines LINUX_PORT at the top.
  */
@@ -348,26 +348,26 @@ typedef float64 float_t;
 #define stderr stdout
 #endif
 
-typedef UINT32  uint;
-typedef UINT64  ulong;
-typedef UINT16  ushort;
-typedef UINT8   uint8;
-typedef UINT16  uint16;
-typedef UINT32  uint32;
-typedef UINT64  uint64;
-typedef INT8    int8;
-typedef INT16   int16;
-typedef INT32   int32;
-typedef INT64   int64;
+typedef UINT32	uint;
+typedef UINT64	ulong;
+typedef UINT16	ushort;
+typedef UINT8	uint8;
+typedef UINT16	uint16;
+typedef UINT32	uint32;
+typedef UINT64	uint64;
+typedef INT8	int8;
+typedef INT16	int16;
+typedef INT32	int32;
+typedef INT64	int64;
 
-typedef BOOLEAN       bool;
+typedef BOOLEAN	      bool;
 typedef unsigned char uchar;
-typedef UINTN         uintptr;
+typedef UINTN	      uintptr;
 
-typedef UINT8   u_char;
-typedef UINT16  u_short;
-typedef UINTN   u_int;
-typedef ULONGN  u_long;
+typedef UINT8	u_char;
+typedef UINT16	u_short;
+typedef UINTN	u_int;
+typedef ULONGN	u_long;
 
 #define UNUSED_PARAMETER(x) (void)(x)
 #define DISCARD_QUAL(ptr, type) ((type *)(uintptr)(ptr))

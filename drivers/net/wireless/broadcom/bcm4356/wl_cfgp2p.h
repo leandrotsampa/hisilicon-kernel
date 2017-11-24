@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -61,7 +61,7 @@ typedef enum {
 /** vendor ies max buffer length for probe response or beacon */
 #define VNDR_IES_MAX_BUF_LEN	1400
 /** normal vendor ies buffer length */
-#define VNDR_IES_BUF_LEN 		512
+#define VNDR_IES_BUF_LEN		512
 
 struct p2p_bss {
 	s32 bssidx;
@@ -266,10 +266,10 @@ extern s32
 wl_cfgp2p_set_firm_p2p(struct bcm_cfg80211 *cfg);
 extern s32
 wl_cfgp2p_set_p2p_mode(struct bcm_cfg80211 *cfg, u8 mode,
-            u32 channel, u16 listen_ms, int bssidx);
+	    u32 channel, u16 listen_ms, int bssidx);
 extern s32
 wl_cfgp2p_ifadd(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
-            chanspec_t chspec);
+	    chanspec_t chspec);
 extern s32
 wl_cfgp2p_ifdisable(struct bcm_cfg80211 *cfg, struct ether_addr *mac);
 extern s32
@@ -311,7 +311,7 @@ extern wifi_wfd_ie_t *
 wl_cfgp2p_find_wfdie(u8 *parse, u32 len);
 extern s32
 wl_cfgp2p_set_management_ie(struct bcm_cfg80211 *cfg, struct net_device *ndev, s32 bssidx,
-            s32 pktflag, const u8 *vndr_ie, u32 vndr_ie_len);
+	    s32 pktflag, const u8 *vndr_ie, u32 vndr_ie_len);
 extern s32
 wl_cfgp2p_clear_management_ie(struct bcm_cfg80211 *cfg, s32 bssidx);
 

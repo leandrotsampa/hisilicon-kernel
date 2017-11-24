@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -37,7 +37,7 @@
 #include <osl_decl.h>
 
 /* logstrs header */
-#define LOGSTRS_MAGIC   0x4C4F4753
+#define LOGSTRS_MAGIC	0x4C4F4753
 #define LOGSTRS_VERSION 0x1
 
 /* We make sure that the block size will fit in a single packet
@@ -55,9 +55,9 @@
  * There are multiple levels of objects define here:
  *   event_log_set - a set of buffers
  *   event log groups - every event log call is part of just one.  All
- *                      event log calls in a group are handled the
- *                      same way.  Each event log group is associated
- *                      with an event log set or is off.
+ *			event log calls in a group are handled the
+ *			same way.  Each event log group is associated
+ *			with an event log set or is off.
  */
 
 #ifndef __ASSEMBLER__
@@ -111,11 +111,11 @@ typedef enum {
  * associated events (i.e, "fast" and "slow" events).
  */
 typedef struct event_log_set {
-	_EL_BLOCK_PTR first_block; 	/* Pointer to first event_log block */
-	_EL_BLOCK_PTR last_block; 	/* Pointer to last event_log block */
+	_EL_BLOCK_PTR first_block;	/* Pointer to first event_log block */
+	_EL_BLOCK_PTR last_block;	/* Pointer to last event_log block */
 	_EL_BLOCK_PTR logtrace_block;	/* next block traced */
-	_EL_BLOCK_PTR cur_block;   	/* Pointer to current event_log block */
-	_EL_TYPE_PTR cur_ptr;      	/* Current event_log pointer */
+	_EL_BLOCK_PTR cur_block;	/* Pointer to current event_log block */
+	_EL_TYPE_PTR cur_ptr;		/* Current event_log pointer */
 	uint32 blockcount;		/* Number of blocks */
 	uint16 logtrace_count;		/* Last count for logtrace */
 	uint16 blockfill_count;		/* Fill count for logtrace */
@@ -135,26 +135,26 @@ typedef struct event_log_top {
 	uint32 logstrs_size;		/* Size of lognums + logstrs area */
 	uint32 timestamp;		/* Last timestamp event */
 	uint32 cyclecount;		/* Cycles at last timestamp event */
-	_EL_SET_PTR sets; 		/* Ptr to array of <num_sets> set ptrs */
+	_EL_SET_PTR sets;		/* Ptr to array of <num_sets> set ptrs */
 } event_log_top_t;
 
 /* Data structure of Keeping the Header from logstrs.bin */
 typedef struct {
-	uint32 logstrs_size;    /* Size of the file */
+	uint32 logstrs_size;	/* Size of the file */
 	uint32 rom_lognums_offset; /* Offset to the ROM lognum */
 	uint32 ram_lognums_offset; /* Offset to the RAM lognum */
 	uint32 rom_logstrs_offset; /* Offset to the ROM logstr */
 	uint32 ram_logstrs_offset; /* Offset to the RAM logstr */
 	/* Keep version and magic last since "header" is appended to the end of logstrs file. */
-	uint32 version;            /* Header version */
-	uint32 log_magic;       /* MAGIC number for verification 'LOGS' */
+	uint32 version;		   /* Header version */
+	uint32 log_magic;	/* MAGIC number for verification 'LOGS' */
 } logstr_header_t;
 
 /*
  * Use the following macros for generating log events.
  *
  * The FAST versions check the enable of the tag before evaluating the arguments and calling the
- * event_log function.  This adds 5 instructions.  The COMPACT versions evaluate the arguments
+ * event_log function.	This adds 5 instructions.  The COMPACT versions evaluate the arguments
  * and call the event_log function unconditionally.  The event_log function will then skip logging
  * if this tag is disabled.
  *
@@ -208,15 +208,15 @@ typedef struct {
  * this way and they are the common case.  Once there are too many
  * parameters the code size starts to be an issue and a loop is better
  */
-#define _EVENT_LOG0(tag, fmt_num) 			\
+#define _EVENT_LOG0(tag, fmt_num)			\
 	event_log0(tag, fmt_num)
-#define _EVENT_LOG1(tag, fmt_num, t1) 			\
+#define _EVENT_LOG1(tag, fmt_num, t1)			\
 	event_log1(tag, fmt_num, t1)
-#define _EVENT_LOG2(tag, fmt_num, t1, t2) 		\
+#define _EVENT_LOG2(tag, fmt_num, t1, t2)		\
 	event_log2(tag, fmt_num, t1, t2)
-#define _EVENT_LOG3(tag, fmt_num, t1, t2, t3) 		\
+#define _EVENT_LOG3(tag, fmt_num, t1, t2, t3)		\
 	event_log3(tag, fmt_num, t1, t2, t3)
-#define _EVENT_LOG4(tag, fmt_num, t1, t2, t3, t4) 	\
+#define _EVENT_LOG4(tag, fmt_num, t1, t2, t3, t4)	\
 	event_log4(tag, fmt_num, t1, t2, t3, t4)
 
 /* The rest call the generic routine that takes a count */
@@ -269,9 +269,9 @@ typedef struct {
 
 /* cast = _EVENT_LOG for no casting
  * cast = _EVENT_LOG_CAST for casting of fmt arguments to uint32.
- *        Only first 4 arguments are casted to uint32. event_logn() is called
- *        if more than 4 arguments are present. This function internally assumes
- *        all arguments are uint32
+ *	  Only first 4 arguments are casted to uint32. event_logn() is called
+ *	  if more than 4 arguments are present. This function internally assumes
+ *	  all arguments are uint32
  */
 #define _EVENT_LOG(cast, tag, fmt, ...)					\
 	static char logstr[] __attribute__ ((section(".logstrs"))) = fmt; \

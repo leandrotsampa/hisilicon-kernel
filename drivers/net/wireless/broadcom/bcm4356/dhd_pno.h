@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -63,7 +63,7 @@
 #define RESULTS_END_MARKER "----\n"
 #define SCAN_END_MARKER "####\n"
 #define AP_END_MARKER "====\n"
-#define PNO_RSSI_MARGIN_DBM          30
+#define PNO_RSSI_MARGIN_DBM	     30
 
 #define CSCAN_COMMAND			"CSCAN "
 #define CSCAN_TLV_PREFIX		'S'
@@ -77,52 +77,52 @@
 #define CSCAN_TLV_TYPE_HOME_IE		'H'
 #define CSCAN_TLV_TYPE_STYPE_IE		'T'
 
-#define WL_SCAN_PARAMS_SSID_MAX         10
-#define GET_SSID                        "SSID="
-#define GET_CHANNEL                     "CH="
-#define GET_NPROBE                      "NPROBE="
-#define GET_ACTIVE_ASSOC_DWELL          "ACTIVE="
-#define GET_PASSIVE_ASSOC_DWELL         "PASSIVE="
-#define GET_HOME_DWELL                  "HOME="
-#define GET_SCAN_TYPE                   "TYPE="
+#define WL_SCAN_PARAMS_SSID_MAX		10
+#define GET_SSID			"SSID="
+#define GET_CHANNEL			"CH="
+#define GET_NPROBE			"NPROBE="
+#define GET_ACTIVE_ASSOC_DWELL		"ACTIVE="
+#define GET_PASSIVE_ASSOC_DWELL		"PASSIVE="
+#define GET_HOME_DWELL			"HOME="
+#define GET_SCAN_TYPE			"TYPE="
 
 #if defined(GSCAN_SUPPORT) || defined(DHD_GET_VALID_CHANNELS)
-#define GSCAN_MAX_CH_BUCKETS             8
-#define GSCAN_MAX_CHANNELS_IN_BUCKET     32
-#define GSCAN_MAX_AP_CACHE_PER_SCAN      32
-#define GSCAN_MAX_AP_CACHE               320
-#define GSCAN_BG_BAND_MASK             (1 << 0)
-#define GSCAN_A_BAND_MASK              (1 << 1)
-#define GSCAN_DFS_MASK                 (1 << 2)
-#define GSCAN_ABG_BAND_MASK            (GSCAN_A_BAND_MASK | GSCAN_BG_BAND_MASK)
-#define GSCAN_BAND_MASK                (GSCAN_ABG_BAND_MASK | GSCAN_DFS_MASK)
+#define GSCAN_MAX_CH_BUCKETS		 8
+#define GSCAN_MAX_CHANNELS_IN_BUCKET	 32
+#define GSCAN_MAX_AP_CACHE_PER_SCAN	 32
+#define GSCAN_MAX_AP_CACHE		 320
+#define GSCAN_BG_BAND_MASK	       (1 << 0)
+#define GSCAN_A_BAND_MASK	       (1 << 1)
+#define GSCAN_DFS_MASK		       (1 << 2)
+#define GSCAN_ABG_BAND_MASK	       (GSCAN_A_BAND_MASK | GSCAN_BG_BAND_MASK)
+#define GSCAN_BAND_MASK		       (GSCAN_ABG_BAND_MASK | GSCAN_DFS_MASK)
 
-#define GSCAN_FLUSH_HOTLIST_CFG      (1 << 0)
+#define GSCAN_FLUSH_HOTLIST_CFG	     (1 << 0)
 #define GSCAN_FLUSH_SIGNIFICANT_CFG  (1 << 1)
-#define GSCAN_FLUSH_SCAN_CFG         (1 << 2)
-#define GSCAN_FLUSH_EPNO_CFG         (1 << 3)
-#define GSCAN_FLUSH_ALL_CFG     (GSCAN_FLUSH_SCAN_CFG | \
+#define GSCAN_FLUSH_SCAN_CFG	     (1 << 2)
+#define GSCAN_FLUSH_EPNO_CFG	     (1 << 3)
+#define GSCAN_FLUSH_ALL_CFG	(GSCAN_FLUSH_SCAN_CFG | \
 								GSCAN_FLUSH_SIGNIFICANT_CFG | \
-								GSCAN_FLUSH_HOTLIST_CFG  | \
+								GSCAN_FLUSH_HOTLIST_CFG	 | \
 								GSCAN_FLUSH_EPNO_CFG)
-#define DHD_EPNO_HIDDEN_SSID          (1 << 0)
-#define DHD_EPNO_A_BAND_TRIG          (1 << 1)
-#define DHD_EPNO_BG_BAND_TRIG         (1 << 2)
-#define DHD_EPNO_STRICT_MATCH         (1 << 3)
-#define DHD_EPNO_SAME_NETWORK         (1 << 4)
-#define DHD_PNO_USE_SSID              (DHD_EPNO_HIDDEN_SSID | DHD_EPNO_STRICT_MATCH)
+#define DHD_EPNO_HIDDEN_SSID	      (1 << 0)
+#define DHD_EPNO_A_BAND_TRIG	      (1 << 1)
+#define DHD_EPNO_BG_BAND_TRIG	      (1 << 2)
+#define DHD_EPNO_STRICT_MATCH	      (1 << 3)
+#define DHD_EPNO_SAME_NETWORK	      (1 << 4)
+#define DHD_PNO_USE_SSID	      (DHD_EPNO_HIDDEN_SSID | DHD_EPNO_STRICT_MATCH)
 
 /* Do not change GSCAN_BATCH_RETRIEVAL_COMPLETE */
-#define GSCAN_BATCH_RETRIEVAL_COMPLETE      0
+#define GSCAN_BATCH_RETRIEVAL_COMPLETE	    0
 #define GSCAN_BATCH_RETRIEVAL_IN_PROGRESS   1
-#define GSCAN_BATCH_NO_THR_SET              101
-#define GSCAN_LOST_AP_WINDOW_DEFAULT        4
-#define GSCAN_MIN_BSSID_TIMEOUT             90
-#define GSCAN_BATCH_GET_MAX_WAIT            500
-#define CHANNEL_BUCKET_EMPTY_INDEX                      0xFFFF
-#define GSCAN_RETRY_THRESHOLD              3
+#define GSCAN_BATCH_NO_THR_SET		    101
+#define GSCAN_LOST_AP_WINDOW_DEFAULT	    4
+#define GSCAN_MIN_BSSID_TIMEOUT		    90
+#define GSCAN_BATCH_GET_MAX_WAIT	    500
+#define CHANNEL_BUCKET_EMPTY_INDEX			0xFFFF
+#define GSCAN_RETRY_THRESHOLD		   3
 
-#define MAX_EPNO_SSID_NUM                   64
+#define MAX_EPNO_SSID_NUM		    64
 #endif /* GSCAN_SUPPORT || DHD_GET_VALID_CHANNELS */
 
 enum scan_status {
@@ -167,12 +167,12 @@ typedef struct cmd_tlv {
 #if defined(GSCAN_SUPPORT) || defined(DHD_GET_VALID_CHANNELS)
 typedef enum {
     WIFI_BAND_UNSPECIFIED,
-    WIFI_BAND_BG = 1,                       /* 2.4 GHz                   */
-    WIFI_BAND_A = 2,                        /* 5 GHz without DFS         */
-    WIFI_BAND_A_DFS = 4,                    /* 5 GHz DFS only            */
-    WIFI_BAND_A_WITH_DFS = 6,               /* 5 GHz with DFS            */
-    WIFI_BAND_ABG = 3,                      /* 2.4 GHz + 5 GHz; no DFS   */
-    WIFI_BAND_ABG_WITH_DFS = 7,             /* 2.4 GHz + 5 GHz with DFS  */
+    WIFI_BAND_BG = 1,			    /* 2.4 GHz			 */
+    WIFI_BAND_A = 2,			    /* 5 GHz without DFS	 */
+    WIFI_BAND_A_DFS = 4,		    /* 5 GHz DFS only		 */
+    WIFI_BAND_A_WITH_DFS = 6,		    /* 5 GHz with DFS		 */
+    WIFI_BAND_ABG = 3,			    /* 2.4 GHz + 5 GHz; no DFS	 */
+    WIFI_BAND_ABG_WITH_DFS = 7,		    /* 2.4 GHz + 5 GHz with DFS	 */
 } gscan_wifi_band_t;
 
 typedef enum {
@@ -306,7 +306,7 @@ struct dhd_pno_hotlist_params {
 	struct list_head bssid_list;
 };
 #if defined(GSCAN_SUPPORT) || defined(DHD_GET_VALID_CHANNELS)
-#define DHD_PNO_REPORT_NO_BATCH      (1 << 2)
+#define DHD_PNO_REPORT_NO_BATCH	     (1 << 2)
 
 typedef struct dhd_pno_gscan_channel_bucket {
 	uint16 bucket_freq_multiple;
@@ -323,11 +323,11 @@ typedef struct dhd_pno_gscan_channel_bucket {
 } dhd_pno_gscan_channel_bucket_t;
 
 
-#define DHD_PNO_AUTH_CODE_OPEN  1 /*  Open   */
-#define DHD_PNO_AUTH_CODE_PSK   2 /* WPA_PSK or WPA2PSK */
-#define DHD_PNO_AUTH_CODE_EAPOL 4 /* any EAPOL    */
+#define DHD_PNO_AUTH_CODE_OPEN	1 /*  Open   */
+#define DHD_PNO_AUTH_CODE_PSK	2 /* WPA_PSK or WPA2PSK */
+#define DHD_PNO_AUTH_CODE_EAPOL 4 /* any EAPOL	  */
 
-#define DHD_EPNO_DEFAULT_INDEX     0xFFFFFFFF
+#define DHD_EPNO_DEFAULT_INDEX	   0xFFFFFFFF
 
 typedef struct dhd_epno_params {
 	uint8 ssid[DOT11_MAX_SSID_LEN];
@@ -350,15 +350,15 @@ typedef struct dhd_epno_results {
 } dhd_epno_results_t;
 
 typedef struct wifi_gscan_result {
-	uint64 ts;                           /* Time of discovery           */
-	char ssid[DOT11_MAX_SSID_LEN+1];     /* null terminated             */
-	struct ether_addr	macaddr;         /* BSSID                      */
-	uint32 channel;                      /* channel frequency in MHz    */
-	int32 rssi;                          /* in db                       */
-	uint64 rtt;                          /* in nanoseconds              */
-	uint64 rtt_sd;                       /* standard deviation in rtt   */
-	uint16 beacon_period;                /* units are Kusec             */
-	uint16 capability;                   /* Capability information       */
+	uint64 ts;			     /* Time of discovery	    */
+	char ssid[DOT11_MAX_SSID_LEN+1];     /* null terminated		    */
+	struct ether_addr	macaddr;	 /* BSSID		       */
+	uint32 channel;			     /* channel frequency in MHz    */
+	int32 rssi;			     /* in db			    */
+	uint64 rtt;			     /* in nanoseconds		    */
+	uint64 rtt_sd;			     /* standard deviation in rtt   */
+	uint16 beacon_period;		     /* units are Kusec		    */
+	uint16 capability;		     /* Capability information	     */
 	uint32 pad;
 } wifi_gscan_result_t;
 
@@ -366,7 +366,7 @@ typedef struct wifi_gscan_full_result {
     wifi_gscan_result_t fixed;
     uint32 scan_ch_bucket;
     uint32 ie_length;		/* byte length of Information Elements */
-    char  ie_data[1];		/* IE  data to follow       */
+    char  ie_data[1];		/* IE  data to follow	    */
 } wifi_gscan_full_result_t;
 
 typedef struct gscan_results_cache {
@@ -433,12 +433,12 @@ typedef struct gscan_batch_params {
 
 struct bssid_t {
 	struct ether_addr	macaddr;
-	int16 rssi_reporting_threshold;  /* 0 -> no reporting threshold */
+	int16 rssi_reporting_threshold;	 /* 0 -> no reporting threshold */
 };
 
 typedef struct gscan_hotlist_scan_params {
 	uint16 lost_ap_window; /* number of scans to declare LOST */
-	uint16 nbssid;   /* number of bssids  */
+	uint16 nbssid;	 /* number of bssids  */
 	struct bssid_t bssid[1];  /* n bssids to follow */
 } gscan_hotlist_scan_params_t;
 
@@ -494,21 +494,21 @@ extern bool dhd_dev_is_legacy_pno_enabled(struct net_device *dev);
 #if defined(GSCAN_SUPPORT) || defined(DHD_GET_VALID_CHANNELS)
 extern void *
 dhd_dev_pno_get_gscan(struct net_device *dev, dhd_pno_gscan_cmd_cfg_t type, void *info,
-        uint32 *len);
+	uint32 *len);
 #endif /* GSCAN_SUPPORT || DHD_GET_VALID_CHANNELS */
 #ifdef GSCAN_SUPPORT
 extern int
 dhd_dev_pno_set_cfg_gscan(struct net_device *dev, dhd_pno_gscan_cmd_cfg_t type,
-              void *buf, bool flush);
+	      void *buf, bool flush);
 int dhd_dev_pno_lock_access_batch_results(struct net_device *dev);
 void dhd_dev_pno_unlock_access_batch_results(struct net_device *dev);
 extern int dhd_dev_pno_run_gscan(struct net_device *dev, bool run, bool flush);
 extern int dhd_dev_pno_enable_full_scan_result(struct net_device *dev, bool real_time);
 int dhd_retreive_batch_scan_results(dhd_pub_t *dhd);
 extern void * dhd_dev_hotlist_scan_event(struct net_device *dev,
-            const void  *data, int *send_evt_bytes, hotlist_type_t type);
+	    const void	*data, int *send_evt_bytes, hotlist_type_t type);
 void * dhd_dev_process_full_gscan_result(struct net_device *dev,
-            const void  *data, uint32 len, int *send_evt_bytes);
+	    const void	*data, uint32 len, int *send_evt_bytes);
 extern int dhd_dev_gscan_batch_cache_cleanup(struct net_device *dev);
 extern void dhd_dev_gscan_hotlist_cache_cleanup(struct net_device *dev, hotlist_type_t type);
 extern int dhd_dev_wait_batch_results_complete(struct net_device *dev);
@@ -521,7 +521,7 @@ extern int dhd_dev_flush_fw_epno(struct net_device *dev);
 extern int dhd_pno_stop_for_ssid(dhd_pub_t *dhd);
 extern int dhd_pno_enable(dhd_pub_t *dhd, int enable);
 extern int dhd_pno_set_for_ssid(dhd_pub_t *dhd, wlc_ssid_ext_t* ssid_list, int nssid,
-	uint16  scan_fr, int pno_repeat, int pno_freq_expo_max, uint16 *channel_list, int nchan);
+	uint16	scan_fr, int pno_repeat, int pno_freq_expo_max, uint16 *channel_list, int nchan);
 
 extern int dhd_pno_set_for_batch(dhd_pub_t *dhd, struct dhd_pno_batch_params *batch_params);
 
@@ -542,11 +542,11 @@ extern bool dhd_is_pno_supported(dhd_pub_t *dhd);
 extern bool dhd_is_legacy_pno_enabled(dhd_pub_t *dhd);
 #if defined(GSCAN_SUPPORT) || defined(DHD_GET_VALID_CHANNELS)
 extern void * dhd_pno_get_gscan(dhd_pub_t *dhd, dhd_pno_gscan_cmd_cfg_t type, void *info,
-                       uint32 *len);
+		       uint32 *len);
 #endif /* GSCAN_SUPPORT || DHD_GET_VALID_CHANNELS */
 #ifdef GSCAN_SUPPORT
 extern int dhd_pno_set_cfg_gscan(dhd_pub_t *dhd, dhd_pno_gscan_cmd_cfg_t type,
-                       void *buf, bool flush);
+		       void *buf, bool flush);
 extern int dhd_pno_lock_batch_results(dhd_pub_t *dhd);
 extern void dhd_pno_unlock_batch_results(dhd_pub_t *dhd);
 extern int dhd_pno_initiate_gscan_request(dhd_pub_t *dhd, bool run, bool flush);
@@ -554,14 +554,14 @@ extern int dhd_pno_enable_full_scan_result(dhd_pub_t *dhd, bool real_time_flag);
 extern int dhd_pno_cfg_gscan(dhd_pub_t *dhd, dhd_pno_gscan_cmd_cfg_t type, void *buf);
 extern int dhd_dev_retrieve_batch_scan(struct net_device *dev);
 extern void *dhd_handle_hotlist_scan_evt(dhd_pub_t *dhd, const void *event_data,
-                       int *send_evt_bytes, hotlist_type_t type);
+		       int *send_evt_bytes, hotlist_type_t type);
 extern void *dhd_process_full_gscan_result(dhd_pub_t *dhd, const void *event_data,
-                       uint32 len, int *send_evt_bytes);
+		       uint32 len, int *send_evt_bytes);
 extern int dhd_gscan_batch_cache_cleanup(dhd_pub_t *dhd);
 extern void dhd_gscan_hotlist_cache_cleanup(dhd_pub_t *dhd, hotlist_type_t type);
 extern int dhd_wait_batch_results_complete(dhd_pub_t *dhd);
 extern void * dhd_pno_process_epno_result(dhd_pub_t *dhd, const void *data,
-         uint32 event, int *size);
+	 uint32 event, int *size);
 extern void dhd_pno_translate_epno_fw_flags(uint32 *flags);
 extern int dhd_pno_set_epno(dhd_pub_t *dhd);
 extern int dhd_pno_flush_fw_epno(dhd_pub_t *dhd);

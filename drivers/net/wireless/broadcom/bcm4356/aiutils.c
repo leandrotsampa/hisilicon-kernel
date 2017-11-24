@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -124,7 +124,7 @@ get_asd(si_t *sih, uint32 **eromptr, uint sp, uint ad, uint st, uint32 *addrl, u
 		*sizel = AD_SZ_BASE << (sz >> AD_SZ_SHIFT);
 
 	SI_VMSG(("  SP %d, ad %d: st = %d, 0x%08x_0x%08x @ 0x%08x_0x%08x\n",
-	        sp, ad, st, *sizeh, *sizel, *addrh, *addrl));
+		sp, ad, st, *sizeh, *sizel, *addrh, *addrl));
 
 	return asd;
 }
@@ -175,7 +175,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 	sii->axi_num_wrappers = 0;
 
 	SI_VMSG(("ai_scan: regs = 0x%p, erombase = 0x%08x, eromptr = 0x%p, eromlim = 0x%p\n",
-	         OSL_OBFUSCATE_BUF(regs), erombase,
+		 OSL_OBFUSCATE_BUF(regs), erombase,
 		OSL_OBFUSCATE_BUF(eromptr), OSL_OBFUSATE_BUF(eromlim)));
 	while (eromptr < eromlim) {
 		uint32 cia, cib, cid, mfg, crev, nmw, nsw, nmp, nsp;
@@ -209,8 +209,8 @@ ai_scan(si_t *sih, void *regs, uint devid)
 
 #ifdef BCMDBG_SI
 		SI_VMSG(("Found component 0x%04x/0x%04x rev %d at erom addr 0x%p, with nmw = %d, "
-		         "nsw = %d, nmp = %d & nsp = %d\n",
-		         mfg, cid, crev, OSL_OBFUSCATE_BUF(eromptr - 1), nmw, nsw, nmp, nsp));
+			 "nsw = %d, nmp = %d & nsp = %d\n",
+			 mfg, cid, crev, OSL_OBFUSCATE_BUF(eromptr - 1), nmw, nsw, nmp, nsp));
 #else
 		BCM_REFERENCE(crev);
 #endif
@@ -260,8 +260,8 @@ ai_scan(si_t *sih, void *regs, uint devid)
 				goto error;
 			}
 			SI_VMSG(("  Master port %d, mp: %d id: %d\n", i,
-			         (mpd & MPD_MP_MASK) >> MPD_MP_SHIFT,
-			         (mpd & MPD_MUI_MASK) >> MPD_MUI_SHIFT));
+				 (mpd & MPD_MP_MASK) >> MPD_MP_SHIFT,
+				 (mpd & MPD_MUI_MASK) >> MPD_MUI_SHIFT));
 		}
 
 		/* First Slave Address Descriptor should be port 0:
@@ -272,7 +272,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 			do {
 			/* Try again to see if it is a bridge */
 			asd = get_asd(sih, &eromptr, 0, 0, AD_ST_BRIDGE, &addrl, &addrh,
-			              &sizel, &sizeh);
+				      &sizel, &sizeh);
 			if (asd != 0)
 				br = TRUE;
 			else {
@@ -297,7 +297,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 		j = 1;
 		do {
 			asd = get_asd(sih, &eromptr, 0, j, AD_ST_SLAVE, &addrl, &addrh,
-			              &sizel, &sizeh);
+				      &sizel, &sizeh);
 			if ((asd != 0) && (j == 1) && (sizel == SI_CORE_SIZE)) {
 				cores_info->coresba2[idx] = addrl;
 				cores_info->coresba2_size[idx] = sizel;
@@ -310,7 +310,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 			j = 0;
 			do {
 				asd = get_asd(sih, &eromptr, i, j, AD_ST_SLAVE, &addrl, &addrh,
-				              &sizel, &sizeh);
+					      &sizel, &sizeh);
 
 				if (asd == 0)
 					break;
@@ -325,7 +325,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 		/* Now get master wrappers */
 		for (i = 0; i < nmw; i++) {
 			asd = get_asd(sih, &eromptr, i, 0, AD_ST_MWRAP, &addrl, &addrh,
-			              &sizel, &sizeh);
+				      &sizel, &sizeh);
 			if (asd == 0) {
 				SI_ERROR(("Missing descriptor for MW %d\n", i));
 				goto error;
@@ -355,7 +355,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 		for (i = 0; i < nsw; i++) {
 			uint fwp = (nsp == 1) ? 0 : 1;
 			asd = get_asd(sih, &eromptr, fwp + i, 0, AD_ST_SWRAP, &addrl, &addrh,
-			              &sizel, &sizeh);
+				      &sizel, &sizeh);
 
 			/* cache APB bridge wrapper address for set/clear timeout */
 			if ((mfg == MFGID_ARM) && (cid == APB_BRIDGE_ID)) {
@@ -389,7 +389,7 @@ ai_scan(si_t *sih, void *regs, uint devid)
 			sii->axi_num_wrappers++;
 
 			SI_VMSG(("SLAVE WRAPPER: %d,  mfg:%x, cid:%x, rev:%x, addr:%x, size:%x\n",
-				sii->axi_num_wrappers,  mfg, cid, crev, addrl, sizel));
+				sii->axi_num_wrappers,	mfg, cid, crev, addrl, sizel));
 		}
 
 
@@ -574,13 +574,13 @@ ai_coreaddrspaceX(si_t *sih, uint asidx, uint32 *addr, uint32 *size)
 	if (asd == 0) {
 		/* Try again to see if it is a bridge */
 		asd = get_asd(sih, &eromptr, 0, 0, AD_ST_BRIDGE, &addrl, &addrh,
-		              &sizel, &sizeh);
+			      &sizel, &sizeh);
 	}
 
 	j = 1;
 	do {
 		asd = get_asd(sih, &eromptr, 0, j, AD_ST_SLAVE, &addrl, &addrh,
-		              &sizel, &sizeh);
+			      &sizel, &sizeh);
 		j++;
 	} while (asd != 0);
 
@@ -638,7 +638,7 @@ ai_addrspace(si_t *sih, uint asidx)
 		return cores_info->coresba2[cidx];
 	else {
 		SI_ERROR(("%s: Need to parse the erom again to find addr space %d\n",
-		          __FUNCTION__, asidx));
+			  __FUNCTION__, asidx));
 		return 0;
 	}
 }
@@ -659,7 +659,7 @@ ai_addrspacesize(si_t *sih, uint asidx)
 		return cores_info->coresba2_size[cidx];
 	else {
 		SI_ERROR(("%s: Need to parse the erom again to find addr space %d\n",
-		          __FUNCTION__, asidx));
+			  __FUNCTION__, asidx));
 		return 0;
 	}
 }
@@ -790,7 +790,7 @@ ai_iscoreup(si_t *sih)
 	ai = sii->curwrap;
 
 	return (((R_REG(sii->osh, &ai->ioctrl) & (SICF_FGC | SICF_CLOCK_EN)) == SICF_CLOCK_EN) &&
-	        ((R_REG(sii->osh, &ai->resetctrl) & AIRC_RESET) == 0));
+		((R_REG(sii->osh, &ai->resetctrl) & AIRC_RESET) == 0));
 }
 
 /*
@@ -827,7 +827,7 @@ ai_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 		/* map if does not exist */
 		if (!cores_info->regs[coreidx]) {
 			cores_info->regs[coreidx] = REG_MAP(cores_info->coresba[coreidx],
-			                            SI_CORE_SIZE);
+						    SI_CORE_SIZE);
 			ASSERT(GOODREGS(cores_info->regs[coreidx]));
 		}
 		r = (volatile uint32 *)((volatile uchar *)cores_info->regs[coreidx] + regoff);
@@ -839,7 +839,7 @@ ai_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 
 			fast = TRUE;
 			r = (volatile uint32 *)((volatile char *)sii->curmap +
-			               PCI_16KB0_CCREGS_OFFSET + regoff);
+				       PCI_16KB0_CCREGS_OFFSET + regoff);
 		} else if (sii->pub.buscoreidx == coreidx) {
 			/* pci registers are at either in the last 2KB of an 8KB window
 			 * or, in pcie and pci rev 13 at 8KB
@@ -847,12 +847,12 @@ ai_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 			fast = TRUE;
 			if (SI_FAST(sii))
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               PCI_16KB0_PCIREGS_OFFSET + regoff);
+					       PCI_16KB0_PCIREGS_OFFSET + regoff);
 			else
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               ((regoff >= SBCONFIGOFF) ?
-				                PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
-				               regoff);
+					       ((regoff >= SBCONFIGOFF) ?
+						PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
+					       regoff);
 		}
 	}
 
@@ -864,7 +864,7 @@ ai_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 
 		/* switch core */
 		r = (volatile uint32*) ((volatile uchar*) ai_setcoreidx(&sii->pub, coreidx) +
-		               regoff);
+			       regoff);
 	}
 	ASSERT(r != NULL);
 
@@ -918,7 +918,7 @@ ai_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 		/* map if does not exist */
 		if (!cores_info->regs[coreidx]) {
 			cores_info->regs[coreidx] = REG_MAP(cores_info->coresba[coreidx],
-			                            SI_CORE_SIZE);
+						    SI_CORE_SIZE);
 			ASSERT(GOODREGS(cores_info->regs[coreidx]));
 		}
 		r = (volatile uint32 *)((volatile uchar *)cores_info->regs[coreidx] + regoff);
@@ -930,7 +930,7 @@ ai_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 
 			fast = TRUE;
 			r = (volatile uint32 *)((volatile char *)sii->curmap +
-			               PCI_16KB0_CCREGS_OFFSET + regoff);
+				       PCI_16KB0_CCREGS_OFFSET + regoff);
 		} else if (sii->pub.buscoreidx == coreidx) {
 			/* pci registers are at either in the last 2KB of an 8KB window
 			 * or, in pcie and pci rev 13 at 8KB
@@ -938,12 +938,12 @@ ai_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 			fast = TRUE;
 			if (SI_FAST(sii))
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               PCI_16KB0_PCIREGS_OFFSET + regoff);
+					       PCI_16KB0_PCIREGS_OFFSET + regoff);
 			else
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               ((regoff >= SBCONFIGOFF) ?
-				                PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
-				               regoff);
+					       ((regoff >= SBCONFIGOFF) ?
+						PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
+					       regoff);
 		}
 	}
 
@@ -1076,7 +1076,7 @@ ai_core_cflags_wo(si_t *sih, uint32 mask, uint32 val)
 
 	if (BCM5357_DMP()) {
 		SI_ERROR(("%s: Accessing USB20H DMP register (ioctrl) on 5357\n",
-		          __FUNCTION__));
+			  __FUNCTION__));
 		return;
 	}
 	if (BCM4707_DMP()) {
@@ -1110,7 +1110,7 @@ ai_core_cflags(si_t *sih, uint32 mask, uint32 val)
 
 	if (BCM5357_DMP()) {
 		SI_ERROR(("%s: Accessing USB20H DMP register (ioctrl) on 5357\n",
-		          __FUNCTION__));
+			  __FUNCTION__));
 		return 0;
 	}
 	if (BCM4707_DMP()) {
@@ -1146,7 +1146,7 @@ ai_core_sflags(si_t *sih, uint32 mask, uint32 val)
 
 	if (BCM5357_DMP()) {
 		SI_ERROR(("%s: Accessing USB20H DMP register (iostatus) on 5357\n",
-		          __FUNCTION__));
+			  __FUNCTION__));
 		return 0;
 	}
 	if (BCM4707_DMP()) {

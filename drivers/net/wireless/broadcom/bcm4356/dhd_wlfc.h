@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -62,8 +62,8 @@ typedef enum {
 } q_type_t;
 
 typedef enum ewlfc_packet_state {
-	eWLFC_PKTTYPE_NEW,        /**< unused in the code (Jan 2015) */
-	eWLFC_PKTTYPE_DELAYED,    /**< packet did not enter wlfc yet */
+	eWLFC_PKTTYPE_NEW,	  /**< unused in the code (Jan 2015) */
+	eWLFC_PKTTYPE_DELAYED,	  /**< packet did not enter wlfc yet */
 	eWLFC_PKTTYPE_SUPPRESSED, /**< packet entered wlfc and was suppressed by the dongle */
 	eWLFC_PKTTYPE_MAX
 } ewlfc_packet_state_t;
@@ -77,7 +77,7 @@ typedef enum ewlfc_mac_entry_action {
 
 typedef struct wlfc_hanger_item {
 	uint8	state;
-	uint8   gen;
+	uint8	gen;
 	uint8	pkt_state;     /**< bitmask containing eg WLFC_HANGER_PKT_STATE_TXCOMPLETE */
 	uint8	pkt_txstatus;
 	uint32	identifier;
@@ -125,19 +125,19 @@ typedef struct wlfc_hanger {
 
 /** Properties related to a remote MAC entity */
 typedef struct wlfc_mac_descriptor {
-	uint8 occupied;         /**< if 0, this descriptor is unused and thus can be (re)used */
+	uint8 occupied;		/**< if 0, this descriptor is unused and thus can be (re)used */
 	uint8 interface_id;
-	uint8 iftype;           /**< eg WLC_E_IF_ROLE_STA */
-	uint8 state;            /**< eg WLFC_STATE_OPEN */
-	uint8 ac_bitmap;        /**< automatic power save delivery (APSD) */
+	uint8 iftype;		/**< eg WLC_E_IF_ROLE_STA */
+	uint8 state;		/**< eg WLFC_STATE_OPEN */
+	uint8 ac_bitmap;	/**< automatic power save delivery (APSD) */
 	uint8 requested_credit;
 	uint8 requested_packet; /**< unit: [number of packets] */
 	uint8 ea[ETHER_ADDR_LEN];
 
 	/** maintain (MAC,AC) based seq count for packets going to the device. As well as bc/mc. */
 	uint8 seq[AC_COUNT + 1];
-	uint8 generation;       /**< toggles between 0 and 1 */
-	struct pktq	psq;    /**< contains both 'delayed' and 'suppressed' packets */
+	uint8 generation;	/**< toggles between 0 and 1 */
+	struct pktq	psq;	/**< contains both 'delayed' and 'suppressed' packets */
 	/** packets at firmware queue */
 	struct pktq	afq;
 	/** The AC pending bitmap that was reported to the fw at last change */
@@ -146,7 +146,7 @@ typedef struct wlfc_mac_descriptor {
 	uint8 traffic_pending_bmp;
 	/** 1= send on next opportunity */
 	uint8 send_tim_signal;
-	uint8 mac_handle;          /**< mac handles are assigned by the dongle */
+	uint8 mac_handle;	   /**< mac handles are assigned by the dongle */
 	/** Number of packets at dongle for this entry. */
 	int transit_count;
 	/** Number of suppression to wait before evict from delayQ */
@@ -247,7 +247,7 @@ typedef struct athost_wl_stat_counters {
 #define WLFC_HOST_FIFO_CREDIT_INC_BACKCTRS(ctx, ac) do {} while (0)
 #define WLFC_HOST_FIFO_DROPPEDCTR_INC(ctx, ac) do {} while (0)
 #endif
-#define WLFC_PACKET_BOUND              10
+#define WLFC_PACKET_BOUND	       10
 #define WLFC_FCMODE_NONE				0
 #define WLFC_FCMODE_IMPLIED_CREDIT		1
 #define WLFC_FCMODE_EXPLICIT_CREDIT		2
@@ -314,8 +314,8 @@ typedef struct athost_wl_status_info {
 	int	pkt_cnt_per_ac[AC_COUNT+1];
 	int	pkt_cnt_in_drv[WLFC_MAX_IFNUM][AC_COUNT+1];
 	int	pkt_cnt_in_psq;
-	uint8	allow_fc;              /**< Boolean */
-	uint32  fc_defer_timestamp;
+	uint8	allow_fc;	       /**< Boolean */
+	uint32	fc_defer_timestamp;
 	uint32	rx_timestamp[AC_COUNT+1];
 
 	/** ON/OFF state for flow control to the host network interface */
@@ -326,13 +326,13 @@ typedef struct athost_wl_status_info {
 	uint8	toggle_host_if;
 
 	/** To borrow credits */
-	uint8   allow_credit_borrow;
+	uint8	allow_credit_borrow;
 
 	/** ac number for the first single ac traffic */
 	uint8	single_ac;
 
 	/** Timestamp for the first single ac traffic */
-	uint32  single_ac_timestamp;
+	uint32	single_ac_timestamp;
 
 	bool	bcmc_credit_supported;
 
@@ -356,7 +356,7 @@ typedef struct dhd_pkttag {
 	b[9  ] - 1 = packet is host->firmware (transmit direction)
 	       - 0 = packet received from firmware (firmware->host)
 	b[8  ] - 1 = packet was sent due to credit_request (pspoll),
-	             packet does not count against FIFO credit.
+		     packet does not count against FIFO credit.
 	       - 0 = normal transaction, packet counts against FIFO credit
 	b[7  ] - 1 = AP, 0 = STA
 	b[6:4] - AC FIFO number

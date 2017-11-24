@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -44,7 +44,7 @@
 
 #if defined(BCMLXSDMMC)
 extern int sdioh_mmc_irq(int irq);
-#endif /* (BCMLXSDMMC)  */
+#endif /* (BCMLXSDMMC)	*/
 
 /* Customer specific Host GPIO defintion  */
 static int dhd_oob_gpio_num = -1;
@@ -53,7 +53,7 @@ module_param(dhd_oob_gpio_num, int, 0644);
 MODULE_PARM_DESC(dhd_oob_gpio_num, "DHD oob gpio number");
 
 /* This function will return:
- *  1) return :  Host gpio interrupt number per customer platform
+ *  1) return :	 Host gpio interrupt number per customer platform
  *  2) irq_flags_ptr : Type of Host interrupt as Level or Edge
  *
  *  NOTE :
@@ -84,7 +84,7 @@ int dhd_customer_oob_irq_map(void *adapter, unsigned long *irq_flags_ptr)
 	}
 
 	WL_ERROR(("%s: customer specific Host GPIO number is (%d)\n",
-	         __FUNCTION__, dhd_oob_gpio_num));
+		 __FUNCTION__, dhd_oob_gpio_num));
 
 #endif
 

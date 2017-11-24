@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -48,11 +48,11 @@
 
 #define DBGRING_FLUSH_THRESHOLD(ring)		(ring->ring_size / 3)
 #define RING_STAT_TO_STATUS(ring, status) \
-	do {               \
+	do {		   \
 		strncpy(status.name, ring->name, \
 			sizeof(status.name) - 1);  \
 		status.ring_id = ring->id;     \
-		status.ring_buffer_byte_size = ring->ring_size;  \
+		status.ring_buffer_byte_size = ring->ring_size;	 \
 		status.written_bytes = ring->stat.written_bytes; \
 		status.written_records = ring->stat.written_records; \
 		status.read_bytes = ring->stat.read_bytes; \
@@ -690,7 +690,7 @@ dhd_dbg_custom_evnt_handler(dhd_pub_t *dhdp, event_log_hdr_t *hdr, uint32 *data)
 		tlv_len = (hdr->count - 2) * DATA_UNIT_FOR_LOG_CNT;
 		for (i = 0; i < ARRAYSIZE(event_tag_map); i++) {
 			tlv_data = (tlv_log *)event_get_tlv(event_tag_map[i].fw_id,
-			         tlvs, tlv_len);
+				 tlvs, tlv_len);
 			if (tlv_data) {
 				DHD_DBGIF(("tlv.tag(%s), tlv.len : %d, tlv.data :  ",
 					event_tag_map[i].desc, tlv_data->len));
@@ -821,7 +821,7 @@ dhd_dbg_verboselog_handler(dhd_pub_t *dhdp, event_log_hdr_t *hdr,
 		return;
 	}
 
-	/* print the message out in a logprint  */
+	/* print the message out in a logprint	*/
 	dhd_dbg_verboselog_printf(dhdp, hdr, raw_event_ptr, log_ptr);
 }
 
@@ -849,7 +849,7 @@ dhd_dbg_verboselog_printf(dhd_pub_t *dhdp, event_log_hdr_t *hdr,
 		return;
 	}
 
-	/* print the message out in a logprint  */
+	/* print the message out in a logprint	*/
 	if (!(raw_event->fmts) || hdr->fmt_num == 0xffff) {
 		if (dhdp->dbg) {
 			log_level = dhdp->dbg->dbg_rings[FW_VERBOSE_RING_ID].log_level;
@@ -1030,9 +1030,9 @@ dhd_dbg_msgtrace_log_parser(dhd_pub_t *dhdp, void *event_data,
 	 * 0x0c580439 -- 39 is tag, 04 is count, 580c is format number
 	 * all these uint32 values comes in reverse order as group as EL data
 	 * while decoding we can only parse from last to first
-	 * |<-                     datalen                     ->|
+	 * |<-			   datalen		       ->|
 	 * |----(payload and maybe more logs)----|event_log_hdr_t|
-	 * data                                  log_hdr
+	 * data					 log_hdr
 	 */
 	dll_init(&list_head);
 	while (datalen > log_hdr_len) {
@@ -1550,7 +1550,7 @@ __dhd_dbg_dump_pkt_info(dhd_pub_t *dhdp, dhd_dbg_pkt_info_t *info)
 {
 	if (DHD_PKT_MON_DUMP_ON()) {
 		DHD_PKT_MON(("payload type   = %d\n", info->payload_type));
-		DHD_PKT_MON(("driver ts      = %u\n", info->driver_ts));
+		DHD_PKT_MON(("driver ts	     = %u\n", info->driver_ts));
 		DHD_PKT_MON(("firmware ts    = %u\n", info->firmware_ts));
 		DHD_PKT_MON(("packet hash    = %u\n", info->pkt_hash));
 		DHD_PKT_MON(("packet length  = %zu\n", info->pkt_len));

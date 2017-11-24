@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -182,7 +182,7 @@
 #define USB30D_CORE_ID		0x83d		/* usb 3.0 device core */
 #define ARMCR4_CORE_ID		0x83e		/* ARM CR4 CPU */
 #define GCI_CORE_ID		0x840		/* GCI Core */
-#define M2MDMA_CORE_ID          0x844           /* memory to memory dma */
+#define M2MDMA_CORE_ID		0x844		/* memory to memory dma */
 #define CMEM_CORE_ID		0x846		/* CNDS DDR2/3 memory controller */
 #define ARMCA7_CORE_ID		0x847		/* ARM CA7 CPU */
 #define SYSMEM_CORE_ID		0x849		/* System memory core */
@@ -216,8 +216,8 @@
 #define ALTA_CORE_ID		0x534		/* I2S core */
 #define DDR23_PHY_CORE_ID	0x5dd
 
-#define SI_PCI1_MEM     0x40000000  /* Host Mode sb2pcitranslation0 (64 MB) */
-#define SI_PCI1_CFG     0x44000000  /* Host Mode sb2pcitranslation1 (64 MB) */
+#define SI_PCI1_MEM	0x40000000  /* Host Mode sb2pcitranslation0 (64 MB) */
+#define SI_PCI1_CFG	0x44000000  /* Host Mode sb2pcitranslation1 (64 MB) */
 #define SI_PCIE1_DMA_H32		0xc0000000	/* PCIE Client Mode sb2pcitranslation2
 						 * (2 ZettaBytes), high 32 bits
 						 */

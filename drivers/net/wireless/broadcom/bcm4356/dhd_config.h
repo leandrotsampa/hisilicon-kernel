@@ -18,26 +18,26 @@ extern uint dhd_txbound;
 extern uint dhd_doflow;
 extern uint dhd_slpauto;
 
-#define BCM43362A0_CHIP_REV     0
-#define BCM43362A2_CHIP_REV     1
-#define BCM43430A0_CHIP_REV     0
-#define BCM43430A1_CHIP_REV     1
-#define BCM43430A2_CHIP_REV     2
-#define BCM43012B0_CHIP_REV     1
-#define BCM4330B2_CHIP_REV      4
-#define BCM4334B1_CHIP_REV      3
-#define BCM43341B0_CHIP_REV     2
-#define BCM43241B4_CHIP_REV     5
-#define BCM4335A0_CHIP_REV      2
-#define BCM4339A0_CHIP_REV      1
-#define BCM43455C0_CHIP_REV     6
-#define BCM43455C5_CHIP_REV     9
-#define BCM4354A1_CHIP_REV      1
-#define BCM4359B1_CHIP_REV      5
-#define BCM4359C0_CHIP_REV      9
+#define BCM43362A0_CHIP_REV	0
+#define BCM43362A2_CHIP_REV	1
+#define BCM43430A0_CHIP_REV	0
+#define BCM43430A1_CHIP_REV	1
+#define BCM43430A2_CHIP_REV	2
+#define BCM43012B0_CHIP_REV	1
+#define BCM4330B2_CHIP_REV	4
+#define BCM4334B1_CHIP_REV	3
+#define BCM43341B0_CHIP_REV	2
+#define BCM43241B4_CHIP_REV	5
+#define BCM4335A0_CHIP_REV	2
+#define BCM4339A0_CHIP_REV	1
+#define BCM43455C0_CHIP_REV	6
+#define BCM43455C5_CHIP_REV	9
+#define BCM4354A1_CHIP_REV	1
+#define BCM4359B1_CHIP_REV	5
+#define BCM4359C0_CHIP_REV	9
 #endif
-#define BCM4356A2_CHIP_REV      2
-#define BCM4358A3_CHIP_REV      3
+#define BCM4356A2_CHIP_REV	2
+#define BCM4358A3_CHIP_REV	3
 
 typedef struct wl_mac_range {
 	uint32 oui;
@@ -144,7 +144,7 @@ typedef struct dhd_conf {
 	/* terence 20161011:
 	    1) conf->tx_max_offset = 1 to fix credict issue in adaptivity testing
 	    2) conf->tx_max_offset = 1 will cause to UDP Tx not work in rxglom supported,
-	        but not happened in sw txglom
+		but not happened in sw txglom
 	*/
 	int tx_max_offset;
 	uint txglomsize;

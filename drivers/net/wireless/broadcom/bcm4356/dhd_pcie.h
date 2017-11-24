@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -208,8 +208,8 @@ typedef struct dhdpcie_config_save
 
 typedef struct dhd_bus {
 	dhd_pub_t	*dhd;
-	struct pci_dev  *rc_dev;	/* pci RC device handle */
-	struct pci_dev  *dev;		/* pci device handle */
+	struct pci_dev	*rc_dev;	/* pci RC device handle */
+	struct pci_dev	*dev;		/* pci device handle */
 #ifdef DHD_EFI
 	void *pcie_dev;
 #endif
@@ -285,11 +285,11 @@ typedef struct dhd_bus {
 	osl_t		*osh;
 	uint32		nvram_csm;	/* Nvram checksum */
 	uint16		pollrate;
-	uint16  polltick;
+	uint16	polltick;
 
-	volatile uint32  *pcie_mb_intr_addr;
-	volatile uint32  *pcie_mb_intr_2_addr;
-	void    *pcie_mb_intr_osh;
+	volatile uint32	 *pcie_mb_intr_addr;
+	volatile uint32	 *pcie_mb_intr_2_addr;
+	void	*pcie_mb_intr_osh;
 	bool	sleep_allowed;
 
 	wake_counts_t	wake_counts;
@@ -299,8 +299,8 @@ typedef struct dhd_bus {
 
 	uint8	h2d_ring_count;
 	uint8	d2h_ring_count;
-	uint32  ringmem_ptr;
-	uint32  ring_state_ptr;
+	uint32	ringmem_ptr;
+	uint32	ring_state_ptr;
 
 	uint32 d2h_dma_scratch_buffer_mem_addr;
 
@@ -336,13 +336,13 @@ typedef struct dhd_bus {
 	*/
 	bool read_shm_fail;
 #endif /* SUPPORT_LINKDOWN_RECOVERY */
-	int32 idletime;                 /* Control for activity timeout */
+	int32 idletime;			/* Control for activity timeout */
 #ifdef DHD_PCIE_RUNTIMEPM
-	int32 idlecount;                /* Activity timeout counter */
-	int32 bus_wake;                 /* For wake up the bus */
-	bool runtime_resume_done;       /* For check runtime suspend end */
-	struct mutex pm_lock;            /* Synchronize for system PM & runtime PM */
-	wait_queue_head_t rpm_queue;    /* wait-queue for bus wake up */
+	int32 idlecount;		/* Activity timeout counter */
+	int32 bus_wake;			/* For wake up the bus */
+	bool runtime_resume_done;	/* For check runtime suspend end */
+	struct mutex pm_lock;		 /* Synchronize for system PM & runtime PM */
+	wait_queue_head_t rpm_queue;	/* wait-queue for bus wake up */
 #endif /* DHD_PCIE_RUNTIMEPM */
 	uint32 d3_inform_cnt;
 	uint32 d0_inform_cnt;
@@ -355,8 +355,8 @@ typedef struct dhd_bus {
 	struct	dhd_pcie_rev api;
 	bool use_mailbox;
 	bool	d3_suspend_pending;
-	bool    use_d0_inform;
-	uint32  hostready_count; /* Number of hostready issued */
+	bool	use_d0_inform;
+	uint32	hostready_count; /* Number of hostready issued */
 #if defined(PCIE_OOB) || defined(BCMPCIE_OOB_HOST_WAKE)
 	bool	oob_presuspend;
 #endif /* PCIE_OOB || BCMPCIE_OOB_HOST_WAKE */
@@ -375,7 +375,7 @@ typedef struct dhd_bus {
 	uint32	inband_host_sleep_exit_to_cnt; /* # of Host_Sleep exit timeout */
 	void	*inb_lock;	/* Lock to serialize in band device wake activity */
 	/* # of contexts in the host which currently want a FW transaction */
-	uint32  host_active_cnt;
+	uint32	host_active_cnt;
 #endif /* PCIE_INB_DW */
 	dhdpcie_config_save_t saved_config;
 	ulong resume_intr_enable_count;

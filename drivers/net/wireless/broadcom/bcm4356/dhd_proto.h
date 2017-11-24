@@ -6,21 +6,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -46,7 +46,7 @@
 #endif /* IOCTL_RESP_TIMEOUT */
 
 #ifndef MFG_IOCTL_RESP_TIMEOUT
-#define MFG_IOCTL_RESP_TIMEOUT  20000  /* In milli second default value for MFG FW */
+#define MFG_IOCTL_RESP_TIMEOUT	20000  /* In milli second default value for MFG FW */
 #endif /* MFG_IOCTL_RESP_TIMEOUT */
 
 #define DEFAULT_D3_ACK_RESP_TIMEOUT	1000
@@ -106,7 +106,7 @@ extern int dhd_prot_ctl_complete(dhd_pub_t *dhd);
 
 /* Check for and handle local prot-specific iovar commands */
 extern int dhd_prot_iovar_op(dhd_pub_t *dhdp, const char *name,
-                             void *params, int plen, void *arg, int len, bool set);
+			     void *params, int plen, void *arg, int len, bool set);
 
 /* Add prot dump output to a buffer */
 extern void dhd_prot_dump(dhd_pub_t *dhdp, struct bcmstrbuf *strbuf);

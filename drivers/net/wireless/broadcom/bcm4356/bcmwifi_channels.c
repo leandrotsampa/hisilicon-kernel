@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -49,7 +49,7 @@
 #include <bcmwifi_channels.h>
 
 #if defined(WIN32) && (defined(BCMDLL) || defined(WLMDLL))
-#include <bcmstdlib.h> 	/* For wl/exe/GNUmakefile.brcm_wlu and GNUmakefile.wlm_dll */
+#include <bcmstdlib.h>	/* For wl/exe/GNUmakefile.brcm_wlu and GNUmakefile.wlm_dll */
 #endif
 
 /* Definitions for D11AC capable Chanspec type */
@@ -58,30 +58,30 @@
  * [<band> 'g'] <channel> ['/'<bandwidth> [<ctl-sideband>]['/'<1st80channel>'-'<2nd80channel>]]
  *
  * <band>:
- *      (optional) 2, 3, 4, 5 for 2.4GHz, 3GHz, 4GHz, and 5GHz respectively.
- *      Default value is 2g if channel <= 14, otherwise 5g.
+ *	(optional) 2, 3, 4, 5 for 2.4GHz, 3GHz, 4GHz, and 5GHz respectively.
+ *	Default value is 2g if channel <= 14, otherwise 5g.
  * <channel>:
- *      channel number of the 5MHz, 10MHz, 20MHz channel,
- *      or primary channel of 40MHz, 80MHz, 160MHz, or 80+80MHz channel.
+ *	channel number of the 5MHz, 10MHz, 20MHz channel,
+ *	or primary channel of 40MHz, 80MHz, 160MHz, or 80+80MHz channel.
  * <bandwidth>:
- *      (optional) 5, 10, 20, 40, 80, 160, or 80+80. Default value is 20.
+ *	(optional) 5, 10, 20, 40, 80, 160, or 80+80. Default value is 20.
  * <primary-sideband>:
- *      (only for 2.4GHz band 40MHz) U for upper sideband primary, L for lower.
+ *	(only for 2.4GHz band 40MHz) U for upper sideband primary, L for lower.
  *
- *      For 2.4GHz band 40MHz channels, the same primary channel may be the
- *      upper sideband for one 40MHz channel, and the lower sideband for an
- *      overlapping 40MHz channel.  The U/L disambiguates which 40MHz channel
- *      is being specified.
+ *	For 2.4GHz band 40MHz channels, the same primary channel may be the
+ *	upper sideband for one 40MHz channel, and the lower sideband for an
+ *	overlapping 40MHz channel.  The U/L disambiguates which 40MHz channel
+ *	is being specified.
  *
- *      For 40MHz in the 5GHz band and all channel bandwidths greater than
- *      40MHz, the U/L specificaion is not allowed since the channels are
- *      non-overlapping and the primary sub-band is derived from its
- *      position in the wide bandwidth channel.
+ *	For 40MHz in the 5GHz band and all channel bandwidths greater than
+ *	40MHz, the U/L specificaion is not allowed since the channels are
+ *	non-overlapping and the primary sub-band is derived from its
+ *	position in the wide bandwidth channel.
  *
  * <1st80Channel>:
  * <2nd80Channel>:
- *      Required for 80+80, otherwise not allowed.
- *      Specifies the center channel of the first and second 80MHz band.
+ *	Required for 80+80, otherwise not allowed.
+ *	Specifies the center channel of the first and second 80MHz band.
  *
  * In its simplest form, it is a 20MHz channel number, with the implied band
  * of 2.4GHz if channel number <= 14, and 5GHz otherwise.
@@ -92,31 +92,31 @@
  * <channel>:
  *	primary channel of 40MHz, channel <= 14 is 2GHz, otherwise 5GHz
  * <ctl-sideband>:
- * 	"U" for upper, "L" for lower (or lower case "u" "l")
+ *	"U" for upper, "L" for lower (or lower case "u" "l")
  *
  * 5 GHz Examples:
- *      Chanspec        BW        Center Ch  Channel Range  Primary Ch
- *      5g8             20MHz     8          -              -
- *      52              20MHz     52         -              -
- *      52/40           40MHz     54         52-56          52
- *      56/40           40MHz     54         52-56          56
- *      52/80           80MHz     58         52-64          52
- *      56/80           80MHz     58         52-64          56
- *      60/80           80MHz     58         52-64          60
- *      64/80           80MHz     58         52-64          64
- *      52/160          160MHz    50         36-64          52
- *      36/160          160MGz    50         36-64          36
- *      36/80+80/42-106 80+80MHz  42,106     36-48,100-112  36
+ *	Chanspec	BW	  Center Ch  Channel Range  Primary Ch
+ *	5g8		20MHz	  8	     -		    -
+ *	52		20MHz	  52	     -		    -
+ *	52/40		40MHz	  54	     52-56	    52
+ *	56/40		40MHz	  54	     52-56	    56
+ *	52/80		80MHz	  58	     52-64	    52
+ *	56/80		80MHz	  58	     52-64	    56
+ *	60/80		80MHz	  58	     52-64	    60
+ *	64/80		80MHz	  58	     52-64	    64
+ *	52/160		160MHz	  50	     36-64	    52
+ *	36/160		160MGz	  50	     36-64	    36
+ *	36/80+80/42-106 80+80MHz  42,106     36-48,100-112  36
  *
  * 2 GHz Examples:
- *      Chanspec        BW        Center Ch  Channel Range  Primary Ch
- *      2g8             20MHz     8          -              -
- *      8               20MHz     8          -              -
- *      6               20MHz     6          -              -
- *      6/40l           40MHz     8          6-10           6
- *      6l              40MHz     8          6-10           6
- *      6/40u           40MHz     4          2-6            6
- *      6u              40MHz     4          2-6            6
+ *	Chanspec	BW	  Center Ch  Channel Range  Primary Ch
+ *	2g8		20MHz	  8	     -		    -
+ *	8		20MHz	  8	     -		    -
+ *	6		20MHz	  6	     -		    -
+ *	6/40l		40MHz	  8	     6-10	    6
+ *	6l		40MHz	  8	     6-10	    6
+ *	6/40u		40MHz	  4	     2-6	    6
+ *	6u		40MHz	  4	     2-6	    6
  */
 
 /* bandwidth ASCII string */
@@ -416,7 +416,7 @@ wf_chspec_aton(const char *a)
 		/* first number is channel, use default for band */
 		ctl_ch = num;
 		chspec_band = ((ctl_ch <= CH_MAX_2G_CHANNEL) ?
-		               WL_CHANSPEC_BAND_2G : WL_CHANSPEC_BAND_5G);
+			       WL_CHANSPEC_BAND_2G : WL_CHANSPEC_BAND_5G);
 	}
 
 	if (c == '\0') {
@@ -609,7 +609,7 @@ done_read:
 
 		/* combine 2 channel IDs in channel field of chspec */
 		chspec_ch = (((uint)ch1_id << WL_CHANSPEC_CHAN1_SHIFT) |
-		             ((uint)ch2_id << WL_CHANSPEC_CHAN2_SHIFT));
+			     ((uint)ch2_id << WL_CHANSPEC_CHAN2_SHIFT));
 
 		/* figure out primary 20 MHz sideband */
 
@@ -680,7 +680,7 @@ wf_chspec_malformed(chanspec_t chanspec)
 		if (CHSPEC_CTL_SB(chanspec) > WL_CHANSPEC_CTL_SB_LLU)
 			return TRUE;
 	} else if (chspec_bw == WL_CHANSPEC_BW_80 ||
-	           chspec_bw == WL_CHANSPEC_BW_8080) {
+		   chspec_bw == WL_CHANSPEC_BW_8080) {
 		if (CHSPEC_CTL_SB(chanspec) > WL_CHANSPEC_CTL_SB_LUU)
 			return TRUE;
 	}
@@ -938,7 +938,7 @@ extern chanspec_t wf_chspec_primary40_chspec(chanspec_t chspec)
 
 		/* Create primary 40MHz chanspec */
 		chspec40 = (WL_CHANSPEC_BAND_5G | WL_CHANSPEC_BW_40 |
-		            sb | center_chan);
+			    sb | center_chan);
 	}
 
 	return chspec40;
@@ -1045,7 +1045,7 @@ static const uint16 sidebands[] = {
  * parameters
  *
  *	primary_channel - primary 20Mhz channel
- *	center_channel   - center frequecny of the 80Mhz channel
+ *	center_channel	 - center frequecny of the 80Mhz channel
  *
  * The center_channel can be one of {42, 58, 106, 122, 138, 155}
  *
@@ -1122,10 +1122,10 @@ wf_chspec_get8080_chspec(uint8 primary_20mhz, uint8 chan0, uint8 chan1)
 	}
 
 	chanspec = ((seg0 << WL_CHANSPEC_CHAN1_SHIFT) |
-	            (seg1 << WL_CHANSPEC_CHAN2_SHIFT) |
-	            (sb << WL_CHANSPEC_CTL_SB_SHIFT) |
-	            WL_CHANSPEC_BW_8080 |
-	            WL_CHANSPEC_BAND_5G);
+		    (seg1 << WL_CHANSPEC_CHAN2_SHIFT) |
+		    (sb << WL_CHANSPEC_CTL_SB_SHIFT) |
+		    WL_CHANSPEC_BW_8080 |
+		    WL_CHANSPEC_BAND_5G);
 
 	return chanspec;
 }

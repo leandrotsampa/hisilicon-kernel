@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -119,7 +119,7 @@ typedef struct ftm_subcmd_info {
 	char				*name;		/* cmd-name string as cmdline input */
 	wl_proxd_cmd_t		cmdid;		/* cmd-id */
 	bcm_xtlv_unpack_cbfn_t *handler;  /* cmd response handler (optional) */
-	ftm_subcmd_flag_t	cmdflag; /* CMD flag (optional)  */
+	ftm_subcmd_flag_t	cmdflag; /* CMD flag (optional)	 */
 } ftm_subcmd_info_t;
 
 
@@ -131,7 +131,7 @@ typedef struct ftm_config_options_info {
 typedef struct ftm_config_param_info {
 	uint16		tlvid;	/* mapping TLV id for the item */
 	union {
-		uint32  chanspec;
+		uint32	chanspec;
 		struct ether_addr mac_addr;
 		wl_proxd_intvl_t data_intvl;
 		uint32 data32;
@@ -338,23 +338,23 @@ static const ftm_strmap_entry_t ftm_tmu_value_loginfo[] = {
 	{ WL_PROXD_TMU_PICO_SEC,		"ps" }
 };
 
-#define RSPEC_BW(rspec)         ((rspec) & WL_RSPEC_BW_MASK)
+#define RSPEC_BW(rspec)		((rspec) & WL_RSPEC_BW_MASK)
 #define RSPEC_IS20MHZ(rspec)	(RSPEC_BW(rspec) == WL_RSPEC_BW_20MHZ)
 #define RSPEC_IS40MHZ(rspec)	(RSPEC_BW(rspec) == WL_RSPEC_BW_40MHZ)
-#define RSPEC_IS80MHZ(rspec)    (RSPEC_BW(rspec) == WL_RSPEC_BW_80MHZ)
-#define RSPEC_IS160MHZ(rspec)   (RSPEC_BW(rspec) == WL_RSPEC_BW_160MHZ)
+#define RSPEC_IS80MHZ(rspec)	(RSPEC_BW(rspec) == WL_RSPEC_BW_80MHZ)
+#define RSPEC_IS160MHZ(rspec)	(RSPEC_BW(rspec) == WL_RSPEC_BW_160MHZ)
 
-#define IS_MCS(rspec)     	(((rspec) & WL_RSPEC_ENCODING_MASK) != WL_RSPEC_ENCODE_RATE)
-#define IS_STBC(rspec)     	(((((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_HT) ||	\
+#define IS_MCS(rspec)		(((rspec) & WL_RSPEC_ENCODING_MASK) != WL_RSPEC_ENCODE_RATE)
+#define IS_STBC(rspec)		(((((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_HT) ||	\
 	(((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_VHT)) &&	\
 	(((rspec) & WL_RSPEC_STBC) == WL_RSPEC_STBC))
-#define RSPEC_ISSGI(rspec)      (((rspec) & WL_RSPEC_SGI) != 0)
-#define RSPEC_ISLDPC(rspec)     (((rspec) & WL_RSPEC_LDPC) != 0)
-#define RSPEC_ISSTBC(rspec)     (((rspec) & WL_RSPEC_STBC) != 0)
-#define RSPEC_ISTXBF(rspec)     (((rspec) & WL_RSPEC_TXBF) != 0)
-#define RSPEC_ISVHT(rspec)    	(((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_VHT)
+#define RSPEC_ISSGI(rspec)	(((rspec) & WL_RSPEC_SGI) != 0)
+#define RSPEC_ISLDPC(rspec)	(((rspec) & WL_RSPEC_LDPC) != 0)
+#define RSPEC_ISSTBC(rspec)	(((rspec) & WL_RSPEC_STBC) != 0)
+#define RSPEC_ISTXBF(rspec)	(((rspec) & WL_RSPEC_TXBF) != 0)
+#define RSPEC_ISVHT(rspec)	(((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_VHT)
 #define RSPEC_ISHT(rspec)	(((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_HT)
-#define RSPEC_ISLEGACY(rspec)   (((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_RATE)
+#define RSPEC_ISLEGACY(rspec)	(((rspec) & WL_RSPEC_ENCODING_MASK) == WL_RSPEC_ENCODE_RATE)
 #define RSPEC2RATE(rspec)	(RSPEC_ISLEGACY(rspec) ? \
 				 ((rspec) & RSPEC_RATE_MASK) : rate_rspec2rate(rspec))
 /* return rate in unit of 500Kbps -- for internal use in wlc_rate_sel.c */
@@ -618,7 +618,7 @@ ftm_cmdid_to_str(uint16 cmdid)
 /*
 * convert BCME_xxx error codes into related error strings
 * note, bcmerrorstr() defined in bcmutils is for BCMDRIVER only,
-*       this duplicate copy is for WL access and may need to clean up later
+*	this duplicate copy is for WL access and may need to clean up later
 */
 static const char *ftm_bcmerrorstrtable[] = BCMERRSTRINGTABLE;
 static const char *
@@ -656,7 +656,7 @@ ftm_tmu_value_to_logstr(wl_proxd_tmu_t tmu)
 static const ftm_strmap_entry_t*
 ftm_get_event_type_loginfo(wl_proxd_event_type_t	event_type)
 {
-	/* look up 'event-type' from a predefined table  */
+	/* look up 'event-type' from a predefined table	 */
 	return ftm_get_strmap_info((int32) event_type,
 		ftm_event_type_loginfo, ARRAYSIZE(ftm_event_type_loginfo));
 }
@@ -787,13 +787,13 @@ dhd_rtt_common_get_handler(dhd_pub_t *dhd, ftm_subcmd_info_t *p_subcmd_info,
 *   wl proxd ftm disable -- to disable ftm
 *   wl proxd ftm <session-id> start -- to start a specified session
 *   wl proxd ftm <session-id> stop  -- to cancel a specified session;
-*                                    state is maintained till session is delete.
+*				     state is maintained till session is delete.
 *   wl proxd ftm <session-id> delete -- to delete a specified session
 *   wl proxd ftm [<session-id>] clear-counters -- to clear counters
 *   wl proxd ftm <session-id> burst-request -- on initiator: to send burst request;
-*                                              on target: send FTM frame
+*					       on target: send FTM frame
 *   wl proxd ftm <session-id> collect
-*   wl proxd ftm tune     (TBD)
+*   wl proxd ftm tune	  (TBD)
 */
 static int
 dhd_rtt_common_set_handler(dhd_pub_t *dhd, const ftm_subcmd_info_t *p_subcmd_info,
@@ -2141,7 +2141,7 @@ dhd_rtt_avail_channel(dhd_pub_t *dhd, wifi_channel_info *channel_info)
 		(s32 *)&chanspec)) == BCME_OK) {
 		c = (chanspec_t)dtoh32(chanspec);
 		c = wl_chspec_driver_to_host(c);
-		channel  = wf_chspec_ctlchan(c);
+		channel	 = wf_chspec_ctlchan(c);
 		DHD_RTT((" control channel is %d \n", channel));
 		if (CHSPEC_IS20(c)) {
 			channel_info->width = WIFI_CHAN_WIDTH_20;

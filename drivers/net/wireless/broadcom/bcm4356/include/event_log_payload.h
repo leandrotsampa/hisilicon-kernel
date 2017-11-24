@@ -6,21 +6,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -38,25 +38,25 @@
 #include <ethernet.h>
 #include <event_log_tag.h>
 
-#define EVENT_LOG_XTLV_ID_STR                   0  /**< XTLV ID for a string */
-#define EVENT_LOG_XTLV_ID_TXQ_SUM               1  /**< XTLV ID for txq_summary_t */
-#define EVENT_LOG_XTLV_ID_SCBDATA_SUM           2  /**< XTLV ID for cb_subq_summary_t */
-#define EVENT_LOG_XTLV_ID_SCBDATA_AMPDU_TX_SUM  3  /**< XTLV ID for scb_ampdu_tx_summary_t */
-#define EVENT_LOG_XTLV_ID_BSSCFGDATA_SUM        4  /**< XTLV ID for bsscfg_q_summary_t */
-#define EVENT_LOG_XTLV_ID_UCTXSTATUS            5  /**< XTLV ID for ucode TxStatus array */
-#define EVENT_LOG_XTLV_ID_TXQ_SUM_V2            6  /**< XTLV ID for txq_summary_v2_t */
+#define EVENT_LOG_XTLV_ID_STR			0  /**< XTLV ID for a string */
+#define EVENT_LOG_XTLV_ID_TXQ_SUM		1  /**< XTLV ID for txq_summary_t */
+#define EVENT_LOG_XTLV_ID_SCBDATA_SUM		2  /**< XTLV ID for cb_subq_summary_t */
+#define EVENT_LOG_XTLV_ID_SCBDATA_AMPDU_TX_SUM	3  /**< XTLV ID for scb_ampdu_tx_summary_t */
+#define EVENT_LOG_XTLV_ID_BSSCFGDATA_SUM	4  /**< XTLV ID for bsscfg_q_summary_t */
+#define EVENT_LOG_XTLV_ID_UCTXSTATUS		5  /**< XTLV ID for ucode TxStatus array */
+#define EVENT_LOG_XTLV_ID_TXQ_SUM_V2		6  /**< XTLV ID for txq_summary_v2_t */
 
 /**
  * An XTLV holding a string
  * String is not null terminated, length is the XTLV len.
  */
 typedef struct xtlv_string {
-	uint16 id;              /* XTLV ID: EVENT_LOG_XTLV_ID_STR */
-	uint16 len;             /* XTLV Len (String length) */
-	char   str[1];          /* var len array characters */
+	uint16 id;		/* XTLV ID: EVENT_LOG_XTLV_ID_STR */
+	uint16 len;		/* XTLV Len (String length) */
+	char   str[1];		/* var len array characters */
 } xtlv_string_t;
 
-#define XTLV_STRING_FULL_LEN(str_len)     (BCM_XTLV_HDR_SIZE + (str_len) * sizeof(char))
+#define XTLV_STRING_FULL_LEN(str_len)	  (BCM_XTLV_HDR_SIZE + (str_len) * sizeof(char))
 
 /**
  * Summary for a single TxQ context
@@ -67,31 +67,31 @@ typedef struct xtlv_string {
  * The excursion queue will have no bsscfgs associated and is the first queue dumped.
  */
 typedef struct txq_summary {
-	uint16 id;              /* XTLV ID: EVENT_LOG_XTLV_ID_TXQ_SUM */
-	uint16 len;             /* XTLV Len */
-	uint32 bsscfg_map;      /* bitmap of bsscfg indexes associated with this queue */
-	uint32 stopped;         /* flow control bitmap */
-	uint8  prec_count;      /* count of precedences/fifos and len of following array */
+	uint16 id;		/* XTLV ID: EVENT_LOG_XTLV_ID_TXQ_SUM */
+	uint16 len;		/* XTLV Len */
+	uint32 bsscfg_map;	/* bitmap of bsscfg indexes associated with this queue */
+	uint32 stopped;		/* flow control bitmap */
+	uint8  prec_count;	/* count of precedences/fifos and len of following array */
 	uint8  pad;
-	uint16 plen[1];         /* var len array of lengths of each prec/fifo in the queue */
+	uint16 plen[1];		/* var len array of lengths of each prec/fifo in the queue */
 } txq_summary_t;
 
-#define TXQ_SUMMARY_LEN                   (OFFSETOF(txq_summary_t, plen))
-#define TXQ_SUMMARY_FULL_LEN(num_q)       (TXQ_SUMMARY_LEN + (num_q) * sizeof(uint16))
+#define TXQ_SUMMARY_LEN			  (OFFSETOF(txq_summary_t, plen))
+#define TXQ_SUMMARY_FULL_LEN(num_q)	  (TXQ_SUMMARY_LEN + (num_q) * sizeof(uint16))
 
 typedef struct txq_summary_v2 {
-	uint16 id;              /* XTLV ID: EVENT_LOG_XTLV_ID_TXQ_SUM_V2 */
-	uint16 len;             /* XTLV Len */
-	uint32 bsscfg_map;      /* bitmap of bsscfg indexes associated with this queue */
-	uint32 stopped;         /* flow control bitmap */
-	uint32 hw_stopped;      /* flow control bitmap */
-	uint8  prec_count;      /* count of precedences/fifos and len of following array */
+	uint16 id;		/* XTLV ID: EVENT_LOG_XTLV_ID_TXQ_SUM_V2 */
+	uint16 len;		/* XTLV Len */
+	uint32 bsscfg_map;	/* bitmap of bsscfg indexes associated with this queue */
+	uint32 stopped;		/* flow control bitmap */
+	uint32 hw_stopped;	/* flow control bitmap */
+	uint8  prec_count;	/* count of precedences/fifos and len of following array */
 	uint8  pad;
-	uint16 plen[1];         /* var len array of lengths of each prec/fifo in the queue */
+	uint16 plen[1];		/* var len array of lengths of each prec/fifo in the queue */
 } txq_summary_v2_t;
 
-#define TXQ_SUMMARY_V2_LEN                (OFFSETOF(txq_summary_v2_t, plen))
-#define TXQ_SUMMARY_V2_FULL_LEN(num_q)    (TXQ_SUMMARY_V2_LEN + (num_q) * sizeof(uint16))
+#define TXQ_SUMMARY_V2_LEN		  (OFFSETOF(txq_summary_v2_t, plen))
+#define TXQ_SUMMARY_V2_FULL_LEN(num_q)	  (TXQ_SUMMARY_V2_LEN + (num_q) * sizeof(uint16))
 
 /**
  * Summary for tx datapath of an SCB cubby
@@ -99,31 +99,31 @@ typedef struct txq_summary_v2 {
  * a cubby ID and sub-ID to differentiate SCB cubby types and possible sub-queues.
  */
 typedef struct scb_subq_summary {
-	uint16 id;             /* XTLV ID: EVENT_LOG_XTLV_ID_SCBDATA_SUM */
-	uint16 len;            /* XTLV Len */
-	uint32 flags;          /* cubby specficic flags */
+	uint16 id;	       /* XTLV ID: EVENT_LOG_XTLV_ID_SCBDATA_SUM */
+	uint16 len;	       /* XTLV Len */
+	uint32 flags;	       /* cubby specficic flags */
 	uint8  cubby_id;       /* ID registered for cubby */
-	uint8  sub_id;         /* sub ID if a cubby has more than one queue */
+	uint8  sub_id;	       /* sub ID if a cubby has more than one queue */
 	uint8  prec_count;     /* count of precedences/fifos and len of following array */
 	uint8  pad;
-	uint16 plen[1];        /* var len array of lengths of each prec/fifo in the queue */
+	uint16 plen[1];	       /* var len array of lengths of each prec/fifo in the queue */
 } scb_subq_summary_t;
 
-#define SCB_SUBQ_SUMMARY_LEN              (OFFSETOF(scb_subq_summary_t, plen))
+#define SCB_SUBQ_SUMMARY_LEN		  (OFFSETOF(scb_subq_summary_t, plen))
 #define SCB_SUBQ_SUMMARY_FULL_LEN(num_q)  (SCB_SUBQ_SUMMARY_LEN + (num_q) * sizeof(uint16))
 
 /* scb_subq_summary_t.flags for APPS */
-#define SCBDATA_APPS_F_PS               0x00000001
-#define SCBDATA_APPS_F_PSPEND           0x00000002
-#define SCBDATA_APPS_F_INPVB            0x00000004
-#define SCBDATA_APPS_F_APSD_USP         0x00000008
-#define SCBDATA_APPS_F_TXBLOCK          0x00000010
-#define SCBDATA_APPS_F_APSD_HPKT_TMR    0x00000020
-#define SCBDATA_APPS_F_APSD_TX_PEND     0x00000040
-#define SCBDATA_APPS_F_INTRANS          0x00000080
-#define SCBDATA_APPS_F_OFF_PEND         0x00000100
-#define SCBDATA_APPS_F_OFF_BLOCKED      0x00000200
-#define SCBDATA_APPS_F_OFF_IN_PROG      0x00000400
+#define SCBDATA_APPS_F_PS		0x00000001
+#define SCBDATA_APPS_F_PSPEND		0x00000002
+#define SCBDATA_APPS_F_INPVB		0x00000004
+#define SCBDATA_APPS_F_APSD_USP		0x00000008
+#define SCBDATA_APPS_F_TXBLOCK		0x00000010
+#define SCBDATA_APPS_F_APSD_HPKT_TMR	0x00000020
+#define SCBDATA_APPS_F_APSD_TX_PEND	0x00000040
+#define SCBDATA_APPS_F_INTRANS		0x00000080
+#define SCBDATA_APPS_F_OFF_PEND		0x00000100
+#define SCBDATA_APPS_F_OFF_BLOCKED	0x00000200
+#define SCBDATA_APPS_F_OFF_IN_PROG	0x00000400
 
 
 /**
@@ -133,37 +133,37 @@ typedef struct scb_subq_summary {
  * Info is for one TID, so one will be dumped per BA TID active for an SCB.
  */
 typedef struct scb_ampdu_tx_summary {
-	uint16 id;              /* XTLV ID: EVENT_LOG_XTLV_ID_SCBDATA_AMPDU_TX_SUM */
-	uint16 len;             /* XTLV Len */
-	uint32 flags;           /* misc flags */
-	uint8  tid;             /* initiator TID (priority) */
-	uint8  ba_state;        /* internal BA state */
-	uint8  bar_cnt;         /* number of bars sent with no progress */
-	uint8  retry_bar;       /* reason code if bar to be retried at watchdog */
-	uint16 barpending_seq;  /* seqnum for bar */
+	uint16 id;		/* XTLV ID: EVENT_LOG_XTLV_ID_SCBDATA_AMPDU_TX_SUM */
+	uint16 len;		/* XTLV Len */
+	uint32 flags;		/* misc flags */
+	uint8  tid;		/* initiator TID (priority) */
+	uint8  ba_state;	/* internal BA state */
+	uint8  bar_cnt;		/* number of bars sent with no progress */
+	uint8  retry_bar;	/* reason code if bar to be retried at watchdog */
+	uint16 barpending_seq;	/* seqnum for bar */
 	uint16 bar_ackpending_seq; /* seqnum of bar for which ack is pending */
-	uint16 start_seq;       /* seqnum of the first unacknowledged packet */
-	uint16 max_seq;         /* max unacknowledged seqnum sent */
+	uint16 start_seq;	/* seqnum of the first unacknowledged packet */
+	uint16 max_seq;		/* max unacknowledged seqnum sent */
 	uint32 released_bytes_inflight; /* Number of bytes pending in bytes */
 	uint32 released_bytes_target;
 } scb_ampdu_tx_summary_t;
 
 /* scb_ampdu_tx_summary.flags defs */
-#define SCBDATA_AMPDU_TX_F_BAR_ACKPEND          0x00000001 /* bar_ackpending */
+#define SCBDATA_AMPDU_TX_F_BAR_ACKPEND		0x00000001 /* bar_ackpending */
 
 /** XTLV stuct to summarize a BSSCFG's packet queue */
 typedef struct bsscfg_q_summary {
-	uint16 id;               /* XTLV ID: EVENT_LOG_XTLV_ID_BSSCFGDATA_SUM */
-	uint16 len;              /* XTLV Len */
+	uint16 id;		 /* XTLV ID: EVENT_LOG_XTLV_ID_BSSCFGDATA_SUM */
+	uint16 len;		 /* XTLV Len */
 	struct ether_addr BSSID; /* BSSID */
-	uint8  bsscfg_idx;       /* bsscfg index */
-	uint8  type;             /* bsscfg type enumeration: BSSCFG_TYPE_XXX */
-	uint8  subtype;          /* bsscfg subtype enumeration: BSSCFG_SUBTYPE_XXX */
-	uint8  prec_count;       /* count of precedences/fifos and len of following array */
-	uint16 plen[1];          /* var len array of lengths of each prec/fifo in the queue */
+	uint8  bsscfg_idx;	 /* bsscfg index */
+	uint8  type;		 /* bsscfg type enumeration: BSSCFG_TYPE_XXX */
+	uint8  subtype;		 /* bsscfg subtype enumeration: BSSCFG_SUBTYPE_XXX */
+	uint8  prec_count;	 /* count of precedences/fifos and len of following array */
+	uint16 plen[1];		 /* var len array of lengths of each prec/fifo in the queue */
 } bsscfg_q_summary_t;
 
-#define BSSCFG_Q_SUMMARY_LEN              (OFFSETOF(bsscfg_q_summary_t, plen))
+#define BSSCFG_Q_SUMMARY_LEN		  (OFFSETOF(bsscfg_q_summary_t, plen))
 #define BSSCFG_Q_SUMMARY_FULL_LEN(num_q)  (BSSCFG_Q_SUMMARY_LEN + (num_q) * sizeof(uint16))
 
 /**
@@ -173,15 +173,15 @@ typedef struct bsscfg_q_summary {
  * Array is uint32 words
  */
 typedef struct xtlv_uc_txs {
-	uint16 id;              /* XTLV ID: EVENT_LOG_XTLV_ID_UCTXSTATUS */
-	uint16 len;             /* XTLV Len */
-	uint8  entry_size;      /* num uint32 words per entry */
-	uint8  pad[3];          /* reserved, zero */
-	uint32 w[1];            /* var len array of words */
+	uint16 id;		/* XTLV ID: EVENT_LOG_XTLV_ID_UCTXSTATUS */
+	uint16 len;		/* XTLV Len */
+	uint8  entry_size;	/* num uint32 words per entry */
+	uint8  pad[3];		/* reserved, zero */
+	uint32 w[1];		/* var len array of words */
 } xtlv_uc_txs_t;
 
-#define XTLV_UCTXSTATUS_LEN                (OFFSETOF(xtlv_uc_txs_t, w))
-#define XTLV_UCTXSTATUS_FULL_LEN(words)    (XTLV_UCTXSTATUS_LEN + (words) * sizeof(uint32))
+#define XTLV_UCTXSTATUS_LEN		   (OFFSETOF(xtlv_uc_txs_t, w))
+#define XTLV_UCTXSTATUS_FULL_LEN(words)	   (XTLV_UCTXSTATUS_LEN + (words) * sizeof(uint32))
 
 #define SCAN_SUMMARY_VERSION	1
 /* Scan flags */
@@ -375,8 +375,8 @@ typedef struct {
 /* Flags used in wlc_msch_req_param_t struct */
 #define WL_MSCH_REQ_FLAGS_CHAN_CONTIGUOUS  (1 << 0) /* Don't break up channels in chanspec_list */
 #define WL_MSCH_REQ_FLAGS_MERGE_CONT_SLOTS (1 << 1)  /* No slot end if slots are continous */
-#define WL_MSCH_REQ_FLAGS_PREMTABLE        (1 << 2) /* Req can be pre-empted by PREMT_CURTS req */
-#define WL_MSCH_REQ_FLAGS_PREMT_CURTS      (1 << 3) /* Pre-empt request at the end of curts */
+#define WL_MSCH_REQ_FLAGS_PREMTABLE	   (1 << 2) /* Req can be pre-empted by PREMT_CURTS req */
+#define WL_MSCH_REQ_FLAGS_PREMT_CURTS	   (1 << 3) /* Pre-empt request at the end of curts */
 #define WL_MSCH_REQ_FLAGS_PREMT_IMMEDIATE  (1 << 4) /* Pre-empt cur_ts immediately */
 
 /* Requested slot Callback states
@@ -462,7 +462,7 @@ typedef struct msch_event_log_profiler_event_data {
 } msch_event_log_profiler_event_data_t;
 
 typedef struct msch_req_param_profiler_event_data {
-	uint16  flags;			/* Describe various request properties */
+	uint16	flags;			/* Describe various request properties */
 	uint8	req_type;		/* Describe start and end time flexiblilty */
 	uint8	priority;		/* Define the request priority */
 	uint32	start_time_l;		/* Requested start time offset in us unit */

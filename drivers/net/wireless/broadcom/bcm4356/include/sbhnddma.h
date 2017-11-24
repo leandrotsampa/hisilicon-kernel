@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -275,8 +275,8 @@ typedef volatile struct {
  * Default DMA Burstlen values for USBRev >= 12 and SDIORev >= 11.
  * When this field contains the value N, the burst length is 2**(N + 4) bytes.
  */
-#define D64_DEF_USBBURSTLEN     2
-#define D64_DEF_SDIOBURSTLEN    1
+#define D64_DEF_USBBURSTLEN	2
+#define D64_DEF_SDIOBURSTLEN	1
 
 
 #ifndef D64_USBBURSTLEN
@@ -294,7 +294,7 @@ typedef volatile struct {
 #define D64_XC_MR_MASK		0x000001C0	/**< Multiple outstanding reads */
 #define D64_XC_MR_SHIFT		6
 #define D64_XC_CS_SHIFT		9		/**< channel switch enable */
-#define D64_XC_CS_MASK		0x00000200      /**< channel switch enable */
+#define D64_XC_CS_MASK		0x00000200	/**< channel switch enable */
 #define	D64_XC_PD		0x00000800	/**< parity check disable */
 #define	D64_XC_AE		0x00030000	/**< address extension bits */
 #define	D64_XC_AE_SHIFT		16
@@ -310,7 +310,7 @@ typedef volatile struct {
 
 /* transmit channel status */
 #define	D64_XS0_CD_MASK		(di->d64_xs0_cd_mask)	/**< current descriptor pointer */
-#define	D64_XS0_XS_MASK		0xf0000000     	/**< transmit state */
+#define	D64_XS0_XS_MASK		0xf0000000	/**< transmit state */
 #define	D64_XS0_XS_SHIFT		28
 #define	D64_XS0_XS_DISABLED	0x00000000	/**< disabled */
 #define	D64_XS0_XS_ACTIVE	0x10000000	/**< active */
@@ -319,7 +319,7 @@ typedef volatile struct {
 #define	D64_XS0_XS_SUSP		0x40000000	/**< suspend pending */
 
 #define	D64_XS1_AD_MASK		(di->d64_xs1_ad_mask)	/**< active descriptor */
-#define	D64_XS1_XE_MASK		0xf0000000     	/**< transmit errors */
+#define	D64_XS1_XE_MASK		0xf0000000	/**< transmit errors */
 #define	D64_XS1_XE_SHIFT		28
 #define	D64_XS1_XE_NOERR	0x00000000	/**< no error */
 #define	D64_XS1_XE_DPE		0x10000000	/**< descriptor protocol error */
@@ -365,7 +365,7 @@ typedef volatile struct {
 
 /* receive channel status */
 #define	D64_RS0_CD_MASK		(di->d64_rs0_cd_mask)	/**< current descriptor pointer */
-#define	D64_RS0_RS_MASK		0xf0000000     	/**< receive state */
+#define	D64_RS0_RS_MASK		0xf0000000	/**< receive state */
 #define	D64_RS0_RS_SHIFT		28
 #define	D64_RS0_RS_DISABLED	0x00000000	/**< disabled */
 #define	D64_RS0_RS_ACTIVE	0x10000000	/**< active */
@@ -410,7 +410,7 @@ typedef volatile struct {
 #define	D64_CTRL2_BC_MASK	0x00007fff /**< buffer byte count. real data len must <= 16KB */
 #define	D64_CTRL2_AE		0x00030000 /**< address extension bits */
 #define	D64_CTRL2_AE_SHIFT	16
-#define D64_CTRL2_PARITY	0x00040000      /* parity bit */
+#define D64_CTRL2_PARITY	0x00040000	/* parity bit */
 
 /** control flags in the range [27:20] are core-specific and not defined here */
 #define	D64_CTRL_CORE_MASK	0x0ff00000

@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -383,7 +383,7 @@ typedef volatile struct {
  *  SDIO Commands and responses
  *
  *  I/O only commands are:
- *      CMD0, CMD3, CMD5, CMD7, CMD14, CMD15, CMD52, CMD53
+ *	CMD0, CMD3, CMD5, CMD7, CMD14, CMD15, CMD52, CMD53
  * ------------------------------------------------
  */
 
@@ -417,7 +417,7 @@ typedef volatile struct {
 /* ------------------------------------------------
  * SDIO Command structures. I/O only commands are:
  *
- * 	CMD0, CMD3, CMD5, CMD7, CMD15, CMD52, CMD53
+ *	CMD0, CMD3, CMD5, CMD7, CMD15, CMD52, CMD53
  * ------------------------------------------------
  */
 
@@ -438,30 +438,30 @@ typedef volatile struct {
 #define CMD_15_RCA_M		BITFIELD_MASK(16)
 #define CMD_15_RCA_S		16
 
-#define CMD52_DATA_M		BITFIELD_MASK(8)  /* Bits [7:0]    - Write Data/Stuff bits of CMD52
+#define CMD52_DATA_M		BITFIELD_MASK(8)  /* Bits [7:0]	   - Write Data/Stuff bits of CMD52
 						   */
 #define CMD52_DATA_S		0
 #define CMD52_REG_ADDR_M	BITFIELD_MASK(17) /* Bits [25:9]   - register address */
 #define CMD52_REG_ADDR_S	9
-#define CMD52_RAW_M		BITFIELD_MASK(1)  /* Bit  27       - Read after Write flag */
+#define CMD52_RAW_M		BITFIELD_MASK(1)  /* Bit  27	   - Read after Write flag */
 #define CMD52_RAW_S		27
 #define CMD52_FUNCTION_M	BITFIELD_MASK(3)  /* Bits [30:28]  - Function number */
 #define CMD52_FUNCTION_S	28
-#define CMD52_RW_FLAG_M		BITFIELD_MASK(1)  /* Bit  31       - R/W flag */
+#define CMD52_RW_FLAG_M		BITFIELD_MASK(1)  /* Bit  31	   - R/W flag */
 #define CMD52_RW_FLAG_S		31
 
 
-#define CMD53_BYTE_BLK_CNT_M	BITFIELD_MASK(9) /* Bits [8:0]     - Byte/Block Count of CMD53 */
+#define CMD53_BYTE_BLK_CNT_M	BITFIELD_MASK(9) /* Bits [8:0]	   - Byte/Block Count of CMD53 */
 #define CMD53_BYTE_BLK_CNT_S	0
 #define CMD53_REG_ADDR_M	BITFIELD_MASK(17) /* Bits [25:9]   - register address */
 #define CMD53_REG_ADDR_S	9
-#define CMD53_OP_CODE_M		BITFIELD_MASK(1)  /* Bit  26       - R/W Operation Code */
+#define CMD53_OP_CODE_M		BITFIELD_MASK(1)  /* Bit  26	   - R/W Operation Code */
 #define CMD53_OP_CODE_S		26
-#define CMD53_BLK_MODE_M	BITFIELD_MASK(1)  /* Bit  27       - Block Mode */
+#define CMD53_BLK_MODE_M	BITFIELD_MASK(1)  /* Bit  27	   - Block Mode */
 #define CMD53_BLK_MODE_S	27
 #define CMD53_FUNCTION_M	BITFIELD_MASK(3)  /* Bits [30:28]  - Function number */
 #define CMD53_FUNCTION_S	28
-#define CMD53_RW_FLAG_M		BITFIELD_MASK(1)  /* Bit  31       - R/W flag */
+#define CMD53_RW_FLAG_M		BITFIELD_MASK(1)  /* Bit  31	   - R/W flag */
 #define CMD53_RW_FLAG_S		31
 
 /* ------------------------------------------------------
@@ -471,16 +471,16 @@ typedef volatile struct {
 #define RSP4_IO_OCR_M		BITFIELD_MASK(24) /* Bits [23:0]  - Card's OCR Bits [23:0] */
 #define RSP4_IO_OCR_S		0
 
-#define RSP4_S18A_M			BITFIELD_MASK(1) /* Bits [23:0]  - Card's OCR Bits [23:0] */
+#define RSP4_S18A_M			BITFIELD_MASK(1) /* Bits [23:0]	 - Card's OCR Bits [23:0] */
 #define RSP4_S18A_S			24
 
 #define RSP4_STUFF_M		BITFIELD_MASK(3)  /* Bits [26:24] - Stuff bits */
 #define RSP4_STUFF_S		24
-#define RSP4_MEM_PRESENT_M	BITFIELD_MASK(1)  /* Bit  27      - Memory present */
+#define RSP4_MEM_PRESENT_M	BITFIELD_MASK(1)  /* Bit  27	  - Memory present */
 #define RSP4_MEM_PRESENT_S	27
 #define RSP4_NUM_FUNCS_M	BITFIELD_MASK(3)  /* Bits [30:28] - Number of I/O funcs */
 #define RSP4_NUM_FUNCS_S	28
-#define RSP4_CARD_READY_M	BITFIELD_MASK(1)  /* Bit  31      - SDIO card ready */
+#define RSP4_CARD_READY_M	BITFIELD_MASK(1)  /* Bit  31	  - SDIO card ready */
 #define RSP4_CARD_READY_S	31
 
 #define RSP6_STATUS_M		BITFIELD_MASK(16) /* Bits [15:0]  - Card status bits [19,22,23,12:0]
@@ -489,11 +489,11 @@ typedef volatile struct {
 #define RSP6_IO_RCA_M		BITFIELD_MASK(16) /* Bits [31:16] - RCA bits[31-16] */
 #define RSP6_IO_RCA_S		16
 
-#define RSP1_AKE_SEQ_ERROR_M	BITFIELD_MASK(1)  /* Bit 3       - Authentication seq error */
+#define RSP1_AKE_SEQ_ERROR_M	BITFIELD_MASK(1)  /* Bit 3	 - Authentication seq error */
 #define RSP1_AKE_SEQ_ERROR_S	3
-#define RSP1_APP_CMD_M		BITFIELD_MASK(1)  /* Bit 5       - Card expects ACMD */
+#define RSP1_APP_CMD_M		BITFIELD_MASK(1)  /* Bit 5	 - Card expects ACMD */
 #define RSP1_APP_CMD_S		5
-#define RSP1_READY_FOR_DATA_M	BITFIELD_MASK(1)  /* Bit 8       - Ready for data (buff empty) */
+#define RSP1_READY_FOR_DATA_M	BITFIELD_MASK(1)  /* Bit 8	 - Ready for data (buff empty) */
 #define RSP1_READY_FOR_DATA_S	8
 #define RSP1_CURR_STATE_M	BITFIELD_MASK(4)  /* Bits [12:9] - State of card
 						   * when Cmd was received
@@ -542,7 +542,7 @@ typedef volatile struct {
 #define RSP1_OUT_OF_RANGE_S	31
 
 
-#define RSP5_DATA_M		BITFIELD_MASK(8)  /* Bits [0:7]   - data */
+#define RSP5_DATA_M		BITFIELD_MASK(8)  /* Bits [0:7]	  - data */
 #define RSP5_DATA_S		0
 #define RSP5_FLAGS_M		BITFIELD_MASK(8)  /* Bit  [15:8]  - Rsp flags */
 #define RSP5_FLAGS_S		8
@@ -557,40 +557,40 @@ typedef volatile struct {
 #define SPIRSP4_IO_OCR_S	0
 #define SPIRSP4_STUFF_M		BITFIELD_MASK(3)  /* Bits [18:16]   - Stuff bits */
 #define SPIRSP4_STUFF_S		16
-#define SPIRSP4_MEM_PRESENT_M	BITFIELD_MASK(1)  /* Bit  19        - Memory present */
+#define SPIRSP4_MEM_PRESENT_M	BITFIELD_MASK(1)  /* Bit  19	    - Memory present */
 #define SPIRSP4_MEM_PRESENT_S	19
 #define SPIRSP4_NUM_FUNCS_M	BITFIELD_MASK(3)  /* Bits [22:20]   - Number of I/O funcs */
 #define SPIRSP4_NUM_FUNCS_S	20
-#define SPIRSP4_CARD_READY_M	BITFIELD_MASK(1)  /* Bit  23        - SDIO card ready */
+#define SPIRSP4_CARD_READY_M	BITFIELD_MASK(1)  /* Bit  23	    - SDIO card ready */
 #define SPIRSP4_CARD_READY_S	23
-#define SPIRSP4_IDLE_STATE_M	BITFIELD_MASK(1)  /* Bit  24        - idle state */
+#define SPIRSP4_IDLE_STATE_M	BITFIELD_MASK(1)  /* Bit  24	    - idle state */
 #define SPIRSP4_IDLE_STATE_S	24
-#define SPIRSP4_ILLEGAL_CMD_M	BITFIELD_MASK(1)  /* Bit  26        - Illegal Cmd error */
+#define SPIRSP4_ILLEGAL_CMD_M	BITFIELD_MASK(1)  /* Bit  26	    - Illegal Cmd error */
 #define SPIRSP4_ILLEGAL_CMD_S	26
-#define SPIRSP4_COM_CRC_ERROR_M	BITFIELD_MASK(1)  /* Bit  27        - COM CRC error */
+#define SPIRSP4_COM_CRC_ERROR_M	BITFIELD_MASK(1)  /* Bit  27	    - COM CRC error */
 #define SPIRSP4_COM_CRC_ERROR_S	27
-#define SPIRSP4_FUNC_NUM_ERROR_M	BITFIELD_MASK(1)  /* Bit  28        - Function number error
+#define SPIRSP4_FUNC_NUM_ERROR_M	BITFIELD_MASK(1)  /* Bit  28	    - Function number error
 							   */
 #define SPIRSP4_FUNC_NUM_ERROR_S	28
-#define SPIRSP4_PARAM_ERROR_M	BITFIELD_MASK(1)  /* Bit  30        - Parameter Error Bit */
+#define SPIRSP4_PARAM_ERROR_M	BITFIELD_MASK(1)  /* Bit  30	    - Parameter Error Bit */
 #define SPIRSP4_PARAM_ERROR_S	30
-#define SPIRSP4_START_BIT_M	BITFIELD_MASK(1)  /* Bit  31        - Start Bit */
+#define SPIRSP4_START_BIT_M	BITFIELD_MASK(1)  /* Bit  31	    - Start Bit */
 #define SPIRSP4_START_BIT_S	31
 
 #define SPIRSP5_DATA_M			BITFIELD_MASK(8)  /* Bits [23:16]   - R/W Data */
 #define SPIRSP5_DATA_S			16
-#define SPIRSP5_IDLE_STATE_M		BITFIELD_MASK(1)  /* Bit  24        - Idle state */
+#define SPIRSP5_IDLE_STATE_M		BITFIELD_MASK(1)  /* Bit  24	    - Idle state */
 #define SPIRSP5_IDLE_STATE_S		24
-#define SPIRSP5_ILLEGAL_CMD_M		BITFIELD_MASK(1)  /* Bit  26        - Illegal Cmd error */
+#define SPIRSP5_ILLEGAL_CMD_M		BITFIELD_MASK(1)  /* Bit  26	    - Illegal Cmd error */
 #define SPIRSP5_ILLEGAL_CMD_S		26
-#define SPIRSP5_COM_CRC_ERROR_M		BITFIELD_MASK(1)  /* Bit  27        - COM CRC error */
+#define SPIRSP5_COM_CRC_ERROR_M		BITFIELD_MASK(1)  /* Bit  27	    - COM CRC error */
 #define SPIRSP5_COM_CRC_ERROR_S		27
-#define SPIRSP5_FUNC_NUM_ERROR_M	BITFIELD_MASK(1)  /* Bit  28        - Function number error
+#define SPIRSP5_FUNC_NUM_ERROR_M	BITFIELD_MASK(1)  /* Bit  28	    - Function number error
 							   */
 #define SPIRSP5_FUNC_NUM_ERROR_S	28
-#define SPIRSP5_PARAM_ERROR_M		BITFIELD_MASK(1)  /* Bit  30        - Parameter Error Bit */
+#define SPIRSP5_PARAM_ERROR_M		BITFIELD_MASK(1)  /* Bit  30	    - Parameter Error Bit */
 #define SPIRSP5_PARAM_ERROR_S		30
-#define SPIRSP5_START_BIT_M		BITFIELD_MASK(1)  /* Bit  31        - Start Bit */
+#define SPIRSP5_START_BIT_M		BITFIELD_MASK(1)  /* Bit  31	    - Start Bit */
 #define SPIRSP5_START_BIT_S		31
 
 /* RSP6 card status format; Pg 68 Physical Layer spec v 1.10 */
@@ -619,8 +619,8 @@ typedef volatile struct {
 							   */
 #define RSP6STAT_COM_CRC_ERROR_S	15
 
-#define SDIOH_XFER_TYPE_READ    SD_IO_OP_READ
-#define SDIOH_XFER_TYPE_WRITE   SD_IO_OP_WRITE
+#define SDIOH_XFER_TYPE_READ	SD_IO_OP_READ
+#define SDIOH_XFER_TYPE_WRITE	SD_IO_OP_WRITE
 
 /* command issue options */
 #define CMD_OPTION_DEFAULT	0

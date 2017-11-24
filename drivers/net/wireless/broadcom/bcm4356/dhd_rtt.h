@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -110,7 +110,7 @@ typedef enum rtt_reason {
 enum {
 	RTT_CAP_ONE_WAY	 = BIT(0),
 	/* IEEE802.11mc */
-	RTT_CAP_FTM_WAY  = BIT(1)
+	RTT_CAP_FTM_WAY	 = BIT(1)
 };
 
 enum {
@@ -235,10 +235,10 @@ typedef struct rtt_status_info {
     bool all_cancel; /* cancel all request once we got the cancel requet */
     uint32 flags; /* indicate whether device is configured as initiator or target */
     struct capability {
-		int32 proto     :8;
-		int32 feature   :8;
-		int32 preamble  :8;
-		int32 bw        :8;
+		int32 proto	:8;
+		int32 feature	:8;
+		int32 preamble	:8;
+		int32 bw	:8;
 	} rtt_capa; /* rtt capability */
     struct mutex rtt_mutex;
     rtt_config_params_t rtt_config;
@@ -301,19 +301,19 @@ typedef struct rtt_result {
 
 /* RTT Capabilities */
 typedef struct rtt_capabilities {
-	uint8 rtt_one_sided_supported;  /* if 1-sided rtt data collection is supported */
-	uint8 rtt_ftm_supported;        /* if ftm rtt data collection is supported */
+	uint8 rtt_one_sided_supported;	/* if 1-sided rtt data collection is supported */
+	uint8 rtt_ftm_supported;	/* if ftm rtt data collection is supported */
 	uint8 lci_support;		/* location configuration information */
 	uint8 lcr_support;		/* Civic Location */
-	uint8 preamble_support;         /* bit mask indicate what preamble is supported */
-	uint8 bw_support;               /* bit mask indicate what BW is supported */
+	uint8 preamble_support;		/* bit mask indicate what preamble is supported */
+	uint8 bw_support;		/* bit mask indicate what BW is supported */
 } rtt_capabilities_t;
 
 
 /* RTT responder information */
 typedef struct wifi_rtt_responder {
 	wifi_channel_info channel;   /* channel of responder */
-	uint8 preamble;             /* preamble supported by responder */
+	uint8 preamble;		    /* preamble supported by responder */
 } wifi_rtt_responder_t;
 
 typedef void (*dhd_rtt_compl_noti_fn)(void *ctx, void *rtt_data);

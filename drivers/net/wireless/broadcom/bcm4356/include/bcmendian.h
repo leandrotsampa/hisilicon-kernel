@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -55,18 +55,18 @@
 /* Reverse the bytes in a 64-bit value */
 #define BCMSWAP64(val) \
 	((uint64)((((uint64)(val) & 0x00000000000000ffULL) << 56) | \
-	          (((uint64)(val) & 0x000000000000ff00ULL) << 40) | \
-	          (((uint64)(val) & 0x0000000000ff0000ULL) << 24) | \
-	          (((uint64)(val) & 0x00000000ff000000ULL) <<  8) | \
-	          (((uint64)(val) & 0x000000ff00000000ULL) >>  8) | \
-	          (((uint64)(val) & 0x0000ff0000000000ULL) >> 24) | \
-	          (((uint64)(val) & 0x00ff000000000000ULL) >> 40) | \
-	          (((uint64)(val) & 0xff00000000000000ULL) >> 56)))
+		  (((uint64)(val) & 0x000000000000ff00ULL) << 40) | \
+		  (((uint64)(val) & 0x0000000000ff0000ULL) << 24) | \
+		  (((uint64)(val) & 0x00000000ff000000ULL) <<  8) | \
+		  (((uint64)(val) & 0x000000ff00000000ULL) >>  8) | \
+		  (((uint64)(val) & 0x0000ff0000000000ULL) >> 24) | \
+		  (((uint64)(val) & 0x00ff000000000000ULL) >> 40) | \
+		  (((uint64)(val) & 0xff00000000000000ULL) >> 56)))
 
 /* Reverse the two 32-bit halves of a 64-bit value */
 #define BCMSWAP64BY32(val) \
 	((uint64)((((uint64)(val) & 0x00000000ffffffffULL) << 32) | \
-	          (((uint64)(val) & 0xffffffff00000000ULL) >> 32)))
+		  (((uint64)(val) & 0xffffffff00000000ULL) >> 32)))
 
 
 /* Byte swapping macros
@@ -236,7 +236,7 @@ bcmswap32by16(uint32 val)
 
 /* Reverse pairs of bytes in a buffer (not for high-performance use) */
 /* buf	- start of buffer of shorts to swap */
-/* len  - byte length of buffer */
+/* len	- byte length of buffer */
 static INLINE void
 bcmswap16_buf(uint16 *buf, uint len)
 {

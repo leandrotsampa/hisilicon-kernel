@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -44,19 +44,19 @@ extern "C" {
 #endif
 
 /* osl multi-precedence packet queue */
-#define PKTQ_LEN_MAX            0xFFFF  /* Max uint16 65535 packets */
+#define PKTQ_LEN_MAX		0xFFFF	/* Max uint16 65535 packets */
 #ifndef PKTQ_LEN_DEFAULT
-#define PKTQ_LEN_DEFAULT        128	/* Max 128 packets */
+#define PKTQ_LEN_DEFAULT	128	/* Max 128 packets */
 #endif
 #ifndef PKTQ_MAX_PREC
-#define PKTQ_MAX_PREC           16	/* Maximum precedence levels */
+#define PKTQ_MAX_PREC		16	/* Maximum precedence levels */
 #endif
 
 typedef struct pktq_prec {
-	void *head;     /**< first packet to dequeue */
-	void *tail;     /**< last packet to dequeue */
-	uint16 len;     /**< number of queued packets */
-	uint16 max;     /**< maximum number of queued packets */
+	void *head;	/**< first packet to dequeue */
+	void *tail;	/**< last packet to dequeue */
+	uint16 len;	/**< number of queued packets */
+	uint16 max;	/**< maximum number of queued packets */
 } pktq_prec_t;
 
 #ifdef PKTQ_LOG
@@ -64,46 +64,46 @@ typedef struct {
 	uint32 requested;    /**< packets requested to be stored */
 	uint32 stored;	     /**< packets stored */
 	uint32 saved;	     /**< packets saved,
-	                            because a lowest priority queue has given away one packet
-	                      */
+				    because a lowest priority queue has given away one packet
+			      */
 	uint32 selfsaved;    /**< packets saved,
-	                            because an older packet from the same queue has been dropped
-	                      */
+				    because an older packet from the same queue has been dropped
+			      */
 	uint32 full_dropped; /**< packets dropped,
-	                            because pktq is full with higher precedence packets
-	                      */
-	uint32 dropped;      /**< packets dropped because pktq per that precedence is full */
+				    because pktq is full with higher precedence packets
+			      */
+	uint32 dropped;	     /**< packets dropped because pktq per that precedence is full */
 	uint32 sacrificed;   /**< packets dropped,
-	                            in order to save one from a queue of a highest priority
-	                      */
-	uint32 busy;         /**< packets droped because of hardware/transmission error */
-	uint32 retry;        /**< packets re-sent because they were not received */
+				    in order to save one from a queue of a highest priority
+			      */
+	uint32 busy;	     /**< packets droped because of hardware/transmission error */
+	uint32 retry;	     /**< packets re-sent because they were not received */
 	uint32 ps_retry;     /**< packets retried again prior to moving power save mode */
 	uint32 suppress;     /**< packets which were suppressed and not transmitted */
 	uint32 retry_drop;   /**< packets finally dropped after retry limit */
 	uint32 max_avail;    /**< the high-water mark of the queue capacity for packets -
-	                            goes to zero as queue fills
-	                      */
+				    goes to zero as queue fills
+			      */
 	uint32 max_used;     /**< the high-water mark of the queue utilisation for packets -
-						        increases with use ('inverse' of max_avail)
-				          */
+							increases with use ('inverse' of max_avail)
+					  */
 	uint32 queue_capacity; /**< the maximum capacity of the queue */
-	uint32 rtsfail;        /**< count of rts attempts that failed to receive cts */
-	uint32 acked;          /**< count of packets sent (acked) successfully */
+	uint32 rtsfail;	       /**< count of rts attempts that failed to receive cts */
+	uint32 acked;	       /**< count of packets sent (acked) successfully */
 	uint32 txrate_succ;    /**< running total of phy rate of packets sent successfully */
 	uint32 txrate_main;    /**< running totoal of primary phy rate of all packets */
 	uint32 throughput;     /**< actual data transferred successfully */
-	uint32 airtime;        /**< cumulative total medium access delay in useconds */
-	uint32  _logtime;      /**< timestamp of last counter clear  */
+	uint32 airtime;	       /**< cumulative total medium access delay in useconds */
+	uint32	_logtime;      /**< timestamp of last counter clear  */
 } pktq_counters_t;
 
 #define PKTQ_LOG_COMMON \
 	uint32			pps_time;	/**< time spent in ps pretend state */ \
-	uint32                  _prec_log;
+	uint32			_prec_log;
 
 typedef struct {
 	PKTQ_LOG_COMMON
-	pktq_counters_t*        _prec_cnt[PKTQ_MAX_PREC];     /**< Counters per queue  */
+	pktq_counters_t*	_prec_cnt[PKTQ_MAX_PREC];     /**< Counters per queue  */
 } pktq_log_t;
 #else
 typedef struct pktq_log pktq_log_t;
@@ -113,10 +113,10 @@ typedef struct pktq_log pktq_log_t;
 #define PKTQ_COMMON	\
 	HND_PKTQ_MUTEX_DECL(mutex)							\
 	pktq_log_t *pktqlog;								\
-	uint16 num_prec;        /**< number of precedences in use */			\
-	uint16 hi_prec;         /**< rapid dequeue hint (>= highest non-empty prec) */	\
-	uint16 max;             /**< total max packets */				\
-	uint16 len;             /**< total number of packets */
+	uint16 num_prec;	/**< number of precedences in use */			\
+	uint16 hi_prec;		/**< rapid dequeue hint (>= highest non-empty prec) */	\
+	uint16 max;		/**< total max packets */				\
+	uint16 len;		/**< total number of packets */
 
 /* multi-priority pkt queue */
 struct pktq {
@@ -132,7 +132,7 @@ struct spktq {
 	struct pktq_prec q[1];
 };
 
-#define PKTQ_PREC_ITER(pq, prec)        for (prec = (pq)->num_prec - 1; prec >= 0; prec--)
+#define PKTQ_PREC_ITER(pq, prec)	for (prec = (pq)->num_prec - 1; prec >= 0; prec--)
 
 /* fn(pkt, arg).  return true if pkt belongs to bsscfg */
 typedef bool (*ifpkt_cb_t)(void*, int);
@@ -144,10 +144,10 @@ typedef bool (*ifpkt_cb_t)(void*, int);
 /* filter function return values */
 typedef enum {
 	PKT_FILTER_NOACTION = 0,    /**< restore the pkt to its position in the queue */
-	PKT_FILTER_DELETE = 1,      /**< delete the pkt */
-	PKT_FILTER_REMOVE = 2,      /**< do not restore the pkt to the queue,
-	                             *   filter fn has taken ownership of the pkt
-	                             */
+	PKT_FILTER_DELETE = 1,	    /**< delete the pkt */
+	PKT_FILTER_REMOVE = 2,	    /**< do not restore the pkt to the queue,
+				     *	 filter fn has taken ownership of the pkt
+				     */
 } pktq_filter_result_t;
 
 /**
@@ -258,8 +258,8 @@ extern bool pktq_full(struct pktq *pq);
 
 /* wrap macros for modules in components use */
 #define spktqinit(pq, max_pkts) pktqinit(pq, max_pkts)
-#define spktenq(pq, p)          pktenq(pq, p)
-#define spktdeq(pq)             pktdeq(pq)
+#define spktenq(pq, p)		pktenq(pq, p)
+#define spktdeq(pq)		pktdeq(pq)
 
 extern bool pktq_init(struct pktq *pq, int num_prec, int max_len);
 extern bool pktq_deinit(struct pktq *pq);

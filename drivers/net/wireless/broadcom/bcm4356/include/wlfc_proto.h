@@ -1,21 +1,21 @@
 /*
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -34,50 +34,50 @@
 
 	/* Use TLV to convey WLFC information.
 	 ---------------------------------------------------------------------------
-	| Type |  Len | value                    | Description
+	| Type |  Len | value			 | Description
 	 ---------------------------------------------------------------------------
-	|  1   |   1  | (handle)                 | MAC OPEN
+	|  1   |   1  | (handle)		 | MAC OPEN
 	 ---------------------------------------------------------------------------
-	|  2   |   1  | (handle)                 | MAC CLOSE
+	|  2   |   1  | (handle)		 | MAC CLOSE
 	 ---------------------------------------------------------------------------
 	|  3   |   2  | (count, handle, prec_bmp)| Set the credit depth for a MAC dstn
 	 ---------------------------------------------------------------------------
-	|  4   |   4+ | see pkttag comments      | TXSTATUS
-	|      |   12 | TX status & timestamps   | Present only when pkt timestamp is enabled
+	|  4   |   4+ | see pkttag comments	 | TXSTATUS
+	|      |   12 | TX status & timestamps	 | Present only when pkt timestamp is enabled
 	 ---------------------------------------------------------------------------
-	|  5   |   4  | see pkttag comments      | PKKTTAG [host->firmware]
+	|  5   |   4  | see pkttag comments	 | PKKTTAG [host->firmware]
 	 ---------------------------------------------------------------------------
-	|  6   |   8  | (handle, ifid, MAC)      | MAC ADD
+	|  6   |   8  | (handle, ifid, MAC)	 | MAC ADD
 	 ---------------------------------------------------------------------------
-	|  7   |   8  | (handle, ifid, MAC)      | MAC DEL
+	|  7   |   8  | (handle, ifid, MAC)	 | MAC DEL
 	 ---------------------------------------------------------------------------
-	|  8   |   1  | (rssi)                   | RSSI - RSSI value for the packet.
+	|  8   |   1  | (rssi)			 | RSSI - RSSI value for the packet.
 	 ---------------------------------------------------------------------------
-	|  9   |   1  | (interface ID)           | Interface OPEN
+	|  9   |   1  | (interface ID)		 | Interface OPEN
 	 ---------------------------------------------------------------------------
-	|  10  |   1  | (interface ID)           | Interface CLOSE
+	|  10  |   1  | (interface ID)		 | Interface CLOSE
 	 ---------------------------------------------------------------------------
-	|  11  |   8  | fifo credit returns map  | FIFO credits back to the host
-	|      |      |                          |
-	|      |      |                          | --------------------------------------
-	|      |      |                          | | ac0 | ac1 | ac2 | ac3 | bcmc | atim |
-	|      |      |                          | --------------------------------------
-	|      |      |                          |
+	|  11  |   8  | fifo credit returns map	 | FIFO credits back to the host
+	|      |      |				 |
+	|      |      |				 | --------------------------------------
+	|      |      |				 | | ac0 | ac1 | ac2 | ac3 | bcmc | atim |
+	|      |      |				 | --------------------------------------
+	|      |      |				 |
 	 ---------------------------------------------------------------------------
-	|  12  |   2  | MAC handle,              | Host provides a bitmap of pending
-	|      |      | AC[0-3] traffic bitmap   | unicast traffic for MAC-handle dstn.
-	|      |      |                          | [host->firmware]
+	|  12  |   2  | MAC handle,		 | Host provides a bitmap of pending
+	|      |      | AC[0-3] traffic bitmap	 | unicast traffic for MAC-handle dstn.
+	|      |      |				 | [host->firmware]
 	 ---------------------------------------------------------------------------
 	|  13  |   3  | (count, handle, prec_bmp)| One time request for packet to a specific
-	|      |      |                          | MAC destination.
+	|      |      |				 | MAC destination.
 	 ---------------------------------------------------------------------------
-	|  15  |  12  | (pkttag, timestamps)     | Send TX timestamp at reception from host
+	|  15  |  12  | (pkttag, timestamps)	 | Send TX timestamp at reception from host
 	 ---------------------------------------------------------------------------
-	|  16  |  12  | (pkttag, timestamps)     | Send WLAN RX timestamp along with RX frame
+	|  16  |  12  | (pkttag, timestamps)	 | Send WLAN RX timestamp along with RX frame
 	 ---------------------------------------------------------------------------
-	| 255  |  N/A |  N/A                     | FILLER - This is a special type
-	|      |      |                          | that has no length or value.
-	|      |      |                          | Typically used for padding.
+	| 255  |  N/A |	 N/A			 | FILLER - This is a special type
+	|      |      |				 | that has no length or value.
+	|      |      |				 | Typically used for padding.
 	 ---------------------------------------------------------------------------
 	*/
 
@@ -206,8 +206,8 @@
 #define WL_TXSTATUS_GET_FREERUNCTR(x)		((x)& WL_TXSTATUS_FREERUNCTR_MASK)
 
 /* AMSDU part of d11 seq number */
-#define WL_SEQ_AMSDU_MASK             0x1 /* allow 1 bit */
-#define WL_SEQ_AMSDU_SHIFT            14
+#define WL_SEQ_AMSDU_MASK	      0x1 /* allow 1 bit */
+#define WL_SEQ_AMSDU_SHIFT	      14
 #define WL_SEQ_SET_AMSDU(x, val)      ((x) = \
 	((x) & ~(WL_SEQ_AMSDU_MASK << WL_SEQ_AMSDU_SHIFT)) | \
 	(((val) & WL_SEQ_AMSDU_MASK) << WL_SEQ_AMSDU_SHIFT)) /**< sets a single AMSDU bit */
@@ -244,7 +244,7 @@
 #define WL_SEQ_SET_REUSE(x, val)	((x) = \
 	((x) & ~(WL_SEQ_FROMDRV_MASK << WL_SEQ_FROMDRV_SHIFT)) | \
 	(((val) & WL_SEQ_FROMDRV_MASK) << WL_SEQ_FROMDRV_SHIFT))
-#define SET_WL_TO_REUSE_SEQ(x)   WL_SEQ_SET_REUSE((x), 1)
+#define SET_WL_TO_REUSE_SEQ(x)	 WL_SEQ_SET_REUSE((x), 1)
 #define RESET_WL_TO_REUSE_SEQ(x) WL_SEQ_SET_REUSE((x), 0)
 
 /** Proptxstatus, related to reuse of d11 seq numbers when retransmitting */
@@ -305,7 +305,7 @@
 	{printf("WLFC: %s():%d:caller:%p\n", \
 	__FUNCTION__, __LINE__, CALL_SITE);}} while (0)
 #define WLFC_PRINTMAC(banner, ea) do {printf("%s MAC: [%02x:%02x:%02x:%02x:%02x:%02x]\n", \
-	banner, ea[0], 	ea[1], 	ea[2], 	ea[3], 	ea[4], 	ea[5]); } while (0)
+	banner, ea[0],	ea[1],	ea[2],	ea[3],	ea[4],	ea[5]); } while (0)
 #define WLFC_WHEREIS(s) printf("WLFC: at %s():%d, %s\n", __FUNCTION__, __LINE__, (s))
 #else
 #define WLFC_DBGMESG(x)

@@ -35,15 +35,15 @@ FW_INSTALL_DIR := $(ANDROID_PRODUCT_OUT)/system/etc/firmware/AP6356S
 BUILD_MODULES = $(patsubst %,%_build,${MODULE_SRC})
 UNINSTALL_MODULES = $(patsubst %,%_uninstall,${MODULE})
 
-DHDCFLAGS = -Wall -Wstrict-prototypes -Dlinux -DBCMDRIVER -DSDTEST       \
-	-DBCMDONGLEHOST -DUNRELEASEDCHIP -DBCMDMA32 -DBCMFILEIMAGE            \
+DHDCFLAGS = -Wall -Wstrict-prototypes -Dlinux -DBCMDRIVER -DSDTEST	 \
+	-DBCMDONGLEHOST -DUNRELEASEDCHIP -DBCMDMA32 -DBCMFILEIMAGE	      \
 	-DDHDTHREAD -DDHD_DEBUG -DSHOW_EVENTS -DBCMDBG -DGET_OTP_MAC_ENABLE   \
-	-DWIFI_ACT_FRAME -DARP_OFFLOAD_SUPPORT -DSUPPORT_PM2_ONLY             \
+	-DWIFI_ACT_FRAME -DARP_OFFLOAD_SUPPORT -DSUPPORT_PM2_ONLY	      \
 	-DKEEP_ALIVE -DPKT_FILTER_SUPPORT -DPNO_SUPPORT -DDHDTCPACK_SUPPRESS  \
-	-DDHD_DONOT_FORWARD_BCMEVENT_AS_NETWORK_PKT -DRXFRAME_THREAD          \
-	-DTSQ_MULTIPLIER -DMFP                                                \
-	-DBCMSDIOH_TXGLOM_EXT -DWL_EXT_IAPSTA                                 \
-	-DENABLE_INSMOD_NO_FW_LOAD                                            \
+	-DDHD_DONOT_FORWARD_BCMEVENT_AS_NETWORK_PKT -DRXFRAME_THREAD	      \
+	-DTSQ_MULTIPLIER -DMFP						      \
+	-DBCMSDIOH_TXGLOM_EXT -DWL_EXT_IAPSTA				      \
+	-DENABLE_INSMOD_NO_FW_LOAD					      \
 	-I$(src) -I$(src)/include \
 	-I$(COMMON_DIR)/include \
 	-I$(MSP_DIR)/include \
@@ -60,8 +60,8 @@ DHDOFILES = aiutils.o siutils.o sbutils.o bcmutils.o bcmwifi_channels.o \
 
 ifneq ($(CONFIG_BCMDHD_SDIO),)
 DHDCFLAGS += \
-	-DBCMSDIO -DMMC_SDIO_ABORT -DBCMLXSDMMC -DUSE_SDIOFIFO_IOVAR          \
-	-DBDC -DDHD_USE_IDLECOUNT -DBCMSDIOH_TXGLOM                           \
+	-DBCMSDIO -DMMC_SDIO_ABORT -DBCMLXSDMMC -DUSE_SDIOFIFO_IOVAR	      \
+	-DBDC -DDHD_USE_IDLECOUNT -DBCMSDIOH_TXGLOM			      \
 	-DCUSTOM_SDIO_F2_BLKSIZE=256
 
 DHDOFILES += bcmsdh.o bcmsdh_linux.o bcmsdh_sdmmc.o bcmsdh_sdmmc_linux.o \
@@ -105,7 +105,7 @@ DHDCFLAGS += \
 	-DCUSTOM_COUNTRY_CODE -DDHD_FW_COREDUMP -DWL_VENDOR_EXT_SUPPORT -DEXPLICIT_DISCIF_CLEANUP
 
 DHDOFILES += dhd_debug_linux.o dhd_debug.o bcmxtlv.o \
-        dhd_rtt.o bcm_app_utils.o
+	dhd_rtt.o bcm_app_utils.o
 endif
 
 obj-$(CONFIG_BCMDHD) += bcmdhd.o

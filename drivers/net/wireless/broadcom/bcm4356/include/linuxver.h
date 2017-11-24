@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -231,7 +231,7 @@ struct pci_driver {
 	char *name;
 	const struct pci_device_id *id_table;	/* NULL if wants all devices */
 	int (*probe)(struct pci_dev *dev,
-	             const struct pci_device_id *id); /* New device inserted */
+		     const struct pci_device_id *id); /* New device inserted */
 	void (*remove)(struct pci_dev *dev);	/* Device removed (NULL if not a hot-plug
 						 * capable driver)
 						 */
@@ -324,7 +324,7 @@ static inline int get_order(unsigned long size)
 }
 
 static inline void *pci_alloc_consistent(struct pci_dev *hwdev, size_t size,
-                                         dma_addr_t *dma_handle)
+					 dma_addr_t *dma_handle)
 {
 	void *ret;
 	int gfp = GFP_ATOMIC | GFP_DMA;
@@ -338,7 +338,7 @@ static inline void *pci_alloc_consistent(struct pci_dev *hwdev, size_t size,
 	return ret;
 }
 static inline void pci_free_consistent(struct pci_dev *hwdev, size_t size,
-                                       void *vaddr, dma_addr_t dma_handle)
+				       void *vaddr, dma_addr_t dma_handle)
 {
 	free_pages((unsigned long)vaddr, get_order(size));
 }
@@ -395,8 +395,8 @@ static inline void tasklet_schedule(struct tasklet_struct *tasklet)
 }
 
 static inline void tasklet_init(struct tasklet_struct *tasklet,
-                                void (*func)(unsigned long),
-                                unsigned long data)
+				void (*func)(unsigned long),
+				unsigned long data)
 {
 	tasklet->next = NULL;
 	tasklet->sync = 0;
@@ -476,8 +476,8 @@ pci_restore_state(struct pci_dev *dev, u32 *buffer)
 	else {
 		for (i = 0; i < 6; i ++)
 			pci_write_config_dword(dev,
-			                       PCI_BASE_ADDRESS_0 + (i * 4),
-			                       pci_resource_start(dev, i));
+					       PCI_BASE_ADDRESS_0 + (i * 4),
+					       pci_resource_start(dev, i));
 		pci_write_config_byte(dev, PCI_INTERRUPT_LINE, dev->irq);
 	}
 	return 0;
@@ -643,7 +643,7 @@ static inline bool binary_sema_up(tsk_ctl_t *tsk)
 { \
 struct task_struct *tsk; \
 struct pid *pid;    \
-pid = find_get_pid((pid_t)nr);    \
+pid = find_get_pid((pid_t)nr);	  \
 tsk = pid_task(pid, PIDTYPE_PID);    \
 if (tsk) send_sig(sig, tsk, 1); \
 }
@@ -716,10 +716,10 @@ not match our unaligned address for < 2.6.24
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 20)
-#define WL_ISR(i, d, p)         wl_isr((i), (d))
+#define WL_ISR(i, d, p)		wl_isr((i), (d))
 #else
-#define WL_ISR(i, d, p)         wl_isr((i), (d), (p))
-#endif  /* < 2.6.20 */
+#define WL_ISR(i, d, p)		wl_isr((i), (d), (p))
+#endif	/* < 2.6.20 */
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 0))
 #define netdev_priv(dev) dev->priv

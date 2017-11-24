@@ -145,7 +145,7 @@ wl_ext_chspec_to_legacy(chanspec_t chspec)
 
 	if (wf_chspec_malformed(chspec)) {
 		ANDROID_ERROR(("wl_ext_chspec_to_legacy: input chanspec (0x%04X) malformed\n",
-		        chspec));
+			chspec));
 		return INVCHANSPEC;
 	}
 
@@ -174,9 +174,9 @@ wl_ext_chspec_to_legacy(chanspec_t chspec)
 		/* cannot express the bandwidth */
 		char chanbuf[CHANSPEC_STR_LEN];
 		ANDROID_ERROR((
-		        "wl_ext_chspec_to_legacy: unable to convert chanspec %s (0x%04X) "
-		        "to pre-11ac format\n",
-		        wf_chspec_ntoa(chspec, chanbuf), chspec));
+			"wl_ext_chspec_to_legacy: unable to convert chanspec %s (0x%04X) "
+			"to pre-11ac format\n",
+			wf_chspec_ntoa(chspec, chanbuf), chspec));
 		return INVCHANSPEC;
 	}
 
@@ -467,10 +467,10 @@ wl_ext_keep_alive(struct net_device *dev, char *command, int total_len)
 			goto exit;
 		} else {
 			mkeep_alive_pktp = (wl_mkeep_alive_pkt_t *) buf;
-			printf("Id            :%d\n"
+			printf("Id	      :%d\n"
 				   "Period (msec) :%d\n"
-				   "Length        :%d\n"
-				   "Packet        :0x",
+				   "Length	  :%d\n"
+				   "Packet	  :0x",
 				   mkeep_alive_pktp->keep_alive_id,
 				   dtoh32(mkeep_alive_pktp->period_msec),
 				   dtoh16(mkeep_alive_pktp->len_bytes));
@@ -1486,7 +1486,7 @@ dhd_priv dhd [string] ==> Not ready
   Ex: dhd_priv dhd bussleep 1
 
 dhd_priv wl [WLC_GET_PM]  ==> Ready to get int val
-dhd_priv wl [WLC_SET_PM] [int]  ==> Ready to set int val
+dhd_priv wl [WLC_SET_PM] [int]	==> Ready to set int val
 dhd_priv wl [string]  ==> Ready to get int val
 dhd_priv wl [string] [int]  ==> Ready to set int val
 Ex: get/set WLC_PM

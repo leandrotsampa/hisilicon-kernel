@@ -8,21 +8,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -53,15 +53,15 @@
  *    consumed. The caller may not commut the READ of the element.
  *
  *  Producer side API:
- *  - bcm_ring_is_full  : Test whether ring is full
- *  - bcm_ring_prod     : Fetch index where an element may be produced (commit)
+ *  - bcm_ring_is_full	: Test whether ring is full
+ *  - bcm_ring_prod	: Fetch index where an element may be produced (commit)
  *  - bcm_ring_prod_pend: Fetch index where an element may be produced (pending)
  *  - bcm_ring_prod_done: Commit a previous pending produce fetch
  *  - bcm_ring_prod_avail: Fetch total number free slots eligible for production
  *
  * Consumer side API:
  *  - bcm_ring_is_empty : Test whether ring is empty
- *  - bcm_ring_cons     : Fetch index where an element may be consumed (commit)
+ *  - bcm_ring_cons	: Fetch index where an element may be consumed (commit)
  *  - bcm_ring_cons_pend: Fetch index where an element may be consumed (pending)
  *  - bcm_ring_cons_done: Commit a previous pending consume fetch
  *  - bcm_ring_cons_avail: Fetch total number elements eligible for consumption
@@ -103,21 +103,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -130,7 +130,7 @@
  */
 
 #ifdef ____cacheline_aligned
-#define __ring_aligned                      ____cacheline_aligned
+#define __ring_aligned			    ____cacheline_aligned
 #else
 #define __ring_aligned
 #endif
@@ -138,17 +138,17 @@
 /* Conditional compile for debug */
 /* #define BCM_RING_DEBUG */
 
-#define BCM_RING_EMPTY                      (-1)
-#define BCM_RING_FULL                       (-1)
-#define BCM_RING_NULL                       ((bcm_ring_t *)NULL)
+#define BCM_RING_EMPTY			    (-1)
+#define BCM_RING_FULL			    (-1)
+#define BCM_RING_NULL			    ((bcm_ring_t *)NULL)
 
 #if defined(BCM_RING_DEBUG)
-#define RING_ASSERT(exp)                    ASSERT(exp)
-#define BCM_RING_IS_VALID(ring)             (((ring) != BCM_RING_NULL) && \
-	                                         ((ring)->self == (ring)))
+#define RING_ASSERT(exp)		    ASSERT(exp)
+#define BCM_RING_IS_VALID(ring)		    (((ring) != BCM_RING_NULL) && \
+						 ((ring)->self == (ring)))
 #else  /* ! BCM_RING_DEBUG */
-#define RING_ASSERT(exp)                    do {} while (0)
-#define BCM_RING_IS_VALID(ring)             ((ring) != BCM_RING_NULL)
+#define RING_ASSERT(exp)		    do {} while (0)
+#define BCM_RING_IS_VALID(ring)		    ((ring) != BCM_RING_NULL)
 #endif /* ! BCM_RING_DEBUG */
 
 #define BCM_RING_SIZE_IS_VALID(ring_size)   ((ring_size) > 0)
@@ -160,7 +160,7 @@
  */
 typedef struct bcm_ring {     /* Ring context */
 #if defined(BCM_RING_DEBUG)
-	struct bcm_ring *self;    /* ptr to self for IS VALID test */
+	struct bcm_ring *self;	  /* ptr to self for IS VALID test */
 #endif /* BCM_RING_DEBUG */
 	int write __ring_aligned; /* WRITE index in a circular ring */
 	int read  __ring_aligned; /* READ index in a circular ring */
@@ -178,21 +178,21 @@ static INLINE bool bcm_ring_is_full(bcm_ring_t *ring, const int ring_size);
 
 static INLINE void bcm_ring_prod_done(bcm_ring_t *ring, int write);
 static INLINE int  bcm_ring_prod_pend(bcm_ring_t *ring, int *pend_write,
-                                      const int ring_size);
+				      const int ring_size);
 static INLINE int  bcm_ring_prod(bcm_ring_t *ring, const int ring_size);
 
 static INLINE void bcm_ring_cons_done(bcm_ring_t *ring, int read);
 static INLINE int  bcm_ring_cons_pend(bcm_ring_t *ring, int *pend_read,
-                                      const int ring_size);
+				      const int ring_size);
 static INLINE int  bcm_ring_cons(bcm_ring_t *ring, const int ring_size);
 
 static INLINE void bcm_ring_sync_read(bcm_ring_t *peer, const bcm_ring_t *self);
 static INLINE void bcm_ring_sync_write(bcm_ring_t *peer, const bcm_ring_t *self);
 
 static INLINE int  bcm_ring_prod_avail(const bcm_ring_t *ring,
-                                       const int ring_size);
+				       const int ring_size);
 static INLINE int  bcm_ring_cons_avail(const bcm_ring_t *ring,
-                                       const int ring_size);
+				       const int ring_size);
 static INLINE void bcm_ring_cons_all(bcm_ring_t *ring);
 
 
@@ -241,7 +241,7 @@ bcm_ring_is_empty(bcm_ring_t *ring)
 
 /**
  * __bcm_ring_next_write - determine the index where the next write may occur
- *                         (with wrap-around).
+ *			   (with wrap-around).
  * @ring: pointer to a ring context
  * @ring_size: size of the ring
  *
@@ -496,10 +496,10 @@ bcm_ring_cons_all(bcm_ring_t *ring)
  */
 
 struct bcm_workq {
-	bcm_ring_t ring;        /* Ring context abstraction */
+	bcm_ring_t ring;	/* Ring context abstraction */
 	struct bcm_workq *peer; /* Peer workq context */
-	void       *buffer;     /* Buffer storage for work items in workQ */
-	int        ring_size;   /* Depth of workQ */
+	void	   *buffer;	/* Buffer storage for work items in workQ */
+	int	   ring_size;	/* Depth of workQ */
 } __ring_aligned;
 
 typedef struct bcm_workq bcm_workq_t;
@@ -507,9 +507,9 @@ typedef struct bcm_workq bcm_workq_t;
 
 /* #define BCM_WORKQ_DEBUG */
 #if defined(BCM_WORKQ_DEBUG)
-#define WORKQ_ASSERT(exp)               ASSERT(exp)
+#define WORKQ_ASSERT(exp)		ASSERT(exp)
 #else  /* ! BCM_WORKQ_DEBUG */
-#define WORKQ_ASSERT(exp)               do {} while (0)
+#define WORKQ_ASSERT(exp)		do {} while (0)
 #endif /* ! BCM_WORKQ_DEBUG */
 
 #define WORKQ_AUDIT(workq) \
@@ -518,11 +518,11 @@ typedef struct bcm_workq bcm_workq_t;
 	WORKQ_ASSERT((workq)->buffer == WORKQ_PEER(workq)->buffer); \
 	WORKQ_ASSERT((workq)->ring_size == WORKQ_PEER(workq)->ring_size);
 
-#define BCM_WORKQ_NULL                  ((bcm_workq_t *)NULL)
+#define BCM_WORKQ_NULL			((bcm_workq_t *)NULL)
 
-#define WORKQ_PEER(workq)               ((workq)->peer)
-#define WORKQ_RING(workq)               (&((workq)->ring))
-#define WORKQ_PEER_RING(workq)          (&((workq)->peer->ring))
+#define WORKQ_PEER(workq)		((workq)->peer)
+#define WORKQ_RING(workq)		(&((workq)->ring))
+#define WORKQ_PEER_RING(workq)		(&((workq)->peer->ring))
 
 #define WORKQ_ELEMENT(__elem_type, __workq, __index) ({ \
 	WORKQ_ASSERT((__workq) != BCM_WORKQ_NULL); \
@@ -532,7 +532,7 @@ typedef struct bcm_workq bcm_workq_t;
 
 
 static INLINE void bcm_workq_init(bcm_workq_t *workq, bcm_workq_t *workq_peer,
-                                  void *buffer, int ring_size);
+				  void *buffer, int ring_size);
 
 static INLINE bool bcm_workq_is_empty(bcm_workq_t *workq_prod);
 
@@ -550,7 +550,7 @@ static INLINE void bcm_workq_cons_refresh(bcm_workq_t *workq_cons);
  */
 static INLINE void
 bcm_workq_init(bcm_workq_t *workq, bcm_workq_t *workq_peer,
-               void *buffer, int ring_size)
+	       void *buffer, int ring_size)
 {
 	ASSERT(workq != BCM_WORKQ_NULL);
 	ASSERT(workq_peer != BCM_WORKQ_NULL);

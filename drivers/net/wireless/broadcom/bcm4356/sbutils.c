@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -46,7 +46,7 @@
 /* local prototypes */
 static uint _sb_coreidx(si_info_t *sii, uint32 sba);
 static uint _sb_scan(si_info_t *sii, uint32 sba, volatile void *regs, uint bus, uint32 sbba,
-                     uint ncores);
+		     uint ncores);
 static uint32 _sb_coresba(si_info_t *sii);
 static volatile void *_sb_setcoreidx(si_info_t *sii, uint coreidx);
 #define	SET_SBREG(sii, r, mask, val)	\
@@ -226,7 +226,7 @@ _sb_coresba(si_info_t *sii)
 	case PCMCIA_BUS: {
 		uint8 tmp = 0;
 		OSL_PCMCIA_READ_ATTR(sii->osh, PCMCIA_ADDR0, &tmp, 1);
-		sbaddr  = (uint32)tmp << 12;
+		sbaddr	= (uint32)tmp << 12;
 		OSL_PCMCIA_READ_ATTR(sii->osh, PCMCIA_ADDR1, &tmp, 1);
 		sbaddr |= (uint32)tmp << 16;
 		OSL_PCMCIA_READ_ATTR(sii->osh, PCMCIA_ADDR2, &tmp, 1);
@@ -291,7 +291,7 @@ sb_core_cflags_wo(si_t *sih, uint32 mask, uint32 val)
 
 	/* mask and set */
 	w = (R_SBREG(sii, &sb->sbtmstatelow) & ~(mask << SBTML_SICF_SHIFT)) |
-	        (val << SBTML_SICF_SHIFT);
+		(val << SBTML_SICF_SHIFT);
 	W_SBREG(sii, &sb->sbtmstatelow, w);
 }
 
@@ -311,7 +311,7 @@ sb_core_cflags(si_t *sih, uint32 mask, uint32 val)
 	/* mask and set */
 	if (mask || val) {
 		w = (R_SBREG(sii, &sb->sbtmstatelow) & ~(mask << SBTML_SICF_SHIFT)) |
-		        (val << SBTML_SICF_SHIFT);
+			(val << SBTML_SICF_SHIFT);
 		W_SBREG(sii, &sb->sbtmstatelow, w);
 	}
 
@@ -338,7 +338,7 @@ sb_core_sflags(si_t *sih, uint32 mask, uint32 val)
 	/* mask and set */
 	if (mask || val) {
 		w = (R_SBREG(sii, &sb->sbtmstatehigh) & ~(mask << SBTMH_SISF_SHIFT)) |
-		        (val << SBTMH_SISF_SHIFT);
+			(val << SBTMH_SISF_SHIFT);
 		W_SBREG(sii, &sb->sbtmstatehigh, w);
 	}
 
@@ -356,8 +356,8 @@ sb_iscoreup(si_t *sih)
 	sb = REGS2SB(sii->curmap);
 
 	return ((R_SBREG(sii, &sb->sbtmstatelow) &
-	         (SBTML_RESET | SBTML_REJ_MASK | (SICF_CLOCK_EN << SBTML_SICF_SHIFT))) ==
-	        (SICF_CLOCK_EN << SBTML_SICF_SHIFT));
+		 (SBTML_RESET | SBTML_REJ_MASK | (SICF_CLOCK_EN << SBTML_SICF_SHIFT))) ==
+		(SICF_CLOCK_EN << SBTML_SICF_SHIFT));
 }
 
 /*
@@ -393,7 +393,7 @@ sb_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 		/* map if does not exist */
 		if (!cores_info->regs[coreidx]) {
 			cores_info->regs[coreidx] = REG_MAP(cores_info->coresba[coreidx],
-			                            SI_CORE_SIZE);
+						    SI_CORE_SIZE);
 			ASSERT(GOODREGS(cores_info->regs[coreidx]));
 		}
 		r = (volatile uint32 *)((volatile uchar *)cores_info->regs[coreidx] + regoff);
@@ -405,7 +405,7 @@ sb_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 
 			fast = TRUE;
 			r = (volatile uint32 *)((volatile char *)sii->curmap +
-			               PCI_16KB0_CCREGS_OFFSET + regoff);
+				       PCI_16KB0_CCREGS_OFFSET + regoff);
 		} else if (sii->pub.buscoreidx == coreidx) {
 			/* pci registers are at either in the last 2KB of an 8KB window
 			 * or, in pcie and pci rev 13 at 8KB
@@ -413,12 +413,12 @@ sb_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 			fast = TRUE;
 			if (SI_FAST(sii))
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               PCI_16KB0_PCIREGS_OFFSET + regoff);
+					       PCI_16KB0_PCIREGS_OFFSET + regoff);
 			else
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               ((regoff >= SBCONFIGOFF) ?
-				                PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
-				               regoff);
+					       ((regoff >= SBCONFIGOFF) ?
+						PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
+					       regoff);
 		}
 	}
 
@@ -430,7 +430,7 @@ sb_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 
 		/* switch core */
 		r = (volatile uint32*) ((volatile uchar*)sb_setcoreidx(&sii->pub, coreidx) +
-		               regoff);
+			       regoff);
 	}
 	ASSERT(r != NULL);
 
@@ -492,7 +492,7 @@ sb_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 		/* map if does not exist */
 		if (!cores_info->regs[coreidx]) {
 			cores_info->regs[coreidx] = REG_MAP(cores_info->coresba[coreidx],
-			                            SI_CORE_SIZE);
+						    SI_CORE_SIZE);
 			ASSERT(GOODREGS(cores_info->regs[coreidx]));
 		}
 		r = (volatile uint32 *)((volatile uchar *)cores_info->regs[coreidx] + regoff);
@@ -504,7 +504,7 @@ sb_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 
 			fast = TRUE;
 			r = (volatile uint32 *)((volatile char *)sii->curmap +
-			               PCI_16KB0_CCREGS_OFFSET + regoff);
+				       PCI_16KB0_CCREGS_OFFSET + regoff);
 		} else if (sii->pub.buscoreidx == coreidx) {
 			/* pci registers are at either in the last 2KB of an 8KB window
 			 * or, in pcie and pci rev 13 at 8KB
@@ -512,12 +512,12 @@ sb_corereg_addr(si_t *sih, uint coreidx, uint regoff)
 			fast = TRUE;
 			if (SI_FAST(sii))
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               PCI_16KB0_PCIREGS_OFFSET + regoff);
+					       PCI_16KB0_PCIREGS_OFFSET + regoff);
 			else
 				r = (volatile uint32 *)((volatile char *)sii->curmap +
-				               ((regoff >= SBCONFIGOFF) ?
-				                PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
-				               regoff);
+					       ((regoff >= SBCONFIGOFF) ?
+						PCI_BAR0_PCISBR_OFFSET : PCI_BAR0_PCIREGS_OFFSET) +
+					       regoff);
 		}
 	}
 
@@ -578,7 +578,7 @@ _sb_scan(si_info_t *sii, uint32 sba, volatile void *regs, uint bus,
 			if (((ccrev == 4) || (ccrev >= 6))) {
 				ASSERT(cc);
 				numcores = (R_REG(sii->osh, &cc->chipid) & CID_CC_MASK) >>
-				        CID_CC_SHIFT;
+					CID_CC_SHIFT;
 			} else {
 				/* Older chips */
 				uint chip = CHIPID(sii->pub.chip);
@@ -589,7 +589,7 @@ _sb_scan(si_info_t *sii, uint32 sba, volatile void *regs, uint bus,
 					numcores = 7;
 				else {
 					SI_ERROR(("sb_chip2numcores: unsupported chip 0x%x\n",
-					          chip));
+						  chip));
 					ASSERT(0);
 					numcores = 1;
 				}
@@ -741,19 +741,19 @@ sb_admatch(si_info_t *sii, uint asidx)
 
 	switch (asidx) {
 	case 0:
-		addrm =  &sb->sbadmatch0;
+		addrm =	 &sb->sbadmatch0;
 		break;
 
 	case 1:
-		addrm =  &sb->sbadmatch1;
+		addrm =	 &sb->sbadmatch1;
 		break;
 
 	case 2:
-		addrm =  &sb->sbadmatch2;
+		addrm =	 &sb->sbadmatch2;
 		break;
 
 	case 3:
-		addrm =  &sb->sbadmatch3;
+		addrm =	 &sb->sbadmatch3;
 		break;
 
 	default:
@@ -869,8 +869,8 @@ sb_core_disable(si_t *sih, uint32 bits)
 
 	/* set reset and reject while enabling the clocks */
 	W_SBREG(sii, &sb->sbtmstatelow,
-	        (((bits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT) |
-	         SBTML_REJ | SBTML_RESET));
+		(((bits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT) |
+		 SBTML_REJ | SBTML_RESET));
 	dummy = R_SBREG(sii, &sb->sbtmstatelow);
 	BCM_REFERENCE(dummy);
 	OSL_DELAY(10);
@@ -912,8 +912,8 @@ sb_core_reset(si_t *sih, uint32 bits, uint32 resetbits)
 
 	/* set reset while enabling the clock and forcing them on throughout the core */
 	W_SBREG(sii, &sb->sbtmstatelow,
-	        (((bits | resetbits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT) |
-	         SBTML_RESET));
+		(((bits | resetbits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT) |
+		 SBTML_RESET));
 	dummy = R_SBREG(sii, &sb->sbtmstatelow);
 	BCM_REFERENCE(dummy);
 	OSL_DELAY(1);
@@ -927,7 +927,7 @@ sb_core_reset(si_t *sih, uint32 bits, uint32 resetbits)
 
 	/* clear reset and allow it to propagate throughout the core */
 	W_SBREG(sii, &sb->sbtmstatelow,
-	        ((bits | resetbits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT));
+		((bits | resetbits | SICF_FGC | SICF_CLOCK_EN) << SBTML_SICF_SHIFT));
 	dummy = R_SBREG(sii, &sb->sbtmstatelow);
 	BCM_REFERENCE(dummy);
 	OSL_DELAY(1);
@@ -1085,14 +1085,14 @@ sb_dumpregs(si_t *sih, struct bcmstrbuf *b)
 
 		if (sii->pub.socirev > SONICS_2_2)
 			bcm_bprintf(b, "sbimerrlog 0x%x sbimerrloga 0x%x\n",
-			          sb_corereg(sih, si_coreidx(&sii->pub), SBIMERRLOG, 0, 0),
-			          sb_corereg(sih, si_coreidx(&sii->pub), SBIMERRLOGA, 0, 0));
+				  sb_corereg(sih, si_coreidx(&sii->pub), SBIMERRLOG, 0, 0),
+				  sb_corereg(sih, si_coreidx(&sii->pub), SBIMERRLOGA, 0, 0));
 
 		bcm_bprintf(b, "sbtmstatelow 0x%x sbtmstatehigh 0x%x sbidhigh 0x%x "
-		            "sbimstate 0x%x\n sbimconfiglow 0x%x sbimconfighigh 0x%x\n",
-		            R_SBREG(sii, &sb->sbtmstatelow), R_SBREG(sii, &sb->sbtmstatehigh),
-		            R_SBREG(sii, &sb->sbidhigh), R_SBREG(sii, &sb->sbimstate),
-		            R_SBREG(sii, &sb->sbimconfiglow), R_SBREG(sii, &sb->sbimconfighigh));
+			    "sbimstate 0x%x\n sbimconfiglow 0x%x sbimconfighigh 0x%x\n",
+			    R_SBREG(sii, &sb->sbtmstatelow), R_SBREG(sii, &sb->sbtmstatehigh),
+			    R_SBREG(sii, &sb->sbidhigh), R_SBREG(sii, &sb->sbimstate),
+			    R_SBREG(sii, &sb->sbimconfiglow), R_SBREG(sii, &sb->sbimconfighigh));
 	}
 
 	sb_setcoreidx(sih, origidx);

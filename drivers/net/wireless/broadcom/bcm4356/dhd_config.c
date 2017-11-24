@@ -39,13 +39,13 @@ uint config_msg_level = CONFIG_ERROR_LEVEL;
 #define MAXSZ_BUF		1000
 #define	MAXSZ_CONFIG	4096
 
-#define FW_TYPE_STA     0
-#define FW_TYPE_APSTA   1
-#define FW_TYPE_P2P     2
-#define FW_TYPE_ES      3
-#define FW_TYPE_MFG     4
-#define FW_TYPE_G       0
-#define FW_TYPE_AG      1
+#define FW_TYPE_STA	0
+#define FW_TYPE_APSTA	1
+#define FW_TYPE_P2P	2
+#define FW_TYPE_ES	3
+#define FW_TYPE_MFG	4
+#define FW_TYPE_G	0
+#define FW_TYPE_AG	1
 
 #ifdef CONFIG_PATH_AUTO_SELECT
 #ifdef BCMSDIO
@@ -1291,7 +1291,7 @@ dhd_conf_get_disable_proptx(dhd_pub_t *dhd)
 	/* check fw proptx priority:
 	  * 1st: check fw support by wl cap
 	  * 2nd: 4334/43340/43341/43241 support proptx but not show in wl cap, so enable it by default
-	  * 	   if you would like to disable it, please set disable_proptx=1 in config.txt
+	  *	   if you would like to disable it, please set disable_proptx=1 in config.txt
 	  * 3th: disable when proptxstatus not support in wl cap
 	  */
 	if (FW_SUPPORTED(dhd, proptxstatus)) {
@@ -1529,15 +1529,15 @@ dhd_conf_read_fw_by_mac(dhd_pub_t *dhd, char *full_param, uint len_param)
 	/* Process fw_by_mac:
 	 * fw_by_mac=[fw_mac_num] \
 	 *  [fw_name1] [mac_num1] [oui1-1] [nic_start1-1] [nic_end1-1] \
-	 *                                    [oui1-1] [nic_start1-1] [nic_end1-1]... \
-	 *                                    [oui1-n] [nic_start1-n] [nic_end1-n] \
+	 *				      [oui1-1] [nic_start1-1] [nic_end1-1]... \
+	 *				      [oui1-n] [nic_start1-n] [nic_end1-n] \
 	 *  [fw_name2] [mac_num2] [oui2-1] [nic_start2-1] [nic_end2-1] \
-	 *                                    [oui2-1] [nic_start2-1] [nic_end2-1]... \
-	 *                                    [oui2-n] [nic_start2-n] [nic_end2-n] \
+	 *				      [oui2-1] [nic_start2-1] [nic_end2-1]... \
+	 *				      [oui2-n] [nic_start2-n] [nic_end2-n] \
 	 * Ex: fw_by_mac=2 \
 	 *  fw_bcmdhd1.bin 2 0x0022F4 0xE85408 0xE8549D 0x983B16 0x3557A9 0x35582A \
 	 *  fw_bcmdhd2.bin 3 0x0022F4 0xE85408 0xE8549D 0x983B16 0x3557A9 0x35582A \
-	 *                           0x983B16 0x916157 0x916487
+	 *			     0x983B16 0x916157 0x916487
 	 */
 
 	if (!strncmp("fw_by_mac=", full_param, len_param)) {

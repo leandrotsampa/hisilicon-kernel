@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -86,7 +86,7 @@ dhdcdc_msg(dhd_pub_t *dhd)
 	DHD_OS_WAKE_LOCK(dhd);
 
 	/* NOTE : cdc->msg.len holds the desired length of the buffer to be
-	 *        returned. Only up to CDC_MAX_MSG_SIZE of this buffer area
+	 *	  returned. Only up to CDC_MAX_MSG_SIZE of this buffer area
 	 *	  is actually sent to the dongle
 	 */
 	if (len > CDC_MAX_MSG_SIZE)
@@ -176,7 +176,7 @@ retry:
 		goto retry;
 	if (id != prot->reqid) {
 		DHD_ERROR(("%s: %s: unexpected request id %d (expected %d)\n",
-		           dhd_ifname(dhd, ifidx), __FUNCTION__, id, prot->reqid));
+			   dhd_ifname(dhd, ifidx), __FUNCTION__, id, prot->reqid));
 		ret = -EINVAL;
 		goto done;
 	}
@@ -263,7 +263,7 @@ dhdcdc_set_ioctl(dhd_pub_t *dhd, int ifidx, uint cmd, void *buf, uint len, uint8
 
 	if (id != prot->reqid) {
 		DHD_ERROR(("%s: %s: unexpected request id %d (expected %d)\n",
-		           dhd_ifname(dhd, ifidx), __FUNCTION__, id, prot->reqid));
+			   dhd_ifname(dhd, ifidx), __FUNCTION__, id, prot->reqid));
 		ret = -EINVAL;
 		goto done;
 	}
@@ -363,7 +363,7 @@ done:
 
 int
 dhd_prot_iovar_op(dhd_pub_t *dhdp, const char *name,
-                  void *params, int plen, void *arg, int len, bool set)
+		  void *params, int plen, void *arg, int len, bool set)
 {
 	return BCME_UNSUPPORTED;
 }
@@ -443,7 +443,7 @@ dhd_prot_hdrpull(dhd_pub_t *dhd, int *ifidx, void *pktbuf, uchar *reorder_buf_in
 
 	if (PKTLEN(dhd->osh, pktbuf) < BDC_HEADER_LEN) {
 		DHD_ERROR(("%s: rx data too short (%d < %d)\n", __FUNCTION__,
-		           PKTLEN(dhd->osh, pktbuf), BDC_HEADER_LEN));
+			   PKTLEN(dhd->osh, pktbuf), BDC_HEADER_LEN));
 		return BCME_ERROR;
 	}
 
@@ -460,7 +460,7 @@ dhd_prot_hdrpull(dhd_pub_t *dhd, int *ifidx, void *pktbuf, uchar *reorder_buf_in
 
 	if (((h->flags & BDC_FLAG_VER_MASK) >> BDC_FLAG_VER_SHIFT) != BDC_PROTO_VER) {
 		DHD_ERROR(("%s: non-BDC packet received, flags = 0x%x\n",
-		           dhd_ifname(dhd, *ifidx), h->flags));
+			   dhd_ifname(dhd, *ifidx), h->flags));
 		if (((h->flags & BDC_FLAG_VER_MASK) >> BDC_FLAG_VER_SHIFT) == BDC_PROTO_VER_1)
 			h->dataOffset = 0;
 		else
@@ -469,7 +469,7 @@ dhd_prot_hdrpull(dhd_pub_t *dhd, int *ifidx, void *pktbuf, uchar *reorder_buf_in
 
 	if (h->flags & BDC_FLAG_SUM_GOOD) {
 		DHD_INFO(("%s: BDC packet received with good rx-csum, flags 0x%x\n",
-		          dhd_ifname(dhd, *ifidx), h->flags));
+			  dhd_ifname(dhd, *ifidx), h->flags));
 		PKTSETSUMGOOD(pktbuf, TRUE);
 	}
 

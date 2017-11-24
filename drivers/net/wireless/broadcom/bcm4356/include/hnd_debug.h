@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -31,7 +31,7 @@
 #define	_HND_DEBUG_H
 
 /* Magic number at a magic location to find HND_DEBUG pointers */
-#define HND_DEBUG_PTR_PTR_MAGIC 0x50504244  	/* DBPP */
+#define HND_DEBUG_PTR_PTR_MAGIC 0x50504244	/* DBPP */
 
 /* Magic number at a magic location to find RAM size */
 #define HND_RAMSIZE_PTR_MAGIC	0x534d4152	/* RAMS */
@@ -77,9 +77,9 @@ typedef struct hnd_ramsize_ptr {
 	uint32	ram_size;
 } hnd_ramsize_ptr_t;
 
-#define  HND_DEBUG_EPIVERS_MAX_STR_LEN	32
-#define  HND_DEBUG_BUILD_SIGNATURE_FWID_LEN	17
-#define  HND_DEBUG_BUILD_SIGNATURE_VER_LEN	22
+#define	 HND_DEBUG_EPIVERS_MAX_STR_LEN	32
+#define	 HND_DEBUG_BUILD_SIGNATURE_FWID_LEN	17
+#define	 HND_DEBUG_BUILD_SIGNATURE_VER_LEN	22
 typedef struct hnd_debug {
 	uint32	magic;
 #define HND_DEBUG_MAGIC 0x47424544	/* 'DEBG' */
@@ -116,27 +116,27 @@ typedef struct hnd_debug {
  * (which could be 64 bits).
  */
 
-typedef struct             {    /* Time value with microsecond resolution    */
-	uint32 tv_sec;	/* Seconds                                   */
-	uint32 tv_usec;	/* Microseconds                              */
+typedef struct		   {	/* Time value with microsecond resolution    */
+	uint32 tv_sec;	/* Seconds				     */
+	uint32 tv_usec;	/* Microseconds				     */
 } timeval_t;
 
 
 /* Linux/ARM 32 prstatus for notes section */
 typedef struct prstatus {
-	  int32 si_signo; 	/* Signal number */
-	  int32 si_code; 	/* Extra code */
-	  int32 si_errno; 	/* Errno */
-	  uint16 pr_cursig; 	/* Current signal.  */
+	  int32 si_signo;	/* Signal number */
+	  int32 si_code;	/* Extra code */
+	  int32 si_errno;	/* Errno */
+	  uint16 pr_cursig;	/* Current signal.  */
 	  uint16 unused;
 	  uint32 pr_sigpend;	/* Set of pending signals.  */
-	  uint32 pr_sighold;	/* Set of held signals.  */
+	  uint32 pr_sighold;	/* Set of held signals.	 */
 	  uint32 pr_pid;
 	  uint32 pr_ppid;
 	  uint32 pr_pgrp;
 	  uint32 pr_sid;
 	  timeval_t pr_utime;	/* User time.  */
-	  timeval_t pr_stime;	/* System time.  */
+	  timeval_t pr_stime;	/* System time.	 */
 	  timeval_t pr_cutime;	/* Cumulative user time.  */
 	  timeval_t pr_cstime;	/* Cumulative system time.  */
 	  uint32 uregs[18];
@@ -166,21 +166,21 @@ typedef struct prstatus {
 				RAMSIZE_PTR_PTR_END
 
 typedef struct hnd_ext_trap_hdr {
-	uint8 version;    /* Extended trap version info */
-	uint8 reserved;   /* currently unused */
-	uint16 len;       /* Length of data excluding this header */
-	uint8 data[];     /* TLV data */
+	uint8 version;	  /* Extended trap version info */
+	uint8 reserved;	  /* currently unused */
+	uint16 len;	  /* Length of data excluding this header */
+	uint8 data[];	  /* TLV data */
 } hnd_ext_trap_hdr_t;
 
-#define TAG_TRAP_SIGNATURE       1  /* Processor register dumps */
-#define TAG_TRAP_STACK           2  /* Processor stack dump (possible code locations) */
-#define TAG_TRAP_MEMORY          3  /* Memory subsystem dump */
-#define TAG_TRAP_DEEPSLEEP       4  /* Deep sleep health check failures */
-#define TAG_TRAP_PSM_WD          5  /* PSM watchdog information */
-#define TAG_TRAP_PHY             6  /* Phy related issues */
-#define TAG_TRAP_BUS             7  /* Bus level issues */
-#define TAG_TRAP_MAC             8  /* Mac level issues */
-#define TAG_TRAP_BACKPLANE       9  /* Backplane related errors */
+#define TAG_TRAP_SIGNATURE	 1  /* Processor register dumps */
+#define TAG_TRAP_STACK		 2  /* Processor stack dump (possible code locations) */
+#define TAG_TRAP_MEMORY		 3  /* Memory subsystem dump */
+#define TAG_TRAP_DEEPSLEEP	 4  /* Deep sleep health check failures */
+#define TAG_TRAP_PSM_WD		 5  /* PSM watchdog information */
+#define TAG_TRAP_PHY		 6  /* Phy related issues */
+#define TAG_TRAP_BUS		 7  /* Bus level issues */
+#define TAG_TRAP_MAC		 8  /* Mac level issues */
+#define TAG_TRAP_BACKPLANE	 9  /* Backplane related errors */
 
 typedef struct hnd_ext_trap_bp_err
 {

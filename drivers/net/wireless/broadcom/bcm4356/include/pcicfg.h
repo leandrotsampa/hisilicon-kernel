@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -142,7 +142,7 @@ typedef struct _pciconfig_cap_pcie {
 /* PCIE Extended configuration */
 #define PCIE_ADV_CORR_ERR_MASK	0x114
 #define CORR_ERR_RE	(1 << 0) /* Receiver  */
-#define CORR_ERR_BT 	(1 << 6) /* Bad TLP  */
+#define CORR_ERR_BT	(1 << 6) /* Bad TLP  */
 #define CORR_ERR_BD	(1 << 7) /* Bad DLLP */
 #define CORR_ERR_RR	(1 << 8) /* REPLAY_NUM rollover */
 #define CORR_ERR_RT	(1 << 12) /* Reply timer timeout */
@@ -180,7 +180,7 @@ typedef struct _pcie_enhanced_caphdr {
 #define	PCI_BAR0_WIN2		0xac	/* backplane addres space accessed by second 4KB of BAR0 */
 #define	PCI_GPIO_IN		0xb0	/* pci config space gpio input (>=rev3) */
 #define	PCI_GPIO_OUT		0xb4	/* pci config space gpio output (>=rev3) */
-#define PCIE_CFG_DEVICE_CONTROL 0xb4    /* 0xb4 is used as device control in PCIE devices */
+#define PCIE_CFG_DEVICE_CONTROL 0xb4	/* 0xb4 is used as device control in PCIE devices */
 #define PCIE_DC_AER_CORR_EN		(1u << 0u)
 #define PCIE_DC_AER_NON_FATAL_EN	(1u << 1u)
 #define PCIE_DC_AER_FATAL_EN		(1u << 2u)
@@ -297,7 +297,7 @@ typedef enum {
 
 #define PCI_CONFIG_SPACE_SIZE	256
 
-#define DWORD_ALIGN(x)  (x & ~(0x03))
+#define DWORD_ALIGN(x)	(x & ~(0x03))
 #define BYTE_POS(x) (x & 0x3)
 #define WORD_POS(x) (x & 0x1)
 
@@ -316,14 +316,14 @@ typedef enum {
 #define write_pci_cfg_byte(a, val) do { \
 	uint32 tmpval; \
 	tmpval = (OSL_PCI_READ_CONFIG(osh, DWORD_ALIGN(a), 4) & ~0xFF << BYTE_POS(a)) | \
-	        val << BYTE_POS(a); \
+		val << BYTE_POS(a); \
 	OSL_PCI_WRITE_CONFIG(osh, DWORD_ALIGN(a), 4, tmpval); \
 	} while (0)
 
 #define write_pci_cfg_word(a, val) do { \
 	uint32 tmpval; \
 	tmpval = (OSL_PCI_READ_CONFIG(osh, DWORD_ALIGN(a), 4) & ~0xFFFF << WORD_POS(a)) | \
-	        val << WORD_POS(a); \
+		val << WORD_POS(a); \
 	OSL_PCI_WRITE_CONFIG(osh, DWORD_ALIGN(a), 4, tmpval); \
 	} while (0)
 

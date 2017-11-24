@@ -5,21 +5,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -56,7 +56,7 @@ typedef uint16 chanspec_t;
 
 /* channel bitvec */
 typedef struct {
-	uint8   vec[MAXCHANNEL/8];   /* bitvec of channels */
+	uint8	vec[MAXCHANNEL/8];   /* bitvec of channels */
 } chanvec_t;
 
 /* make sure channel num is within valid range */
@@ -66,7 +66,7 @@ typedef struct {
 	(ABS(wf_chspec_ctlchan(sp1) - wf_chspec_ctlchan(sp2)) < (sep))
 
 /* All builds use the new 11ac ratespec/chanspec */
-#undef  D11AC_IOTYPES
+#undef	D11AC_IOTYPES
 #define D11AC_IOTYPES
 
 #define WL_CHANSPEC_CHAN_MASK		0x00ff
@@ -126,7 +126,7 @@ typedef struct {
 					((channel) + CH_10MHZ_APART) : 0)
 
 #define LL_20_SB(channel) (((channel) > 3 * CH_10MHZ_APART) ? ((channel) - 3 * CH_10MHZ_APART) : 0)
-#define UU_20_SB(channel) 	(((channel) < (MAXCHANNEL - 3 * CH_10MHZ_APART)) ? \
+#define UU_20_SB(channel)	(((channel) < (MAXCHANNEL - 3 * CH_10MHZ_APART)) ? \
 				((channel) + 3 * CH_10MHZ_APART) : 0)
 #define LU_20_SB(channel) LOWER_20_SB(channel)
 #define UL_20_SB(channel) UPPER_20_SB(channel)
@@ -400,10 +400,10 @@ typedef struct {
 /**
  *  No of sub-band vlaue of the specified Mhz chanspec
  */
-#define WF_NUM_SIDEBANDS_40MHZ   2
-#define WF_NUM_SIDEBANDS_80MHZ   4
+#define WF_NUM_SIDEBANDS_40MHZ	 2
+#define WF_NUM_SIDEBANDS_80MHZ	 4
 #define WF_NUM_SIDEBANDS_8080MHZ 4
-#define WF_NUM_SIDEBANDS_160MHZ  8
+#define WF_NUM_SIDEBANDS_160MHZ	 8
 
 /**
  * Convert chanspec to ascii string
@@ -469,7 +469,7 @@ extern bool wf_chspec_valid(chanspec_t chanspec);
  * 20MHz channels this is just the channel number. For 40MHz or wider channels
  * it is the primary 20MHz channel specified by the chanspec.
  *
- * @param	chspec    input chanspec
+ * @param	chspec	  input chanspec
  *
  * @return Returns the channel number of the primary 20MHz channel
  */
@@ -480,7 +480,7 @@ extern uint8 wf_chspec_ctlchan(chanspec_t chspec);
  *
  * This function returns the bandwidth string for the passed chanspec.
  *
- * @param	chspec    input chanspec
+ * @param	chspec	  input chanspec
  *
  * @return Returns the bandwidth string
  */
@@ -493,7 +493,7 @@ extern const char *wf_chspec_to_bw_str(chanspec_t chspec);
  * channels this is just the chanspec. For 40MHz or wider channels it is the
  * chanspec of the primary 20MHZ channel specified by the chanspec.
  *
- * @param	chspec    input chanspec
+ * @param	chspec	  input chanspec
  *
  * @return Returns the chanspec of the primary 20MHz channel
  */
@@ -527,13 +527,13 @@ extern chanspec_t wf_chspec_primary40_chspec(chanspec_t chspec);
  *
  * Reference 802.11 REVma, section 17.3.8.3, and 802.11B section 18.4.6.2
  *
- * @param	freq          frequency in MHz
+ * @param	freq	      frequency in MHz
  * @param	start_factor  base frequency in 500 kHz units, e.g. 10000 for 5 GHz
  *
  * @return Returns a channel number
  *
- * @see  WF_CHAN_FACTOR_2_4_G
- * @see  WF_CHAN_FACTOR_5_G
+ * @see	 WF_CHAN_FACTOR_2_4_G
+ * @see	 WF_CHAN_FACTOR_5_G
  */
 extern int wf_mhz2channel(uint freq, uint start_factor);
 
@@ -555,13 +555,13 @@ extern int wf_mhz2channel(uint freq, uint start_factor);
  *
  * Reference 802.11 REVma, section 17.3.8.3, and 802.11B section 18.4.6.2
  *
- * @param	channel       input channel number
+ * @param	channel	      input channel number
  * @param	start_factor  base frequency in 500 kHz units, e.g. 10000 for 5 GHz
  *
  * @return Returns a frequency in MHz
  *
- * @see  WF_CHAN_FACTOR_2_4_G
- * @see  WF_CHAN_FACTOR_5_G
+ * @see	 WF_CHAN_FACTOR_2_4_G
+ * @see	 WF_CHAN_FACTOR_5_G
  */
 extern int wf_channel2mhz(uint channel, uint start_factor);
 
@@ -570,7 +570,7 @@ extern int wf_channel2mhz(uint channel, uint start_factor);
  * parameters
  *
  *	primary_channel - primary 20Mhz channel
- *	center_channel   - center frequecny of the 80Mhz channel
+ *	center_channel	 - center frequecny of the 80Mhz channel
  *
  * The center_channel can be one of {42, 58, 106, 122, 138, 155}
  *
@@ -582,7 +582,7 @@ extern chanspec_t wf_chspec_80(uint8 center_channel, uint8 primary_channel);
  * Convert ctl chan and bw to chanspec
  *
  * @param	ctl_ch		channel
- * @param	bw	        bandwidth
+ * @param	bw		bandwidth
  *
  * @return	> 0 if successful or 0 otherwise
  *

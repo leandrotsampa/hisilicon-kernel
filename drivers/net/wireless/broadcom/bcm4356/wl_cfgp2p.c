@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -75,9 +75,9 @@ static int wl_cfgp2p_if_open(struct net_device *net);
 static int wl_cfgp2p_if_stop(struct net_device *net);
 
 static const struct net_device_ops wl_cfgp2p_if_ops = {
-	.ndo_open       = wl_cfgp2p_if_open,
-	.ndo_stop       = wl_cfgp2p_if_stop,
-	.ndo_do_ioctl   = wl_cfgp2p_do_ioctl,
+	.ndo_open	= wl_cfgp2p_if_open,
+	.ndo_stop	= wl_cfgp2p_if_stop,
+	.ndo_do_ioctl	= wl_cfgp2p_do_ioctl,
 	.ndo_start_xmit = wl_cfgp2p_start_xmit,
 };
 #endif /* WL_ENABLE_P2P_IF */
@@ -424,14 +424,14 @@ int wl_cfg_multip2p_operational(struct bcm_cfg80211 *cfg)
 
 /* Create a new P2P BSS.
  * Parameters:
- * @mac      : MAC address of the BSS to create
+ * @mac	     : MAC address of the BSS to create
  * @if_type  : interface type: WL_P2P_IF_GO or WL_P2P_IF_CLIENT
  * @chspec   : chspec to use if creating a GO BSS.
  * Returns 0 if success.
  */
 s32
 wl_cfgp2p_ifadd(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
-            chanspec_t chspec)
+	    chanspec_t chspec)
 {
 	wl_p2p_if_t ifreq;
 	s32 err;
@@ -444,7 +444,7 @@ wl_cfgp2p_ifadd(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
 	CFGP2P_ERR(("---cfg p2p_ifadd "MACDBG" %s %u\n",
 		MAC2STRDBG(ifreq.addr.octet),
 		(if_type == WL_P2P_IF_GO) ? "go" : "client",
-	        (chspec & WL_CHANSPEC_CHAN_MASK) >> WL_CHANSPEC_CHAN_SHIFT));
+		(chspec & WL_CHANSPEC_CHAN_MASK) >> WL_CHANSPEC_CHAN_SHIFT));
 
 	err = wldev_iovar_setbuf(ndev, "p2p_ifadd", &ifreq, sizeof(ifreq),
 		cfg->ioctl_buf, WLC_IOCTL_MAXLEN, &cfg->ioctl_buf_sync);
@@ -458,7 +458,7 @@ wl_cfgp2p_ifadd(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
 
 /* Disable a P2P BSS.
  * Parameters:
- * @mac      : MAC address of the BSS to disable
+ * @mac	     : MAC address of the BSS to disable
  * Returns 0 if success.
  */
 s32
@@ -479,7 +479,7 @@ wl_cfgp2p_ifdisable(struct bcm_cfg80211 *cfg, struct ether_addr *mac)
 
 /* Delete a P2P BSS.
  * Parameters:
- * @mac      : MAC address of the BSS to delete
+ * @mac	     : MAC address of the BSS to delete
  * Returns 0 if success.
  */
 s32
@@ -500,12 +500,12 @@ wl_cfgp2p_ifdel(struct bcm_cfg80211 *cfg, struct ether_addr *mac)
 
 /* Change a P2P Role.
  * Parameters:
- * @mac      : MAC address of the BSS to change a role
+ * @mac	     : MAC address of the BSS to change a role
  * Returns 0 if success.
  */
 s32
 wl_cfgp2p_ifchange(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
-            chanspec_t chspec, s32 conn_idx)
+	    chanspec_t chspec, s32 conn_idx)
 {
 	wl_p2p_if_t ifreq;
 	s32 err;
@@ -535,7 +535,7 @@ wl_cfgp2p_ifchange(struct bcm_cfg80211 *cfg, struct ether_addr *mac, u8 if_type,
 
 /* Get the index of a created P2P BSS.
  * Parameters:
- * @mac      : MAC address of the created BSS
+ * @mac	     : MAC address of the created BSS
  * @index    : output: index of created BSS
  * Returns 0 if success.
  */
@@ -733,7 +733,7 @@ wl_cfgp2p_init_discovery(struct bcm_cfg80211 *cfg)
 
 /* Deinitialize P2P Discovery
  * Parameters :
- * @cfg        : wl_private data
+ * @cfg	       : wl_private data
  * Returns 0 if succes
  */
 static s32
@@ -754,7 +754,7 @@ wl_cfgp2p_deinit_discovery(struct bcm_cfg80211 *cfg)
 
 	/* Set the discovery state to SCAN */
 	wl_cfgp2p_set_p2p_mode(cfg, WL_P2P_DISC_ST_SCAN, 0, 0,
-	            bssidx);
+		    bssidx);
 	/* Disable P2P discovery in the WL driver (deletes the discovery BSSCFG) */
 	ret = wl_cfgp2p_set_discovery(cfg, 0);
 
@@ -770,7 +770,7 @@ wl_cfgp2p_deinit_discovery(struct bcm_cfg80211 *cfg)
 /* Enable P2P Discovery
  * Parameters:
  * @cfg	: wl_private data
- * @ie  : probe request ie (WPS IE + P2P IE)
+ * @ie	: probe request ie (WPS IE + P2P IE)
  * @ie_len   : probe request ie length
  * Returns 0 if success.
  */
@@ -828,7 +828,7 @@ exit:
 
 /* Disable P2P Discovery
  * Parameters:
- * @cfg       : wl_private_data
+ * @cfg	      : wl_private_data
  * Returns 0 if success.
  */
 s32
@@ -1016,7 +1016,7 @@ wl_cfgp2p_escan(struct bcm_cfg80211 *cfg, struct net_device *dev, u16 active,
 
 /* search function to reach at common channel to send action frame
  * Parameters:
- * @cfg       : wl_private data
+ * @cfg	      : wl_private data
  * @ndev     : net device for bssidx
  * @bssidx   : bssidx for BSS
  * Returns 0 if success.
@@ -1168,7 +1168,7 @@ wl_cfgp2p_find_wfdie(u8 *parse, u32 len)
 }
 u32
 wl_cfgp2p_vndr_ie(struct bcm_cfg80211 *cfg, u8 *iebuf, s32 pktflag,
-            s8 *oui, s32 ie_id, s8 *data, s32 datalen, const s8* add_del_cmd)
+	    s8 *oui, s32 ie_id, s8 *data, s32 datalen, const s8* add_del_cmd)
 {
 	vndr_ie_setbuf_t hdr;	/* aligned temporary vndr_ie buffer header */
 	s32 iecount;
@@ -1176,8 +1176,8 @@ wl_cfgp2p_vndr_ie(struct bcm_cfg80211 *cfg, u8 *iebuf, s32 pktflag,
 
 	/* Validate the pktflag parameter */
 	if ((pktflag & ~(VNDR_IE_BEACON_FLAG | VNDR_IE_PRBRSP_FLAG |
-	            VNDR_IE_ASSOCRSP_FLAG | VNDR_IE_AUTHRSP_FLAG |
-	            VNDR_IE_PRBREQ_FLAG | VNDR_IE_ASSOCREQ_FLAG))) {
+		    VNDR_IE_ASSOCRSP_FLAG | VNDR_IE_AUTHRSP_FLAG |
+		    VNDR_IE_PRBREQ_FLAG | VNDR_IE_ASSOCREQ_FLAG))) {
 		CFGP2P_ERR(("p2pwl_vndr_ie: Invalid packet flag 0x%x\n", pktflag));
 		return -1;
 	}
@@ -1244,7 +1244,7 @@ exit:
  * Parameters: Note that this idx is applicable only
  * for primary and P2P interfaces. The virtual AP/STA is not
  * covered here.
- * @cfg     : wl_private data
+ * @cfg	    : wl_private data
  * @bssidx : bssidx which indicate bsscfg->idx of firmware.
  * @type   : output arg to store array idx of p2p->bss.
  * Returns error
@@ -1416,7 +1416,7 @@ wl_cfgp2p_listen_expired(unsigned long data)
  */
 static s32
 wl_cfgp2p_cancel_listen(struct bcm_cfg80211 *cfg, struct net_device *ndev,
-                         struct wireless_dev *wdev, bool notify)
+			 struct wireless_dev *wdev, bool notify)
 {
 	WL_DBG(("Enter \n"));
 	/* Irrespective of whether timer is running or not, reset
@@ -1444,9 +1444,9 @@ wl_cfgp2p_cancel_listen(struct bcm_cfg80211 *cfg, struct net_device *ndev,
  * with a P2P probe response.
  *
  * This fn assumes dongle p2p device discovery is already enabled.
- * Parameters   :
- * @cfg          : wl_private data
- * @channel     : channel to listen
+ * Parameters	:
+ * @cfg		 : wl_private data
+ * @channel	: channel to listen
  * @duration_ms : the time (milli seconds) to wait
  */
 s32
@@ -1480,7 +1480,7 @@ wl_cfgp2p_discover_listen(struct bcm_cfg80211 *cfg, s32 channel, u32 duration_ms
 	}
 
 	ret = wl_cfgp2p_set_p2p_mode(cfg, WL_P2P_DISC_ST_LISTEN, channel, (u16) duration_ms,
-	            wl_to_p2p_bss_bssidx(cfg, P2PAPI_BSSCFG_DEVICE));
+		    wl_to_p2p_bss_bssidx(cfg, P2PAPI_BSSCFG_DEVICE));
 	_timer = &cfg->p2p->listen_timer;
 
 	/*  We will wait to receive WLC_E_P2P_DISC_LISTEN_COMPLETE from dongle ,
@@ -1527,7 +1527,7 @@ wl_cfgp2p_discover_enable_search(struct bcm_cfg80211 *cfg, u8 enable)
 	if (!enable) {
 		wl_clr_p2p_status(cfg, SCANNING);
 		ret = wl_cfgp2p_set_p2p_mode(cfg, WL_P2P_DISC_ST_SCAN, 0, 0,
-		            wl_to_p2p_bss_bssidx(cfg, P2PAPI_BSSCFG_DEVICE));
+			    wl_to_p2p_bss_bssidx(cfg, P2PAPI_BSSCFG_DEVICE));
 	}
 
 	return ret;
@@ -1538,7 +1538,7 @@ wl_cfgp2p_discover_enable_search(struct bcm_cfg80211 *cfg, u8 enable)
  */
 s32
 wl_cfgp2p_action_tx_complete(struct bcm_cfg80211 *cfg, bcm_struct_cfgdev *cfgdev,
-            const wl_event_msg_t *e, void *data)
+	    const wl_event_msg_t *e, void *data)
 {
 	s32 ret = BCME_OK;
 	u32 event_type = ntoh32(e->event_type);
@@ -1732,7 +1732,7 @@ wl_cfgp2p_supported(struct bcm_cfg80211 *cfg, struct net_device *ndev)
 	s32 ret = BCME_OK;
 	s32 p2p_supported = 0;
 	ret = wldev_iovar_getint(ndev, "p2p",
-	               &p2p_supported);
+		       &p2p_supported);
 	if (ret < 0) {
 		if (ret == BCME_UNSUPPORTED) {
 			CFGP2P_INFO(("p2p is unsupported\n"));
@@ -2174,12 +2174,12 @@ wl_cfgp2p_retreive_p2p_dev_addr(wl_bss_info_t *bi, u32 bi_length)
 
 	/* In probe responses, DEVICE INFO attribute will be present */
 	if (!(ptr = wl_cfgp2p_find_attrib_in_all_p2p_Ies(((u8 *) bi) + bi->ie_offset,
-	bi->ie_length,  P2P_SEID_DEV_INFO))) {
+	bi->ie_length,	P2P_SEID_DEV_INFO))) {
 		/* If DEVICE_INFO is not found, this might be a beacon frame.
 		 * check for DEVICE_ID in the beacon frame.
 		 */
 		ptr = wl_cfgp2p_find_attrib_in_all_p2p_Ies(((u8 *) bi) + bi->ie_offset,
-		bi->ie_length,  P2P_SEID_DEV_ID);
+		bi->ie_length,	P2P_SEID_DEV_ID);
 	}
 
 	if (!ptr)

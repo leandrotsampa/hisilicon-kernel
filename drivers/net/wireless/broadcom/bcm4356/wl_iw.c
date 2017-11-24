@@ -3,21 +3,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -202,10 +202,10 @@ typedef struct priv_link {
 #endif
 
 /* dev to wl_iw_t */
-#define IW_DEV_IF(dev)          ((wl_iw_t*)(WL_DEV_LINK(dev))->wliw)
+#define IW_DEV_IF(dev)		((wl_iw_t*)(WL_DEV_LINK(dev))->wliw)
 
 static void swap_key_from_BE(
-	        wl_wsec_key_t *key
+		wl_wsec_key_t *key
 )
 {
 	key->index = htod32(key->index);
@@ -218,7 +218,7 @@ static void swap_key_from_BE(
 }
 
 static void swap_key_to_BE(
-	        wl_wsec_key_t *key
+		wl_wsec_key_t *key
 )
 {
 	key->index = dtoh32(key->index);
@@ -780,7 +780,7 @@ wl_iw_get_range(
 	if ((error = dev_wlc_ioctl(dev, WLC_GET_PHYTYPE, &phytype, sizeof(phytype))))
 		return error;
 	if (nmode == 1 && (((phytype == WLC_PHY_TYPE_LCN) ||
-	                    (phytype == WLC_PHY_TYPE_LCN40)))) {
+			    (phytype == WLC_PHY_TYPE_LCN40)))) {
 		if ((error = dev_wlc_intvar_get(dev, "mimo_bw_cap", &bw_cap)))
 			return error;
 		if ((error = dev_wlc_intvar_get(dev, "sgi_tx", &sgi_tx)))
@@ -2141,7 +2141,7 @@ wl_iw_get_retry(
 
 	WL_TRACE(("%s: SIOCGIWRETRY\n", dev->name));
 
-	vwrq->disabled = 0;      /* Can't be disabled */
+	vwrq->disabled = 0;	 /* Can't be disabled */
 
 	/* Do not handle lifetime queries */
 	if ((vwrq->flags & IW_RETRY_TYPE) == IW_RETRY_LIFETIME)
@@ -2699,7 +2699,7 @@ wl_iw_set_wpaauth(
 
 		if (iw->privacy_invoked && !val) {
 			WL_WSEC(("%s: %s: 'Privacy invoked' TRUE but clearing wsec, assuming "
-			         "we're a WPS enrollee\n", dev->name, __FUNCTION__));
+				 "we're a WPS enrollee\n", dev->name, __FUNCTION__));
 			if ((error = dev_wlc_intvar_set(dev, "is_WPS_enrollee", TRUE))) {
 				WL_WSEC(("Failed to set iovar is_WPS_enrollee\n"));
 				return error;
@@ -3200,39 +3200,39 @@ wl_iw_conn_status_str(uint32 event_type, uint32 status, uint32 reason,
 	/* Map of WLC_E events to connection failure strings */
 #	define WL_IW_DONT_CARE	9999
 	const conn_fail_event_map_t event_map [] = {
-		/* inEvent           inStatus                inReason         */
-		/* outName outCause                                           */
+		/* inEvent	     inStatus		     inReason	      */
+		/* outName outCause					      */
 		{WLC_E_SET_SSID,     WLC_E_STATUS_SUCCESS,   WL_IW_DONT_CARE,
 		"Conn", "Success"},
 		{WLC_E_SET_SSID,     WLC_E_STATUS_NO_NETWORKS, WL_IW_DONT_CARE,
 		"Conn", "NoNetworks"},
-		{WLC_E_SET_SSID,     WLC_E_STATUS_FAIL,      WL_IW_DONT_CARE,
+		{WLC_E_SET_SSID,     WLC_E_STATUS_FAIL,	     WL_IW_DONT_CARE,
 		"Conn", "ConfigMismatch"},
-		{WLC_E_PRUNE,        WL_IW_DONT_CARE,        WLC_E_PRUNE_ENCR_MISMATCH,
+		{WLC_E_PRUNE,	     WL_IW_DONT_CARE,	     WLC_E_PRUNE_ENCR_MISMATCH,
 		"Conn", "EncrypMismatch"},
-		{WLC_E_PRUNE,        WL_IW_DONT_CARE,        WLC_E_RSN_MISMATCH,
+		{WLC_E_PRUNE,	     WL_IW_DONT_CARE,	     WLC_E_RSN_MISMATCH,
 		"Conn", "RsnMismatch"},
-		{WLC_E_AUTH,         WLC_E_STATUS_TIMEOUT,   WL_IW_DONT_CARE,
+		{WLC_E_AUTH,	     WLC_E_STATUS_TIMEOUT,   WL_IW_DONT_CARE,
 		"Conn", "AuthTimeout"},
-		{WLC_E_AUTH,         WLC_E_STATUS_FAIL,      WL_IW_DONT_CARE,
+		{WLC_E_AUTH,	     WLC_E_STATUS_FAIL,	     WL_IW_DONT_CARE,
 		"Conn", "AuthFail"},
-		{WLC_E_AUTH,         WLC_E_STATUS_NO_ACK,    WL_IW_DONT_CARE,
+		{WLC_E_AUTH,	     WLC_E_STATUS_NO_ACK,    WL_IW_DONT_CARE,
 		"Conn", "AuthNoAck"},
-		{WLC_E_REASSOC,      WLC_E_STATUS_FAIL,      WL_IW_DONT_CARE,
+		{WLC_E_REASSOC,	     WLC_E_STATUS_FAIL,	     WL_IW_DONT_CARE,
 		"Conn", "ReassocFail"},
-		{WLC_E_REASSOC,      WLC_E_STATUS_TIMEOUT,   WL_IW_DONT_CARE,
+		{WLC_E_REASSOC,	     WLC_E_STATUS_TIMEOUT,   WL_IW_DONT_CARE,
 		"Conn", "ReassocTimeout"},
-		{WLC_E_REASSOC,      WLC_E_STATUS_ABORT,     WL_IW_DONT_CARE,
+		{WLC_E_REASSOC,	     WLC_E_STATUS_ABORT,     WL_IW_DONT_CARE,
 		"Conn", "ReassocAbort"},
-		{WLC_E_PSK_SUP,      WLC_SUP_KEYED,          WL_IW_DONT_CARE,
+		{WLC_E_PSK_SUP,	     WLC_SUP_KEYED,	     WL_IW_DONT_CARE,
 		"Sup", "ConnSuccess"},
-		{WLC_E_PSK_SUP,      WL_IW_DONT_CARE,        WL_IW_DONT_CARE,
+		{WLC_E_PSK_SUP,	     WL_IW_DONT_CARE,	     WL_IW_DONT_CARE,
 		"Sup", "WpaHandshakeFail"},
-		{WLC_E_DEAUTH_IND,   WL_IW_DONT_CARE,        WL_IW_DONT_CARE,
+		{WLC_E_DEAUTH_IND,   WL_IW_DONT_CARE,	     WL_IW_DONT_CARE,
 		"Conn", "Deauth"},
-		{WLC_E_DISASSOC_IND, WL_IW_DONT_CARE,        WL_IW_DONT_CARE,
+		{WLC_E_DISASSOC_IND, WL_IW_DONT_CARE,	     WL_IW_DONT_CARE,
 		"Conn", "DisassocInd"},
-		{WLC_E_DISASSOC,     WL_IW_DONT_CARE,        WL_IW_DONT_CARE,
+		{WLC_E_DISASSOC,     WL_IW_DONT_CARE,	     WL_IW_DONT_CARE,
 		"Conn", "Disassoc"}
 	};
 
@@ -3272,8 +3272,8 @@ static bool
 wl_iw_check_conn_fail(wl_event_msg_t *e, char* stringBuf, uint buflen)
 {
 	uint32 event = ntoh32(e->event_type);
-	uint32 status =  ntoh32(e->status);
-	uint32 reason =  ntoh32(e->reason);
+	uint32 status =	 ntoh32(e->status);
+	uint32 reason =	 ntoh32(e->reason);
 
 	if (wl_iw_conn_status_str(event, status, reason, stringBuf, buflen)) {
 		return TRUE;
@@ -3296,9 +3296,9 @@ wl_iw_event(struct net_device *dev, wl_event_msg_t *e, void* data)
 	char extra[IW_CUSTOM_MAX + 1];
 	int cmd = 0;
 	uint32 event_type = ntoh32(e->event_type);
-	uint16 flags =  ntoh16(e->flags);
+	uint16 flags =	ntoh16(e->flags);
 	uint32 datalen = ntoh32(e->datalen);
-	uint32 status =  ntoh32(e->status);
+	uint32 status =	 ntoh32(e->status);
 
 	memset(&wrqu, 0, sizeof(wrqu));
 	memset(extra, 0, sizeof(extra));
@@ -3881,7 +3881,7 @@ wl_iw_attach(struct net_device *dev, void * dhdp)
 	iscan->iscan_state = ISCAN_STATE_IDLE;
 
 	/* Set up the timer */
-	iscan->timer_ms    = 2000;
+	iscan->timer_ms	   = 2000;
 	init_timer(&iscan->timer);
 	iscan->timer.data = (ulong)iscan;
 	iscan->timer.function = wl_iw_timerfunc;

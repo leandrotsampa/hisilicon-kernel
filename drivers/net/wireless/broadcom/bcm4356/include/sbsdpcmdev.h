@@ -4,21 +4,21 @@
  *
  * Copyright (C) 1999-2017, Broadcom Corporation
  *
- *      Unless you and Broadcom execute a separate written software license
+ *	Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
  * following added to such license:
  *
- *      As a special exception, the copyright holders of this software give you
+ *	As a special exception, the copyright holders of this software give you
  * permission to link this software with independent modules, and to copy and
  * distribute the resulting executable under terms of your choice, provided that
  * you also meet, for each linked independent module, the terms and conditions of
- * the license of that module.  An independent module is a module which is not
- * derived from this software.  The special exception does not apply to any
+ * the license of that module.	An independent module is a module which is not
+ * derived from this software.	The special exception does not apply to any
  * modifications of the software.
  *
- *      Notwithstanding the above, under no circumstances may you combine this
+ *	Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
@@ -79,7 +79,7 @@ typedef volatile struct {
 	uint16 PAD[1];
 	uint16 pcmciamesportalmask;	/* PcmciaMesPortalMask, 0x014, rev8   */
 	uint16 PAD[1];
-	uint16 pcmciawrframebc;		/* PcmciaWrFrameBC, 0x018, rev8   */
+	uint16 pcmciawrframebc;		/* PcmciaWrFrameBC, 0x018, rev8	  */
 	uint16 PAD[1];
 	uint16 pcmciaunderflowtimer;	/* PcmciaUnderflowTimer, 0x01c, rev8   */
 	uint16 PAD[1];
@@ -93,8 +93,8 @@ typedef volatile struct {
 	uint32 funcintmask;		/* SDIO Function Interrupt Mask, SDIO rev4 */
 	uint32 PAD[2];
 	uint32 tosbmailbox;		/* ToSBMailbox, 0x040, rev8   */
-	uint32 tohostmailbox;		/* ToHostMailbox, 0x044, rev8   */
-	uint32 tosbmailboxdata;		/* ToSbMailboxData, 0x048, rev8   */
+	uint32 tohostmailbox;		/* ToHostMailbox, 0x044, rev8	*/
+	uint32 tosbmailboxdata;		/* ToSbMailboxData, 0x048, rev8	  */
 	uint32 tohostmailboxdata;	/* ToHostMailboxData, 0x04c, rev8   */
 
 	/* synchronized access to registers in SDIO clock domain */
@@ -102,9 +102,9 @@ typedef volatile struct {
 	uint32 PAD[3];
 
 	/* PCMCIA frame control */
-	uint8 pcmciaframectrl;		/* pcmciaFrameCtrl, 0x060, rev8   */
+	uint8 pcmciaframectrl;		/* pcmciaFrameCtrl, 0x060, rev8	  */
 	uint8 PAD[3];
-	uint8 pcmciawatermark;		/* pcmciaWaterMark, 0x064, rev8   */
+	uint8 pcmciawatermark;		/* pcmciaWaterMark, 0x064, rev8	  */
 	uint8 PAD[155];
 
 	/* interrupt batching control */
