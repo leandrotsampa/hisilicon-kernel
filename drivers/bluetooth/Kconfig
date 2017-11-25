@@ -354,4 +354,12 @@ config BT_QCOMSMD
 	  Say Y here to compile support for HCI over Qualcomm SMD into the
 	  kernel or say M to compile as a module.
 
+config HISI_BT_POWER
+	tristate "HiSilicon Bluetooth Power Control"
+	depends on ARCH_HISI && RFKILL
+	default m
+	help
+	  Provides a parameter to switch on/off power from PMIC
+	  to Bluetooth device.
+
 endmenu

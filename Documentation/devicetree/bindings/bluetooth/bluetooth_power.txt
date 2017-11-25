@@ -1,0 +1,17 @@
+* Bluetooth Controller
+Bluetooth controller communicates with the Bluetooth Host using HCI Transport layer.
+HCI Transport layer can be based on UART or USB serial communication protocol.
+
+Required properties:
+  - compatible: Should be "brcm,bcm4356-bt"
+  - brcm,bt-reset-gpio: GPIO pin to bring BT Controller out of reset
+
+Optional properties:
+  None
+
+Example:
+
+bt-bcm4356 {
+	compatible = "brcm,bcm4356-bt";
+	brcm,bt-reset-gpio = <&gpio2 4 0>;
+};
