@@ -165,9 +165,6 @@ static const struct hisi_gate_clock hi3798cv200_gate_clks[] = {
 		CLK_SET_RATE_PARENT, 0x6C, 16, 0, },
 	{ HISTB_I2C4_CLK, "clk_i2c4", "clk_apb",
 		CLK_SET_RATE_PARENT, 0x6C, 20, 0, },
-	/* SPI */
-	{ HISTB_SPI0_CLK, "clk_spi0", "clk_apb",
-		CLK_SET_RATE_PARENT, 0x70, 0, 0, },
 	/* SDIO */
 	{ HISTB_SDIO0_BIU_CLK, "clk_sdio0_biu", "200m",
 			CLK_SET_RATE_PARENT, 0x9c, 0, 0, },
@@ -240,6 +237,8 @@ static const struct hisi_misc_clock hi3798cv200_misc_clks[] = {
 		|USB3_SUSPEND_CKEN1|USB3_REF_CKEN1 },
 	{ HISTB_GPU_CLK, "clk_gpu", "gpu_mux", CLK_SET_RATE_PARENT,
 		PERI_CRG53_GPU, GPU_SRST_REQ, GPU_CKEN },
+	{ HISTB_SPI0_CLK, "clk_spi0", "clk_apb", CLK_SET_RATE_PARENT,
+		0x70, BIT(1), BIT(0) },
 };
 
 static struct hisi_clock_data *hi3798cv200_clk_register(
