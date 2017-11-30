@@ -64,6 +64,7 @@ config ION_HISI_UNMAPPED_HEAP
 config ION_HISI_UNMAPPED_BASE
 	hex "Physical base address of the ION unmapped heap"
 	depends on ION_HISI_UNMAPPED_HEAP
+	default 0
 	help
 	  Allows one the statically define an unmapped heap from the
 	  Hisilicon ION driver to exercice unamped heaps buffer managment.
@@ -71,6 +72,7 @@ config ION_HISI_UNMAPPED_BASE
 config ION_HISI_UNMAPPED_SIZE
 	hex "Physical byte size of the ION unmapped heap"
 	depends on ION_HISI_UNMAPPED_HEAP
+	default 0
 	help
 	  Allows one the statically define an unmapped heap from the
 	  Hisilicon ION driver to exercice unamped heaps buffer managment.
