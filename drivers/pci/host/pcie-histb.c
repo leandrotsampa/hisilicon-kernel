@@ -50,6 +50,7 @@
 
 struct histb_pcie_host {
 	void __iomem *sysctrl;
+	int power_gpio;
 	int reset_gpio;
 	struct clk *aux_clk;
 	struct clk *pipe_clk;
@@ -235,6 +236,8 @@ static void histb_pcie_host_disable(struct histb_pcie_host *hipcie)
 
 	if (gpio_is_valid(hipcie->reset_gpio))
 		gpio_set_value_cansleep(hipcie->reset_gpio, 0);
+	if (gpio_is_valid(hipcie->power_gpio))
+		gpio_set_value_cansleep(hipcie->power_gpio, 0);
 }
 
 static int histb_pcie_host_enable(struct pcie_port *pp)
@@ -244,8 +247,14 @@ static int histb_pcie_host_enable(struct pcie_port *pp)
 	int ret;
 
 	/* power on pcie device if have */
-	if (gpio_is_valid(hipcie->reset_gpio))
+	if (gpio_is_valid(hipcie->power_gpio))
+		gpio_set_value_cansleep(hipcie->power_gpio, 1);
+
+	if (gpio_is_valid(hipcie->reset_gpio)) {
+		gpio_set_value_cansleep(hipcie->reset_gpio, 0);
+		mdelay(10);
 		gpio_set_value_cansleep(hipcie->reset_gpio, 1);
+	}
 
 	ret = clk_prepare_enable(hipcie->bus_clk);
 	if (ret) {
@@ -324,13 +333,26 @@ static int histb_pcie_probe(struct platform_device *pdev)
 		return PTR_ERR(pp->dbi_base);
 	}
 
+	hipcie->power_gpio = of_get_named_gpio_flags(np,
+				"power-gpios", 0, &of_flags);
+	if (of_flags & OF_GPIO_ACTIVE_LOW)
+		flag |= GPIOF_ACTIVE_LOW;
+	if (gpio_is_valid(hipcie->power_gpio)) {
+		ret = devm_gpio_request_one(dev, hipcie->power_gpio,
+				flag, "PCIe device power control");
+		if (ret) {
+			dev_err(dev, "unable to request gpio\n");
+			return ret;
+		}
+	}
+
 	hipcie->reset_gpio = of_get_named_gpio_flags(np,
 				"reset-gpios", 0, &of_flags);
 	if (of_flags & OF_GPIO_ACTIVE_LOW)
 		flag |= GPIOF_ACTIVE_LOW;
 	if (gpio_is_valid(hipcie->reset_gpio)) {
 		ret = devm_gpio_request_one(dev, hipcie->reset_gpio,
-				flag, "PCIe device power control");
+				flag, "PCIe device reset control");
 		if (ret) {
 			dev_err(dev, "unable to request gpio\n");
 			return ret;
