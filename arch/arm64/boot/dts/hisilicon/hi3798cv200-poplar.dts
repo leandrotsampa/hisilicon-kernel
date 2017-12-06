@@ -165,6 +165,7 @@
 };
 
 &pcie {
+	power-gpios = <&gpio6 7 GPIO_ACTIVE_HIGH>;
 	reset-gpios = <&gpio4 4 GPIO_ACTIVE_HIGH>;
 	status = "okay";
 };
