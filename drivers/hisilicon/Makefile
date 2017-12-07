@@ -12,6 +12,7 @@
 
 obj-y += atags/
 obj-y += kapi/
+obj-y += hi_fence/
 obj-y += misc/
 
 obj-$(CONFIG_BLK_DEV_RAM) += initmrd/
