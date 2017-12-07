@@ -64,7 +64,7 @@ HI_S32 DRV_HIFB_FenceInit(HIFB_PAR_S *par)
     gs_SyncInfo.u32Timeline   = 0;
     gs_SyncInfo.FrameEndFlag  = 0;
     init_waitqueue_head(&gs_SyncInfo.FrameEndEvent);
-    gs_SyncInfo.pstTimeline = sw_sync_timeline_create("hifb");
+    gs_SyncInfo.pstTimeline = hi_sw_sync_timeline_create("hifb");
 
     par->pstHwcRefreshWorkqueue = create_singlethread_workqueue(HIFB_HWC_REFRESH_WORK_QUEUE);
     if (NULL == par->pstHwcRefreshWorkqueue)
@@ -86,7 +86,7 @@ HI_VOID DRV_HIFB_FenceDInit(HIFB_PAR_S *par)
 	return;
     }
 
-    sync_timeline_destroy((struct sync_timeline*)gs_SyncInfo.pstTimeline);
+    hi_sync_timeline_destroy((struct sync_timeline*)gs_SyncInfo.pstTimeline);
     gs_SyncInfo.pstTimeline = NULL;
 
     if (NULL == par->pstHwcRefreshWorkqueue)
@@ -116,7 +116,7 @@ HI_VOID DRV_HIFB_FENCE_FrameEndCallBack(HI_VOID)
     {/**��֤ÿһ֡���ݶ��õ��ͷ�**/
 	gs_SyncInfo.bFrameHit = HI_TRUE;
 	atomic_dec(&gs_SyncInfo.UpdateCnt);
-	sw_sync_timeline_inc(gs_SyncInfo.pstTimeline, 1);
+	hi_sw_sync_timeline_inc(gs_SyncInfo.pstTimeline, 1);
 	gs_SyncInfo.u32Timeline++;
     }
 	spin_unlock_irqrestore(&gs_SyncInfo.lock,lockflag);
@@ -139,7 +139,7 @@ HI_S32 DRV_HIFB_FENCE_Create(HI_VOID)
 {
     HI_S32 FenceFd = -1;
     HI_U32 u32FenceValue = 0;
-    struct sync_fence *fence = NULL;
+    struct hi_sync_fence *fence = NULL;
     struct sync_pt *pt = NULL;
 
     if (NULL == gs_SyncInfo.pstTimeline)
@@ -156,20 +156,20 @@ HI_S32 DRV_HIFB_FENCE_Create(HI_VOID)
 	return FenceFd;
     }
 
-    pt = sw_sync_pt_create(gs_SyncInfo.pstTimeline, u32FenceValue);
+    pt = hi_sw_sync_pt_create(gs_SyncInfo.pstTimeline, u32FenceValue);
     if (NULL == pt)
     {
 	return -ENOMEM;
     }
 
-    fence = sync_fence_create(HIFB_FENCE_NAME, pt);
+    fence = hi_sync_fence_create(pt);
     if (NULL == fence)
     {
-	sync_pt_free(pt);
+        hi_sync_pt_free(pt);
 	return -ENOMEM;
     }
 
-    sync_fence_install(fence, FenceFd);
+    hi_sync_fence_install(fence, FenceFd);
 
     return FenceFd;
 }
@@ -213,7 +213,7 @@ HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable)
     while (atomic_read(&gs_SyncInfo.UpdateCnt) > 0)
     {
 	atomic_dec(&gs_SyncInfo.UpdateCnt);
-	sw_sync_timeline_inc(gs_SyncInfo.pstTimeline, 1);
+	hi_sw_sync_timeline_inc(gs_SyncInfo.pstTimeline, 1);
 	gs_SyncInfo.u32Timeline++;
     }
 
@@ -221,18 +221,14 @@ HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable)
 }
 
 
-HI_S32 DRV_HIFB_FENCE_Waite(struct sync_fence *fence, long timeout)
+HI_S32 DRV_HIFB_FENCE_Waite(struct hi_sync_fence *fence, long timeout)
 {
     int err;
-    /**
-     **����ȴ�gs_SyncInfo.u32Timeline��gs_SyncInfo.u32FenceValue���
-     **���֮�����fence�̻߳ᱻ���ѣ�����ȳ�ʱ��������ֵ������ʱ��ָ����
-     **�ײ���м�¼�����������ֵֻ��Ϊ�������ʹ��
-     **/
-    err = sync_fence_wait(fence, timeout);
+
+    err = hi_sync_fence_wait(fence, timeout);
     if (err == -ETIME)
-    {/**#define MSEC_PER_SEC	1000L ��time.h��**/
-	err = sync_fence_wait(fence, 10 * MSEC_PER_SEC);
+    {/**10 * MSEC_PER_SEC  in time.h **/
+	err = hi_sync_fence_wait(fence, 10 * MSEC_PER_SEC);
     }
     if (err < 0)
     {

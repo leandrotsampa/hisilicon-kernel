@@ -46,6 +46,26 @@ typedef struct
 /********************** Global Variable declaration **************************/
 
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)
+#define hi_sync_fence                           sync_file
+#define hi_sync_fence_create(sync_pt)           sync_file_create(&sync_pt->base)
+#define hi_sync_fence_install(fence,fence_fd)   fd_install(fence_fd, fence->file)
+#define hi_sync_fence_wait(fence,timeout)       fence_wait_timeout(fence->fence, true, timeout)
+#define hi_sync_fence_fdget                     sync_file_fdget
+#define hi_sync_fence_put(fence)                fput(fence->file)
+#else
+#define hi_sync_fence                           sync_fence
+#define hi_sw_sync_timeline_create              sw_sync_timeline_create
+#define hi_sync_fence_create(sync_pt)           sync_fence_create(HIFB_SYNC_NAME, sync_pt)
+#define hi_sync_timeline_destroy                sync_timeline_destroy
+#define hi_sync_fence_install(fence,fence_fd)   sync_fence_install(fence, fence_fd)
+#define hi_sync_fence_wait(fence,timeout)       sync_fence_wait(fence, timeout)
+#define hi_sw_sync_timeline_inc                 sw_sync_timeline_inc
+#define hi_sw_sync_pt_create                    sw_sync_pt_create
+#define hi_sync_pt_free                         sync_pt_free
+#define hi_sync_fence_fdget                     sync_fence_fdget
+#define hi_sync_fence_put(fence)                sync_fence_put(fence)
+#endif
 
 /******************************* API declaration *****************************/
 
@@ -56,6 +76,6 @@ HI_BOOL DRV_HIFB_FENCE_IsRefresh(HI_VOID);
 HI_S32	DRV_HIFB_FENCE_Create(HI_VOID);
 HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable);
 HI_VOID DRV_HIFB_WaiteRefreshEnd(HI_BOOL ShouldWaite);
-HI_S32	DRV_HIFB_FENCE_Waite(struct sync_fence *fence, long timeout);
+HI_S32  DRV_HIFB_FENCE_Waite(struct hi_sync_fence *fence, long timeout);
 
 #endif

@@ -56,7 +56,7 @@ HI_VOID GFX2D_FENCE_Open(HI_VOID)
 {
     if (NULL == gs_pstTimeline)
     {
-	gs_pstTimeline = sw_sync_timeline_create("gfx2d");
+	gs_pstTimeline = hi_sw_sync_timeline_create("gfx2d");
     }
 
     return;
@@ -66,7 +66,7 @@ HI_VOID GFX2D_FENCE_Close(HI_VOID)
 {
     if (gs_pstTimeline)
     {
-	sync_timeline_destroy(&gs_pstTimeline->obj);
+	hi_sync_timeline_destroy(&gs_pstTimeline->obj);
 	gs_pstTimeline = NULL;
 	gs_u32FenceValue = 0;
 	gs_u32TimelineValue = 0;
@@ -78,7 +78,7 @@ HI_VOID GFX2D_FENCE_Close(HI_VOID)
 HI_S32 GFX2D_FENCE_Create(const char *name)
 {
     HI_S32 fd;
-    struct sync_fence *fence = NULL;
+    struct sync_file *fence = NULL;
     struct sync_pt *pt = NULL;
 
     if (NULL == gs_pstTimeline)
@@ -99,7 +99,7 @@ HI_S32 GFX2D_FENCE_Create(const char *name)
     /**
      **����ͬ���ڵ�
      **/
-    pt = sw_sync_pt_create(gs_pstTimeline, ++gs_u32FenceValue);
+    pt = hi_sw_sync_pt_create(gs_pstTimeline, ++gs_u32FenceValue);
     if (NULL == pt)
     {
 	gs_u32FenceValue--;
@@ -108,16 +108,16 @@ HI_S32 GFX2D_FENCE_Create(const char *name)
 	return -ENOMEM;
     }
 
-    fence = sync_fence_create(name, pt);
+    fence = sync_file_create(&pt->base);
     if (fence == NULL)
     {
 	HI_GFX_COMM_LOG_ERROR(HIGFX_GFX2D_ID, "sync_fence_create failed!\n");
-	sync_pt_free(pt);
+	hi_sync_pt_free(pt);
 	put_unused_fd(fd);
 	return -ENOMEM;
     }
 
-    sync_fence_install(fence, fd);
+    fd_install(fd, fence->file); //sync_fence_install(fence, fd);
 
     return fd;
 
@@ -135,29 +135,31 @@ HI_VOID GFX2D_FENCE_Destroy(HI_S32 fd)
 HI_S32 GFX2D_FENCE_Wait(HI_S32 fd)
 {
     HI_S32 s32Ret;
-    struct sync_fence *fence = NULL;
+    struct fence *fence = NULL;
+    struct file *file;
 
-    fence = sync_fence_fdget(fd);
+    fence = sync_file_get_fence(fd);
     if (fence == NULL)
     {
 	HI_GFX_COMM_LOG_ERROR(HIGFX_GFX2D_ID, "sync_fence_fdget failed!\n");
 	return HI_FAILURE;
     }
 
-    s32Ret = sync_fence_wait(fence, GFX2D_FENCE_TIMEOUT);
+    s32Ret = fence_wait_timeout(fence, true, GFX2D_FENCE_TIMEOUT);
     if (s32Ret < 0)
     {
 	HI_GFX_COMM_LOG_ERROR(HIGFX_GFX2D_ID, "error waiting on fence: 0x%x\n", s32Ret);
     }
 
-    sync_fence_put(fence);
+    file = fget(fd);
+    fput(file);
 
     return 0;
 }
 
 HI_S32 GFX2D_FENCE_WakeUp(HI_VOID)
 {
-    sw_sync_timeline_inc(gs_pstTimeline, 1);
+    hi_sw_sync_timeline_inc(gs_pstTimeline, 1);
     gs_u32TimelineValue++;
 
     return HI_SUCCESS;

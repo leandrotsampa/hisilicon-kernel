@@ -17,7 +17,7 @@ EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
 
 EXTRA_CFLAGS += -Werror
 EXTRA_CFLAGS += -DCONFIG_GFX_STB_SDK
-EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/hi_fence
 #EXTRA_CFLAGS += -DGFX2D_FENCE_SUPPORT
 EXTRA_CFLAGS += -DCONFIG_GFX_MMU_SUPPORT
 
