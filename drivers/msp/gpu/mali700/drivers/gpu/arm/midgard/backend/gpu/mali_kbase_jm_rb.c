@@ -1915,11 +1915,8 @@ void kbase_backend_complete_wq_post_sched(struct kbase_device *kbdev,
 
 void kbase_gpu_dump_slots(struct kbase_device *kbdev)
 {
-	struct kbasep_js_device_data *js_devdata;
 	unsigned long flags;
 	int js;
-
-	js_devdata = &kbdev->js_data;
 
 	spin_lock_irqsave(&kbdev->hwaccess_lock, flags);
 

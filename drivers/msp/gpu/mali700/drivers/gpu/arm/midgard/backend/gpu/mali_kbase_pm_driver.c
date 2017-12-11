@@ -13,9 +13,7 @@
  *
  */
 
-#ifndef MIDGARD_HISILICON_PLUGIN
-#define MIDGARD_HISILICON_PLUGIN
-#endif
+
 
 
 
@@ -39,9 +37,6 @@
 #include <backend/gpu/mali_kbase_device_internal.h>
 #include <backend/gpu/mali_kbase_irq_internal.h>
 #include <backend/gpu/mali_kbase_pm_internal.h>
-#ifdef MIDGARD_HISILICON_PLUGIN
-#include <backend/gpu/mali_kbase_devfreq.h>
-#endif
 
 #include <linux/of.h>
 
@@ -236,12 +231,7 @@ static void kbase_pm_invoke(struct kbase_device *kbdev,
 				break;
 			}
 	}
-#ifdef MIDGARD_HISILICON_PLUGIN
-	if((action == ACTION_PWROFF) && (core_type == KBASE_PM_CORE_L2))
-	{
-		return ;
-	}
-#endif
+
 	if (lo != 0)
 		kbase_reg_write(kbdev, GPU_CONTROL_REG(reg), lo, NULL);
 
@@ -314,10 +304,8 @@ u64 kbase_pm_get_present_cores(struct kbase_device *kbdev,
 		return kbdev->gpu_props.props.raw_props.shader_present;
 	case KBASE_PM_CORE_TILER:
 		return kbdev->gpu_props.props.raw_props.tiler_present;
-#ifdef CONFIG_MALI_CORESTACK
 	case KBASE_PM_CORE_STACK:
 		return kbdev->gpu_props.props.raw_props.stack_present;
-#endif /* CONFIG_MALI_CORESTACK */
 	default:
 		break;
 	}
@@ -595,7 +583,7 @@ u64 kbase_pm_core_stack_mask(u64 cores)
 		if (test_bit(i, (unsigned long *)&cores)) {
 			/* Every core which ID >= 16 is filled to stacks 4-7
 			 * instead of 0-3 */
-			size_t const stack_num = (i > 16) ?
+			size_t const stack_num = (i >= 16) ?
 				(i % NUM_CORES_PER_STACK) + 4 :
 				(i % NUM_CORES_PER_STACK);
 			set_bit(stack_num, (unsigned long *)&stack_mask);
@@ -695,10 +683,6 @@ MOCKABLE(kbase_pm_check_transitions_nolock) (struct kbase_device *kbdev)
 			KBASE_PM_CORE_L2, desired_l2_state, l2_inuse_bitmap,
 			&l2_available_bitmap,
 			&kbdev->pm.backend.powering_on_l2_state);
-#ifdef MIDGARD_HISILICON_PLUGIN
-	/* Temporary fix to bypass checking L2 state reg */
-	in_desired_state = true;
-#endif
 
 	if (kbdev->l2_available_bitmap != l2_available_bitmap)
 		KBASE_TIMELINE_POWER_L2(kbdev, l2_available_bitmap);
@@ -1243,15 +1227,25 @@ static void kbase_pm_hw_issues_detect(struct kbase_device *kbdev)
 	kbdev->hw_quirks_mmu = kbase_reg_read(kbdev,
 			GPU_CONTROL_REG(L2_MMU_CONFIG), NULL);
 
-	/* Limit read ID width for AXI */
-	kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_READS);
-	kbdev->hw_quirks_mmu |= (DEFAULT_ARID_LIMIT & 0x3) <<
+
+	/* Limit read & write ID width for AXI */
+	if (kbase_hw_has_feature(kbdev, BASE_HW_FEATURE_3BIT_EXT_RW_L2_MMU_CONFIG)) {
+		kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_READS);
+		kbdev->hw_quirks_mmu |= (DEFAULT_3BIT_ARID_LIMIT & 0x7) <<
+				L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_READS_SHIFT;
+
+		kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_WRITES);
+		kbdev->hw_quirks_mmu |= (DEFAULT_3BIT_AWID_LIMIT & 0x7) <<
+				L2_MMU_CONFIG_3BIT_LIMIT_EXTERNAL_WRITES_SHIFT;
+	} else {
+		kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_READS);
+		kbdev->hw_quirks_mmu |= (DEFAULT_ARID_LIMIT & 0x3) <<
 				L2_MMU_CONFIG_LIMIT_EXTERNAL_READS_SHIFT;
 
-	/* Limit write ID width for AXI */
-	kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_WRITES);
-	kbdev->hw_quirks_mmu |= (DEFAULT_AWID_LIMIT & 0x3) <<
+		kbdev->hw_quirks_mmu &= ~(L2_MMU_CONFIG_LIMIT_EXTERNAL_WRITES);
+		kbdev->hw_quirks_mmu |= (DEFAULT_AWID_LIMIT & 0x3) <<
 				L2_MMU_CONFIG_LIMIT_EXTERNAL_WRITES_SHIFT;
+	}
 
 	if (kbdev->system_coherency == COHERENCY_ACE) {
 		/* Allow memory configuration disparity to be ignored, we
@@ -1310,6 +1304,9 @@ static void kbase_pm_hw_issues_detect(struct kbase_device *kbdev)
 				JM_FORCE_COHERENCY_FEATURES_SHIFT;
 		}
 	}
+
+	if (kbase_hw_has_feature(kbdev, BASE_HW_FEATURE_TLS_HASHING))
+		kbdev->hw_quirks_sc |= SC_TLS_HASH_ENABLE;
 
 	if (!kbdev->hw_quirks_jm)
 		kbdev->hw_quirks_jm = kbase_reg_read(kbdev,
@@ -1473,13 +1470,6 @@ int kbase_pm_init_hw(struct kbase_device *kbdev, unsigned int flags)
 	int err;
 	bool resume_vinstr = false;
 
-#ifdef MIDGARD_HISILICON_PLUGIN
-	if(kbase_devfreq_downscale(kbdev) < 0)
-	{
-		return 0;
-	}
-#endif
-
 	KBASE_DEBUG_ASSERT(NULL != kbdev);
 	lockdep_assert_held(&kbdev->pm.lock);
 
@@ -1578,9 +1568,6 @@ int kbase_pm_init_hw(struct kbase_device *kbdev, unsigned int flags)
 		kbase_pm_enable_interrupts(kbdev);
 
 exit:
-#ifdef MIDGARD_HISILICON_PLUGIN
-	kbase_devfreq_restore(kbdev);
-#endif
 	/* If GPU is leaving protected mode resume vinstr operation. */
 	if (kbdev->vinstr_ctx && resume_vinstr)
 		kbase_vinstr_resume(kbdev->vinstr_ctx);

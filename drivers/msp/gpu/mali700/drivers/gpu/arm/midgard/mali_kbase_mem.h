@@ -30,9 +30,6 @@
 #endif
 
 #include <linux/kref.h>
-#ifdef CONFIG_KDS
-#include <linux/kds.h>
-#endif				/* CONFIG_KDS */
 #ifdef CONFIG_UMP
 #include <linux/ump.h>
 #endif				/* CONFIG_UMP */
@@ -109,7 +106,7 @@ struct kbase_mem_phy_alloc {
 	struct kref           kref; /* number of users of this alloc */
 	atomic_t              gpu_mappings;
 	size_t                nents; /* 0..N */
-	phys_addr_t           *pages; /* N elements, only 0..nents are valid */
+	struct tagged_addr    *pages; /* N elements, only 0..nents are valid */
 
 	/* kbase_cpu_mappings */
 	struct list_head      mappings;
@@ -195,6 +192,20 @@ static inline void kbase_mem_phy_alloc_gpu_unmapped(struct kbase_mem_phy_alloc *
 		}
 }
 
+/**
+ * kbase_mem_is_imported - Indicate whether a memory type is imported
+ *
+ * @type: the memory type
+ *
+ * Return: true if the memory type is imported, false otherwise
+ */
+static inline bool kbase_mem_is_imported(enum kbase_memory_type type)
+{
+	return (type == KBASE_MEM_TYPE_IMPORTED_UMP) ||
+		(type == KBASE_MEM_TYPE_IMPORTED_UMM) ||
+		(type == KBASE_MEM_TYPE_IMPORTED_USER_BUF);
+}
+
 void kbase_mem_kref_free(struct kref *kref);
 
 int kbase_mem_init(struct kbase_device *kbdev);
@@ -242,8 +253,7 @@ struct kbase_va_region {
 /* Can grow on pf? */
 #define KBASE_REG_PF_GROW           (1ul << 7)
 
-/* VA managed by us */
-#define KBASE_REG_CUSTOM_VA         (1ul << 8)
+/* Bit 8 is unused */
 
 /* inner shareable coherency */
 #define KBASE_REG_SHARE_IN          (1ul << 9)
@@ -270,6 +280,11 @@ struct kbase_va_region {
 
 /* Imported buffer is padded? */
 #define KBASE_REG_IMPORT_PAD        (1ul << 21)
+
+/* Bit 22 is reserved.
+ *
+ * Do not remove, use the next unreserved bit for new flags */
+#define KBASE_REG_RESERVED_BIT_22   (1ul << 22)
 
 #define KBASE_REG_ZONE_SAME_VA      KBASE_REG_ZONE(0)
 
@@ -302,15 +317,13 @@ struct kbase_va_region {
 	struct kbase_mem_phy_alloc *cpu_alloc; /* the one alloc object we mmap to the CPU when mapping this region */
 	struct kbase_mem_phy_alloc *gpu_alloc; /* the one alloc object we mmap to the GPU when mapping this region */
 
-	/* non-NULL if this memory object is a kds_resource */
-	struct kds_resource *kds_res;
-
 	/* List head used to store the region in the JIT allocation pool */
 	struct list_head jit_node;
 };
 
 /* Common functions */
-static inline phys_addr_t *kbase_get_cpu_phy_pages(struct kbase_va_region *reg)
+static inline struct tagged_addr *kbase_get_cpu_phy_pages(
+		struct kbase_va_region *reg)
 {
 	KBASE_DEBUG_ASSERT(reg);
 	KBASE_DEBUG_ASSERT(reg->cpu_alloc);
@@ -320,7 +333,8 @@ static inline phys_addr_t *kbase_get_cpu_phy_pages(struct kbase_va_region *reg)
 	return reg->cpu_alloc->pages;
 }
 
-static inline phys_addr_t *kbase_get_gpu_phy_pages(struct kbase_va_region *reg)
+static inline struct tagged_addr *kbase_get_gpu_phy_pages(
+		struct kbase_va_region *reg)
 {
 	KBASE_DEBUG_ASSERT(reg);
 	KBASE_DEBUG_ASSERT(reg->cpu_alloc);
@@ -454,10 +468,21 @@ static inline int kbase_atomic_sub_pages(int num_pages, atomic_t *used_pages)
  */
 #define KBASE_MEM_POOL_MAX_SIZE_KCTX  (SZ_64M >> PAGE_SHIFT)
 
+/*
+ * The order required for a 2MB page allocation (2^order * 4KB = 2MB)
+ */
+#define KBASE_MEM_POOL_2MB_PAGE_TABLE_ORDER	9
+
+/*
+ * The order required for a 4KB page allocation
+ */
+#define KBASE_MEM_POOL_4KB_PAGE_TABLE_ORDER	0
+
 /**
  * kbase_mem_pool_init - Create a memory pool for a kbase device
  * @pool:      Memory pool to initialize
  * @max_size:  Maximum number of free pages the pool can hold
+ * @order:     Page order for physical page size (order=0=>4kB, order=9=>2MB)
  * @kbdev:     Kbase device where memory is used
  * @next_pool: Pointer to the next pool or NULL.
  *
@@ -479,6 +504,7 @@ static inline int kbase_atomic_sub_pages(int num_pages, atomic_t *used_pages)
  */
 int kbase_mem_pool_init(struct kbase_mem_pool *pool,
 		size_t max_size,
+		size_t order,
 		struct kbase_device *kbdev,
 		struct kbase_mem_pool *next_pool);
 
@@ -526,13 +552,17 @@ void kbase_mem_pool_free(struct kbase_mem_pool *pool, struct page *page,
  * @nr_pages: Number of pages to allocate
  * @pages:    Pointer to array where the physical address of the allocated
  *            pages will be stored.
+ * @partial_allowed: If fewer pages allocated is allowed
  *
  * Like kbase_mem_pool_alloc() but optimized for allocating many pages.
  *
- * Return: 0 on success, negative -errno on error
+ * Return:
+ * On success number of pages allocated (could be less than nr_pages if
+ * partial_allowed).
+ * On error an error code.
  */
 int kbase_mem_pool_alloc_pages(struct kbase_mem_pool *pool, size_t nr_pages,
-		phys_addr_t *pages);
+		struct tagged_addr *pages, bool partial_allowed);
 
 /**
  * kbase_mem_pool_free_pages - Free pages to memory pool
@@ -547,7 +577,7 @@ int kbase_mem_pool_alloc_pages(struct kbase_mem_pool *pool, size_t nr_pages,
  * Like kbase_mem_pool_free() but optimized for freeing many pages.
  */
 void kbase_mem_pool_free_pages(struct kbase_mem_pool *pool, size_t nr_pages,
-		phys_addr_t *pages, bool dirty, bool reclaimed);
+		struct tagged_addr *pages, bool dirty, bool reclaimed);
 
 /**
  * kbase_mem_pool_size - Get number of free pages in memory pool
@@ -607,16 +637,16 @@ int kbase_mem_pool_grow(struct kbase_mem_pool *pool, size_t nr_to_grow);
  */
 void kbase_mem_pool_trim(struct kbase_mem_pool *pool, size_t new_size);
 
-/*
+/**
  * kbase_mem_alloc_page - Allocate a new page for a device
- * @kbdev: The kbase device
+ * @pool:  Memory pool to allocate a page from
  *
  * Most uses should use kbase_mem_pool_alloc to allocate a page. However that
  * function can fail in the event the pool is empty.
  *
  * Return: A new page or NULL if no memory
  */
-struct page *kbase_mem_alloc_page(struct kbase_device *kbdev);
+struct page *kbase_mem_alloc_page(struct kbase_mem_pool *pool);
 
 int kbase_region_tracker_init(struct kbase_context *kctx);
 int kbase_region_tracker_init_jit(struct kbase_context *kctx, u64 jit_va_pages);
@@ -664,17 +694,19 @@ void kbase_mmu_term(struct kbase_context *kctx);
 phys_addr_t kbase_mmu_alloc_pgd(struct kbase_context *kctx);
 void kbase_mmu_free_pgd(struct kbase_context *kctx);
 int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
-				  phys_addr_t *phys, size_t nr,
+				  struct tagged_addr *phys, size_t nr,
 				  unsigned long flags);
 int kbase_mmu_insert_pages(struct kbase_context *kctx, u64 vpfn,
-				  phys_addr_t *phys, size_t nr,
+				  struct tagged_addr *phys, size_t nr,
 				  unsigned long flags);
 int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
-					phys_addr_t phys, size_t nr,
+					struct tagged_addr phys, size_t nr,
 					unsigned long flags);
 
 int kbase_mmu_teardown_pages(struct kbase_context *kctx, u64 vpfn, size_t nr);
-int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn, phys_addr_t *phys, size_t nr, unsigned long flags);
+int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn,
+			   struct tagged_addr *phys, size_t nr,
+			   unsigned long flags);
 
 /**
  * @brief Register region and map it on the GPU.
@@ -752,8 +784,8 @@ void *kbase_mmu_dump(struct kbase_context *kctx, int nr_pages);
  * Return: 0 on success or error code
  */
 int kbase_sync_now(struct kbase_context *kctx, struct basep_syncset *sset);
-void kbase_sync_single(struct kbase_context *kctx, phys_addr_t cpu_pa,
-		phys_addr_t gpu_pa, off_t offset, size_t size,
+void kbase_sync_single(struct kbase_context *kctx, struct tagged_addr cpu_pa,
+		struct tagged_addr gpu_pa, off_t offset, size_t size,
 		enum kbase_sync_type sync_fn);
 void kbase_pre_job_sync(struct kbase_context *kctx, struct base_syncset *syncsets, size_t nr);
 void kbase_post_job_sync(struct kbase_context *kctx, struct base_syncset *syncsets, size_t nr);
@@ -1002,22 +1034,13 @@ void kbase_jit_term(struct kbase_context *kctx);
  * @kctx:              kbase context.
  * @reg:               The region to map.
  * @locked_mm:         The mm_struct which has been locked for this operation.
- * @kds_res_count:     The number of KDS resources.
- * @kds_resources:     Array of KDS resources.
- * @kds_access_bitmap: Access bitmap for KDS.
- * @exclusive:         If the KDS resource requires exclusive access.
  *
  * Return: The physical allocation which backs the region on success or NULL
  * on failure.
  */
 struct kbase_mem_phy_alloc *kbase_map_external_resource(
 		struct kbase_context *kctx, struct kbase_va_region *reg,
-		struct mm_struct *locked_mm
-#ifdef CONFIG_KDS
-		, u32 *kds_res_count, struct kds_resource **kds_resources,
-		unsigned long *kds_access_bitmap, bool exclusive
-#endif
-		);
+		struct mm_struct *locked_mm);
 
 /**
  * kbase_unmap_external_resource - Unmap an external resource from the GPU.

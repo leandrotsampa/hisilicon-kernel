@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2012-2014, 2017 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2012-2014,2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -42,4 +42,48 @@ enum kbase_sync_type {
 	KBASE_SYNC_TO_DEVICE
 };
 
-#endif				/* _KBASE_LOWLEVEL_H */
+struct tagged_addr { phys_addr_t tagged_addr; };
+
+#define HUGE_PAGE    (1u << 0)
+#define HUGE_HEAD    (1u << 1)
+#define FROM_PARTIAL (1u << 2)
+
+static inline phys_addr_t as_phys_addr_t(struct tagged_addr t)
+{
+	return t.tagged_addr & PAGE_MASK;
+}
+
+static inline struct tagged_addr as_tagged(phys_addr_t phys)
+{
+	struct tagged_addr t;
+
+	t.tagged_addr = phys & PAGE_MASK;
+	return t;
+}
+
+static inline struct tagged_addr as_tagged_tag(phys_addr_t phys, int tag)
+{
+	struct tagged_addr t;
+
+	t.tagged_addr = (phys & PAGE_MASK) | (tag & ~PAGE_MASK);
+	return t;
+}
+
+static inline bool is_huge(struct tagged_addr t)
+{
+	return t.tagged_addr & HUGE_PAGE;
+}
+
+static inline bool is_huge_head(struct tagged_addr t)
+{
+	int mask = HUGE_HEAD | HUGE_PAGE;
+
+	return mask == (t.tagged_addr & mask);
+}
+
+static inline bool is_partial(struct tagged_addr t)
+{
+	return t.tagged_addr & FROM_PARTIAL;
+}
+
+#endif /* _KBASE_LOWLEVEL_H */

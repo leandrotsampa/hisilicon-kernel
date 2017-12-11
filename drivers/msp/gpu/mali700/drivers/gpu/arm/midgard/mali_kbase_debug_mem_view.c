@@ -125,7 +125,7 @@ static int debug_mem_show(struct seq_file *m, void *v)
 	if (!(map->flags & KBASE_REG_CPU_CACHED))
 		prot = pgprot_writecombine(prot);
 
-	page = pfn_to_page(PFN_DOWN(map->alloc->pages[data->offset]));
+	page = phys_to_page(as_phys_addr_t(map->alloc->pages[data->offset]));
 	mapping = vmap(&page, 1, VM_MAP, prot);
 	if (!mapping)
 		goto out;
@@ -299,7 +299,7 @@ void kbase_debug_mem_view_init(struct file *kctx_file)
 {
 	struct kbase_context *kctx = kctx_file->private_data;
 
-	debugfs_create_file("mem_view", S_IRUGO, kctx->kctx_dentry, kctx_file,
+	debugfs_create_file("mem_view", S_IRUSR, kctx->kctx_dentry, kctx_file,
 			&kbase_debug_mem_view_fops);
 }
 

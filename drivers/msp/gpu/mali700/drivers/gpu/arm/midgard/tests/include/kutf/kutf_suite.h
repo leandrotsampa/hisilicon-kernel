@@ -26,8 +26,17 @@
  * of each test.
  */
 
+#include <linux/kref.h>
+#include <linux/workqueue.h>
+#include <linux/wait.h>
+
 #include <kutf/kutf_mem.h>
 #include <kutf/kutf_resultset.h>
+
+/* Arbitrary maximum size to prevent user space allocating too much kernel
+ * memory
+ */
+#define KUTF_MAX_LINE_LENGTH (1024u)
 
 /**
  * Pseudo-flag indicating an absence of any specified test class. Note that
@@ -147,7 +156,47 @@ union kutf_callback_data {
 };
 
 /**
+ * struct kutf_userdata_line - A line of user data to be returned to the user
+ * @node:   struct list_head to link this into a list
+ * @str:    The line of user data to return to user space
+ * @size:   The number of bytes within @str
+ */
+struct kutf_userdata_line {
+	struct list_head node;
+	char *str;
+	size_t size;
+};
+
+/**
+ * KUTF_USERDATA_WARNING_OUTPUT - Flag specifying that a warning has been output
+ *
+ * If user space reads the "run" file while the test is waiting for user data,
+ * then the framework will output a warning message and set this flag within
+ * struct kutf_userdata. A subsequent read will then simply return an end of
+ * file condition rather than outputting the warning again. The upshot of this
+ * is that simply running 'cat' on a test which requires user data will produce
+ * the warning followed by 'cat' exiting due to EOF - which is much more user
+ * friendly than blocking indefinitely waiting for user data.
+ */
+#define KUTF_USERDATA_WARNING_OUTPUT  1
+
+/**
+ * struct kutf_userdata - Structure holding user data
+ * @flags:       See %KUTF_USERDATA_WARNING_OUTPUT
+ * @input_head:  List of struct kutf_userdata_line containing user data
+ *               to be read by the kernel space test.
+ * @input_waitq: Wait queue signalled when there is new user data to be
+ *               read by the kernel space test.
+ */
+struct kutf_userdata {
+	unsigned long flags;
+	struct list_head input_head;
+	wait_queue_head_t input_waitq;
+};
+
+/**
  * struct kutf_context - Structure representing a kernel test context
+ * @kref:		Refcount for number of users of this context
  * @suite:		Convenience pointer to the suite this context
  *                      is running
  * @test_fix:		The fixture that is being run in this context
@@ -161,8 +210,11 @@ union kutf_callback_data {
  * @status:		The status of the currently running fixture.
  * @expected_status:	The expected status on exist of the currently
  *                      running fixture.
+ * @work:		Work item to enqueue onto the work queue to run the test
+ * @userdata:		Structure containing the user data for the test to read
  */
 struct kutf_context {
+	struct kref                     kref;
 	struct kutf_suite               *suite;
 	struct kutf_test_fixture        *test_fix;
 	struct kutf_mempool             fixture_pool;
@@ -173,6 +225,9 @@ struct kutf_context {
 	struct kutf_result_set          *result_set;
 	enum kutf_result_status         status;
 	enum kutf_result_status         expected_status;
+
+	struct work_struct              work;
+	struct kutf_userdata            userdata;
 };
 
 /**
@@ -345,7 +400,7 @@ void kutf_add_test_with_filters(struct kutf_suite *suite,
  * @name:	The name of the test.
  * @execute:	Callback to the test function to run.
  * @filters:	A set of filtering flags, assigning test categories.
- * @test_data:	Test specific callback data, provoided during the
+ * @test_data:	Test specific callback data, provided during the
  *		running of the test in the kutf_context
  */
 void kutf_add_test_with_filters_and_data(
@@ -355,6 +410,7 @@ void kutf_add_test_with_filters_and_data(
 		void (*execute)(struct kutf_context *context),
 		unsigned int filters,
 		union kutf_callback_data test_data);
+
 
 /* ============================================================================
 	Test functions

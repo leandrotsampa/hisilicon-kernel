@@ -126,8 +126,25 @@ struct kbase_ipa_model *kbase_ipa_init_model(struct kbase_device *kbdev,
 					     struct kbase_ipa_model_ops *ops);
 void kbase_ipa_term_model(struct kbase_ipa_model *model);
 
-extern struct kbase_ipa_model_ops kbase_simple_ipa_model_ops;
+extern struct kbase_ipa_model_ops kbase_g71_ipa_model_ops;
 
+#if MALI_UNIT_TEST
+/**
+ * kbase_get_real_power() - get the real power consumption of the GPU
+ * @df: dynamic voltage and frequency scaling information for the GPU.
+ * @power: where to store the power consumption, in mW.
+ * @freq: a frequency, in HZ.
+ * @voltage: a voltage, in mV.
+ *
+ * This function is only exposed for use by unit tests. The returned value
+ * incorporates both static and dynamic power consumption.
+ *
+ * Return: 0 on success, or an error code.
+ */
+int kbase_get_real_power(struct devfreq *df, u32 *power,
+				unsigned long freq,
+				unsigned long voltage);
+#endif /* MALI_UNIT_TEST */
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 4, 0)
 extern struct devfreq_cooling_ops kbase_ipa_power_model_ops;

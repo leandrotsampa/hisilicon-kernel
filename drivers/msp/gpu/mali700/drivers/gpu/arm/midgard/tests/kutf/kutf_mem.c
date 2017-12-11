@@ -19,7 +19,6 @@
 
 #include <linux/list.h>
 #include <linux/slab.h>
-#include <linux/module.h>
 
 #include <kutf/kutf_mem.h>
 
@@ -42,6 +41,7 @@ int kutf_mempool_init(struct kutf_mempool *pool)
 	}
 
 	INIT_LIST_HEAD(&pool->head);
+	mutex_init(&pool->lock);
 
 	return 0;
 }
@@ -57,6 +57,7 @@ void kutf_mempool_destroy(struct kutf_mempool *pool)
 		return;
 	}
 
+	mutex_lock(&pool->lock);
 	list_for_each_safe(remove, tmp, &pool->head) {
 		struct kutf_alloc_entry *remove_alloc;
 
@@ -64,6 +65,8 @@ void kutf_mempool_destroy(struct kutf_mempool *pool)
 		list_del(&remove_alloc->node);
 		kfree(remove_alloc);
 	}
+	mutex_unlock(&pool->lock);
+
 }
 EXPORT_SYMBOL(kutf_mempool_destroy);
 
@@ -76,6 +79,8 @@ void *kutf_mempool_alloc(struct kutf_mempool *pool, size_t size)
 		goto fail_pool;
 	}
 
+	mutex_lock(&pool->lock);
+
 	ret = kmalloc(sizeof(*ret) + size, GFP_KERNEL);
 	if (!ret) {
 		pr_err("Failed to allocate memory\n");
@@ -85,9 +90,12 @@ void *kutf_mempool_alloc(struct kutf_mempool *pool, size_t size)
 	INIT_LIST_HEAD(&ret->node);
 	list_add(&ret->node, &pool->head);
 
+	mutex_unlock(&pool->lock);
+
 	return &ret->data[0];
 
 fail_alloc:
+	mutex_unlock(&pool->lock);
 fail_pool:
 	return NULL;
 }

@@ -13,9 +13,7 @@
  *
  */
 
-#ifndef MIDGARD_HISILICON_PLUGIN
-#define MIDGARD_HISILICON_PLUGIN
-#endif
+
 
 
 
@@ -34,24 +32,21 @@
 #include <mali_base_hwconfig_issues.h>
 #include <mali_kbase_mem_lowlevel.h>
 #include <mali_kbase_mmu_hw.h>
-#include <mali_kbase_mmu_mode.h>
 #include <mali_kbase_instr_defs.h>
 #include <mali_kbase_pm.h>
+#include <mali_kbase_gpuprops_types.h>
 #include <protected_mode_switcher.h>
 
 #include <linux/atomic.h>
 #include <linux/mempool.h>
 #include <linux/slab.h>
 #include <linux/file.h>
+#include <linux/sizes.h>
 
 #ifdef CONFIG_MALI_FPGA_BUS_LOGGER
 #include <linux/bus_logger.h>
 #endif
 
-
-#ifdef CONFIG_KDS
-#include <linux/kds.h>
-#endif				/* CONFIG_KDS */
 
 #if defined(CONFIG_SYNC)
 #include <sync.h>
@@ -145,13 +140,15 @@
 /* mmu */
 #define MIDGARD_MMU_VA_BITS 48
 
+#define MIDGARD_MMU_LEVEL(x) (x)
+
 #if MIDGARD_MMU_VA_BITS > 39
-#define MIDGARD_MMU_TOPLEVEL    0
+#define MIDGARD_MMU_TOPLEVEL    MIDGARD_MMU_LEVEL(0)
 #else
-#define MIDGARD_MMU_TOPLEVEL    1
+#define MIDGARD_MMU_TOPLEVEL    MIDGARD_MMU_LEVEL(1)
 #endif
 
-#define MIDGARD_MMU_BOTTOMLEVEL 3
+#define MIDGARD_MMU_BOTTOMLEVEL MIDGARD_MMU_LEVEL(3)
 
 #define GROWABLE_FLAGS_REQUIRED (KBASE_REG_PF_GROW | KBASE_REG_GPU_WR)
 
@@ -221,6 +218,12 @@
 #define KBASE_SERIALIZE_INTER_SLOT (1 << 1)
 /* Reset the GPU after each atom completion */
 #define KBASE_SERIALIZE_RESET (1 << 2)
+
+/* Forward declarations */
+struct kbase_context;
+struct kbase_device;
+struct kbase_as;
+struct kbase_mmu_setup;
 
 #ifdef CONFIG_DEBUG_FS
 struct base_job_fault_event {
@@ -434,11 +437,6 @@ struct kbase_jd_atom {
 	u64 affinity;
 	u64 jc;
 	enum kbase_atom_coreref_state coreref_state;
-#ifdef CONFIG_KDS
-	struct list_head node;
-	struct kds_resource_set *kds_rset;
-	bool kds_dep_satisfied;
-#endif				/* CONFIG_KDS */
 #if defined(CONFIG_SYNC)
 	/* Stores either an input or output fence, depending on soft-job type */
 	struct sync_fence *fence;
@@ -649,9 +647,6 @@ struct kbase_jd_context {
 	u32 *tb;
 	size_t tb_wrap_offset;
 
-#ifdef CONFIG_KDS
-	struct kds_callback kds_cb;
-#endif				/* CONFIG_KDS */
 #ifdef CONFIG_GPU_TRACEPOINTS
 	atomic_t work_id;
 #endif
@@ -910,6 +905,8 @@ struct kbase_pm_device_data {
  * @cur_size:  Number of free pages currently in the pool (may exceed @max_size
  *             in some corner cases)
  * @max_size:  Maximum number of free pages in the pool
+ * @order:     order = 0 refers to a pool of 4 KB pages
+ *             order = 9 refers to a pool of 2 MB pages (2^9 * 4KB = 2 MB)
  * @pool_lock: Lock protecting the pool - must be held when modifying @cur_size
  *             and @page_list
  * @page_list: List of free pages in the pool
@@ -922,6 +919,7 @@ struct kbase_mem_pool {
 	struct kbase_device *kbdev;
 	size_t              cur_size;
 	size_t              max_size;
+	size_t		    order;
 	spinlock_t          pool_lock;
 	struct list_head    page_list;
 	struct shrinker     reclaim;
@@ -941,6 +939,24 @@ struct kbase_devfreq_opp {
 	u64 real_freq;
 	u64 core_mask;
 };
+
+struct kbase_mmu_mode {
+	void (*update)(struct kbase_context *kctx);
+	void (*get_as_setup)(struct kbase_context *kctx,
+			struct kbase_mmu_setup * const setup);
+	void (*disable_as)(struct kbase_device *kbdev, int as_nr);
+	phys_addr_t (*pte_to_phy_addr)(u64 entry);
+	int (*ate_is_valid)(u64 ate, unsigned int level);
+	int (*pte_is_valid)(u64 pte, unsigned int level);
+	void (*entry_set_ate)(u64 *entry, struct tagged_addr phy,
+			unsigned long flags, unsigned int level);
+	void (*entry_set_pte)(u64 *entry, phys_addr_t phy);
+	void (*entry_invalidate)(u64 *entry);
+};
+
+struct kbase_mmu_mode const *kbase_mmu_mode_get_lpae(void);
+struct kbase_mmu_mode const *kbase_mmu_mode_get_aarch64(void);
+
 
 #define DEVNAME_SIZE	16
 
@@ -983,6 +999,7 @@ struct kbase_device {
 	struct kbase_pm_device_data pm;
 	struct kbasep_js_device_data js_data;
 	struct kbase_mem_pool mem_pool;
+	struct kbase_mem_pool lp_mem_pool;
 	struct kbasep_mem_device memdev;
 	struct kbase_mmu_mode const *mmu_mode;
 
@@ -1095,9 +1112,6 @@ struct kbase_device {
 	unsigned long current_freq;
 	unsigned long current_nominal_freq;
 	unsigned long current_voltage;
-#ifdef MIDGARD_HISILICON_PLUGIN
-	unsigned long saved_freq;
-#endif
 	u64 current_core_mask;
 	struct kbase_devfreq_opp *opp_table;
 	int num_opps;
@@ -1335,10 +1349,16 @@ enum kbase_context_flags {
 	KCTX_NO_IMPLICIT_SYNC = 1U << 10,
 };
 
+struct kbase_sub_alloc {
+	struct list_head link;
+	struct page *page;
+	DECLARE_BITMAP(sub_pages, SZ_2M / SZ_4K);
+};
+
 struct kbase_context {
 	struct file *filp;
 	struct kbase_device *kbdev;
-	int id; /* System wide unique id */
+	u32 id; /* System wide unique id */
 	unsigned long api_version;
 	phys_addr_t pgd;
 	struct list_head event_list;
@@ -1356,7 +1376,10 @@ struct kbase_context {
 
 	u64 *mmu_teardown_pages;
 
-	struct page *aliasing_sink_page;
+	struct tagged_addr aliasing_sink_page;
+
+	struct mutex            mem_partials_lock;
+	struct list_head        mem_partials;
 
 	struct mutex            mmu_lock;
 	struct mutex            reg_lock; /* To be converted to a rwlock? */
@@ -1379,15 +1402,13 @@ struct kbase_context {
 	atomic_t         nonmapped_pages;
 
 	struct kbase_mem_pool mem_pool;
+	struct kbase_mem_pool lp_mem_pool;
 
 	struct shrinker         reclaim;
 	struct list_head        evict_list;
 
 	struct list_head waiting_soft_jobs;
 	spinlock_t waiting_soft_jobs_lock;
-#ifdef CONFIG_KDS
-	struct list_head waiting_kds_resource;
-#endif
 #ifdef CONFIG_MALI_DMA_FENCE
 	struct {
 		struct list_head waiting_resource;

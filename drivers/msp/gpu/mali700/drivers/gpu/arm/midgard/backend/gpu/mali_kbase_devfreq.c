@@ -13,9 +13,7 @@
  *
  */
 
-#ifndef MIDGARD_HISILICON_PLUGIN
-#define MIDGARD_HISILICON_PLUGIN
-#endif
+
 
 #include <mali_kbase.h>
 #include <mali_kbase_tlstream.h>
@@ -44,41 +42,6 @@
 #define dev_pm_opp_find_freq_ceil opp_find_freq_ceil
 #define dev_pm_opp_find_freq_floor opp_find_freq_floor
 #endif /* Linux >= 3.13 */
-
-#ifdef MIDGARD_HISILICON_PLUGIN
-#include <mali_kbase_avs.h>
-#define HI_GPU_FREQ_MIN		200000000
-#define HI_GPU_FREQ_THRESHOLD	400000000
-
-static int
-kbase_devfreq_init_voltage(struct kbase_device *kbdev, unsigned long initial_freq)
-{
-	int err;
-	struct dev_pm_opp *opp;
-	unsigned long initial_voltage;
-
-	rcu_read_lock();
-	opp = devfreq_recommended_opp(kbdev->dev, &initial_freq, 0);
-	initial_voltage = dev_pm_opp_get_voltage(opp);
-	rcu_read_unlock();
-
-	initial_voltage = kbase_svb_reset_voltage(initial_freq, initial_voltage);
-
-#ifdef CONFIG_REGULATOR
-	if (kbdev->regulator) {
-		if(initial_voltage != regulator_get_voltage(kbdev->regulator)) {
-		err = regulator_set_voltage(kbdev->regulator, initial_voltage, initial_voltage);
-		if (err) {
-			dev_err(kbdev->dev, "Failed to increase voltage (%d)\n", err);
-			return err;
-			}
-		}
-	}
-	kbdev->current_voltage = initial_voltage;
-#endif
-	return 0;
-}
-#endif
 
 /**
  * opp_translate - Translate nominal OPP frequency from devicetree into real
@@ -127,10 +90,6 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
 	rcu_read_lock();
 	opp = devfreq_recommended_opp(dev, &freq, flags);
 	voltage = dev_pm_opp_get_voltage(opp);
-
-#ifdef MIDGARD_HISILICON_PLUGIN
-	voltage = kbase_svb_reset_voltage(freq, voltage);
-#endif
 	rcu_read_unlock();
 	if (IS_ERR_OR_NULL(opp)) {
 		dev_err(dev, "Failed to get opp (%ld)\n", PTR_ERR(opp));
@@ -369,9 +328,6 @@ int kbase_devfreq_init(struct kbase_device *kbdev)
 	dp->get_cur_freq = kbase_devfreq_cur_freq;
 	dp->exit = kbase_devfreq_exit;
 
-#ifdef MIDGARD_HISILICON_PLUGIN
-	kbase_devfreq_init_voltage(kbdev, dp->initial_freq);
-#endif
 	if (kbase_devfreq_init_freq_table(kbdev, dp))
 		return -EFAULT;
 
@@ -455,89 +411,3 @@ void kbase_devfreq_term(struct kbase_device *kbdev)
 
 	kfree(kbdev->opp_table);
 }
-
-#ifdef MIDGARD_HISILICON_PLUGIN
-static int
-kbase_devfreq_target2(struct device *dev, unsigned long *target_freq, u32 flags)
-{
-	struct kbase_device *kbdev = dev_get_drvdata(dev);
-	unsigned long freq = 0;
-	int err = -1;
-	freq = *target_freq;
-
-#ifdef CONFIG_HAVE_CLK
-	err = clk_set_rate(kbdev->clock, freq);
-	if (err) {
-		dev_err(dev, "Failed to set clock %lu (target %lu)\n",
-				freq, *target_freq);
-		return err;
-	}
-#endif
-	*target_freq = freq;
-	kbdev->current_freq = freq;
-	kbase_pm_reset_dvfs_utilisation(kbdev);
-	return err;
-}
-
-int kbase_devfreq_downscale(struct kbase_device *kbdev)
-{
-	int err;
-	unsigned long min_freq = HI_GPU_FREQ_MIN;
-
-	if(NULL == kbdev->devfreq)
-	{
-		return 0;
-	}
-
-	if(kbdev->current_freq <= HI_GPU_FREQ_THRESHOLD)
-	{
-		kbdev->saved_freq = kbdev->current_freq;
-		return 0;
-	}
-
-#if defined(CONFIG_PM_DEVFREQ) && \
-		(LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
-	devfreq_suspend_device(kbdev->devfreq);
-#endif
-
-	kbdev->saved_freq = kbdev->current_freq;
-
-	err = kbase_devfreq_target2(kbdev->dev, &min_freq, 0);
-	if(err)
-	{
-		dev_err(kbdev->dev, "Failed to set clock %lu  (%d)\n", min_freq, err);
-		return err;
-	}
-
-	return 0;
-}
-
-int kbase_devfreq_restore(struct kbase_device *kbdev)
-{
-	int err;
-
- 	if(NULL == kbdev->devfreq)
-	{
-		return 0;
-	}
-
-	if(kbdev->saved_freq == kbdev->current_freq)
-	{
-		return 0;
-	}
-	err = kbase_devfreq_target(kbdev->dev, &kbdev->saved_freq, 0);
-
-	if(err)
-	{
-		dev_err(kbdev->dev, "Failed to set clock %lu\n", kbdev->saved_freq);
-		return err;
-	}
-
-#if defined(CONFIG_PM_DEVFREQ) && \
-		(LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
-	devfreq_resume_device(kbdev->devfreq);
-#endif
-
-	return 0;
-}
-#endif

@@ -35,7 +35,7 @@
 #include <linux/mutex.h>
 #include <linux/rwsem.h>
 #include <linux/sched.h>
-#if (LINUX_VERSION_CODE > KERNEL_VERSION(4, 10, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
 #include <linux/sched/mm.h>
 #endif
 #include <linux/slab.h>
@@ -45,7 +45,6 @@
 #include <linux/workqueue.h>
 
 #include "mali_base_kernel.h"
-#include <mali_kbase_uku.h>
 #include <mali_kbase_linux.h>
 
 /*
@@ -74,12 +73,14 @@
 #ifdef CONFIG_GPU_TRACEPOINTS
 #include <trace/events/gpu.h>
 #endif
-/**
- * @page page_base_kernel_main Kernel-side Base (KBase) APIs
- */
 
-/**
- * @defgroup base_kbase_api Kernel-side Base (KBase) APIs
+#ifndef u64_to_user_ptr
+/* Introduced in Linux v4.6 */
+#define u64_to_user_ptr(x) ((void __user *)(uintptr_t)x)
+#endif
+
+/*
+ * Kernel-side Base (KBase) APIs
  */
 
 struct kbase_device *kbase_device_alloc(void);
@@ -219,10 +220,6 @@ void kbase_device_trace_register_access(struct kbase_context *kctx, enum kbase_r
 int kbase_device_trace_buffer_install(
 		struct kbase_context *kctx, u32 *tb, size_t size);
 void kbase_device_trace_buffer_uninstall(struct kbase_context *kctx);
-
-/* api to be ported per OS, only need to do the raw register access */
-void kbase_os_reg_write(struct kbase_device *kbdev, u16 offset, u32 value);
-u32 kbase_os_reg_read(struct kbase_device *kbdev, u16 offset);
 
 void kbasep_as_do_poke(struct work_struct *work);
 

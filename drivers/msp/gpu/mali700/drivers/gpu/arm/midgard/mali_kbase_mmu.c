@@ -99,14 +99,31 @@ static void kbase_mmu_report_fault_and_kill(struct kbase_context *kctx,
 		struct kbase_as *as, const char *reason_str);
 
 
-static size_t make_multiple(size_t minimum, size_t multiple)
+/**
+ * make_multiple() - Calculate the nearest integral multiple of a given number.
+ *
+ * @minimum: The number to round up.
+ * @multiple: The number of which the function shall calculate an integral multiple.
+ * @result: The number rounded up to the nearest integral multiple in case of success,
+ *          or just the number itself in case of failure.
+ *
+ * Return: 0 in case of success, or -1 in case of failure.
+ */
+static int make_multiple(size_t minimum, size_t multiple, size_t *result)
 {
-	size_t remainder = minimum % multiple;
+	int err = -1;
 
-	if (remainder == 0)
-		return minimum;
+	*result = minimum;
 
-	return minimum + multiple - remainder;
+	if (multiple > 0) {
+		size_t remainder = minimum % multiple;
+
+		if (remainder != 0)
+			*result = minimum + multiple - remainder;
+		err = 0;
+	}
+
+	return err;
 }
 
 void page_fault_worker(struct work_struct *data)
@@ -266,15 +283,13 @@ void page_fault_worker(struct work_struct *data)
 		goto fault_done;
 	}
 
-	new_pages = make_multiple(fault_rel_pfn -
-			kbase_reg_current_backed_size(region) + 1,
-			region->extent);
+	err = make_multiple(fault_rel_pfn - kbase_reg_current_backed_size(region) + 1,
+			region->extent,
+			&new_pages);
+	WARN_ON(err);
 
 	/* cap to max vsize */
-	if (new_pages + kbase_reg_current_backed_size(region) >
-			region->nr_pages)
-		new_pages = region->nr_pages -
-				kbase_reg_current_backed_size(region);
+	new_pages = min(new_pages, region->nr_pages - kbase_reg_current_backed_size(region));
 
 	if (0 == new_pages) {
 		mutex_lock(&kbdev->mmu_hw_mutex);
@@ -411,7 +426,7 @@ phys_addr_t kbase_mmu_alloc_pgd(struct kbase_context *kctx)
 		goto sub_pages;
 
 	KBASE_TLSTREAM_AUX_PAGESALLOC(
-			(u32)kctx->id,
+			kctx->id,
 			(u64)new_page_count);
 
 	page = kmap(p);
@@ -490,20 +505,27 @@ static int mmu_get_next_pgd(struct kbase_context *kctx,
 	return 0;
 }
 
-static int mmu_get_bottom_pgd(struct kbase_context *kctx,
-		u64 vpfn, phys_addr_t *out_pgd)
+/*
+ * Returns the PGD for the specified level of translation
+ */
+static int mmu_get_pgd_at_level(struct kbase_context *kctx,
+					u64 vpfn,
+					unsigned int level,
+					phys_addr_t *out_pgd)
 {
 	phys_addr_t pgd;
 	int l;
 
 	lockdep_assert_held(&kctx->mmu_lock);
-
 	pgd = kctx->pgd;
-	for (l = MIDGARD_MMU_TOPLEVEL; l < MIDGARD_MMU_BOTTOMLEVEL; l++) {
+
+	for (l = MIDGARD_MMU_TOPLEVEL; l < level; l++) {
 		int err = mmu_get_next_pgd(kctx, &pgd, vpfn, l);
 		/* Handle failure condition */
 		if (err) {
-			dev_dbg(kctx->kbdev->dev, "mmu_get_bottom_pgd: mmu_get_next_pgd failure\n");
+			dev_dbg(kctx->kbdev->dev,
+				 "%s: mmu_get_next_pgd failure at level %d\n",
+				 __func__, l);
 			return err;
 		}
 	}
@@ -513,97 +535,79 @@ static int mmu_get_bottom_pgd(struct kbase_context *kctx,
 	return 0;
 }
 
-static phys_addr_t mmu_insert_pages_recover_get_next_pgd(struct kbase_context *kctx, phys_addr_t pgd, u64 vpfn, int level)
-{
-	u64 *page;
-	phys_addr_t target_pgd;
+#define mmu_get_bottom_pgd(kctx, vpfn, out_pgd) \
+	mmu_get_pgd_at_level((kctx), (vpfn), MIDGARD_MMU_BOTTOMLEVEL, (out_pgd))
 
-	KBASE_DEBUG_ASSERT(pgd);
-	KBASE_DEBUG_ASSERT(NULL != kctx);
 
-	lockdep_assert_held(&kctx->mmu_lock);
-	lockdep_assert_held(&kctx->reg_lock);
-
-	/*
-	 * Architecture spec defines level-0 as being the top-most.
-	 * This is a bit unfortunate here, but we keep the same convention.
-	 */
-	vpfn >>= (3 - level) * 9;
-	vpfn &= 0x1FF;
-
-	page = kmap_atomic(pfn_to_page(PFN_DOWN(pgd)));
-	/* kmap_atomic should NEVER fail */
-	KBASE_DEBUG_ASSERT(NULL != page);
-
-	target_pgd = kctx->kbdev->mmu_mode->pte_to_phy_addr(page[vpfn]);
-	/* As we are recovering from what has already been set up, we should have a target_pgd */
-	KBASE_DEBUG_ASSERT(0 != target_pgd);
-	kunmap_atomic(page);
-	return target_pgd;
-}
-
-static phys_addr_t mmu_insert_pages_recover_get_bottom_pgd(struct kbase_context *kctx, u64 vpfn)
+static void mmu_insert_pages_failure_recovery(struct kbase_context *kctx,
+					      u64 from_vpfn, u64 to_vpfn)
 {
 	phys_addr_t pgd;
-	int l;
-
-	lockdep_assert_held(&kctx->mmu_lock);
-
-	pgd = kctx->pgd;
-
-	for (l = MIDGARD_MMU_TOPLEVEL; l < MIDGARD_MMU_BOTTOMLEVEL; l++) {
-		pgd = mmu_insert_pages_recover_get_next_pgd(kctx, pgd, vpfn, l);
-		/* Should never fail */
-		KBASE_DEBUG_ASSERT(0 != pgd);
-	}
-
-	return pgd;
-}
-
-static void mmu_insert_pages_failure_recovery(struct kbase_context *kctx, u64 vpfn,
-					      size_t nr)
-{
-	phys_addr_t pgd;
-	u64 *pgd_page;
+	u64 vpfn = from_vpfn;
 	struct kbase_mmu_mode const *mmu_mode;
 
 	KBASE_DEBUG_ASSERT(NULL != kctx);
 	KBASE_DEBUG_ASSERT(0 != vpfn);
 	/* 64-bit address range is the max */
 	KBASE_DEBUG_ASSERT(vpfn <= (U64_MAX / PAGE_SIZE));
+	KBASE_DEBUG_ASSERT(from_vpfn <= to_vpfn);
 
 	lockdep_assert_held(&kctx->mmu_lock);
 	lockdep_assert_held(&kctx->reg_lock);
 
 	mmu_mode = kctx->kbdev->mmu_mode;
 
-	while (nr) {
+	while (vpfn < to_vpfn) {
 		unsigned int i;
-		unsigned int index = vpfn & 0x1FF;
-		unsigned int count = KBASE_MMU_PAGE_ENTRIES - index;
-		struct page *p;
+		unsigned int idx = vpfn & 0x1FF;
+		unsigned int count = KBASE_MMU_PAGE_ENTRIES - idx;
+		unsigned int pcount = 0;
+		unsigned int left = to_vpfn - vpfn;
+		unsigned int level;
+		u64 *page;
 
-		if (count > nr)
-			count = nr;
+		if (count > left)
+			count = left;
 
-		pgd = mmu_insert_pages_recover_get_bottom_pgd(kctx, vpfn);
-		KBASE_DEBUG_ASSERT(0 != pgd);
+		/* need to check if this is a 2MB page or a 4kB */
+		pgd = kctx->pgd;
 
-		p = pfn_to_page(PFN_DOWN(pgd));
+		for (level = MIDGARD_MMU_TOPLEVEL;
+				level <= MIDGARD_MMU_BOTTOMLEVEL; level++) {
+			idx = (vpfn >> ((3 - level) * 9)) & 0x1FF;
+			page = kmap(phys_to_page(pgd));
+			if (mmu_mode->ate_is_valid(page[idx], level))
+				break; /* keep the mapping */
+			kunmap(phys_to_page(pgd));
+			pgd = mmu_mode->pte_to_phy_addr(page[idx]);
+		}
 
-		pgd_page = kmap_atomic(p);
-		KBASE_DEBUG_ASSERT(NULL != pgd_page);
+		switch (level) {
+		case MIDGARD_MMU_LEVEL(2):
+			/* remap to single entry to update */
+			pcount = 1;
+			break;
+		case MIDGARD_MMU_BOTTOMLEVEL:
+			/* page count is the same as the logical count */
+			pcount = count;
+			break;
+		default:
+			dev_warn(kctx->kbdev->dev, "%sNo support for ATEs at level %d\n",
+			       __func__, level);
+			goto next;
+		}
 
 		/* Invalidate the entries we added */
-		for (i = 0; i < count; i++)
-			mmu_mode->entry_invalidate(&pgd_page[index + i]);
+		for (i = 0; i < pcount; i++)
+			mmu_mode->entry_invalidate(&page[idx + i]);
 
+		kbase_mmu_sync_pgd(kctx->kbdev,
+				   kbase_dma_addr(phys_to_page(pgd)) + 8 * idx,
+				   8 * pcount);
+		kunmap(phys_to_page(pgd));
+
+next:
 		vpfn += count;
-		nr -= count;
-
-		kbase_mmu_sync_pgd(kctx->kbdev, kbase_dma_addr(p), PAGE_SIZE);
-
-		kunmap_atomic(pgd_page);
 	}
 }
 
@@ -611,7 +615,7 @@ static void mmu_insert_pages_failure_recovery(struct kbase_context *kctx, u64 vp
  * Map the single page 'phys' 'nr' of times, starting at GPU PFN 'vpfn'
  */
 int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
-					phys_addr_t phys, size_t nr,
+					struct tagged_addr phys, size_t nr,
 					unsigned long flags)
 {
 	phys_addr_t pgd;
@@ -623,11 +627,14 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 	size_t recover_count = 0;
 	size_t remain = nr;
 	int err;
+	struct kbase_mmu_mode const *mmu_mode;
 
 	KBASE_DEBUG_ASSERT(NULL != kctx);
 	KBASE_DEBUG_ASSERT(0 != vpfn);
 	/* 64-bit address range is the max */
 	KBASE_DEBUG_ASSERT(vpfn <= (U64_MAX / PAGE_SIZE));
+
+	mmu_mode = kctx->kbdev->mmu_mode;
 
 	/* Early out if there is nothing to do */
 	if (nr == 0)
@@ -670,7 +677,9 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx,
 								  recover_vpfn,
-								  recover_count);
+								  recover_vpfn +
+								  recover_count
+								  );
 			}
 			goto fail_unlock;
 		}
@@ -684,7 +693,9 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx,
 								  recover_vpfn,
-								  recover_count);
+								  recover_vpfn +
+								  recover_count
+								  );
 			}
 			err = -ENOMEM;
 			goto fail_unlock;
@@ -693,9 +704,12 @@ int kbase_mmu_insert_single_page(struct kbase_context *kctx, u64 vpfn,
 		for (i = 0; i < count; i++) {
 			unsigned int ofs = index + i;
 
+			/* Fail if the current page is a valid ATE entry */
 			KBASE_DEBUG_ASSERT(0 == (pgd_page[ofs] & 1UL));
-			kctx->kbdev->mmu_mode->entry_set_ate(&pgd_page[ofs],
-					phys, flags);
+
+			mmu_mode->entry_set_ate(&pgd_page[ofs],
+						phys, flags,
+						MIDGARD_MMU_BOTTOMLEVEL);
 		}
 
 		vpfn += count;
@@ -722,24 +736,37 @@ fail_unlock:
 	return err;
 }
 
-int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
-				  phys_addr_t *phys, size_t nr,
-				  unsigned long flags)
+static inline void cleanup_empty_pte(struct kbase_context *kctx, u64 *pte)
+{
+	phys_addr_t tmp_pgd;
+	struct page *tmp_p;
+
+	tmp_pgd = kctx->kbdev->mmu_mode->pte_to_phy_addr(*pte);
+	tmp_p = phys_to_page(tmp_pgd);
+	kbase_mem_pool_free(&kctx->mem_pool, tmp_p, false);
+	kbase_process_page_usage_dec(kctx, 1);
+	kbase_atomic_sub_pages(1, &kctx->used_pages);
+	kbase_atomic_sub_pages(1, &kctx->kbdev->memdev.used_pages);
+}
+
+int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx,
+				    const u64 start_vpfn,
+				    struct tagged_addr *phys, size_t nr,
+				    unsigned long flags)
 {
 	phys_addr_t pgd;
 	u64 *pgd_page;
-	/* In case the insert_pages only partially completes we need to be able
-	 * to recover */
-	bool recover_required = false;
-	u64 recover_vpfn = vpfn;
-	size_t recover_count = 0;
+	u64 insert_vpfn = start_vpfn;
 	size_t remain = nr;
 	int err;
+	struct kbase_mmu_mode const *mmu_mode;
 
-	KBASE_DEBUG_ASSERT(NULL != kctx);
-	KBASE_DEBUG_ASSERT(0 != vpfn);
+	KBASE_DEBUG_ASSERT(kctx);
+	KBASE_DEBUG_ASSERT(start_vpfn);
 	/* 64-bit address range is the max */
-	KBASE_DEBUG_ASSERT(vpfn <= (U64_MAX / PAGE_SIZE));
+	KBASE_DEBUG_ASSERT(start_vpfn <= (U64_MAX / PAGE_SIZE));
+
+	mmu_mode = kctx->kbdev->mmu_mode;
 
 	/* Early out if there is nothing to do */
 	if (nr == 0)
@@ -749,22 +776,29 @@ int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
 
 	while (remain) {
 		unsigned int i;
-		unsigned int index = vpfn & 0x1FF;
-		unsigned int count = KBASE_MMU_PAGE_ENTRIES - index;
+		unsigned int vindex = insert_vpfn & 0x1FF;
+		unsigned int count = KBASE_MMU_PAGE_ENTRIES - vindex;
 		struct page *p;
+		unsigned int cur_level;
 
 		if (count > remain)
 			count = remain;
 
+		if (!vindex && is_huge_head(*phys))
+			cur_level = MIDGARD_MMU_LEVEL(2);
+		else
+			cur_level = MIDGARD_MMU_BOTTOMLEVEL;
+
 		/*
-		 * Repeatedly calling mmu_get_bottom_pte() is clearly
+		 * Repeatedly calling mmu_get_pgd_at_level() is clearly
 		 * suboptimal. We don't have to re-parse the whole tree
 		 * each time (just cache the l0-l2 sequence).
 		 * On the other hand, it's only a gain when we map more than
 		 * 256 pages at once (on average). Do we really care?
 		 */
 		do {
-			err = mmu_get_bottom_pgd(kctx, vpfn, &pgd);
+			err = mmu_get_pgd_at_level(kctx, insert_vpfn, cur_level,
+						   &pgd);
 			if (err != -ENOMEM)
 				break;
 			/* Fill the memory pool with enough pages for
@@ -772,17 +806,19 @@ int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
 			 */
 			mutex_unlock(&kctx->mmu_lock);
 			err = kbase_mem_pool_grow(&kctx->mem_pool,
-					MIDGARD_MMU_BOTTOMLEVEL);
+					cur_level);
 			mutex_lock(&kctx->mmu_lock);
 		} while (!err);
+
 		if (err) {
-			dev_warn(kctx->kbdev->dev, "kbase_mmu_insert_pages: mmu_get_bottom_pgd failure\n");
-			if (recover_required) {
+			dev_warn(kctx->kbdev->dev,
+				 "%s: mmu_get_bottom_pgd failure\n", __func__);
+			if (insert_vpfn != start_vpfn) {
 				/* Invalidate the pages we have partially
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx,
-								  recover_vpfn,
-								  recover_count);
+								  start_vpfn,
+								  insert_vpfn);
 			}
 			goto fail_unlock;
 		}
@@ -790,40 +826,50 @@ int kbase_mmu_insert_pages_no_flush(struct kbase_context *kctx, u64 vpfn,
 		p = pfn_to_page(PFN_DOWN(pgd));
 		pgd_page = kmap(p);
 		if (!pgd_page) {
-			dev_warn(kctx->kbdev->dev, "kbase_mmu_insert_pages: kmap failure\n");
-			if (recover_required) {
+			dev_warn(kctx->kbdev->dev, "%s: kmap failure\n",
+				 __func__);
+			if (insert_vpfn != start_vpfn) {
 				/* Invalidate the pages we have partially
 				 * completed */
 				mmu_insert_pages_failure_recovery(kctx,
-								  recover_vpfn,
-								  recover_count);
+								  start_vpfn,
+								  insert_vpfn);
 			}
 			err = -ENOMEM;
 			goto fail_unlock;
 		}
 
-		for (i = 0; i < count; i++) {
-			unsigned int ofs = index + i;
+		if (cur_level == MIDGARD_MMU_LEVEL(2)) {
+			unsigned int level_index = (insert_vpfn >> 9) & 0x1FF;
+			u64 *target = &pgd_page[level_index];
 
-			KBASE_DEBUG_ASSERT(0 == (pgd_page[ofs] & 1UL));
-			kctx->kbdev->mmu_mode->entry_set_ate(&pgd_page[ofs],
-					phys[i], flags);
+			if (mmu_mode->pte_is_valid(*target, cur_level))
+				cleanup_empty_pte(kctx, target);
+			mmu_mode->entry_set_ate(target, *phys, flags,
+						cur_level);
+		} else {
+			for (i = 0; i < count; i++) {
+				unsigned int ofs = vindex + i;
+				u64 *target = &pgd_page[ofs];
+
+				/* Fail if the current page is a valid ATE entry
+				 */
+				KBASE_DEBUG_ASSERT(0 == (*target & 1UL));
+
+				kctx->kbdev->mmu_mode->entry_set_ate(target,
+						phys[i], flags, cur_level);
+			}
 		}
 
 		phys += count;
-		vpfn += count;
+		insert_vpfn += count;
 		remain -= count;
 
 		kbase_mmu_sync_pgd(kctx->kbdev,
-				kbase_dma_addr(p) + (index * sizeof(u64)),
+				kbase_dma_addr(p) + (vindex * sizeof(u64)),
 				count * sizeof(u64));
 
 		kunmap(p);
-		/* We have started modifying the page table. If further pages
-		 * need inserting and fail we need to undo what has already
-		 * taken place */
-		recover_required = true;
-		recover_count += count;
 	}
 
 	mutex_unlock(&kctx->mmu_lock);
@@ -838,7 +884,7 @@ fail_unlock:
  * Map 'nr' pages pointed to by 'phys' at GPU PFN 'vpfn'
  */
 int kbase_mmu_insert_pages(struct kbase_context *kctx, u64 vpfn,
-				  phys_addr_t *phys, size_t nr,
+				  struct tagged_addr *phys, size_t nr,
 				  unsigned long flags)
 {
 	int err;
@@ -1042,11 +1088,9 @@ KBASE_EXPORT_TEST_API(kbase_mmu_disable);
 int kbase_mmu_teardown_pages(struct kbase_context *kctx, u64 vpfn, size_t nr)
 {
 	phys_addr_t pgd;
-	u64 *pgd_page;
-	struct kbase_device *kbdev;
 	size_t requested_nr = nr;
 	struct kbase_mmu_mode const *mmu_mode;
-	int err;
+	int err = -EFAULT;
 
 	KBASE_DEBUG_ASSERT(NULL != kctx);
 	beenthere(kctx, "kctx %p vpfn %lx nr %zd", (void *)kctx, (unsigned long)vpfn, nr);
@@ -1058,51 +1102,102 @@ int kbase_mmu_teardown_pages(struct kbase_context *kctx, u64 vpfn, size_t nr)
 
 	mutex_lock(&kctx->mmu_lock);
 
-	kbdev = kctx->kbdev;
-	mmu_mode = kbdev->mmu_mode;
+	mmu_mode = kctx->kbdev->mmu_mode;
 
 	while (nr) {
 		unsigned int i;
 		unsigned int index = vpfn & 0x1FF;
 		unsigned int count = KBASE_MMU_PAGE_ENTRIES - index;
-		struct page *p;
+		unsigned int pcount;
+		unsigned int level;
+		u64 *page;
 
 		if (count > nr)
 			count = nr;
 
-		err = mmu_get_bottom_pgd(kctx, vpfn, &pgd);
-		if (err) {
-			dev_warn(kbdev->dev, "kbase_mmu_teardown_pages: mmu_get_bottom_pgd failure\n");
-			err = -EINVAL;
-			goto fail_unlock;
+		/* need to check if this is a 2MB or a 4kB page */
+		pgd = kctx->pgd;
+
+		for (level = MIDGARD_MMU_TOPLEVEL;
+				level <= MIDGARD_MMU_BOTTOMLEVEL; level++) {
+			phys_addr_t next_pgd;
+
+			index = (vpfn >> ((3 - level) * 9)) & 0x1FF;
+			page = kmap(phys_to_page(pgd));
+			if (mmu_mode->ate_is_valid(page[index], level))
+				break; /* keep the mapping */
+			else if (!mmu_mode->pte_is_valid(page[index], level)) {
+				/* nothing here, advance */
+				switch (level) {
+				case MIDGARD_MMU_LEVEL(0):
+					count = 134217728;
+					break;
+				case MIDGARD_MMU_LEVEL(1):
+					count = 262144;
+					break;
+				case MIDGARD_MMU_LEVEL(2):
+					count = 512;
+					break;
+				case MIDGARD_MMU_LEVEL(3):
+					count = 1;
+					break;
+				}
+				if (count > nr)
+					count = nr;
+				goto next;
+			}
+			next_pgd = mmu_mode->pte_to_phy_addr(page[index]);
+			kunmap(phys_to_page(pgd));
+			pgd = next_pgd;
 		}
 
-		p = pfn_to_page(PFN_DOWN(pgd));
-		pgd_page = kmap(p);
-		if (!pgd_page) {
-			dev_warn(kbdev->dev, "kbase_mmu_teardown_pages: kmap failure\n");
-			err = -ENOMEM;
-			goto fail_unlock;
+		switch (level) {
+		case MIDGARD_MMU_LEVEL(0):
+		case MIDGARD_MMU_LEVEL(1):
+			dev_warn(kctx->kbdev->dev,
+				 "%s: No support for ATEs at level %d\n",
+				 __func__, level);
+			kunmap(phys_to_page(pgd));
+			goto out;
+		case MIDGARD_MMU_LEVEL(2):
+			/* can only teardown if count >= 512 */
+			if (count >= 512) {
+				pcount = 1;
+			} else {
+				dev_warn(kctx->kbdev->dev,
+					 "%s: limiting teardown as it tries to do a partial 2MB teardown, need 512, but have %d to tear down\n",
+					 __func__, count);
+				pcount = 0;
+			}
+			break;
+		case MIDGARD_MMU_BOTTOMLEVEL:
+			/* page count is the same as the logical count */
+			pcount = count;
+			break;
+		default:
+			dev_err(kctx->kbdev->dev,
+				"%s: found non-mapped memory, early out\n",
+				__func__);
+			vpfn += count;
+			nr -= count;
+			continue;
 		}
 
-		for (i = 0; i < count; i++)
-			mmu_mode->entry_invalidate(&pgd_page[index + i]);
-
-		vpfn += count;
-		nr -= count;
+		/* Invalidate the entries we added */
+		for (i = 0; i < pcount; i++)
+			mmu_mode->entry_invalidate(&page[index + i]);
 
 		kbase_mmu_sync_pgd(kctx->kbdev,
-				kbase_dma_addr(p) + (index * sizeof(u64)),
-				count * sizeof(u64));
+				   kbase_dma_addr(phys_to_page(pgd)) +
+				   8 * index, 8*pcount);
 
-		kunmap(p);
+next:
+		kunmap(phys_to_page(pgd));
+		vpfn += count;
+		nr -= count;
 	}
-
-	mutex_unlock(&kctx->mmu_lock);
-	kbase_mmu_flush_invalidate(kctx, vpfn, requested_nr, true);
-	return 0;
-
-fail_unlock:
+	err = 0;
+out:
 	mutex_unlock(&kctx->mmu_lock);
 	kbase_mmu_flush_invalidate(kctx, vpfn, requested_nr, true);
 	return err;
@@ -1122,7 +1217,9 @@ KBASE_EXPORT_TEST_API(kbase_mmu_teardown_pages);
  * already held by the caller. Refer to kbasep_js_runpool_release_ctx() for more
  * information.
  */
-int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn, phys_addr_t *phys, size_t nr, unsigned long flags)
+int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn,
+			   struct tagged_addr *phys, size_t nr,
+			   unsigned long flags)
 {
 	phys_addr_t pgd;
 	u64 *pgd_page;
@@ -1167,7 +1264,8 @@ int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn, phys_addr_t *ph
 			mutex_lock(&kctx->mmu_lock);
 		} while (!err);
 		if (err) {
-			dev_warn(kctx->kbdev->dev, "mmu_get_bottom_pgd failure\n");
+			dev_warn(kctx->kbdev->dev,
+				 "mmu_get_bottom_pgd failure\n");
 			goto fail_unlock;
 		}
 
@@ -1181,7 +1279,7 @@ int kbase_mmu_update_pages(struct kbase_context *kctx, u64 vpfn, phys_addr_t *ph
 
 		for (i = 0; i < count; i++)
 			mmu_mode->entry_set_ate(&pgd_page[index + i], phys[i],
-					flags);
+						flags, MIDGARD_MMU_BOTTOMLEVEL);
 
 		phys += count;
 		vpfn += count;
@@ -1204,28 +1302,11 @@ fail_unlock:
 	return err;
 }
 
-/* This is a debug feature only */
-static void mmu_check_unused(struct kbase_context *kctx, phys_addr_t pgd)
-{
-	u64 *page;
-	int i;
-
-	lockdep_assert_held(&kctx->reg_lock);
-
-	page = kmap_atomic(pfn_to_page(PFN_DOWN(pgd)));
-	/* kmap_atomic should NEVER fail. */
-	KBASE_DEBUG_ASSERT(NULL != page);
-
-	for (i = 0; i < KBASE_MMU_PAGE_ENTRIES; i++) {
-		if (kctx->kbdev->mmu_mode->ate_is_valid(page[i]))
-			beenthere(kctx, "live pte %016lx", (unsigned long)page[i]);
-	}
-	kunmap_atomic(page);
-}
-
-static void mmu_teardown_level(struct kbase_context *kctx, phys_addr_t pgd, int level, int zap, u64 *pgd_page_buffer)
+static void mmu_teardown_level(struct kbase_context *kctx, phys_addr_t pgd,
+			       int level, u64 *pgd_page_buffer)
 {
 	phys_addr_t target_pgd;
+	struct page *p;
 	u64 *pgd_page;
 	int i;
 	struct kbase_mmu_mode const *mmu_mode;
@@ -1237,7 +1318,8 @@ static void mmu_teardown_level(struct kbase_context *kctx, phys_addr_t pgd, int 
 	pgd_page = kmap_atomic(pfn_to_page(PFN_DOWN(pgd)));
 	/* kmap_atomic should NEVER fail. */
 	KBASE_DEBUG_ASSERT(NULL != pgd_page);
-	/* Copy the page to our preallocated buffer so that we can minimize kmap_atomic usage */
+	/* Copy the page to our preallocated buffer so that we can minimize
+	 * kmap_atomic usage */
 	memcpy(pgd_page_buffer, pgd_page, PAGE_SIZE);
 	kunmap_atomic(pgd_page);
 	pgd_page = pgd_page_buffer;
@@ -1248,28 +1330,21 @@ static void mmu_teardown_level(struct kbase_context *kctx, phys_addr_t pgd, int 
 		target_pgd = mmu_mode->pte_to_phy_addr(pgd_page[i]);
 
 		if (target_pgd) {
-			if (level < (MIDGARD_MMU_BOTTOMLEVEL - 1)) {
-				mmu_teardown_level(kctx, target_pgd, level + 1, zap, pgd_page_buffer + (PAGE_SIZE / sizeof(u64)));
-			} else {
-				/*
-				 * So target_pte is a level-3 page.
-				 * As a leaf, it is safe to free it.
-				 * Unless we have live pages attached to it!
-				 */
-				mmu_check_unused(kctx, target_pgd);
-			}
-
-			beenthere(kctx, "pte %lx level %d", (unsigned long)target_pgd, level + 1);
-			if (zap) {
-				struct page *p = phys_to_page(target_pgd);
-
-				kbase_mem_pool_free(&kctx->mem_pool, p, true);
-				kbase_process_page_usage_dec(kctx, 1);
-				kbase_atomic_sub_pages(1, &kctx->used_pages);
-				kbase_atomic_sub_pages(1, &kctx->kbdev->memdev.used_pages);
+			if (mmu_mode->pte_is_valid(pgd_page[i], level)) {
+				mmu_teardown_level(kctx,
+						   target_pgd,
+						   level + 1,
+						   pgd_page_buffer +
+						   (PAGE_SIZE / sizeof(u64)));
 			}
 		}
 	}
+
+	p = pfn_to_page(PFN_DOWN(pgd));
+	kbase_mem_pool_free(&kctx->mem_pool, p, true);
+	kbase_process_page_usage_dec(kctx, 1);
+	kbase_atomic_sub_pages(1, &kctx->used_pages);
+	kbase_atomic_sub_pages(1, &kctx->kbdev->memdev.used_pages);
 }
 
 int kbase_mmu_init(struct kbase_context *kctx)
@@ -1299,23 +1374,18 @@ void kbase_mmu_term(struct kbase_context *kctx)
 
 void kbase_mmu_free_pgd(struct kbase_context *kctx)
 {
-	int new_page_count __maybe_unused;
+	int new_page_count = 0;
 
 	KBASE_DEBUG_ASSERT(NULL != kctx);
 	KBASE_DEBUG_ASSERT(NULL != kctx->mmu_teardown_pages);
 
 	mutex_lock(&kctx->mmu_lock);
-	mmu_teardown_level(kctx, kctx->pgd, MIDGARD_MMU_TOPLEVEL, 1, kctx->mmu_teardown_pages);
+	mmu_teardown_level(kctx, kctx->pgd, MIDGARD_MMU_TOPLEVEL,
+			   kctx->mmu_teardown_pages);
 	mutex_unlock(&kctx->mmu_lock);
 
-	beenthere(kctx, "pgd %lx", (unsigned long)kctx->pgd);
-	kbase_mem_pool_free(&kctx->mem_pool, phys_to_page(kctx->pgd), true);
-	kbase_process_page_usage_dec(kctx, 1);
-	new_page_count = kbase_atomic_sub_pages(1, &kctx->used_pages);
-	kbase_atomic_sub_pages(1, &kctx->kbdev->memdev.used_pages);
-
 	KBASE_TLSTREAM_AUX_PAGESALLOC(
-			(u32)kctx->id,
+			kctx->id,
 			(u64)new_page_count);
 }
 
@@ -1358,7 +1428,7 @@ static size_t kbasep_mmu_dump_level(struct kbase_context *kctx, phys_addr_t pgd,
 
 	if (level < MIDGARD_MMU_BOTTOMLEVEL) {
 		for (i = 0; i < KBASE_MMU_PAGE_ENTRIES; i++) {
-			if (mmu_mode->pte_is_valid(pgd_page[i])) {
+			if (mmu_mode->pte_is_valid(pgd_page[i], level)) {
 				target_pgd = mmu_mode->pte_to_phy_addr(
 						pgd_page[i]);
 
@@ -1403,7 +1473,7 @@ void *kbase_mmu_dump(struct kbase_context *kctx, int nr_pages)
 		char *buffer;
 		char *mmu_dump_buffer;
 		u64 config[3];
-		size_t size;
+		size_t dump_size, size = 0;
 
 		buffer = (char *)kaddr;
 		mmu_dump_buffer = buffer;
@@ -1418,27 +1488,24 @@ void *kbase_mmu_dump(struct kbase_context *kctx, int nr_pages)
 			memcpy(buffer, &config, sizeof(config));
 			mmu_dump_buffer += sizeof(config);
 			size_left -= sizeof(config);
+			size += sizeof(config);
 		}
 
-
-
-		size = kbasep_mmu_dump_level(kctx,
+		dump_size = kbasep_mmu_dump_level(kctx,
 				kctx->pgd,
 				MIDGARD_MMU_TOPLEVEL,
 				&mmu_dump_buffer,
 				&size_left);
 
-		if (!size)
+		if (!dump_size)
 			goto fail_free;
+
+		size += dump_size;
 
 		/* Add on the size for the end marker */
 		size += sizeof(u64);
-		/* Add on the size for the config */
-		if (kctx->api_version >= KBASE_API_VERSION(8, 4))
-			size += sizeof(config);
 
-
-		if (size > nr_pages * PAGE_SIZE || size_left < sizeof(u64)) {
+		if (size > (nr_pages * PAGE_SIZE)) {
 			/* The buffer isn't big enough - free the memory and return failure */
 			goto fail_free;
 		}
@@ -2062,14 +2129,10 @@ void kbase_mmu_interrupt_process(struct kbase_device *kbdev, struct kbase_contex
 		 * We need to switch to UNMAPPED mode - but we do this in a
 		 * worker so that we can sleep
 		 */
-		KBASE_DEBUG_ASSERT(0 == object_is_on_stack(&as->work_busfault));
-		WARN_ON(work_pending(&as->work_busfault));
-		queue_work(as->pf_wq, &as->work_busfault);
+		WARN_ON(!queue_work(as->pf_wq, &as->work_busfault));
 		atomic_inc(&kbdev->faults_pending);
 	} else {
-		KBASE_DEBUG_ASSERT(0 == object_is_on_stack(&as->work_pagefault));
-		WARN_ON(work_pending(&as->work_pagefault));
-		queue_work(as->pf_wq, &as->work_pagefault);
+		WARN_ON(!queue_work(as->pf_wq, &as->work_pagefault));
 		atomic_inc(&kbdev->faults_pending);
 	}
 }

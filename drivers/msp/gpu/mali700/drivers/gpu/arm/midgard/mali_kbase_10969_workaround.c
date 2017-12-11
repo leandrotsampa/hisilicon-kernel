@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2013-2015, 2017 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2013-2015,2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -46,7 +46,7 @@ int kbasep_10969_workaround_clamp_coordinates(struct kbase_jd_atom *katom)
 	struct device *dev = katom->kctx->kbdev->dev;
 	u32   clamped = 0;
 	struct kbase_va_region *region;
-	phys_addr_t *page_array;
+	struct tagged_addr *page_array;
 	u64 page_index;
 	u32 offset = katom->jc & (~PAGE_MASK);
 	u32 *page_1 = NULL;
@@ -74,7 +74,7 @@ int kbasep_10969_workaround_clamp_coordinates(struct kbase_jd_atom *katom)
 
 	page_index = (katom->jc >> PAGE_SHIFT) - region->start_pfn;
 
-	p = pfn_to_page(PFN_DOWN(page_array[page_index]));
+	p = phys_to_page(as_phys_addr_t(page_array[page_index]));
 
 	/* we need the first 10 words of the fragment shader job descriptor.
 	 * We need to check that the offset + 10 words is less that the page
@@ -98,7 +98,7 @@ int kbasep_10969_workaround_clamp_coordinates(struct kbase_jd_atom *katom)
 	/* The data needed overflows page the dimension,
 	 * need to map the subsequent page */
 	if (copy_size < JOB_HEADER_SIZE) {
-		p = pfn_to_page(PFN_DOWN(page_array[page_index + 1]));
+		p = phys_to_page(as_phys_addr_t(page_array[page_index + 1]));
 		page_2 = kmap_atomic(p);
 
 		kbase_sync_single_for_cpu(katom->kctx->kbdev,
@@ -181,7 +181,7 @@ int kbasep_10969_workaround_clamp_coordinates(struct kbase_jd_atom *katom)
 
 		/* Flush CPU cache to update memory for future GPU reads*/
 		memcpy(page_1, dst, copy_size);
-		p = pfn_to_page(PFN_DOWN(page_array[page_index]));
+		p = phys_to_page(as_phys_addr_t(page_array[page_index]));
 
 		kbase_sync_single_for_device(katom->kctx->kbdev,
 				kbase_dma_addr(p) + offset,
@@ -190,7 +190,8 @@ int kbasep_10969_workaround_clamp_coordinates(struct kbase_jd_atom *katom)
 		if (copy_size < JOB_HEADER_SIZE) {
 			memcpy(page_2, dst + copy_size,
 					JOB_HEADER_SIZE - copy_size);
-			p = pfn_to_page(PFN_DOWN(page_array[page_index + 1]));
+			p = phys_to_page(as_phys_addr_t(page_array[page_index +
+								   1]));
 
 			kbase_sync_single_for_device(katom->kctx->kbdev,
 					kbase_dma_addr(p),

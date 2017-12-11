@@ -34,4 +34,5 @@ if kutf_env['debug'] == '1':
 
 if env['unit'] == '1':
 	SConscript('mali_kutf_ipa_test/sconscript')
+	SConscript('mali_kutf_ipa_unit_test/sconscript')
 	SConscript('mali_kutf_vinstr_test/sconscript')

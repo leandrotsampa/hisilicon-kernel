@@ -125,11 +125,11 @@ struct kbase_vmap_struct {
 	u64 gpu_addr;
 	struct kbase_mem_phy_alloc *cpu_alloc;
 	struct kbase_mem_phy_alloc *gpu_alloc;
-	phys_addr_t *cpu_pages;
-	phys_addr_t *gpu_pages;
+	struct tagged_addr *cpu_pages;
+	struct tagged_addr *gpu_pages;
 	void *addr;
 	size_t size;
-	bool is_cached;
+	bool sync_needed;
 };
 
 
@@ -169,6 +169,9 @@ struct kbase_vmap_struct {
  * when userspace code was expecting only the GPU to access the memory (e.g. HW
  * workarounds).
  *
+ * All cache maintenance operations shall be ignored if the
+ * memory region has been imported.
+ *
  */
 void *kbase_vmap_prot(struct kbase_context *kctx, u64 gpu_addr, size_t size,
 		      unsigned long prot_request, struct kbase_vmap_struct *map);
@@ -192,6 +195,9 @@ void *kbase_vmap_prot(struct kbase_context *kctx, u64 gpu_addr, size_t size,
  *
  * kbase_vmap_prot() should be used in preference, since kbase_vmap() makes no
  * checks to ensure the security of e.g. imported user bufs from RO SHM.
+ *
+ * Note: All cache maintenance operations shall be ignored if the memory region
+ * has been imported.
  */
 void *kbase_vmap(struct kbase_context *kctx, u64 gpu_addr, size_t size,
 		struct kbase_vmap_struct *map);
@@ -207,6 +213,9 @@ void *kbase_vmap(struct kbase_context *kctx, u64 gpu_addr, size_t size,
  * required, dependent on the CPU mapping for the memory region.
  *
  * The reference taken on pages during kbase_vmap() is released.
+ *
+ * Note: All cache maintenance operations shall be ignored if the memory region
+ * has been imported.
  */
 void kbase_vunmap(struct kbase_context *kctx, struct kbase_vmap_struct *map);
 

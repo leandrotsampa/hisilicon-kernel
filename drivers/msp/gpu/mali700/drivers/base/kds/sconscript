@@ -28,15 +28,14 @@ build_kds = not env.KernelConfigEnabled("CONFIG_KDS")
 
 # Build KDS module
 if build_kds:
-    kds_mod = env.BuildKernelModule('$STATIC_LIB_PATH/kds.ko', ['kds.c'],
-                                    make_targets=['kds'])
+    kds_mod = env.BuildKernelModule('$STATIC_LIB_PATH/kds.ko', ['kds.c'])
     env.KernelObjTarget('kds', kds_mod)
 
 # Build KDS test module
 if int(env['unit']) == 1:
     kds_test_mod = env.BuildKernelModule('$STATIC_LIB_PATH/kds_test.ko',
-                                         ['kds_test.c'],
-                                         make_targets=['kds_test'])
+                                         ['tests/kds_test.c'],
+                                         M=Dir("#kernel/drivers/base/kds/tests").abspath)
     env.KernelObjTarget('kds', kds_test_mod)
     if build_kds:
         env.Depends(kds_test_mod, kds_mod)

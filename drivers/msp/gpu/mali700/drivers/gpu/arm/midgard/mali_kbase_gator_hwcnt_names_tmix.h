@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2016-2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -105,8 +105,8 @@ static const char * const hardware_counters_mali_tMIx[] = {
 	"TMIx_PRIM_CULLED",
 	"TMIx_PRIM_CLIPPED",
 	"TMIx_PRIM_SAT_CULLED",
-	"",
-	"",
+	"TMIx_BIN_ALLOC_INIT",
+	"TMIx_BIN_ALLOC_OVERFLOW",
 	"TMIx_BUS_READ",
 	"",
 	"TMIx_BUS_WRITE",

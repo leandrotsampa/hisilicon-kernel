@@ -30,14 +30,17 @@
  */
 
 #include <linux/list.h>
+#include <linux/mutex.h>
 
 /**
  * struct kutf_mempool - the memory pool context management structure
  * @head:	list head on which the allocations in this context are added to
+ * @lock:	mutex for concurrent allocation from multiple threads
  *
  */
 struct kutf_mempool {
 	struct list_head head;
+	struct mutex lock;
 };
 
 /**

@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2012-2015 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2012-2015, 2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -173,7 +173,6 @@ int kds_async_waitall(
 	unsigned long lflags;
 	int i;
 	int triggered;
-	int err = -EFAULT;
 
 	BUG_ON(!pprset);
 	BUG_ON(!resource_list);
@@ -262,11 +261,10 @@ roll_back:
 	{
 		list_del(&rset->resources[i].link);
 	}
-	err = -EINVAL;
 
 	spin_unlock_irqrestore(&kds_lock, lflags);
 	kfree(rset);
-	return err;
+	return -EINVAL;
 }
 EXPORT_SYMBOL(kds_async_waitall);
 

@@ -37,7 +37,6 @@
 #include <mali_midg_regmap.h>
 #include <mali_kbase_cache_policy.h>
 #include <mali_kbase_hw.h>
-#include <mali_kbase_hwaccess_time.h>
 #include <mali_kbase_tlstream.h>
 
 /* This function finds out which RB tree the given GPU VA region belongs to
@@ -738,6 +737,7 @@ fail_unlock:
 int kbase_mem_init(struct kbase_device *kbdev)
 {
 	struct kbasep_mem_device *memdev;
+	int ret;
 
 	KBASE_DEBUG_ASSERT(kbdev);
 
@@ -747,8 +747,23 @@ int kbase_mem_init(struct kbase_device *kbdev)
 	/* Initialize memory usage */
 	atomic_set(&memdev->used_pages, 0);
 
-	return kbase_mem_pool_init(&kbdev->mem_pool,
-			KBASE_MEM_POOL_MAX_SIZE_KBDEV, kbdev, NULL);
+	ret = kbase_mem_pool_init(&kbdev->mem_pool,
+			KBASE_MEM_POOL_MAX_SIZE_KBDEV,
+			KBASE_MEM_POOL_4KB_PAGE_TABLE_ORDER,
+			kbdev,
+			NULL);
+	if (ret)
+		return ret;
+
+	ret = kbase_mem_pool_init(&kbdev->lp_mem_pool,
+			(KBASE_MEM_POOL_MAX_SIZE_KBDEV >> 9),
+			KBASE_MEM_POOL_2MB_PAGE_TABLE_ORDER,
+			kbdev,
+			NULL);
+	if (ret)
+		kbase_mem_pool_term(&kbdev->mem_pool);
+
+	return ret;
 }
 
 void kbase_mem_halt(struct kbase_device *kbdev)
@@ -770,6 +785,7 @@ void kbase_mem_term(struct kbase_device *kbdev)
 		dev_warn(kbdev->dev, "%s: %d pages in use!\n", __func__, pages);
 
 	kbase_mem_pool_term(&kbdev->mem_pool);
+	kbase_mem_pool_term(&kbdev->lp_mem_pool);
 }
 
 KBASE_EXPORT_TEST_API(kbase_mem_term);
@@ -921,7 +937,7 @@ int kbase_gpu_mmap(struct kbase_context *kctx, struct kbase_va_region *reg, u64 
 			} else {
 				err = kbase_mmu_insert_single_page(kctx,
 					reg->start_pfn + i * stride,
-					page_to_phys(kctx->aliasing_sink_page),
+					kctx->aliasing_sink_page,
 					alloc->imported.alias.aliased[i].length,
 					(reg->flags & mask) | attr);
 
@@ -1070,10 +1086,12 @@ int kbasep_find_enclosing_cpu_mapping_offset(
 KBASE_EXPORT_TEST_API(kbasep_find_enclosing_cpu_mapping_offset);
 
 void kbase_sync_single(struct kbase_context *kctx,
-		phys_addr_t cpu_pa, phys_addr_t gpu_pa,
+		struct tagged_addr t_cpu_pa, struct tagged_addr t_gpu_pa,
 		off_t offset, size_t size, enum kbase_sync_type sync_fn)
 {
 	struct page *cpu_page;
+	phys_addr_t cpu_pa = as_phys_addr_t(t_cpu_pa);
+	phys_addr_t gpu_pa = as_phys_addr_t(t_gpu_pa);
 
 	cpu_page = pfn_to_page(PFN_DOWN(cpu_pa));
 
@@ -1128,8 +1146,8 @@ static int kbase_do_syncset(struct kbase_context *kctx,
 	struct kbase_cpu_mapping *map;
 	unsigned long start;
 	size_t size;
-	phys_addr_t *cpu_pa;
-	phys_addr_t *gpu_pa;
+	struct tagged_addr *cpu_pa;
+	struct tagged_addr *gpu_pa;
 	u64 page_off, page_count;
 	u64 i;
 	u64 offset;
@@ -1147,7 +1165,8 @@ static int kbase_do_syncset(struct kbase_context *kctx,
 		goto out_unlock;
 	}
 
-	if (!(reg->flags & KBASE_REG_CPU_CACHED))
+	if (!(reg->flags & KBASE_REG_CPU_CACHED) ||
+			kbase_mem_is_imported(reg->gpu_alloc->type))
 		goto out_unlock;
 
 	start = (uintptr_t)sset->user_addr;
@@ -1175,7 +1194,7 @@ static int kbase_do_syncset(struct kbase_context *kctx,
 	}
 
 	/* Sync first page */
-	if (cpu_pa[page_off]) {
+	if (as_phys_addr_t(cpu_pa[page_off])) {
 		size_t sz = MIN(((size_t) PAGE_SIZE - offset), size);
 
 		kbase_sync_single(kctx, cpu_pa[page_off], gpu_pa[page_off],
@@ -1185,7 +1204,7 @@ static int kbase_do_syncset(struct kbase_context *kctx,
 	/* Sync middle pages (if any) */
 	for (i = 1; page_count > 2 && i < page_count - 1; i++) {
 		/* we grow upwards, so bail on first non-present page */
-		if (!cpu_pa[page_off + i])
+		if (!as_phys_addr_t(cpu_pa[page_off + i]))
 			break;
 
 		kbase_sync_single(kctx, cpu_pa[page_off + i],
@@ -1193,7 +1212,8 @@ static int kbase_do_syncset(struct kbase_context *kctx,
 	}
 
 	/* Sync last page (if any) */
-	if (page_count > 1 && cpu_pa[page_off + page_count - 1]) {
+	if (page_count > 1 &&
+	    as_phys_addr_t(cpu_pa[page_off + page_count - 1])) {
 		size_t sz = ((start + size - 1) & ~PAGE_MASK) + 1;
 
 		kbase_sync_single(kctx, cpu_pa[page_off + page_count - 1],
@@ -1412,24 +1432,142 @@ int kbase_alloc_phy_pages_helper(
 {
 	int new_page_count __maybe_unused;
 	size_t old_page_count = alloc->nents;
+	size_t nr_left = nr_pages_requested;
+	int res;
+	struct kbase_context *kctx;
+	struct tagged_addr *tp;
 
 	KBASE_DEBUG_ASSERT(alloc->type == KBASE_MEM_TYPE_NATIVE);
 	KBASE_DEBUG_ASSERT(alloc->imported.kctx);
+
+	if (alloc->reg) {
+		if (nr_pages_requested > alloc->reg->nr_pages - alloc->nents)
+			goto invalid_request;
+	}
+
+	kctx = alloc->imported.kctx;
 
 	if (nr_pages_requested == 0)
 		goto done; /*nothing to do*/
 
 	new_page_count = kbase_atomic_add_pages(
-			nr_pages_requested, &alloc->imported.kctx->used_pages);
-	kbase_atomic_add_pages(nr_pages_requested, &alloc->imported.kctx->kbdev->memdev.used_pages);
+			nr_pages_requested, &kctx->used_pages);
+	kbase_atomic_add_pages(nr_pages_requested,
+			       &kctx->kbdev->memdev.used_pages);
 
 	/* Increase mm counters before we allocate pages so that this
 	 * allocation is visible to the OOM killer */
-	kbase_process_page_usage_inc(alloc->imported.kctx, nr_pages_requested);
+	kbase_process_page_usage_inc(kctx, nr_pages_requested);
 
-	if (kbase_mem_pool_alloc_pages(&alloc->imported.kctx->mem_pool,
-			nr_pages_requested, alloc->pages + old_page_count) != 0)
-		goto no_alloc;
+	tp = alloc->pages + old_page_count;
+
+#ifdef CONFIG_MALI_2MB_ALLOC
+	/* Check if we have enough pages requested so we can allocate a large
+	 * page (512 * 4KB = 2MB )
+	 */
+	if (nr_left >= (SZ_2M / SZ_4K)) {
+		int nr_lp = nr_left / (SZ_2M / SZ_4K);
+
+		res = kbase_mem_pool_alloc_pages(&kctx->lp_mem_pool,
+						 nr_lp * (SZ_2M / SZ_4K),
+						 tp,
+						 true);
+
+		if (res > 0) {
+			nr_left -= res;
+			tp += res;
+		}
+
+		if (nr_left) {
+			struct kbase_sub_alloc *sa, *temp_sa;
+
+			mutex_lock(&kctx->mem_partials_lock);
+
+			list_for_each_entry_safe(sa, temp_sa,
+						 &kctx->mem_partials, link) {
+				int pidx = 0;
+
+				while (nr_left) {
+					pidx = find_next_zero_bit(sa->sub_pages,
+								  SZ_2M / SZ_4K,
+								  pidx);
+					bitmap_set(sa->sub_pages, pidx, 1);
+					*tp++ = as_tagged_tag(page_to_phys(sa->page +
+									   pidx),
+							      FROM_PARTIAL);
+					nr_left--;
+
+					if (bitmap_full(sa->sub_pages, SZ_2M / SZ_4K)) {
+						/* unlink from partial list when full */
+						list_del_init(&sa->link);
+						break;
+					}
+				}
+			}
+			mutex_unlock(&kctx->mem_partials_lock);
+		}
+
+		/* only if we actually have a chunk left <512. If more it indicates
+		 * that we couldn't allocate a 2MB above, so no point to retry here.
+		 */
+		if (nr_left > 0 && nr_left < (SZ_2M / SZ_4K)) {
+			/* create a new partial and suballocate the rest from it */
+			struct page *np = NULL;
+
+			do {
+				int err;
+
+				np = kbase_mem_pool_alloc(&kctx->lp_mem_pool);
+				if (np)
+					break;
+				err = kbase_mem_pool_grow(&kctx->lp_mem_pool, 1);
+				if (err)
+					break;
+			} while (1);
+
+			if (np) {
+				int i;
+				struct kbase_sub_alloc *sa;
+				struct page *p;
+
+				sa = kmalloc(sizeof(*sa), GFP_KERNEL);
+				if (!sa) {
+					kbase_mem_pool_free(&kctx->lp_mem_pool, np, false);
+					goto no_new_partial;
+				}
+
+				/* store pointers back to the control struct */
+				np->lru.next = (void *)sa;
+				for (p = np; p < np + SZ_2M / SZ_4K; p++)
+					p->lru.prev = (void *)np;
+				INIT_LIST_HEAD(&sa->link);
+				bitmap_zero(sa->sub_pages, SZ_2M / SZ_4K);
+				sa->page = np;
+
+				for (i = 0; i < nr_left; i++)
+					*tp++ = as_tagged_tag(page_to_phys(np + i), FROM_PARTIAL);
+
+				bitmap_set(sa->sub_pages, 0, nr_left);
+				nr_left = 0;
+
+				/* expose for later use */
+				mutex_lock(&kctx->mem_partials_lock);
+				list_add(&sa->link, &kctx->mem_partials);
+				mutex_unlock(&kctx->mem_partials_lock);
+			}
+		}
+	}
+no_new_partial:
+#endif
+
+	if (nr_left) {
+		res = kbase_mem_pool_alloc_pages(&kctx->mem_pool,
+						 nr_left,
+						 tp,
+						 false);
+		if (res <= 0)
+			goto alloc_failed;
+	}
 
 	/*
 	 * Request a zone cache update, this scans only the new pages an
@@ -1441,19 +1579,51 @@ int kbase_alloc_phy_pages_helper(
 		kbase_zone_cache_clear(alloc);
 
 	KBASE_TLSTREAM_AUX_PAGESALLOC(
-			(u32)alloc->imported.kctx->id,
+			kctx->id,
 			(u64)new_page_count);
 
 	alloc->nents += nr_pages_requested;
 done:
 	return 0;
 
-no_alloc:
-	kbase_process_page_usage_dec(alloc->imported.kctx, nr_pages_requested);
-	kbase_atomic_sub_pages(nr_pages_requested, &alloc->imported.kctx->used_pages);
-	kbase_atomic_sub_pages(nr_pages_requested, &alloc->imported.kctx->kbdev->memdev.used_pages);
+alloc_failed:
+	/* rollback needed if got one or more 2MB but failed later */
+	if (nr_left != nr_pages_requested)
+		kbase_mem_pool_free_pages(&kctx->lp_mem_pool,
+				  nr_pages_requested - nr_left,
+				  alloc->pages + old_page_count,
+				  false,
+				  false);
 
+	kbase_process_page_usage_dec(kctx, nr_pages_requested);
+	kbase_atomic_sub_pages(nr_pages_requested, &kctx->used_pages);
+	kbase_atomic_sub_pages(nr_pages_requested,
+			       &kctx->kbdev->memdev.used_pages);
+
+invalid_request:
 	return -ENOMEM;
+}
+
+static void free_partial(struct kbase_context *kctx, struct tagged_addr tp)
+{
+	struct page *p, *head_page;
+	struct kbase_sub_alloc *sa;
+
+	p = phys_to_page(as_phys_addr_t(tp));
+	head_page = (struct page *)p->lru.prev;
+	sa = (struct kbase_sub_alloc *)head_page->lru.next;
+	mutex_lock(&kctx->mem_partials_lock);
+	clear_bit(p - head_page, sa->sub_pages);
+	if (bitmap_empty(sa->sub_pages, SZ_2M / SZ_4K)) {
+		list_del(&sa->link);
+		kbase_mem_pool_free(&kctx->lp_mem_pool, head_page, true);
+		kfree(sa);
+	} else if (bitmap_weight(sa->sub_pages, SZ_2M / SZ_4K) ==
+		   SZ_2M / SZ_4K - 1) {
+		/* expose the partial again */
+		list_add(&sa->link, &kctx->mem_partials);
+	}
+	mutex_unlock(&kctx->mem_partials_lock);
 }
 
 int kbase_free_phy_pages_helper(
@@ -1463,8 +1633,9 @@ int kbase_free_phy_pages_helper(
 	struct kbase_context *kctx = alloc->imported.kctx;
 	bool syncback;
 	bool reclaimed = (alloc->evicted != 0);
-	phys_addr_t *start_free;
+	struct tagged_addr *start_free;
 	int new_page_count __maybe_unused;
+	size_t freed = 0;
 
 	KBASE_DEBUG_ASSERT(alloc->type == KBASE_MEM_TYPE_NATIVE);
 	KBASE_DEBUG_ASSERT(alloc->imported.kctx);
@@ -1478,6 +1649,13 @@ int kbase_free_phy_pages_helper(
 
 	syncback = alloc->properties & KBASE_MEM_PHY_ALLOC_ACCESSED_CACHED;
 
+	/* pad start_free to a valid start location */
+	while (nr_pages_to_free && is_huge(*start_free) &&
+	       !is_huge_head(*start_free)) {
+		nr_pages_to_free--;
+		start_free++;
+	}
+
 	/*
 	 * Clear the zone cache, we don't expect JIT allocations to be
 	 * shrunk in parts so there is no point trying to optimize for that
@@ -1486,27 +1664,60 @@ int kbase_free_phy_pages_helper(
 	 */
 	kbase_zone_cache_clear(alloc);
 
-	kbase_mem_pool_free_pages(&kctx->mem_pool,
-				  nr_pages_to_free,
-				  start_free,
-				  syncback,
-				  reclaimed);
 
-	alloc->nents -= nr_pages_to_free;
+	while (nr_pages_to_free) {
+		if (is_huge_head(*start_free)) {
+			/* This is a 2MB entry, so free all the 512 pages that
+			 * it points to
+			 */
+			kbase_mem_pool_free_pages(&kctx->lp_mem_pool,
+					512,
+					start_free,
+					syncback,
+					reclaimed);
+			nr_pages_to_free -= 512;
+			start_free += 512;
+			freed += 512;
+		} else if (is_partial(*start_free)) {
+			free_partial(kctx, *start_free);
+			nr_pages_to_free--;
+			start_free++;
+			freed++;
+		} else {
+			struct tagged_addr *local_end_free;
+
+			local_end_free = start_free;
+			while (nr_pages_to_free &&
+			       !is_huge(*local_end_free) &&
+			       !is_partial(*local_end_free)) {
+				local_end_free++;
+				nr_pages_to_free--;
+			}
+			kbase_mem_pool_free_pages(&kctx->mem_pool,
+					local_end_free - start_free,
+					start_free,
+					syncback,
+					reclaimed);
+			freed += local_end_free - start_free;
+			start_free += local_end_free - start_free;
+		}
+	}
+
+	alloc->nents -= freed;
 
 	/*
 	 * If the allocation was not evicted (i.e. evicted == 0) then
 	 * the page accounting needs to be done.
 	 */
 	if (!reclaimed) {
-		kbase_process_page_usage_dec(kctx, nr_pages_to_free);
-		new_page_count = kbase_atomic_sub_pages(nr_pages_to_free,
+		kbase_process_page_usage_dec(kctx, freed);
+		new_page_count = kbase_atomic_sub_pages(freed,
 							&kctx->used_pages);
-		kbase_atomic_sub_pages(nr_pages_to_free,
+		kbase_atomic_sub_pages(freed,
 				       &kctx->kbdev->memdev.used_pages);
 
 		KBASE_TLSTREAM_AUX_PAGESALLOC(
-				(u32)kctx->id,
+				kctx->id,
 				(u64)new_page_count);
 	}
 
@@ -2160,7 +2371,7 @@ static int kbase_jd_user_buf_map(struct kbase_context *kctx,
 	long pinned_pages;
 	struct kbase_mem_phy_alloc *alloc;
 	struct page **pages;
-	phys_addr_t *pa;
+	struct tagged_addr *pa;
 	long i;
 	int err = -ENOMEM;
 	unsigned long address;
@@ -2229,7 +2440,7 @@ static int kbase_jd_user_buf_map(struct kbase_context *kctx,
 			goto unwind;
 
 		alloc->imported.user_buf.dma_addrs[i] = dma_addr;
-		pa[i] = page_to_phys(pages[i]);
+		pa[i] = as_tagged(page_to_phys(pages[i]));
 
 		local_size -= min;
 		offset = 0;
@@ -2250,6 +2461,9 @@ unwind:
 		dma_unmap_page(kctx->kbdev->dev,
 				alloc->imported.user_buf.dma_addrs[i],
 				PAGE_SIZE, DMA_BIDIRECTIONAL);
+	}
+
+	while (++i < pinned_pages) {
 		put_page(pages[i]);
 		pages[i] = NULL;
 	}
@@ -2290,7 +2504,7 @@ static int kbase_jd_umm_map(struct kbase_context *kctx,
 	struct sg_table *sgt;
 	struct scatterlist *s;
 	int i;
-	phys_addr_t *pa;
+	struct tagged_addr *pa;
 	int err;
 	size_t count = 0;
 	struct kbase_mem_phy_alloc *alloc;
@@ -2312,8 +2526,7 @@ static int kbase_jd_umm_map(struct kbase_context *kctx,
 	KBASE_DEBUG_ASSERT(pa);
 
 	for_each_sg(sgt->sgl, s, sgt->nents, i) {
-		int j;
-		size_t pages = PFN_UP(sg_dma_len(s));
+		size_t j, pages = PFN_UP(sg_dma_len(s));
 
 		WARN_ONCE(sg_dma_len(s) & (PAGE_SIZE-1),
 		"sg_dma_len(s)=%u is not a multiple of PAGE_SIZE\n",
@@ -2325,9 +2538,10 @@ static int kbase_jd_umm_map(struct kbase_context *kctx,
 
 		for (j = 0; (j < pages) && (count < reg->nr_pages); j++,
 				count++)
-			*pa++ = sg_dma_address(s) + (j << PAGE_SHIFT);
+			*pa++ = as_tagged(sg_dma_address(s) +
+				(j << PAGE_SHIFT));
 		WARN_ONCE(j < pages,
-		"sg list from dma_buf_map_attachment > dma_buf->size=%zu\n",
+			  "sg list from dma_buf_map_attachment > dma_buf->size=%zu\n",
 		alloc->imported.umm.dma_buf->size);
 	}
 
@@ -2352,7 +2566,7 @@ static int kbase_jd_umm_map(struct kbase_context *kctx,
 	if (reg->flags & KBASE_REG_IMPORT_PAD) {
 		err = kbase_mmu_insert_single_page(kctx,
 				reg->start_pfn + count,
-				page_to_phys(kctx->aliasing_sink_page),
+				kctx->aliasing_sink_page,
 				reg->nr_pages - count,
 				(reg->flags | KBASE_REG_GPU_RD) &
 				~KBASE_REG_GPU_WR);
@@ -2386,35 +2600,9 @@ static void kbase_jd_umm_unmap(struct kbase_context *kctx,
 }
 #endif				/* CONFIG_DMA_SHARED_BUFFER */
 
-#if (defined(CONFIG_KDS) && defined(CONFIG_UMP)) \
-		|| defined(CONFIG_DMA_SHARED_BUFFER_USES_KDS)
-static void add_kds_resource(struct kds_resource *kds_res,
-		struct kds_resource **kds_resources, u32 *kds_res_count,
-		unsigned long *kds_access_bitmap, bool exclusive)
-{
-	u32 i;
-
-	for (i = 0; i < *kds_res_count; i++) {
-		/* Duplicate resource, ignore */
-		if (kds_resources[i] == kds_res)
-			return;
-	}
-
-	kds_resources[*kds_res_count] = kds_res;
-	if (exclusive)
-		set_bit(*kds_res_count, kds_access_bitmap);
-	(*kds_res_count)++;
-}
-#endif
-
 struct kbase_mem_phy_alloc *kbase_map_external_resource(
 		struct kbase_context *kctx, struct kbase_va_region *reg,
-		struct mm_struct *locked_mm
-#ifdef CONFIG_KDS
-		, u32 *kds_res_count, struct kds_resource **kds_resources,
-		unsigned long *kds_access_bitmap, bool exclusive
-#endif
-		)
+		struct mm_struct *locked_mm)
 {
 	int err;
 
@@ -2435,34 +2623,10 @@ struct kbase_mem_phy_alloc *kbase_map_external_resource(
 	}
 	break;
 	case KBASE_MEM_TYPE_IMPORTED_UMP: {
-#if defined(CONFIG_KDS) && defined(CONFIG_UMP)
-		if (kds_res_count) {
-			struct kds_resource *kds_res;
-
-			kds_res = ump_dd_kds_resource_get(
-					reg->gpu_alloc->imported.ump_handle);
-			if (kds_res)
-				add_kds_resource(kds_res, kds_resources,
-						kds_res_count,
-						kds_access_bitmap, exclusive);
-		}
-#endif				/*defined(CONFIG_KDS) && defined(CONFIG_UMP) */
 		break;
 	}
 #ifdef CONFIG_DMA_SHARED_BUFFER
 	case KBASE_MEM_TYPE_IMPORTED_UMM: {
-#ifdef CONFIG_DMA_SHARED_BUFFER_USES_KDS
-		if (kds_res_count) {
-			struct kds_resource *kds_res;
-
-			kds_res = get_dma_buf_kds_resource(
-					reg->gpu_alloc->imported.umm.dma_buf);
-			if (kds_res)
-				add_kds_resource(kds_res, kds_resources,
-						kds_res_count,
-						kds_access_bitmap, exclusive);
-		}
-#endif
 		reg->gpu_alloc->imported.umm.current_mapping_usage_count++;
 		if (1 == reg->gpu_alloc->imported.umm.current_mapping_usage_count) {
 			err = kbase_jd_umm_map(kctx, reg);
@@ -2570,12 +2734,7 @@ struct kbase_ctx_ext_res_meta *kbase_sticky_resource_acquire(
 		 * Fill in the metadata object and acquire a reference
 		 * for the physical resource.
 		 */
-		meta->alloc = kbase_map_external_resource(kctx, reg, NULL
-#ifdef CONFIG_KDS
-				, NULL, NULL,
-				NULL, false
-#endif
-				);
+		meta->alloc = kbase_map_external_resource(kctx, reg, NULL);
 
 		if (!meta->alloc)
 			goto fail_map;

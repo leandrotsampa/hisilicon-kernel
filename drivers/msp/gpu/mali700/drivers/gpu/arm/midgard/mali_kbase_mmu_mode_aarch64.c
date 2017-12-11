@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2010-2014, 2016, 2017 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2010-2014, 2016-2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -17,19 +17,19 @@
 
 
 
-#include "mali_kbase_mmu_mode.h"
-
 #include "mali_kbase.h"
 #include "mali_midg_regmap.h"
+#include "mali_kbase_defs.h"
 
 #define ENTRY_TYPE_MASK     3ULL
-/* For valid ATEs bit 1 = (level == 3) ? 1 : 0.
- * The MMU is only ever configured by the driver so that ATEs
- * are at level 3, so bit 1 should always be set
+/* For valid ATEs bit 1 = ((level == 3) ? 1 : 0).
+ * Valid ATE entries at level 3 are flagged with the value 3.
+ * Valid ATE entries at level 0-2 are flagged with the value 1.
  */
-#define ENTRY_IS_ATE        3ULL
-#define ENTRY_IS_INVAL      2ULL
-#define ENTRY_IS_PTE        3ULL
+#define ENTRY_IS_ATE_L3		3ULL
+#define ENTRY_IS_ATE_L02	1ULL
+#define ENTRY_IS_INVAL		2ULL
+#define ENTRY_IS_PTE		3ULL
 
 #define ENTRY_ATTR_BITS (7ULL << 2)	/* bits 4:2 */
 #define ENTRY_ACCESS_RW (1ULL << 6)     /* bits 6:7 */
@@ -122,13 +122,19 @@ static phys_addr_t pte_to_phy_addr(u64 entry)
 	return entry & ~0xFFF;
 }
 
-static int ate_is_valid(u64 ate)
+static int ate_is_valid(u64 ate, unsigned int level)
 {
-	return ((ate & ENTRY_TYPE_MASK) == ENTRY_IS_ATE);
+	if (level == MIDGARD_MMU_BOTTOMLEVEL)
+		return ((ate & ENTRY_TYPE_MASK) == ENTRY_IS_ATE_L3);
+	else
+		return ((ate & ENTRY_TYPE_MASK) == ENTRY_IS_ATE_L02);
 }
 
-static int pte_is_valid(u64 pte)
+static int pte_is_valid(u64 pte, unsigned int level)
 {
+	/* PTEs cannot exist at the bottom level */
+	if (level == MIDGARD_MMU_BOTTOMLEVEL)
+		return false;
 	return ((pte & ENTRY_TYPE_MASK) == ENTRY_IS_PTE);
 }
 
@@ -164,16 +170,24 @@ static u64 get_mmu_flags(unsigned long flags)
 	return mmu_flags;
 }
 
-static void entry_set_ate(u64 *entry, phys_addr_t phy, unsigned long flags)
+static void entry_set_ate(u64 *entry,
+		struct tagged_addr phy,
+		unsigned long flags,
+		unsigned int level)
 {
-	page_table_entry_set(entry, (phy & ~0xFFF) |
-			get_mmu_flags(flags) |
-			ENTRY_ACCESS_BIT | ENTRY_IS_ATE);
+	if (level == MIDGARD_MMU_BOTTOMLEVEL)
+		page_table_entry_set(entry, as_phys_addr_t(phy) |
+				get_mmu_flags(flags) |
+				ENTRY_ACCESS_BIT | ENTRY_IS_ATE_L3);
+	else
+		page_table_entry_set(entry, as_phys_addr_t(phy) |
+				get_mmu_flags(flags) |
+				ENTRY_ACCESS_BIT | ENTRY_IS_ATE_L02);
 }
 
 static void entry_set_pte(u64 *entry, phys_addr_t phy)
 {
-	page_table_entry_set(entry, (phy & ~0xFFF) |
+	page_table_entry_set(entry, (phy & PAGE_MASK) |
 			ENTRY_ACCESS_BIT | ENTRY_IS_PTE);
 }
 

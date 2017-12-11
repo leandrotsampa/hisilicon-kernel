@@ -17,4 +17,4 @@ ccflags-y += -I$(src)/../include
 
 obj-$(CONFIG_MALI_KUTF) += kutf.o
 
-kutf-y := kutf_mem.o kutf_resultset.o kutf_suite.o kutf_utils.o
+kutf-y := kutf_mem.o kutf_resultset.o kutf_suite.o kutf_utils.o kutf_helpers.o kutf_helpers_user.o

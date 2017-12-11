@@ -41,6 +41,7 @@ kbase_create_context(struct kbase_device *kbdev, bool is_compat)
 {
 	struct kbase_context *kctx;
 	int err;
+	struct page *p;
 
 	KBASE_DEBUG_ASSERT(kbdev != NULL);
 
@@ -71,14 +72,24 @@ kbase_create_context(struct kbase_device *kbdev, bool is_compat)
 	kctx->pid = current->pid;
 
 	err = kbase_mem_pool_init(&kctx->mem_pool,
-			kbdev->mem_pool_max_size_default,
-			kctx->kbdev, &kbdev->mem_pool);
+				  kbdev->mem_pool_max_size_default,
+				  KBASE_MEM_POOL_4KB_PAGE_TABLE_ORDER,
+				  kctx->kbdev,
+				  &kbdev->mem_pool);
 	if (err)
 		goto free_kctx;
 
+	err = kbase_mem_pool_init(&kctx->lp_mem_pool,
+				  (kbdev->mem_pool_max_size_default >> 9),
+				  KBASE_MEM_POOL_2MB_PAGE_TABLE_ORDER,
+				  kctx->kbdev,
+				  &kbdev->lp_mem_pool);
+	if (err)
+		goto free_mem_pool;
+
 	err = kbase_mem_evictable_init(kctx);
 	if (err)
-		goto free_pool;
+		goto free_both_pools;
 
 	atomic_set(&kctx->used_pages, 0);
 
@@ -98,11 +109,11 @@ kbase_create_context(struct kbase_device *kbdev, bool is_compat)
 
 	mutex_init(&kctx->reg_lock);
 
+	mutex_init(&kctx->mem_partials_lock);
+	INIT_LIST_HEAD(&kctx->mem_partials);
+
 	INIT_LIST_HEAD(&kctx->waiting_soft_jobs);
 	spin_lock_init(&kctx->waiting_soft_jobs_lock);
-#ifdef CONFIG_KDS
-	INIT_LIST_HEAD(&kctx->waiting_kds_resource);
-#endif
 	err = kbase_dma_fence_init(kctx);
 	if (err)
 		goto free_event;
@@ -122,9 +133,10 @@ kbase_create_context(struct kbase_device *kbdev, bool is_compat)
 		mutex_unlock(&kctx->mmu_lock);
 	} while (!kctx->pgd);
 
-	kctx->aliasing_sink_page = kbase_mem_alloc_page(kctx->kbdev);
-	if (!kctx->aliasing_sink_page)
+	p = kbase_mem_alloc_page(&kctx->mem_pool);
+	if (!p)
 		goto no_sink_page;
+	kctx->aliasing_sink_page = as_tagged(page_to_phys(p));
 
 	init_waitqueue_head(&kctx->event_queue);
 
@@ -166,7 +178,7 @@ no_jit:
 no_sticky:
 	kbase_region_tracker_term(kctx);
 no_region_tracker:
-	kbase_mem_pool_free(&kctx->mem_pool, kctx->aliasing_sink_page, false);
+	kbase_mem_pool_free(&kctx->mem_pool, p, false);
 no_sink_page:
 	/* VM lock needed for the call to kbase_mmu_free_pgd */
 	kbase_gpu_vm_lock(kctx);
@@ -184,7 +196,9 @@ free_jd:
 	kbase_jd_exit(kctx);
 deinit_evictable:
 	kbase_mem_evictable_deinit(kctx);
-free_pool:
+free_both_pools:
+	kbase_mem_pool_term(&kctx->lp_mem_pool);
+free_mem_pool:
 	kbase_mem_pool_term(&kctx->mem_pool);
 free_kctx:
 	vfree(kctx);
@@ -214,6 +228,7 @@ void kbase_destroy_context(struct kbase_context *kctx)
 	int pages;
 	unsigned long pending_regions_to_clean;
 	unsigned long flags;
+	struct page *p;
 
 	KBASE_DEBUG_ASSERT(NULL != kctx);
 
@@ -254,7 +269,8 @@ void kbase_destroy_context(struct kbase_context *kctx)
 	kbase_mmu_free_pgd(kctx);
 
 	/* drop the aliasing sink page now that it can't be mapped anymore */
-	kbase_mem_pool_free(&kctx->mem_pool, kctx->aliasing_sink_page, false);
+	p = phys_to_page(as_phys_addr_t(kctx->aliasing_sink_page));
+	kbase_mem_pool_free(&kctx->mem_pool, p, false);
 
 	/* free pending region setups */
 	pending_regions_to_clean = (~kctx->cookies) & KBASE_COOKIE_MASK;
@@ -277,8 +293,6 @@ void kbase_destroy_context(struct kbase_context *kctx)
 
 	kbase_jd_exit(kctx);
 
-	kbase_pm_context_idle(kbdev);
-
 	kbase_dma_fence_term(kctx);
 
 	mutex_lock(&kbdev->mmu_hw_mutex);
@@ -295,9 +309,12 @@ void kbase_destroy_context(struct kbase_context *kctx)
 
 	kbase_mem_evictable_deinit(kctx);
 	kbase_mem_pool_term(&kctx->mem_pool);
+	kbase_mem_pool_term(&kctx->lp_mem_pool);
 	WARN_ON(atomic_read(&kctx->nonmapped_pages) != 0);
 
 	vfree(kctx);
+
+	kbase_pm_context_idle(kbdev);
 }
 KBASE_EXPORT_SYMBOL(kbase_destroy_context);
 

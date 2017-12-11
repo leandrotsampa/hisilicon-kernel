@@ -232,9 +232,21 @@ int mali_kutf_irq_test_main_init(void)
 	struct kutf_suite *suite;
 
 	irq_app = kutf_create_application("irq");
+
+	if (NULL == irq_app) {
+		pr_warn("Creation of test application failed!\n");
+		return -ENOMEM;
+	}
+
 	suite = kutf_create_suite(irq_app, "irq_default",
 			1, mali_kutf_irq_default_create_fixture,
 			mali_kutf_irq_default_remove_fixture);
+
+	if (NULL == suite) {
+		pr_warn("Creation of test suite failed!\n");
+		kutf_destroy_application(irq_app);
+		return -ENOMEM;
+	}
 
 	kutf_add_test(suite, 0x0, "irq_latency",
 			mali_kutf_irq_latency);

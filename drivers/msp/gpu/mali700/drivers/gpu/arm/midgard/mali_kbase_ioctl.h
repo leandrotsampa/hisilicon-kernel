@@ -26,6 +26,9 @@ extern "C" {
 
 #define KBASE_IOCTL_TYPE 0x80
 
+#define BASE_UK_VERSION_MAJOR 11
+#define BASE_UK_VERSION_MINOR 0
+
 #ifdef ANDROID
 /* Android's definition of ioctl is incorrect, specifying the type argument as
  * 'int'. This creates a warning when using _IOWR (as the top bit is set). Work
@@ -71,7 +74,7 @@ struct kbase_ioctl_set_flags {
  * @stride: sizeof(struct base_jd_atom_v2)
  */
 struct kbase_ioctl_job_submit {
-	union kbase_pointer addr;
+	__u64 addr;
 	__u32 nr_atoms;
 	__u32 stride;
 };
@@ -106,7 +109,7 @@ struct kbase_ioctl_job_submit {
  * 11 = u64
  */
 struct kbase_ioctl_get_gpuprops {
-	union kbase_pointer buffer;
+	__u64 buffer;
 	__u32 size;
 	__u32 flags;
 };
@@ -246,13 +249,15 @@ struct kbase_ioctl_disjoint_query {
  * struct kbase_ioctl_get_ddk_version - Query the kernel version
  * @version_buffer: Buffer to receive the kernel version string
  * @size: Size of the buffer
+ * @padding: Padding
  *
  * The ioctl will return the number of bytes written into version_buffer
  * (which includes a NULL byte) or a negative error code
  */
 struct kbase_ioctl_get_ddk_version {
-	union kbase_pointer version_buffer;
+	__u64 version_buffer;
 	__u32 size;
+	__u32 padding;
 };
 
 #define KBASE_IOCTL_GET_DDK_VERSION \
@@ -325,7 +330,7 @@ union kbase_ioctl_mem_find_cpu_offset {
  * @id: The kernel context ID
  */
 struct kbase_ioctl_get_context_id {
-	int id; /* This should really be __u32, but see GPUCORE-10048 */
+	__u32 id;
 };
 
 #define KBASE_IOCTL_GET_CONTEXT_ID \
@@ -383,7 +388,7 @@ union kbase_ioctl_mem_alias {
 		__u64 flags;
 		__u64 stride;
 		__u64 nents;
-		union kbase_pointer aliasing_info;
+		__u64 aliasing_info;
 	} in;
 	struct {
 		__u64 flags;
@@ -410,7 +415,7 @@ union kbase_ioctl_mem_alias {
 union kbase_ioctl_mem_import {
 	struct {
 		__u64 flags;
-		union kbase_pointer phandle;
+		__u64 phandle;
 		__u32 type;
 		__u32 padding;
 	} in;
@@ -472,10 +477,12 @@ struct kbase_ioctl_fence_validate {
  * struct kbase_ioctl_get_profiling_controls - Get the profiling controls
  * @count: The size of @buffer in u32 words
  * @buffer: The buffer to receive the profiling controls
+ * @padding: Padding
  */
 struct kbase_ioctl_get_profiling_controls {
-	union kbase_pointer buffer;
+	__u64 buffer;
 	__u32 count;
+	__u32 padding;
 };
 
 #define KBASE_IOCTL_GET_PROFILING_CONTROLS \
@@ -490,7 +497,7 @@ struct kbase_ioctl_get_profiling_controls {
  * The data provided is accessible through a debugfs file
  */
 struct kbase_ioctl_mem_profile_add {
-	union kbase_pointer buffer;
+	__u64 buffer;
 	__u32 len;
 	__u32 padding;
 };
@@ -512,6 +519,8 @@ struct kbase_ioctl_soft_event_update {
 
 #define KBASE_IOCTL_SOFT_EVENT_UPDATE \
 	_IOW(KBASE_IOCTL_TYPE, 28, struct kbase_ioctl_soft_event_update)
+
+/* IOCTLs 29-32 are reserved */
 
 /***************
  * test ioctls *
@@ -648,6 +657,9 @@ struct kbase_ioctl_tlstream_stats {
 #define KBASE_GPUPROP_COHERENCY_GROUP_13		77
 #define KBASE_GPUPROP_COHERENCY_GROUP_14		78
 #define KBASE_GPUPROP_COHERENCY_GROUP_15		79
+
+#define KBASE_GPUPROP_TEXTURE_FEATURES_3		80
+#define KBASE_GPUPROP_RAW_TEXTURE_FEATURES_3		81
 
 #ifdef __cpluscplus
 }

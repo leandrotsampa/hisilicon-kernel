@@ -1,6 +1,6 @@
 /*
  *
- * (C) COPYRIGHT 2014-2015 ARM Limited. All rights reserved.
+ * (C) COPYRIGHT 2014-2017 ARM Limited. All rights reserved.
  *
  * This program is free software and is provided to you under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -68,38 +68,13 @@
  * Attached value: pointer to @ref kbase_platform_funcs_conf
  * Default value: See @ref kbase_platform_funcs_conf
  */
-#define PLATFORM_FUNCS (&platform_callbacks)
-
-/** Power model for IPA
- *
- * Attached value: pointer to @ref mali_pa_model_ops
- */
-#ifdef CONFIG_DEVFREQ_THERMAL
-#define POWER_MODEL_CALLBACKS (&hisilicon_model_ops)
-#else
-#define POWER_MODEL_CALLBACKS (NULL)
-#endif
+#define PLATFORM_FUNCS (NULL)
 
 extern struct kbase_pm_callback_conf pm_callbacks;
-extern struct kbase_platform_funcs_conf platform_callbacks;
 
 /**
- * Secure mode switch
+ * Autosuspend delay
  *
- * Attached value: pointer to @ref kbase_secure_ops
+ * The delay time (in milliseconds) to be used for autosuspend
  */
-#define SECURE_CALLBACKS (NULL)
-
-
-#ifdef CONFIG_DEVFREQ_THERMAL
-extern struct devfreq_cooling_ops hisilicon_model_ops;
-#endif
-
-typedef enum
-{
-    KBASE_CHIP_TYPE_FF = 1,
-    KBASE_CHIP_TYPE_TT = 2,
-    KBASE_CHIP_TYPE_SS = 3,
-}KBASE_CHIP_TYPE;
-
-int kbase_svb_identify(void);
+#define AUTO_SUSPEND_DELAY (100)

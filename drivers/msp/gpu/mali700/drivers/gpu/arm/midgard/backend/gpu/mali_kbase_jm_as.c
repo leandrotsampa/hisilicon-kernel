@@ -207,11 +207,9 @@ bool kbase_backend_use_ctx(struct kbase_device *kbdev,
 				int as_nr)
 {
 	struct kbasep_js_device_data *js_devdata;
-	struct kbasep_js_kctx_info *js_kctx_info;
 	struct kbase_as *new_address_space = NULL;
 
 	js_devdata = &kbdev->js_data;
-	js_kctx_info = &kctx->jctx.sched_info;
 
 	if (kbdev->hwaccess.active_kctx == kctx) {
 		WARN(1, "Context is already scheduled in\n");
