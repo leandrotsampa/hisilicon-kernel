@@ -15,4 +15,5 @@
 
 mali_kbase-y += \
 	$(MALI_PLATFORM_DIR)/mali_kbase_config_devicetree.o \
-	$(MALI_PLATFORM_DIR)/mali_kbase_runtime_pm.o
+	$(MALI_PLATFORM_DIR)/mali_kbase_runtime_pm.o \
+	$(MALI_PLATFORM_DIR)/mali_kbase_avs.o

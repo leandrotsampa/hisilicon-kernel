@@ -13,7 +13,9 @@
  *
  */
 
-
+#ifndef MIDGARD_HISILICON_PLUGIN
+#define MIDGARD_HISILICON_PLUGIN
+#endif
 
 
 
@@ -37,6 +39,9 @@
 #include <backend/gpu/mali_kbase_device_internal.h>
 #include <backend/gpu/mali_kbase_irq_internal.h>
 #include <backend/gpu/mali_kbase_pm_internal.h>
+#ifdef MIDGARD_HISILICON_PLUGIN
+#include <backend/gpu/mali_kbase_devfreq.h>
+#endif
 
 #include <linux/of.h>
 
@@ -231,7 +236,12 @@ static void kbase_pm_invoke(struct kbase_device *kbdev,
 				break;
 			}
 	}
-
+#ifdef MIDGARD_HISILICON_PLUGIN
+	if((action == ACTION_PWROFF) && (core_type == KBASE_PM_CORE_L2))
+	{
+		return ;
+	}
+#endif
 	if (lo != 0)
 		kbase_reg_write(kbdev, GPU_CONTROL_REG(reg), lo, NULL);
 
@@ -683,6 +693,10 @@ MOCKABLE(kbase_pm_check_transitions_nolock) (struct kbase_device *kbdev)
 			KBASE_PM_CORE_L2, desired_l2_state, l2_inuse_bitmap,
 			&l2_available_bitmap,
 			&kbdev->pm.backend.powering_on_l2_state);
+#ifdef MIDGARD_HISILICON_PLUGIN
+	/* Temporary fix to bypass checking L2 state reg */
+	in_desired_state = true;
+#endif
 
 	if (kbdev->l2_available_bitmap != l2_available_bitmap)
 		KBASE_TIMELINE_POWER_L2(kbdev, l2_available_bitmap);
@@ -1470,6 +1484,13 @@ int kbase_pm_init_hw(struct kbase_device *kbdev, unsigned int flags)
 	int err;
 	bool resume_vinstr = false;
 
+#ifdef MIDGARD_HISILICON_PLUGIN
+	if(kbase_devfreq_downscale(kbdev) < 0)
+	{
+		return 0;
+	}
+#endif
+
 	KBASE_DEBUG_ASSERT(NULL != kbdev);
 	lockdep_assert_held(&kbdev->pm.lock);
 
@@ -1568,6 +1589,10 @@ int kbase_pm_init_hw(struct kbase_device *kbdev, unsigned int flags)
 		kbase_pm_enable_interrupts(kbdev);
 
 exit:
+#ifdef MIDGARD_HISILICON_PLUGIN
+	kbase_devfreq_restore(kbdev);
+#endif
+
 	/* If GPU is leaving protected mode resume vinstr operation. */
 	if (kbdev->vinstr_ctx && resume_vinstr)
 		kbase_vinstr_resume(kbdev->vinstr_ctx);

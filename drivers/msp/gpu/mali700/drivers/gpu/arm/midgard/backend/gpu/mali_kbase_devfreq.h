@@ -12,13 +12,19 @@
  * Boston, MA  02110-1301, USA.
  *
  */
-
-
+#ifndef MIDGARD_HISILICON_PLUGIN
+#define MIDGARD_HISILICON_PLUGIN
+#endif
 
 #ifndef _BASE_DEVFREQ_H_
 #define _BASE_DEVFREQ_H_
 
 int kbase_devfreq_init(struct kbase_device *kbdev);
 void kbase_devfreq_term(struct kbase_device *kbdev);
+
+#ifdef MIDGARD_HISILICON_PLUGIN
+int kbase_devfreq_downscale(struct kbase_device *kbdev);
+int kbase_devfreq_restore(struct kbase_device *kbdev);
+#endif
 
 #endif /* _BASE_DEVFREQ_H_ */

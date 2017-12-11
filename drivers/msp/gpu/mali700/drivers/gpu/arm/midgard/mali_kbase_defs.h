@@ -13,7 +13,9 @@
  *
  */
 
-
+#ifndef MIDGARD_HISILICON_PLUGIN
+#define MIDGARD_HISILICON_PLUGIN
+#endif
 
 
 
@@ -1112,6 +1114,9 @@ struct kbase_device {
 	unsigned long current_freq;
 	unsigned long current_nominal_freq;
 	unsigned long current_voltage;
+#ifdef MIDGARD_HISILICON_PLUGIN
+	unsigned long saved_freq;
+#endif
 	u64 current_core_mask;
 	struct kbase_devfreq_opp *opp_table;
 	int num_opps;
