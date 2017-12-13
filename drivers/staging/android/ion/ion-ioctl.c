@@ -30,6 +30,7 @@ union ion_ioctl_arg {
 	struct ion_heap_query query;
 	struct ion_phys_data phys;
 	struct ion_map_iommu_data map_iommu;
+	struct ion_ref ref;
 };
 
 static int validate_ioctl_arg(unsigned int cmd, union ion_ioctl_arg *arg)
@@ -245,6 +246,22 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		data.map_iommu.format.iova_start = 0;
 		data.map_iommu.format.iova_size = 0;
 
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_IOMMU_REF_CNT:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.ref.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+		ret = ion_iommu_map_ref(client, handle, &data.ref.ref);
+		if (ret) {
+			pr_err("%s: get iommu map ref failed!\n", __func__);
+		}
 		ion_handle_put(handle);
 		break;
 	}

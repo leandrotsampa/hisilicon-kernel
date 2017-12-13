@@ -117,6 +117,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	buffer->heap = heap;
 	buffer->flags = flags;
 	kref_init(&buffer->ref);
+	buffer->iommu_map = NULL;
 
 	ret = heap->ops->allocate(heap, buffer, len, align, flags);
 
@@ -192,6 +193,14 @@ err2:
 
 void ion_buffer_destroy(struct ion_buffer *buffer)
 {
+	if (buffer->iommu_map) {
+		pr_info("%s: iommu map not released, do unmap now!\n",
+								__func__);
+		buffer->heap->ops->unmap_iommu(buffer->iommu_map);
+		kfree(buffer->iommu_map);
+		buffer->iommu_map = NULL;
+	}
+
 	if (WARN_ON(buffer->kmap_cnt > 0))
 		buffer->heap->ops->unmap_kernel(buffer->heap, buffer);
 	buffer->heap->ops->free(buffer);
@@ -855,6 +864,44 @@ int ion_unmap_sec_iommu(struct ion_client *client, struct ion_handle *handle)
 
 	return 0;
 }
+
+int ion_iommu_map_ref(struct ion_client *client, struct ion_handle *handle,
+							unsigned int *ref)
+{
+	struct ion_iommu_map *iommu_map;
+	struct ion_buffer *buffer;
+
+	mutex_lock(&client->lock);
+
+	/* check if the handle belongs to client. */
+	if (!ion_handle_validate(client, handle)) {
+		pr_err("%s: invalid handle passed to iommu unmap.\n", __func__);
+		mutex_unlock(&client->lock);
+		return -EINVAL;
+	}
+
+	buffer = handle->buffer;
+
+	mutex_lock(&buffer->lock);
+
+	iommu_map = buffer->iommu_map;
+	if (!iommu_map) {
+		/*
+		 * There is no iommu map or iommu map is del
+		 */
+		*ref = 0;
+		goto out;
+	}
+
+	*ref = atomic_read(&iommu_map->ref.refcount);
+
+out:
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+
+	return 0;
+}
+EXPORT_SYMBOL(ion_iommu_map_ref);
 
 static struct mutex debugfs_mutex;
 static struct rb_root *ion_root_client;

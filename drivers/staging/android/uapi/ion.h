@@ -197,6 +197,16 @@ struct ion_map_iommu_data {
 	struct iommu_map_format format;
 };
 
+/*
+ * struct ion_ref - get the buffer reference count(such as iommu map)
+ * @handle:	the handle of buffer
+ * @ref:	the a kind of attr's ref of buffer
+ */
+struct ion_ref {
+	ion_user_handle_t handle;
+	unsigned int ref;
+};
+
 #define ION_IOC_MAGIC		'I'
 
 /**
@@ -299,5 +309,10 @@ struct ion_map_iommu_data {
  * DOC: ION_IOC_UNMAP_SEC_IOMMU - destory iommu SEC mapping of a buffer
  */
 #define ION_IOC_UNMAP_SEC_IOMMU     _IOWR(ION_IOC_MAGIC, 13, struct ion_map_iommu_data)
+
+/*
+ * DOC: ION_IOC_IOMMU_REF_CNT - get iommu ref cnt
+ */
+#define ION_IOC_IOMMU_REF_CNT	_IOWR(ION_IOC_MAGIC, 14, struct ion_ref)
 
 #endif /* _UAPI_LINUX_ION_H */

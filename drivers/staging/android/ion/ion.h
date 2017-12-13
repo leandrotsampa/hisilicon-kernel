@@ -273,4 +273,6 @@ int ion_unmap_sec_iommu(struct ion_client *client, struct ion_handle *handle);
  *    */
 struct ion_platform_heap *hisi_get_cma_heap(const char *name);
 
+int ion_iommu_map_ref(struct ion_client *client, struct ion_handle *handle,
+						unsigned int *ref);
 #endif /* _LINUX_ION_H */
