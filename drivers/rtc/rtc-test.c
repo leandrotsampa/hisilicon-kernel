@@ -116,6 +116,8 @@ static int test_probe(struct platform_device *plat_dev)
 		test_rtc_ops.set_mmss = NULL;
 	}
 
+	device_init_wakeup(&plat_dev->dev, 1);
+
 	rtc = devm_rtc_device_register(&plat_dev->dev, "test",
 				&test_rtc_ops, THIS_MODULE);
 	if (IS_ERR(rtc)) {
