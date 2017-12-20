@@ -34,7 +34,11 @@ static char ion_default_cmd[MMZ_SETUP_CMDLINE_LEN] = "ddr,0,0,160M";
 #endif
 
 #define cma_name_len		(10)
+#ifdef CONFIG_ION_HISI_UNMAPPED_HEAP
+#define cma_heap_start		(4)
+#else
 #define cma_heap_start		(3)
+#endif
 #define cma_heap_num		(4)
 static int cma_heap_index  = cma_heap_start;
 static char cma_name[cma_heap_num][cma_name_len];
@@ -52,6 +56,16 @@ static struct ion_platform_heap hi_ion_heaps[]  = {
 		.type	= ION_HEAP_TYPE_DMA,
 		.name	= "dma area",
 	},
+#ifdef CONFIG_ION_HISI_UNMAPPED_HEAP
+	[3] = {
+		.id     = ION_HEAP_TYPE_UNMAPPED,
+		.type   = ION_HEAP_TYPE_UNMAPPED,
+		.name   = "unmapped",
+		.base   = CONFIG_ION_HISI_UNMAPPED_BASE,
+		.size   = CONFIG_ION_HISI_UNMAPPED_SIZE,
+		.align  = SZ_4K,
+	},
+#endif
 	/*
 	 * the following is mmz(cma) zones, hisi_ion_parse_cmdline will
 	 * overwrite it!

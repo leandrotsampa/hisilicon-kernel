@@ -52,3 +52,37 @@ config ION_OF
 	  extensions
 
 	  If using Ion and devicetree, you should say Y here
+
+config ION_UNMAPPED_HEAP
+	bool "unmapped heap support in ION"
+	depends on ION && (ARM || ARM64)
+	default y
+	help
+	  ION unmapped heap is not available on some architectures.
+	  If unmapped heap is supported, the default configuration enables
+	  it. You should say N here only if you really do not want unmapped
+	  heap support in the ION driver.
+
+config ION_HISI_UNMAPPED_HEAP
+	bool "Hisilicon ION driver define an ION unmapped heap"
+	depends on ION_HISI && ION_UNMAPPED_HEAP
+	help
+	  Hisilicon ION driver will create a unmapped heap from physical
+	  location provided through CONFIG_ION_HISI_UNMAPPED_BASE and
+	  CONFIG_ION_HISI_UNMAPPED_SIZE.
+
+config ION_HISI_UNMAPPED_BASE
+	hex "Physical base address of the ION unmapped heap"
+	depends on ION_HISI_UNMAPPED_HEAP
+	default 0
+	help
+	  Allows one the statically define an unmapped heap from the
+	  Hisilicon ION driver to exercice unamped heaps buffer managment.
+
+config ION_HISI_UNMAPPED_SIZE
+	hex "Physical byte size of the ION unmapped heap"
+	depends on ION_HISI_UNMAPPED_HEAP
+	default 0
+	help
+	  Allows one the statically define an unmapped heap from the
+	  Hisilicon ION driver to exercice unamped heaps buffer managment.

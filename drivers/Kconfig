@@ -202,6 +202,8 @@ source "drivers/hwtracing/intel_th/Kconfig"
 
 source "drivers/fpga/Kconfig"
 
+source "drivers/tee/Kconfig"
+
 menu "Hisilicon Poplar support"
 config POPLAR_MSP
 	bool "Enable support for common and MSP code"
