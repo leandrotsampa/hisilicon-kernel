@@ -475,6 +475,7 @@ kbase_devfreq_target2(struct device *dev, unsigned long *target_freq, u32 flags)
 #endif
 	*target_freq = freq;
 	kbdev->current_freq = freq;
+	kbdev->current_nominal_freq = freq;
 	kbase_pm_reset_dvfs_utilisation(kbdev);
 	return err;
 }
