@@ -48,7 +48,7 @@ typedef struct tagHifbRefreshWorkQueue_S
 {
     HIFB_PAR_S *pstPar;
     HIFB_HWC_LAYERINFO_S stLayerInfo;
-    struct hi_sync_fence *pSyncfence;
+    struct sync_fence *pSyncfence;
     struct work_struct HwcRefreshWork;
 }HIFB_REFRESH_WORKQUEUE_S;
 #endif
@@ -276,8 +276,6 @@ HI_S32 DRV_HIFB_FenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
     pstWork->pstPar = pstPar;
     pstWork->stLayerInfo.s32ReleaseFenceFd = s32FenceFd;
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)
-#else
     if (pstWork->stLayerInfo.s32AcquireFenceFd >= 0)
     {
         pstWork->pSyncfence = hi_sync_fence_fdget(pstWork->stLayerInfo.s32AcquireFenceFd);
@@ -286,7 +284,6 @@ HI_S32 DRV_HIFB_FenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
     {
 	pstWork->pSyncfence = NULL;
     }
-#endif
 
     if (NULL == pstPar->pstHwcRefreshWorkqueue)
     {
@@ -330,22 +327,13 @@ static HI_VOID DRV_HIFB_HwcRefreshWork(struct work_struct *work)
     HIFB_REFRESH_WORKQUEUE_S *pstWork = NULL;
 
     pstWork = (HIFB_REFRESH_WORKQUEUE_S*)container_of(work, HIFB_REFRESH_WORKQUEUE_S, HwcRefreshWork);
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 9, 0)
-	if (pstWork->stLayerInfo.s32AcquireFenceFd >= 0)
-	{
-		struct fence *fence = sync_file_get_fence(pstWork->stLayerInfo.s32AcquireFenceFd);
-		fence_wait_timeout(fence, true, 4000);
-		fence_put(fence);
-	}
-#else
     if (NULL != pstWork->pSyncfence)
     {
 	DRV_HIFB_FENCE_Waite(pstWork->pSyncfence, -1);
 	hi_sync_fence_put(pstWork->pSyncfence);
 	pstWork->pSyncfence = NULL;
     }
-#endif
+
     pstPar = pstWork->pstPar;
 
     if (pstPar->u8RefreshCount > 0)

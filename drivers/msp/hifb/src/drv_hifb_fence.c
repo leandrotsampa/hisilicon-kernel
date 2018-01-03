@@ -139,7 +139,7 @@ HI_S32 DRV_HIFB_FENCE_Create(HI_VOID)
 {
     HI_S32 FenceFd = -1;
     HI_U32 u32FenceValue = 0;
-    struct hi_sync_fence *fence = NULL;
+    struct sync_fence *fence = NULL;
     struct sync_pt *pt = NULL;
 
     if (NULL == gs_SyncInfo.pstTimeline)
@@ -162,10 +162,10 @@ HI_S32 DRV_HIFB_FENCE_Create(HI_VOID)
 	return -ENOMEM;
     }
 
-    fence = hi_sync_fence_create(pt);
+    fence = hi_sync_fence_create(HIFB_FENCE_NAME, pt);
     if (NULL == fence)
     {
-        hi_sync_pt_free(pt);
+	hi_sync_pt_free(pt);
 	return -ENOMEM;
     }
 
@@ -221,13 +221,13 @@ HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable)
 }
 
 
-HI_S32 DRV_HIFB_FENCE_Waite(struct hi_sync_fence *fence, long timeout)
+HI_S32 DRV_HIFB_FENCE_Waite(struct sync_fence *fence, long timeout)
 {
     int err;
 
     err = hi_sync_fence_wait(fence, timeout);
     if (err == -ETIME)
-    {/**10 * MSEC_PER_SEC  in time.h **/
+    {/**#define MSEC_PER_SEC	1000L ��time.h��**/
 	err = hi_sync_fence_wait(fence, 10 * MSEC_PER_SEC);
     }
     if (err < 0)
