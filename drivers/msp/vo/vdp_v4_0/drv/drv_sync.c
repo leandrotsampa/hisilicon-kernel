@@ -104,7 +104,8 @@ WIN_FENCE_FD DRV_SYNC_CreateFence(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewInd
         #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
 	struct sync_fence *fence;
         #else
-        struct sync_file *fence;
+        // struct sync_file *fence;
+	struct sync_fence *fence;
         #endif
 	struct sync_pt *pt;
 	struct sw_sync_timeline *timeline;
@@ -156,16 +157,16 @@ WIN_FENCE_FD DRV_SYNC_CreateFence(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewInd
 		sync_pt_free(pt);
 		return -ENOMEM;
 	}
-
 	sync_fence_install(fence, fd);
 #else
-	fence = sync_file_create(&pt->base); //hi_sync_fence_create(pstSyncInfo->u8FenceName, pt);
+	// fence = sync_file_create(&pt->base);
+	fence = hi_sync_fence_create(pstSyncInfo->u8FenceName, pt);
 	if (fence == NULL) {
 		hi_sync_pt_free(pt);
 		return -ENOMEM;
 	}
-        fd_install(fd, fence->file);
-	//hi_sync_fence_install(fence, fd);
+	// fd_install(fd, fence->file);
+	hi_sync_fence_install(fence, fd);
 #endif
 	//add idx and pt_value into array
 	pstSyncInfo->u32FenceArray[u32Tail][0] = u32NewIndex;
@@ -294,6 +295,7 @@ HI_S32 DRV_SYNC_Flush(WIN_SYNC_INFO_S *pstSyncInfo)
 #else
 		hi_sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
 #endif
+
 		pstSyncInfo->u32Timeline ++;
 
 #if FENCE_DBG
