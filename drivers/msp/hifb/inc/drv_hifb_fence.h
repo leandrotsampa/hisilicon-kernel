@@ -22,7 +22,7 @@ Date		    Author		  Modification
 #define __DRV_HIFB_FENCE_H__
 
 /*********************************add include here******************************/
-#include <sw_sync.h>
+#include "hi_sync_debug.h"
 
 #include "drv_hifb_osr.h"
 
@@ -38,7 +38,7 @@ typedef struct
     HI_U32   u32Timeline;
     HI_U32  FrameEndFlag;
     wait_queue_head_t	 FrameEndEvent;
-    struct sw_sync_timeline *pstTimeline;
+    struct hi_sync_timeline *pstTimeline;
     HI_BOOL bFrameHit;
     spinlock_t	       lock;
 }HIFB_SYNC_INFO_S;
@@ -56,6 +56,6 @@ HI_BOOL DRV_HIFB_FENCE_IsRefresh(HI_VOID);
 HI_S32	DRV_HIFB_FENCE_Create(HI_VOID);
 HI_VOID DRV_HIFB_IncRefreshTime(HI_BOOL bLayerEnable);
 HI_VOID DRV_HIFB_WaiteRefreshEnd(HI_BOOL ShouldWaite);
-HI_S32  DRV_HIFB_FENCE_Waite(struct sync_fence *fence, long timeout);
+HI_S32  DRV_HIFB_FENCE_Waite(struct fence *fence, long timeout);
 
 #endif

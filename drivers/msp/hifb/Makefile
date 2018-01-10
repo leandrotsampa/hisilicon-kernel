@@ -18,7 +18,7 @@ EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
 
 HAL_DIR	 := hifb_v2_0
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/hi_fence \
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/hi_sync \
 		-I$(srctree)/drivers/msp/hifb/adp/$(HAL_DIR)
 
 EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT

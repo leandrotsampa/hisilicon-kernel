@@ -54,7 +54,7 @@ HI_S32 DRV_SYNC_Init(WIN_SYNC_INFO_S *pstSyncInfo,HI_U32 u32Index)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
     pstSyncInfo->pstTimeline = sw_sync_timeline_create(u8TimelineName);
 #else
-    pstSyncInfo->pstTimeline = hi_sw_sync_timeline_create(u8TimelineName);
+    pstSyncInfo->pstTimeline = hi_sync_timeline_create(u8TimelineName);
 #endif
     if (pstSyncInfo->pstTimeline == HI_NULL)
     {
@@ -87,7 +87,7 @@ HI_S32 DRV_SYNC_DeInit(WIN_SYNC_INFO_S *pstSyncInfo)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
         sync_timeline_destroy((struct sync_timeline*)pstSyncInfo->pstTimeline);
 #else
-        hi_sync_timeline_destroy((struct sync_timeline*)pstSyncInfo->pstTimeline);
+        hi_sync_timeline_destroy(pstSyncInfo->pstTimeline);
 #endif
         pstSyncInfo->pstTimeline = HI_NULL;
     }
@@ -103,12 +103,14 @@ WIN_FENCE_FD DRV_SYNC_CreateFence(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewInd
 #ifdef HI_VO_WIN_SYNC_SUPPORT
         #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
 	struct sync_fence *fence;
-        #else
-        // struct sync_file *fence;
-	struct sync_fence *fence;
-        #endif
-	struct sync_pt *pt;
 	struct sw_sync_timeline *timeline;
+	struct sync_pt *pt;
+	 #else
+	 //struct sync_fence *fence;
+	 struct sync_file *sync_file;
+	struct hi_sync_timeline *timeline;
+	struct hi_sync_pt *pt;
+	 #endif
 
 	HI_U32 u32Head;
 	HI_U32 u32Tail;
@@ -145,28 +147,34 @@ WIN_FENCE_FD DRV_SYNC_CreateFence(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewInd
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
     pt = sw_sync_pt_create(timeline, u32PtValue);
 #else
-    pt = hi_sw_sync_pt_create(timeline, u32PtValue);
+    pt = hi_sync_pt_create(timeline, sizeof(*pt), u32PtValue);
 #endif
 	if (pt == NULL) {
 		return -ENOMEM;
 	}
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
-    fence = sync_fence_create(pstSyncInfo->u8FenceName, pt);
+	fence = sync_fence_create(pstSyncInfo->u8FenceName, pt);
 	if (fence == NULL) {
 		sync_pt_free(pt);
 		return -ENOMEM;
 	}
 	sync_fence_install(fence, fd);
 #else
-	// fence = sync_file_create(&pt->base);
+	sync_file = sync_file_create(&pt->base);
+        fence_put(&pt->base);
+        if (!sync_file) {
+                return -ENOMEM;
+        }
+	fd_install(fd, sync_file->file);
+	/*
 	fence = hi_sync_fence_create(pstSyncInfo->u8FenceName, pt);
 	if (fence == NULL) {
 		hi_sync_pt_free(pt);
 		return -ENOMEM;
 	}
-	// fd_install(fd, fence->file);
 	hi_sync_fence_install(fence, fd);
+	*/
 #endif
 	//add idx and pt_value into array
 	pstSyncInfo->u32FenceArray[u32Tail][0] = u32NewIndex;
@@ -188,23 +196,18 @@ WIN_FENCE_FD DRV_SYNC_CreateFence(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewInd
 HI_S32 DRV_SYNC_Signal(WIN_SYNC_INFO_S *pstSyncInfo,HI_U32 u32RefreshIndex,HI_U32 u32RefreshAddr)
 {
 #ifdef HI_VO_WIN_SYNC_SUPPORT
-	struct sw_sync_timeline *pstTimeline;
-
 	HI_U32 u32SearchHead;
 	HI_U32 u32SearchTail;
 	HI_U32 u32SearchCnt;
 	HI_U32 u32SignalLine = 0;
 
-	pstTimeline = pstSyncInfo->pstTimeline;
-
-	if (pstTimeline == HI_NULL)
+	if (!pstSyncInfo->pstTimeline)
 	{
 		WIN_ERROR("Invalid Time line\n");
 		return -ENOMEM;
 	}
 
 	pstSyncInfo->u32RefreshCnt ++;
-
 	u32SearchHead = pstSyncInfo->u32ArrayHead;
 	u32SearchTail = pstSyncInfo->u32ArrayTail;
 	u32SearchCnt = u32SearchHead;
@@ -232,9 +235,9 @@ HI_S32 DRV_SYNC_Signal(WIN_SYNC_INFO_S *pstSyncInfo,HI_U32 u32RefreshIndex,HI_U3
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
         sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
 #else
-		hi_sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
+	hi_sync_timeline_signal(pstSyncInfo->pstTimeline, 1);
+	// hi_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
 #endif
-
 		pstSyncInfo->u32Timeline ++;
 
 #if FENCE_DBG
@@ -258,8 +261,6 @@ HI_S32 DRV_SYNC_Signal(WIN_SYNC_INFO_S *pstSyncInfo,HI_U32 u32RefreshIndex,HI_U3
 HI_S32 DRV_SYNC_Flush(WIN_SYNC_INFO_S *pstSyncInfo)
 {
 #ifdef HI_VO_WIN_SYNC_SUPPORT
-	struct sw_sync_timeline *pstTimeline;
-
 	HI_U32 u32SearchHead;
 	HI_U32 u32SearchTail;
 	HI_U32 u32SearchCnt;
@@ -270,9 +271,7 @@ HI_S32 DRV_SYNC_Flush(WIN_SYNC_INFO_S *pstSyncInfo)
 	return HI_FAILURE;
     }
 
-	pstTimeline = pstSyncInfo->pstTimeline;
-
-	if (pstTimeline == HI_NULL)
+	if (!pstSyncInfo->pstTimeline)
 	{
 		WIN_ERROR("Invalid Time line\n");
 		return -ENOMEM;
@@ -293,7 +292,8 @@ HI_S32 DRV_SYNC_Flush(WIN_SYNC_INFO_S *pstSyncInfo)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
         sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
 #else
-		hi_sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
+	hi_sync_timeline_signal(pstSyncInfo->pstTimeline, 1);
+	// hi_sw_sync_timeline_inc(pstSyncInfo->pstTimeline, 1);
 #endif
 
 		pstSyncInfo->u32Timeline ++;
@@ -315,19 +315,11 @@ WIN_ERROR("time line %d\n",pstSyncInfo->u32Timeline);
 HI_VOID	 DRV_SYNC_AddData(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewIndex,HI_U32 u32NewAddr)
 {
 #ifdef HI_VO_WIN_SYNC_SUPPORT
-	struct sw_sync_timeline *timeline;
-
 	HI_U32 u32Head;
 	HI_U32 u32Tail;
 
-	HI_U32 u32PtValue;
-
-	timeline = pstSyncInfo->pstTimeline;
-
-	u32PtValue = pstSyncInfo->u32NextFenceValue;
-
-	if (timeline == NULL) {
-	return;
+	if (!pstSyncInfo->pstTimeline) {
+		return;
 	}
 
 	u32Head = pstSyncInfo->u32ArrayHead;
@@ -336,7 +328,7 @@ HI_VOID	 DRV_SYNC_AddData(WIN_SYNC_INFO_S *pstSyncInfo, HI_U32 u32NewIndex,HI_U3
 	if ((u32Tail+1)%DEF_FENCE_ARRAY_LENTH == u32Head)
 	{
 		WIN_ERROR("FenceArray is Full\n");
-	return;
+		return;
 	}
 
 	//add idx and pt_value into array

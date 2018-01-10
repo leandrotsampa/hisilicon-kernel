@@ -48,7 +48,7 @@ typedef struct tagHifbRefreshWorkQueue_S
 {
     HIFB_PAR_S *pstPar;
     HIFB_HWC_LAYERINFO_S stLayerInfo;
-    struct sync_fence *pSyncfence;
+    struct fence *pSyncfence;
     struct work_struct HwcRefreshWork;
 }HIFB_REFRESH_WORKQUEUE_S;
 #endif
@@ -278,7 +278,7 @@ HI_S32 DRV_HIFB_FenceRefresh(HIFB_PAR_S* pstPar, HI_VOID *pArgs)
 
     if (pstWork->stLayerInfo.s32AcquireFenceFd >= 0)
     {
-        pstWork->pSyncfence = hi_sync_fence_fdget(pstWork->stLayerInfo.s32AcquireFenceFd);
+	pstWork->pSyncfence = sync_file_get_fence(pstWork->stLayerInfo.s32AcquireFenceFd);
     }
     else
     {
@@ -330,7 +330,7 @@ static HI_VOID DRV_HIFB_HwcRefreshWork(struct work_struct *work)
     if (NULL != pstWork->pSyncfence)
     {
 	DRV_HIFB_FENCE_Waite(pstWork->pSyncfence, -1);
-	hi_sync_fence_put(pstWork->pSyncfence);
+	fence_put(pstWork->pSyncfence);
 	pstWork->pSyncfence = NULL;
     }
 

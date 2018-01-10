@@ -5,13 +5,14 @@
 #ifndef __DRV_SYNC_H__
 #define __DRV_SYNC_H__
 
+#include <linux/version.h>
 #include "hi_type.h"
 #include "hi_common.h"
 #include "hi_drv_video.h"
 
 #ifdef HI_VO_WIN_SYNC_SUPPORT
 
-#include "sw_sync.h"
+#include "hi_sync_debug.h"
 
 #define WIN_FENCE_FD HI_U32
 
@@ -30,8 +31,12 @@ typedef struct
 	HI_U32	 u32NextFenceValue;// = u32FenceCnt + 1
 
 	HI_U32	 u32LastRefreshIdx;
-
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 9, 0)
     struct	sw_sync_timeline *pstTimeline;
+#else
+    struct	hi_sync_timeline *pstTimeline;
+#endif
+
 
 	HI_U8	u8FenceName[12];
 
