@@ -18,26 +18,6 @@
 		stdout-path = "serial0:115200n8";
 	};
 
-	cpus {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		enable-method = "hisilicon,hix5hd2-smp";
-
-		cpu@0 {
-			compatible = "arm,cortex-a9";
-			device_type = "cpu";
-			reg = <0>;
-			next-level-cache = <&l2>;
-		};
-
-		cpu@1 {
-			compatible = "arm,cortex-a9";
-			device_type = "cpu";
-			reg = <1>;
-			next-level-cache = <&l2>;
-		};
-	};
-
 	memory {
 		device_type = "memory";
 		reg = <0x00000000 0x80000000>;
