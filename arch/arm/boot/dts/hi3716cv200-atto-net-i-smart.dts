@@ -20,7 +20,7 @@
 
 	memory {
 		device_type = "memory";
-		reg = <0x00000000 0x80000000>;
+		reg = <0x00000000 0x40000000>;
 	};
 };
 
@@ -29,6 +29,10 @@
 };
 
 &uart0 {
+	status = "okay";
+};
+
+&mmc {
 	status = "okay";
 };
 
