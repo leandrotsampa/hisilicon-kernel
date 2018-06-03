@@ -140,6 +140,19 @@
 		};
 */
 
+		sysctrl: system-controller@f8000000 {
+			compatible = "hisilicon,sysctrl", "syscon";
+			reg = <0xf8000000 0x1000>;
+			reboot-offset = <0x4>;
+		};
+
+		reboot {
+			compatible = "syscon-reboot";
+			regmap = <&sysctrl>;
+			offset = <0x4>;
+			mask = <0xdeadbeef>;
+		};
+
 		cpuctrl@f8a22000 {
 			compatible = "hisilicon,cpuctrl";
 			#address-cells = <1>;
