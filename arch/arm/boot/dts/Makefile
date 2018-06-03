@@ -171,7 +171,8 @@ dtb-$(CONFIG_ARCH_HIP01) += \
 dtb-$(CONFIG_ARCH_HIP04) += \
 	hip04-d01.dtb
 dtb-$(CONFIG_ARCH_HISI) += \
-	hi3519-demb.dtb
+	hi3519-demb.dtb \
+	hi3798cv200-egreat-a5.dtb
 dtb-$(CONFIG_ARCH_HIX5HD2) += \
 	hisi-x5hd2-dkb.dtb
 dtb-$(CONFIG_ARCH_HIX5HD2) += \

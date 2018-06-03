@@ -1,0 +1,25 @@
+/*
+ * DTS File for HiSilicon Poplar Development Board
+ *
+ * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
+ *
+ * Released under the GPLv2 only.
+ * SPDX-License-Identifier: GPL-2.0
+ */
+
+/dts-v1/;
+/memreserve/ 0x00000000 0x04080000;
+/* reserved for bootloader */
+
+#include "hi3798cv200.dtsi"
+
+/ {
+	model = "Egreat A5";
+	compatible = "hisilicon,hi3798cv200-poplar", "hisilicon,hi3798cv200";
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+};
+
