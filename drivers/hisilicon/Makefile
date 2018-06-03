@@ -1,5 +1,6 @@
 
-#obj-y += kapi/ misc/ soc/ clk/ atags/ flash_stats/
+#obj-y += kapi/ misc/ clk/ atags/ flash_stats/
+obj-y += soc/
 
 #obj-$(CONFIG_BLK_DEV_LOOP)		+= initfile/
 #obj-$(CONFIG_VIRTUAL_INPUT)		+= vinput/

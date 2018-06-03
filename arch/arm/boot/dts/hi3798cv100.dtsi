@@ -152,6 +152,11 @@
 			offset = <0x4>;
 			mask = <0xdeadbeef>;
 		};
+		
+		perictrl: peripheral-controller@f8a20000 {
+			compatible = "hisilicon,perictrl", "syscon";
+			reg = <0xf8a20000 0x1000>;
+		};
 
 		cpuctrl@f8a22000 {
 			compatible = "hisilicon,cpuctrl";

@@ -15,6 +15,7 @@
 #include <asm/cacheflush.h>
 #include <asm/smp_plat.h>
 #include "core.h"
+#include <linux/hikapi.h>
 
 /* Sysctrl registers in Hi3620 SoC */
 #define SCISOEN				0xc0
@@ -183,6 +184,7 @@ static bool hix5hd2_hotplug_init(void)
 void hix5hd2_set_cpu(int cpu, bool enable)
 {
 	u32 val = 0;
+	u64 chipid = get_chipid(0ULL);
 
 	if (!ctrl_base)
 		if (!hix5hd2_hotplug_init())
@@ -196,7 +198,13 @@ void hix5hd2_set_cpu(int cpu, bool enable)
 		writel_relaxed(val, ctrl_base + HIX5HD2_PERI_PMC0);
 		/* unreset */
 		val = readl_relaxed(ctrl_base + HIX5HD2_PERI_CRG20);
-		val &= ~CRG20_CPU1_RESET;
+		if (chipid == _HI3798CV100A ||
+			chipid == _HI3798CV100 ||
+			chipid == _HI3796CV100) {
+			val &= ~(1 << (12 + cpu));
+		} else {
+			val &= ~CRG20_CPU1_RESET;
+		}
 		writel_relaxed(val, ctrl_base + HIX5HD2_PERI_CRG20);
 	} else {
 		/* power down cpu1 */
