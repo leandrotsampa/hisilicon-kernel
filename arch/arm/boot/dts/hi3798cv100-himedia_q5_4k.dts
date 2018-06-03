@@ -52,4 +52,32 @@
 	status = "okay";
 };
 
+&gmac0 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	phy-handle = <&phy2>;
+	phy-mode = "rgmii";
+	/* Placeholder, overwritten by bootloader */
+	mac-address = [00 00 00 00 00 00];
+	status = "okay";
+
+	phy2: ethernet-phy@1 {
+		reg = <1>;
+	};
+};
+
+&gmac1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	phy-handle = <&phy1>;
+	phy-mode = "rgmii";
+	/* Placeholder, overwritten by bootloader */
+	mac-address = [00 00 00 00 00 00];
+	status = "okay";
+
+	phy1: ethernet-phy@0 {
+		reg = <0>;
+	};
+};
+
 
