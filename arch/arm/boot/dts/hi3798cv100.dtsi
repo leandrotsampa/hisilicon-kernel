@@ -153,5 +153,28 @@
 				#clock-cells = <1>;
 			};
 		};
+		
+		/* unremovable emmc as mmcblk0 */
+		mmc: mmc@f9830000 {
+			compatible = "snps,dw-mshc";
+			reg = <0xf9830000 0x1000>;
+			interrupts = <0 35 4>;
+			clocks = <&clock HIX5HD2_MMC_CIU_RST>,
+				 <&clock HIX5HD2_MMC_BIU_CLK>;
+			clock-names = "ciu", "biu";
+			status = "disabled";
+		};
+
+		sd: mmc@f9820000 {
+			compatible = "snps,dw-mshc";
+			reg = <0xf9820000 0x1000>;
+			interrupts = <0 34 4>;
+			clocks = <&clock HIX5HD2_SD_CIU_RST>,
+				 <&clock HIX5HD2_SD_BIU_CLK>;
+			clock-names = "ciu","biu";
+			status = "disabled";
+		};
+
+		
 	};
 };

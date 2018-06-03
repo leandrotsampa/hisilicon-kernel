@@ -28,10 +28,16 @@
 	status = "okay";
 };
 
-/*
 &uart0 {
 	status = "okay";
 };
-*/
+
+&mmc {
+	status = "okay";
+};
+
+&sd {
+	status = "okay";
+};
 
 
