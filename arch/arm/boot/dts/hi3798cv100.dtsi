@@ -193,6 +193,29 @@
 			status = "disabled";
 		};
 
+		ohci: ohci@f9880000 {
+			compatible = "generic-ohci";
+			reg = <0xf9880000 0x1000>;
+			interrupts = <0 67 4>;
+			clocks = <&clock HIX5HD2_USB_CLK>;
+			status = "disabled";
+		};
+
+		ehci: ehci@f9890000 {
+			compatible = "generic-ehci";
+			reg = <0xf9890000 0x1000>;
+			interrupts = <0 66 4>;
+			clocks = <&clock HIX5HD2_USB_CLK>;
+			status = "disabled";
+		};
+
+		xhci: xhci@f9870000 {
+			compatible = "generic-xhci";
+			reg = <0xf9870000 0x10000>;
+			interrupts = <0 69 4>;
+			clocks = <&clock HIX5HD2_USB3_CLK>;
+			status = "disabled";
+		};
 		
 	};
 };
