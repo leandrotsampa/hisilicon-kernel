@@ -175,7 +175,8 @@ dtb-$(CONFIG_ARCH_HISI) += \
 dtb-$(CONFIG_ARCH_HIX5HD2) += \
 	hisi-x5hd2-dkb.dtb
 dtb-$(CONFIG_ARCH_HIX5HD2) += \
-	hi3716cv200-atto-net-i-smart.dtb
+	hi3716cv200-atto-net-i-smart.dtb \
+	hi3798cv100-himedia_q5_4k.dtb
 dtb-$(CONFIG_ARCH_INTEGRATOR) += \
 	integratorap.dtb \
 	integratorcp.dtb
