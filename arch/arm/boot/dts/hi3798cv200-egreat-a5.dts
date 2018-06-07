@@ -21,5 +21,18 @@
 		stdout-path = "serial0:115200n8";
 	};
 
+	memory@0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x80000000>;
+	};
 };
+
+&uart0 {
+	status = "okay";
+};
+
+&timer1 {
+        status = "okay";
+};
+
 
