@@ -117,6 +117,33 @@
 			status = "disabled";
 		};
 
+                emmc: mmc@9830000 {
+                        compatible = "snps,dw-mshc";
+                        reg = <0x9830000 0x10000>;
+                        /*interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;*/
+                        interrupts = <0 35 4>;
+                        clocks = <&crg HISTB_MMC_CIU_CLK>,
+                                 <&crg HISTB_MMC_BIU_CLK>;
+                        clock-names = "ciu", "biu";
+                        resets = <&crg 0xa0 4>;
+                        reset-names = "reset";
+                        status = "disabled";
+                };
+
+		sd0: mmc@9820000 {
+			compatible = "snps,dw-mshc";
+			reg = <0x9820000 0x10000>;
+			/*interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>;*/
+			interrupts = <0 34 4>;
+			clocks = <&crg HISTB_SDIO0_CIU_CLK>,
+				 <&crg HISTB_SDIO0_BIU_CLK>;
+			clock-names = "ciu", "biu";
+			resets = <&crg 0x9c 4>;
+			reset-names = "reset";
+			status = "disabled";
+		};
+
+
 	};
 };
 

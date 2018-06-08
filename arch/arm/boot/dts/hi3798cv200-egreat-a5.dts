@@ -35,4 +35,12 @@
         status = "okay";
 };
 
+&sd0 {
+	status = "okay";
+};
+
+&emmc {
+	status = "okay";
+};
+
 
