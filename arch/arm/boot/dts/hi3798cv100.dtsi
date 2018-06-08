@@ -153,6 +153,12 @@
 			mask = <0xdeadbeef>;
 		};
 		
+		gmacphyrst: reset-controller {
+			compatible = "hisilicon,hi3798cv100-gmacphyrst";
+			#reset-cells = <1>;
+			reg = <0xf8b2d000 0x1000>, <0xf8004000 0x1000>;
+		};
+				
 		perictrl: peripheral-controller@f8a20000 {
 			compatible = "hisilicon,perictrl", "syscon";
 			reg = <0xf8a20000 0x1000>;
@@ -221,9 +227,10 @@
 			compatible = "hisilicon,hix5hd2-gmac";
 			reg = <0xf9840000 0x1000>,<0xf984300c 0x4>;
 			interrupts = <0 71 4>;
-			clocks = <&clock HIX5HD2_MAC0_CLK>, 
-				<&clock HIX5HD2_MAC_IF0_CLK>;
-			clock-names = "mac_core", "mac_ifc";
+			clocks = <&clock HI3798CV1X_MAC0_CLK>;
+			clock-names = "mac_core";
+			resets = <&gmacphyrst 0>;
+			reset-names = "phy";
 			status = "disabled";
 		};
 
@@ -231,9 +238,10 @@
 			compatible = "hisilicon,hix5hd2-gmac";
 			reg = <0xf9841000 0x1000>,<0xf9843010 0x4>;
 			interrupts = <0 72 4>;
-			clocks = <&clock HIX5HD2_MAC1_CLK>, 
-				<&clock HIX5HD2_MAC_IF1_CLK>;
-			clock-names = "mac_core", "mac_ifc";
+			clocks = <&clock HI3798CV1X_MAC1_CLK>;
+			clock-names = "mac_core";
+			resets = <&gmacphyrst 1>;
+			reset-names = "phy";
 			status = "disabled";
 		};
 		
