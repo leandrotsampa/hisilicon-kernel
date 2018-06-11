@@ -16,6 +16,7 @@
 	#size-cells = <2>;
 
 	cpus {
+		cluster0: cluster0 { 
 		#address-cells = <2>;
 		#size-cells = <0>;
 
@@ -45,6 +46,7 @@
 			device_type = "cpu";
 			reg = <0x0 0x3>;
 			/*enable-method = "psci";*/
+		};
 		};
 	};
 
@@ -95,6 +97,13 @@
 			reg = <0x8000000 0x1000>;
 			#clock-cells = <1>;
 			#reset-cells = <2>;
+		};
+
+		reboot {
+			compatible = "syscon-reboot";
+			regmap = <&sysctrl>;
+			offset = <0x4>;
+			mask = <0xdeadbeef>;
 		};
 
 		uart0: serial@8b00000 {
