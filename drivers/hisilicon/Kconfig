@@ -3,3 +3,7 @@ config HISILICON_VENDOR
 	help
 	  It includes HiSilicon vendor drivers to support multimedia
 	  functions like graphic, audio, video etc.
+
+config HISILICON_CHIP_TYPE_HI3798CV100
+	bool "HiSilicon Hi3798cv100 chip type"
+	

@@ -363,7 +363,11 @@ static int ioctl_mmb_user_unmap(struct file *file, unsigned int iocmd, struct mm
 	len  = PAGE_ALIGN(mmb->length);
 
 	if (udata->map_cached) {
+#if 0
 		mmz_flush_dcache_area((void *)udata->uvirt, (size_t)mmb->length);
+#else
+		printk("ioctl_mmb_user_unmap: mmz_flush_dcache_area not used!!\n");
+#endif
 		flush_outer_cache_range(phyaddr, mmb->length, iommu);
 	}
 

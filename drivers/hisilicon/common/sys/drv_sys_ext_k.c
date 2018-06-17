@@ -100,6 +100,41 @@ HI_VOID HI_DRV_SYS_GetChipVersion(HI_CHIP_TYPE_E *penChipType, HI_CHIP_VERSION_E
 	    ChipType	= HI_CHIP_TYPE_HI3796M;
 	    ChipVersion = HI_CHIP_VERSION_V200;
 	    break;
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV100)
+	case 0x19050100:
+        switch (g_pstRegPeri->PERI_SOC_FUSE.bits.chip_id)
+        {
+            case 0x18:
+                if (g_pstRegSysCtrl->SC_SYS_DBG0.bits.chip_vision)
+                {
+                    ChipType    = HI_CHIP_TYPE_HI3796C;
+                    ChipVersion = HI_CHIP_VERSION_V100;
+                }
+                else
+                {
+                    ChipType    = HI_CHIP_TYPE_HI3796C_A;
+                    ChipVersion = HI_CHIP_VERSION_V100;
+                }
+                break;
+            case 0x1C:
+                if (g_pstRegSysCtrl->SC_SYS_DBG0.bits.chip_vision)
+                {
+                    ChipType    = HI_CHIP_TYPE_HI3798C;
+                    ChipVersion = HI_CHIP_VERSION_V100;
+                }
+                else
+                {
+                    ChipType    = HI_CHIP_TYPE_HI3798C_A;
+                    ChipVersion = HI_CHIP_VERSION_V100;
+                }
+                break;
+            default:
+                ChipType    = HI_CHIP_TYPE_HI3796C;
+                ChipVersion = HI_CHIP_VERSION_V100;
+                break;
+        }
+		break;
+#endif
 	default:
 	    ChipType	= HI_CHIP_TYPE_HI3798C;
 	    ChipVersion = HI_CHIP_VERSION_V200;
@@ -158,12 +193,19 @@ HI_S32 HI_DRV_SYS_GetTimeStampMs(HI_U32 *pu32TimeMs)
  */
 HI_S32 HI_DRV_SYS_GetDolbySupport(HI_U32 *pu32Support)
 {
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV100)
+	*pu32Support = !(g_pstRegPeri->PERI_CHIP_INFO4.bits.dolby_flag);
+#elif defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV200)
     *pu32Support = !(g_pstRegPeri->CHIPSET_INFO.bits.dolby_flag);
+#else
+    *pu32Support = 0;
+#endif
     return HI_SUCCESS;
 }
 
 HI_S32 HI_DRV_SYS_GetHdrSupport(HI_U32 *pu32Support)
 {
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV200)
     switch (g_pstRegPeri->PERI_SOC_FUSE_0.bits.otp_hdr_ctrl)
     {
 	case 0x0:
@@ -174,12 +216,16 @@ HI_S32 HI_DRV_SYS_GetHdrSupport(HI_U32 *pu32Support)
 	    *pu32Support = 0x0;
 	    break;
     }
+#else
+    *pu32Support = 0;
+#endif
 
     return HI_SUCCESS;
 }
 
 HI_S32 HI_DRV_SYS_GetDolbyvisionSupport(HI_U32 *pu32Support)
 {
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV200)
     switch (g_pstRegPeri->PERI_SOC_FUSE_0.bits.otp_hdr_ctrl)
     {
 	case 0x0:
@@ -189,6 +235,9 @@ HI_S32 HI_DRV_SYS_GetDolbyvisionSupport(HI_U32 *pu32Support)
 	    *pu32Support = 0x0;
 	    break;
     }
+#else
+    *pu32Support = 0;
+#endif
 
     return HI_SUCCESS;
 }
@@ -198,7 +247,13 @@ HI_S32 HI_DRV_SYS_GetDolbyvisionSupport(HI_U32 *pu32Support)
  */
 HI_S32 HI_DRV_SYS_GetDtsSupport(HI_U32 *pu32Support)
 {
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV100)
+	*pu32Support = g_pstRegPeri->PERI_CHIP_INFO4.bits.dts_flag;
+#elif defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV200)
     *pu32Support = g_pstRegPeri->CHIPSET_INFO.bits.dts_flag;
+#else
+    *pu32Support = 0;
+#endif
 
     return HI_SUCCESS;
 }
@@ -208,7 +263,13 @@ HI_S32 HI_DRV_SYS_GetDtsSupport(HI_U32 *pu32Support)
  */
 HI_S32 HI_DRV_SYS_GetRoviSupport(HI_U32 *pu32Support)
 {
+#if defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV100)
+	*pu32Support = g_pstRegPeri->PERI_SOC_FUSE.bits.mven;
+#elif defined (CONFIG_HISILICON_CHIP_TYPE_HI3798CV200)
     *pu32Support = g_pstRegPeri->PERI_SOC_FUSE_0.bits.mven;
+#else
+    *pu32Support = 0;
+#endif
 
     return HI_SUCCESS;
 }

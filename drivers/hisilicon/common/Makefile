@@ -5,9 +5,9 @@
 ## header search path
 
 EXTRA_CFLAGS := -Werror
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include \
-		-I$(srctree)/drivers/common/include \
-		-I$(srctree)/drivers/common \
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/sdk/common-include \
+		-I$(srctree)/drivers/hisilicon/common/include \
+		-I$(srctree)/drivers/hisilicon/common \
 		-I$(srctree)/drivers/common/mmz \
 		-I$(srctree)/drivers/msp/include \
 		-I$(srctree)/drivers/sdk/msp-api/include \

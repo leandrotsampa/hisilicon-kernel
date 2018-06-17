@@ -11,7 +11,12 @@
 #include <dt-bindings/clock/hix5hd2-clock.h>
 
 / {
-        cpus {
+
+	virtdev {
+		compatible = "virt-device";
+	};
+
+	cpus {
                 #address-cells = <1>;
                 #size-cells = <0>;
                 enable-method = "hisilicon,hix5hd2-smp";
