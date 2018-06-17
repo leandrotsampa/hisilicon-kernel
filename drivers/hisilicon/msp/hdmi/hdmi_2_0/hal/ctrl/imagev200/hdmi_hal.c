@@ -862,7 +862,11 @@ static HI_VOID HalHdmiClkSet(HDMI_CLK_TYPE_E enClkType)
     volatile HI_VOID *pRegAddr = HI_NULL;
 
 #if defined(CONFIG_HDMI_STB_SDK)
+#if 0
     HI_U32 u32NewValue2 = 0, u32OldValue2 = 0;
+#else
+    HI_U32 u32NewValue2 = 0;
+#endif
 
     pRegAddr = (volatile HI_VOID*)&(g_pstRegCrg->PERI_CRG67.u32);
 
@@ -882,11 +886,15 @@ static HI_VOID HalHdmiClkSet(HDMI_CLK_TYPE_E enClkType)
 
     HdmiRegWrite(pRegAddr, u32NewValue1);
 
+#if 0
     pRegAddr = (volatile HI_VOID*)&(g_pstRegCrg->PERI_CRG158.u32);
     u32OldValue2 = HdmiRegRead(pRegAddr);
     u32NewValue2 |= u32OldValue2;
     u32NewValue2 |= 0x7;
     HdmiRegWrite(pRegAddr, u32NewValue2);
+#else
+    printk("HalHdmiClkSet: PERI_CRG158 does not exist!\n");
+#endif
 
 #elif defined(CONFIG_HDMI_BVT_SDK)
     pRegAddr = (volatile HI_VOID *)HDMI_IO_MAP(HDMI_CRG_BASE_ADDR, 4);
@@ -931,7 +939,11 @@ static HI_VOID HalHdmiClkDivSet(HI_BOOL bIdClkDiv, HI_BOOL bPixelnxClkDiv)
     volatile HI_VOID* pRegAddr = HI_NULL;
 
 #if defined(CONFIG_HDMI_STB_SDK)
+#if 0
     pRegAddr = (volatile HI_VOID*)&(g_pstRegCrg->PERI_CRG158.u32);
+#else
+    printk("HalHdmiClkDivSet: PERI_CRG158 does not exist!\n");
+#endif
 #elif defined(CONFIG_HDMI_BVT_SDK)
     pRegAddr = (volatile HI_VOID*)HDMI_IO_MAP(HDMI_CRG_BASE_ADDR, 4);
 #endif

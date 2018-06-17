@@ -9,6 +9,7 @@
 
 #include "hi_type.h"
 
+#if 0
 #include "drv_vdec_ext.h"
 #include "drv_omxvdec_ext.h"
 #include "drv_gpio_ext.h"
@@ -31,7 +32,9 @@
 #include "drv_tuner_ext.h"
 #include "drv_png_ext.h"
 #include "drv_disp_ext.h"
+#endif
 #include "drv_hdmi_ext.h"
+#if 0
 #include "drv_cipher_ext.h"
 #include "drv_vfmw_ext.h"
 #include "drv_mce_ext.h"
@@ -49,15 +52,19 @@
 #include "drv_gfx2d_ext.h"
 #include "drv_ci_ext.h"
 #include "drv_hdmirx_ext.h"
+#endif
 
 #ifndef MODULE
 HI_S32 __init HI_DRV_LoadModules(HI_VOID)
 {
+#if 0
     GPIO_DRV_ModInit();
     // GPIOI2C_DRV_ModInit();
     PDM_DRV_ModInit();
     PQ_DRV_ModInit();
+#endif
     HDMI_DRV_ModInit();
+#if 0
     VDP_DRV_ModInit();
     TDE_DRV_ModInit();
     HIFB_DRV_ModInit();
@@ -76,6 +83,7 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     // KEYLED_DRV_ModInit();
     // SCI_DRV_ModInit();
     // AENC_DRV_ModInit();
+#endif
 
     return HI_SUCCESS;
 }
