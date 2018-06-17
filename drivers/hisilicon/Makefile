@@ -12,8 +12,10 @@ obj-y += soc/
 #obj-$(CONFIG_PCIE_HISILICON)		+= pcie/
 
 obj-y += atags/
+obj-y += common/
 obj-y += kapi/
 obj-y += misc/
+obj-y += msp/
 
 obj-$(CONFIG_BLK_DEV_RAM) += initmrd/
 obj-$(CONFIG_CMA) += cma/

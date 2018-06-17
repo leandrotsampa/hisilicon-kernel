@@ -1,29 +1,5 @@
-menu "Hisilicon driver support"
-
-config VIRTUAL_INPUT
-	tristate "virtual input device for android"
+config HISILICON_VENDOR
+	bool "HiSilicon vendor drivers support"
 	help
-	  If you say yes here you get support for android.
-
-config HISI_DEBUG_UART_PHYS
-	hex "hisilicon physical base address of debug UART"
-	default 0xF8B00000 if ARCH_HI3798CV2X
-
-config HISI_DEBUG_UART_VIRT
-	hex "hisilicon virtual base address of debug UART"
-	default 0xF9B00000 if ARCH_HI3798CV2X
-
-source "drivers/hisilicon/pcie/Kconfig"
-source "drivers/hisilicon/kapi/Kconfig"
-source "drivers/hisilicon/misc/Kconfig"
-source "drivers/hisilicon/cma/Kconfig"
-source "drivers/hisilicon/usbotg/Kconfig"
-source "drivers/hisilicon/soc/Kconfig"
-source "drivers/hisilicon/regulator/Kconfig"
-source "drivers/hisilicon/hash_vrf_dev/Kconfig"
-
-menu "Hisilicon thermal drivers"
-source "drivers/hisilicon/ipa/Kconfig"
-endmenu
-
-endmenu
+	  It includes HiSilicon vendor drivers to support multimedia
+	  functions like graphic, audio, video etc.
