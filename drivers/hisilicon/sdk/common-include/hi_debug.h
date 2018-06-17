@@ -51,7 +51,7 @@ extern "C"{
 
 /**Default level of the output debugging information*/
 /**CNcomment: Ĭ�ϵĵ�����Ϣ�������*/
-#define HI_LOG_LEVEL_DEFAULT HI_LOG_LEVEL_ERROR
+#define HI_LOG_LEVEL_DEFAULT HI_LOG_LEVEL_DBG
 
 /**Level of the output debugging information*/
 /**CNcomment: ������Ϣ�������*/
