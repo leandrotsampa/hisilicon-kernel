@@ -5,12 +5,6 @@
 # Rewritten to use lists instead of if-statements.
 #
 
-obj-y				+= hisilicon/
-ifeq ($(CONFIG_POPLAR_MSP),y)
-obj-y				+= common/
-obj-y				+= msp/
-endif
-
 obj-y				+= irqchip/
 obj-y				+= bus/
 
@@ -181,3 +175,4 @@ obj-$(CONFIG_ANDROID)		+= android/
 obj-$(CONFIG_NVMEM)		+= nvmem/
 obj-$(CONFIG_FPGA)		+= fpga/
 obj-$(CONFIG_TEE)		+= tee/
+obj-$(CONFIG_HISILICON_VENDOR)	+= hisilicon/

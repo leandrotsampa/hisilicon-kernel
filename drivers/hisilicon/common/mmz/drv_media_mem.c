@@ -181,7 +181,11 @@ void flush_inner_cache(void *viraddr, unsigned int len)
 	if (len > L2_CACHE_SIZE)
 		on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
 	else
+#if 0
 		mmz_flush_dcache_area((void *)viraddr,(size_t)len);
+#else
+		printk("TODO: mmz_flush_dcache_area: viraddr=%p len=%u\n", viraddr, len);
+#endif
 }
 
 void flush_outer_cache_range(mmb_addr_t phyaddr, mmb_addr_t len,
@@ -607,7 +611,11 @@ static void __dma_clear_buffer(struct ion_handle *handle)
 			HI_U32 length = PAGE_ALIGN(sg->length);
 			void *ptr = page_address(page);
 			/* memset(ptr, 0, size); */
+#if 0
 			mmz_flush_dcache_area(ptr, length);
+#else
+			printk("TODO: mmz_flush_dcache_area: ptr=%p, length=%u\n", ptr, length);
+#endif
 		}
 	} else {
 		on_each_cpu((smp_call_func_t)mmz_flush_dcache_all, NULL, 1);
@@ -757,7 +765,11 @@ int hil_mmb_unmap(hil_mmb_t *mmb, void *addr)
 
 	if (kdata->map_cached) {
 		up(&mmz_lock);
+#if 0
 		__flush_dcache_area((void *)kdata->kvirt, (size_t)mmb->length);
+#else
+		printk("TODO: __flush_dcache_area: (void *)kdata->kvirt=%p mmb->length=%u\n", (void *)kdata->kvirt, mmb->length);
+#endif
 		down(&mmz_lock);
 	}
 

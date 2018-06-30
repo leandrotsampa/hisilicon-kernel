@@ -204,14 +204,6 @@ source "drivers/fpga/Kconfig"
 
 source "drivers/tee/Kconfig"
 
-menu "Hisilicon Poplar support"
-config POPLAR_MSP
-	bool "Enable support for common and MSP code"
-	default yes
-	help
-	  Include common and MSP code to support the HiSilicon
-	  Poplar board.
-endmenu
 source "drivers/hisilicon/Kconfig"
 
 endmenu

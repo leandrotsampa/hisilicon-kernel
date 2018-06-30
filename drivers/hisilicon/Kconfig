@@ -1,5 +1,11 @@
 menu "Hisilicon driver support"
 
+config HISILICON_VENDOR
+	bool "HiSilicon vendor drivers support"
+	help
+	  It includes HiSilicon vendor drivers to support multimedia
+	  functions like graphic, audio, video etc.
+
 config VIRTUAL_INPUT
 	tristate "virtual input device for android"
 	help
