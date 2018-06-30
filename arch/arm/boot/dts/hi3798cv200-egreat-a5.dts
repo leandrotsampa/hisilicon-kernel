@@ -43,4 +43,17 @@
 	status = "okay";
 };
 
+&gmac1 {
+	status = "okay";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	phy-handle = <&eth_phy1>;
+	phy-mode = "rgmii";
+	hisilicon,phy-reset-delays-us = <10000 10000 30000>;
+
+	eth_phy1: phy@3 {
+		reg = <3>;
+	};
+};
+
 
