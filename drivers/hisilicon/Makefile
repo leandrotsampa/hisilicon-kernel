@@ -12,7 +12,8 @@
 obj-y += atags/
 obj-y += common/
 obj-y += kapi/
-##obj-y += misc/
+obj-y += misc/
+obj-y += msp/
 obj-y += soc/
 
 obj-$(CONFIG_BLK_DEV_RAM) += initmrd/
