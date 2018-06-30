@@ -37,7 +37,9 @@
 #if 0
 #include "drv_cipher_ext.h"
 #include "drv_vfmw_ext.h"
+#endif
 #include "drv_mce_ext.h"
+#if 0
 #include "drv_vpss_ext.h"
 #include "drv_venc_ext.h"
 #include "drv_pdm_ext.h"
@@ -79,7 +81,9 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     AIAO_DRV_ModInit();
     ADEC_DRV_ModInit();
     VPSS_DRV_ModInit();
+#endif
     MCE_DRV_ModInit();
+#if 0
     // KEYLED_DRV_ModInit();
     // SCI_DRV_ModInit();
     // AENC_DRV_ModInit();
