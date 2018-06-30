@@ -2,3 +2,10 @@
 if ARCH_HI3798CV2X
 source "drivers/hisilicon/soc/hi3798cv200/Kconfig"
 endif
+
+config POWER_RESET_HI3798CV2X
+	bool "hisi hi3798cv2x platform reset driver"
+	depends on ARCH_HISI
+	help
+	  This driver supports reset hisi arm platform. 
+

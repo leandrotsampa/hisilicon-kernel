@@ -109,6 +109,14 @@
 			reg = <0x8000000 0x1000>;
 			#clock-cells = <1>;
 			#reset-cells = <2>;
+			
+			reboot-mode {
+				compatible = "syscon-reboot-mode";
+				offset = <0x0>;
+				mode-normal	= <0x77665501>;
+				mode-bootloader	= <0x77665500>;
+				mode-recovery	= <0x77665502>;
+			};
 		};
 
 		reboot {
@@ -118,6 +126,11 @@
 			mask = <0xdeadbeef>;
 		};
 
+		softreset@8a2c000 {
+			compatible = "arm,hi3798cv2x-reset";
+			reg = <0x8a2c000 0x1000>;
+		};
+		
 		uart0: serial@8b00000 {
 			compatible = "arm,pl011", "arm,primecell";
 			reg = <0x8b00000 0x1000>;

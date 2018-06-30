@@ -12,7 +12,8 @@
 
 obj-y += atags/
 obj-y += kapi/
-obj-y += misc/
+##obj-y += misc/
+obj-y += soc/
 
 obj-$(CONFIG_BLK_DEV_RAM) += initmrd/
 obj-$(CONFIG_CMA) += cma/
