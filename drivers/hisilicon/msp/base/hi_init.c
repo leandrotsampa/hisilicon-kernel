@@ -31,8 +31,8 @@
 #include "drv_tde_ext.h"
 #include "drv_tuner_ext.h"
 #include "drv_png_ext.h"
-#include "drv_disp_ext.h"
 #endif
+#include "drv_disp_ext.h"
 #include "drv_hdmi_ext.h"
 #if 0
 #include "drv_cipher_ext.h"
@@ -40,15 +40,19 @@
 #include "drv_mce_ext.h"
 #include "drv_vpss_ext.h"
 #include "drv_venc_ext.h"
+#endif
 #include "drv_pdm_ext.h"
+#if 0
 #include "drv_aenc_ext.h"
 #include "drv_ao_ext.h"
 #include "drv_adsp_ext.h"
 
 #include "drv_vi_ext.h"
 #include "drv_hdmirx_ext.h"
+#endif
 #include "drv_pq_ext.h"
 
+#if 0
 #include "drv_gfx2d_ext.h"
 #include "drv_ci_ext.h"
 #include "drv_hdmirx_ext.h"
@@ -60,12 +64,12 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
 #if 0
     GPIO_DRV_ModInit();
     // GPIOI2C_DRV_ModInit();
+#endif
     PDM_DRV_ModInit();
     PQ_DRV_ModInit();
-#endif
     HDMI_DRV_ModInit();
-#if 0
     VDP_DRV_ModInit();
+#if 0
     TDE_DRV_ModInit();
     HIFB_DRV_ModInit();
     // JPEG_DRV_ModInit();

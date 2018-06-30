@@ -16,19 +16,19 @@ module :=  comm table zme csc gfxzme gfxcsc
 
 EXTRA_CFLAGS += -Werror
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/sdk/common-include			\
+		-I$(srctree)/drivers/hisilicon/common/include			\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-include			\
 		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
+		-I$(srctree)/drivers/hisilicon/msp/include			\
 		-I$(MSP_DRV_REG_INCLUDE)		\
 		-I$(srctree)/drivers/sdk/msp-api/pq/include		\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include		\
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/mng	\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-api/higo/include		\
+		-I$(srctree)/drivers/hisilicon/msp/pq/$(VERSION)/mng	\
 		-I$(srctree)/drivers/msp/pq/$(VERSION)/mng/$(CHIP) \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/hal/$(CHIP) \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/hal/common  \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)
+		-I$(srctree)/drivers/hisilicon/msp/pq/$(VERSION)/hal/$(CHIP) \
+		-I$(srctree)/drivers/hisilicon/msp/pq/$(VERSION)/hal/common  \
+		-I$(srctree)/drivers/hisilicon/msp/pq/$(VERSION)
 
 KBUILD_EXTRA_SYMBOLS += $(srctree)/drivers/common/Module.symvers
 

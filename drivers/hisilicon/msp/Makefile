@@ -25,12 +25,12 @@ objects += hdmi
 #objects += hi_dbe
 #objects += hifb
 #objects += mce
-#objects += pdm
-#objects += pq
+objects += pdm
+objects += pq
 #objects += pvr
 #objects += sync
 #objects += tde
-#objects += vo
+objects += vo
 #objects += vpss
 
 obj-y += ${addsuffix /,${objects}}
