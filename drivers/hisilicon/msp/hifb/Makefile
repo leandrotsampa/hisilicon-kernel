@@ -1,25 +1,25 @@
 #===============================================================================
 # local variables
 #===============================================================================
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/sdk/common-include			\
+		-I$(srctree)/drivers/hisilicon/common/include			\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-include			\
 		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/msp/hifb/include		\
-		-I$(srctree)/drivers/msp/hifb/inc		\
-		-I$(srctree)/drivers/msp/hifb/adp/inc		\
-		-I$(srctree)/drivers/msp/hifb/adp/alg		\
+		-I$(srctree)/drivers/hisilicon/msp/include			\
+		-I$(srctree)/drivers/hisilicon/msp/hifb/include		\
+		-I$(srctree)/drivers/hisilicon/msp/hifb/inc		\
+		-I$(srctree)/drivers/hisilicon/msp/hifb/adp/inc		\
+		-I$(srctree)/drivers/hisilicon/msp/hifb/adp/alg		\
 		-I$(srctree)/drivers/msp/tde/include		\
-		-I$(srctree)/drivers/sdk/msp-api/tde/include		\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include		\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-api/tde/include		\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-api/higo/include		\
 		-I$(srctree)/drivers/sdk/ha_codec-include	\
-		-I$(srctree)/drivers/msp/jpeg/grc_cmm_inc
+		-I$(srctree)/drivers/hisilicon/msp/jpeg/grc_cmm_inc
 
 HAL_DIR	 := hifb_v2_0
 
 EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android \
-		-I$(srctree)/drivers/msp/hifb/adp/$(HAL_DIR)
+		-I$(srctree)/drivers/hisilicon/msp/hifb/adp/$(HAL_DIR)
 
 #EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT
 EXTRA_CFLAGS += -DCFG_HIFB_ANDROID_SUPPORT
@@ -51,7 +51,7 @@ obj-y += $(MOD_NAME).o
 
 EXTRA_CFLAGS += -Werror
 
-DRIVER_PATH := $(srctree)/drivers/msp/hifb
+DRIVER_PATH := $(srctree)/drivers/hisilicon/msp/hifb
 
 COMMON_FILES := $(wildcard $(DRIVER_PATH)/src/*.c)
 ADAPT_FILES  := $(wildcard $(DRIVER_PATH)/adp/src/*.c)

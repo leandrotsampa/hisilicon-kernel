@@ -27,7 +27,9 @@
 #include "drv_ir_ext.h"
 #include "drv_jpeg_ext.h"
 #include "drv_jpge_ext.h"
+#endif
 #include "drv_hifb_ext.h"
+#if 0
 #include "drv_tde_ext.h"
 #include "drv_tuner_ext.h"
 #include "drv_png_ext.h"
@@ -71,7 +73,9 @@ HI_S32 __init HI_DRV_LoadModules(HI_VOID)
     VDP_DRV_ModInit();
 #if 0
     TDE_DRV_ModInit();
+#endif
     HIFB_DRV_ModInit();
+#if 0
     // JPEG_DRV_ModInit();
     // PNG_DRV_ModInit();
     GFX2D_OS_ModInit();
