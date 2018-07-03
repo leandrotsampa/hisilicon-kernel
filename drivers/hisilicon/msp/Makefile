@@ -29,7 +29,7 @@ objects += pdm
 objects += pq
 #objects += pvr
 #objects += sync
-#objects += tde
+objects += tde
 objects += vo
 #objects += vpss
 

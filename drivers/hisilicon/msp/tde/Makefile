@@ -7,16 +7,16 @@ HAL_DIR := tde_v1_0
 
 EXTRA_CFLAGS += -Werror
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
+EXTRA_CFLAGS += -I$(srctree)/drivers/hisilicon/sdk/common-include			\
+		-I$(srctree)/drivers/hisilicon/common/include			\
 		-I$(srctree)/drivers/sdk/msp-include			\
 		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/sdk/msp-api/$(TARGET)/include	\
+		-I$(srctree)/drivers/hisilicon/msp/include			\
+		-I$(srctree)/drivers/hisilicon/sdk/msp-api/$(TARGET)/include	\
 		-I$(srctree)/drivers/msp/$(TARGET)		\
-		-I$(srctree)/drivers/msp/jpeg/grc_cmm_inc	\
-		-I$(srctree)/drivers/msp/tde/include		\
-		-I$(srctree)/drivers/msp/tde/adp/$(HAL_DIR)
+		-I$(srctree)/drivers/hisilicon/msp/jpeg/grc_cmm_inc	\
+		-I$(srctree)/drivers/hisilicon/msp/tde/include		\
+		-I$(srctree)/drivers/hisilicon/msp/tde/adp/$(HAL_DIR)
 
 EXTRA_CFLAGS += -DHI_TDE_MEMCOUNT_SUPPORT=0
 EXTRA_CFLAGS += -DHI_TDE_BUFFER=0x20000
