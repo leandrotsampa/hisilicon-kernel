@@ -1,6 +1,6 @@
 /*
  * FileName:
- * Author:         h00211444  Version: 0.0.1  Date: 2012-12-24
+ * Author:         sdk  Version: 0.0.1  Date: 2012-12-24
  * Description:
  * Version:
  * Function List:
@@ -528,9 +528,9 @@ void TEEC_ReleaseSharedMemory (
     struct list_node *ptr;
     TEEC_SharedMemory* temp_shardmem;
     bool found = false;
-    /* DTS2013030408264 h00211444 begin */
+    /* DTS2013030408264 sdk begin */
     void* rel_addr;
-    /* DTS2013030408264 h00211444 end */
+    /* DTS2013030408264 sdk end */
 
     /* First, check parameters is valid or not */
     if (sharedMem == NULL) {
@@ -556,7 +556,7 @@ void TEEC_ReleaseSharedMemory (
 
     /* Paramters right, start execution */
     if ((sharedMem->is_allocated) && (sharedMem->size != 0)) {
-        /* DTS2013030408264 h00211444 begin */
+        /* DTS2013030408264 sdk begin */
         rel_addr = (void*)sharedMem->buffer;
         /* call munmap, notify os decrease mmap count */
         ret = munmap(sharedMem->buffer, sharedMem->size);
@@ -571,7 +571,7 @@ void TEEC_ReleaseSharedMemory (
             TEEC_Error("release SharedMemory failed, ioctl error\n");
             return;
         }
-        /* DTS2013030408264 h00211444 end */
+        /* DTS2013030408264 sdk end */
     }
 
     sharedMem->buffer = NULL;
@@ -613,12 +613,12 @@ static TEEC_Result TEEC_CheckMemRef(
         if (!(memref.parent->flags & TEEC_MEM_OUTPUT))
             goto param_error;
     } else if (param_type == TEEC_MEMREF_PARTIAL_INOUT) {
-        /* DTS2013030509162 h00211444 begin */
+        /* DTS2013030509162 sdk begin */
         if (!(memref.parent->flags & TEEC_MEM_INPUT))
             goto param_error;
         if (!(memref.parent->flags & TEEC_MEM_OUTPUT))
             goto param_error;
-        /* DTS2013030509162 h00211444 end */
+        /* DTS2013030509162 sdk end */
     } else {
         // if type is TEEC_MEMREF_WHOLE, ignore it
     }
@@ -767,7 +767,7 @@ void TEEC_Encode(
                     + operation->params[param_cnt].memref.offset;
                 cli_context->params[param_cnt].memref.offset = 0;
             }
-            /* DTSDTS2013030104869 h00211444 begin */
+            /* DTSDTS2013030104869 sdk begin */
             /* translate the paramType to know the driver */
             if (param_type[param_cnt] == TEEC_MEMREF_WHOLE) {
                 switch (operation->params[param_cnt].memref.parent->flags) {
@@ -789,7 +789,7 @@ void TEEC_Encode(
              * translate TEEC_MEMREF_PARTIAL_XXX to TEEC_MEMREF_TEMP_XXX */
             if (!operation->params[param_cnt].memref.parent->is_allocated)
                 param_type[param_cnt] = param_type[param_cnt] - diff;
-            /* DTSDTS2013030104869 h00211444 end */
+            /* DTSDTS2013030104869 sdk end */
         }  else if ((param_type[param_cnt] ==  TEEC_VALUE_INPUT)
             || (param_type[param_cnt] == TEEC_VALUE_OUTPUT)
             || (param_type[param_cnt] == TEEC_VALUE_INOUT)) {

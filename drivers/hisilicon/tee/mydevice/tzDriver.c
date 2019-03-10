@@ -60,7 +60,7 @@ static struct otz_smc_cdata otz_smc_cd[NR_CPUS];
             __asmeq("%1", "r0")
             __asmeq("%2", "r1")
             __asmeq("%3", "r2")
- #if GCC_VERSION >= 40600//for hisi linux:by fangjian00208632
+ #if GCC_VERSION >= 40600//for hisi linux:by sdk
             ".arch_extension sec\n"
  #endif
             "smc    #0  @ switch to secure world\n"

@@ -520,9 +520,23 @@ static ssize_t sockfs_listxattr(struct dentry *dentry, char *buffer,
 	return used;
 }
 
+int sockfs_setattr(struct dentry *dentry, struct iattr *iattr)
+{
+	int err = simple_setattr(dentry, iattr);
+
+	if (!err) {
+		struct socket *sock = SOCKET_I(dentry->d_inode);
+
+		sock->sk->sk_uid = iattr->ia_uid;
+	}
+
+	return err;
+}
+
 static const struct inode_operations sockfs_inode_ops = {
 	.getxattr = sockfs_getxattr,
 	.listxattr = sockfs_listxattr,
+	.setattr = sockfs_setattr,
 };
 
 /**
@@ -1117,7 +1131,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	err = security_socket_create(family, type, protocol, kern);
 	if (err)
-        return err;
+		return err;
 
 	/*
 	 *	Allocate the socket and allow the family to set things up. if
@@ -1162,7 +1176,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	err = pf->create(net, sock, protocol, kern);
 	if (err < 0)
-        goto out_module_put;
+		goto out_module_put;
 
 	/*
 	 * Now to bump the refcnt of the [loadable] module that owns this
@@ -1178,7 +1192,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	module_put(pf->owner);
 	err = security_socket_post_create(sock, family, type, protocol, kern);
 	if (err)
-        goto out_sock_release;
+		goto out_sock_release;
 	*res = sock;
 
 	return 0;

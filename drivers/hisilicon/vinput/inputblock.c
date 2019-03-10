@@ -20,6 +20,8 @@ static ssize_t event_write(struct file *filp, const char __user *buffer,
 
 	if (count > PAGE_SIZE)
 		num = (PAGE_SIZE - 1);
+	if (NULL == buffer)
+		return -EFAULT;
 
 	options = (char *)__get_free_page(GFP_TEMPORARY);
 	if (!options)
@@ -28,7 +30,7 @@ static ssize_t event_write(struct file *filp, const char __user *buffer,
 	if (copy_from_user(options, buffer, num)) {
 		free_page((unsigned long) options);
 		return -EFAULT;
-	}   
+	}
 
 	memset(state_buff, 0, sizeof(state_buff));
 
@@ -56,9 +58,11 @@ static ssize_t event_read(struct file *filp, char __user *buffer,
 			  size_t count, loff_t *ppos)
 {
 	char *msg, *p;
-	
+
 	if (*ppos != 0)
 		return 0;
+	if (NULL == buffer)
+		return -EFAULT;
 
 	msg = (char *)__get_free_page(GFP_TEMPORARY);
 	if (!msg)

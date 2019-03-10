@@ -18,6 +18,7 @@ struct tz_pageinfo {
  * normal_smmu: no sec smmu address
  * total_size: the whole size of mem
  * pageinfoaddr: the buf phys of the mem info
+ * nblocks: the number of config physic mem blocks
  */
 typedef struct tz_memblocks {
         u32 sec_smmu;
@@ -25,6 +26,9 @@ typedef struct tz_memblocks {
 	u32 normal_smmu;
         u32 total_size;
         u32 pageinfoaddr;
+#ifndef CONFIG_TEE_VMX_ULTRA
+	u32 nblocks;
+#endif
 } TEE_MEMBLOCKS;
 
 /*
@@ -36,7 +40,7 @@ typedef struct tee_mem{
 	struct list_head list;
 }TEE_MEM_LIST;
 
-#ifdef CONFIG_TZDRIVER
+#ifdef CONFIG_TEE
 
 /*
  * hisi_get_tee_meminfo -- get tz_mblock address by sec addr

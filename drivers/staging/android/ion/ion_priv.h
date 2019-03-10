@@ -194,6 +194,7 @@ struct ion_heap {
 	spinlock_t free_lock;
 	wait_queue_head_t waitqueue;
 	struct task_struct *task;
+	struct device *pdev;
 
 	int (*debug_show)(struct ion_heap *heap, struct seq_file *, void *);
 };

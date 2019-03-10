@@ -816,7 +816,7 @@ struct nand_flash_dev {
 		struct {
 			uint8_t mfr_id;
 			uint8_t dev_id;
-		};
+		} ids;
 		uint8_t id[NAND_MAX_ID_LEN];
 	};
 	unsigned int pagesize;

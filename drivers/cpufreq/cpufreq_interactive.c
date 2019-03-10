@@ -1387,6 +1387,34 @@ int cpufreq_interactive_boostpulse(void)
 }
 EXPORT_SYMBOL(cpufreq_interactive_boostpulse);
 
+static int hispeed_freq;
+int cpufreq_interactive_setboost(int val, int freq)
+{
+	int ret;
+	struct cpufreq_interactive_tunables *tunables;
+	struct cpufreq_policy cur_policy;
+
+	ret = cpufreq_get_policy(&cur_policy, 0);
+	if (ret)
+		return ret;
+
+	tunables = (struct cpufreq_interactive_tunables *)cur_policy.governor_data;
+
+	tunables->boost_val = val;
+	if (tunables->boost_val) {
+		hispeed_freq = tunables->hispeed_freq;
+		tunables->hispeed_freq = freq;
+		if (!tunables->boosted)
+			cpufreq_interactive_boost(tunables);
+	} else {
+		tunables->boostpulse_endtime = ktime_to_us(ktime_get());
+		tunables->hispeed_freq = hispeed_freq;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(cpufreq_interactive_setboost);
+
 MODULE_AUTHOR("Mike Chan <mike@android.com>");
 MODULE_DESCRIPTION("'cpufreq_interactive' - A cpufreq governor for "
 	"Latency sensitive workloads");

@@ -12,6 +12,7 @@
 #define ADDR_INVALID (~0)
 
 static DEFINE_SEMAPHORE(smmu_lock);
+static DEFINE_SEMAPHORE(tee_lock);
 
 LIST_HEAD(smmu_list);
 
@@ -97,17 +98,17 @@ u32 hisi_get_tee_meminfo(u32 sec_addr, int flag)
 	list_for_each_entry(tee_mem, &smmu_list, list) {
 		mblock = (TEE_MEMBLOCKS *)phys_to_virt(tee_mem->phys_buf);
 		if (flag) {
-			if (mblock->sec_smmu == sec_addr)
+			if ((mblock->sec_smmu <= sec_addr) && (sec_addr < (mblock->sec_smmu + mblock->total_size)))
 				break;
 		} else {
-			if (mblock->phys_addr == sec_addr)
+			if ((mblock->phys_addr <= sec_addr) && (sec_addr < (mblock->phys_addr + mblock->total_size)))
 				break;
 		}
 
 		mblock = NULL;
 	}
 	if (NULL == mblock) {
-		TEEC_Error("%s cannot find memblock, sec_ddr:0x%x  iommu:0x%x \n",
+		pr_err("%s cannot find memblock, sec_ddr:0x%x  iommu:0x%x \n",
 							__func__, sec_addr, flag);
 		up(&smmu_lock);
 		return INVALIDATE_ADDR;
@@ -135,12 +136,12 @@ static u32 _hisi_tee_smmumem_into_ta(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iom
 	TEE_MEMBLOCKS *tz_mblock = NULL;
 
 	if (NULL == teebuf->table) {
-		TEEC_Error("TEEC sec smmu get meminfo failed!\n");
+		pr_err("TEEC sec smmu get meminfo failed!\n");
 		goto out;
 	}
 
 	if (teebuf->table->nents >= MAX_MEMBLOCK_NUM) {
-		TEEC_Error("Too many memblocks in sg list! The max number of \
+		pr_err("Too many memblocks in sg list! The max number of \
 				memblock is 0x%x and current number is 0x%x\n",
 				MAX_MEMBLOCK_NUM, teebuf->table->nents);
 		goto out;
@@ -149,14 +150,16 @@ static u32 _hisi_tee_smmumem_into_ta(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iom
 	size = (teebuf->table->nents)*sizeof(struct tz_pageinfo) + sizeof(TEE_MEMBLOCKS);
 	buf = kmalloc(size, GFP_KERNEL);
 	if (NULL == buf) {
-		TEEC_Error("TEEC sec smmu failed to alloc buf!\n");
+		pr_err("TEEC sec smmu failed to alloc buf!\n");
 		goto free_tzm;
 	}
 
 	memset(buf, 0, size);
 	tz_mblock = (TEE_MEMBLOCKS *)buf;
 	tz_mblock->total_size = teebuf->u32Size;
-
+#ifndef CONFIG_TEE_VMX_ULTRA
+	tz_mblock->nblocks = teebuf->table->nents;
+#endif
 	if (iommu)
 		tz_mblock->normal_smmu = addr;
 	else
@@ -165,7 +168,7 @@ static u32 _hisi_tee_smmumem_into_ta(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iom
 	memcpy(buf, tz_mblock, sizeof(TEE_MEMBLOCKS));
 	tmp = kzalloc(sizeof(struct tz_pageinfo), GFP_KERNEL);
 	if (NULL == tmp) {
-		TEEC_Error("TEEC sec smmu get tz_pageinfo mem failed!\n");
+		pr_err("TEEC sec smmu get tz_pageinfo mem failed!\n");
 		goto free_dma;
 	}	
 
@@ -264,7 +267,7 @@ int hisi_teesmmu_init(void)
 	/* init context*/
 	result = TEEK_InitializeContext(NULL, &context);
 	if(result != TEEC_SUCCESS) {
-		TEEC_Error("TEEC_InitializeContext failed, ret=0x%x.\n", result);
+		pr_err("TEEC_InitializeContext failed, ret=0x%x.\n", result);
 		goto cleanup_1;
 	}
 
@@ -286,11 +289,11 @@ int hisi_teesmmu_init(void)
 	result = TEEK_OpenSession(&context, &session, &smmu_uuid,
 				TEEC_LOGIN_IDENTIFY, NULL, &operation, &origin);
 	if(result != TEEC_SUCCESS) {
-		TEEC_Error("TEEC_OpenSession failed, ReturnCode=0x%x, \
+		pr_err("TEEC_OpenSession failed, ReturnCode=0x%x, \
 				ReturnOrigin=0x%x\n", result, origin);
 		goto cleanup_2;
 	}
-	TEEC_Debug("TEEC sec smmu initialized.\n");
+	pr_debug("TEEC sec smmu initialized.\n");
 	init_done++;
 
 	return 0;
@@ -307,7 +310,7 @@ void hisi_teesmmu_exit(void)
 	TEEK_FinalizeContext(&context);
 	init_done = 0;
 
-	TEEC_Debug("TEEC sec smmu removed.\n");
+	pr_debug("TEEC sec smmu removed.\n");
 }
 
 static int hisi_secmem_handle(u32 buf_phy, int chioce)
@@ -318,10 +321,11 @@ static int hisi_secmem_handle(u32 buf_phy, int chioce)
 	int ret;
 	int init = 0;
 
+	down(&tee_lock);
 	if (!init_done) {
 		ret = hisi_teesmmu_init();
 		if (ret) {
-			TEEC_Error("TEEC sec smmu init failed!\n");
+			pr_err("TEEC sec smmu init failed!\n");
 			goto out;
 		}
 		init = 1;
@@ -374,18 +378,18 @@ static int hisi_secmem_handle(u32 buf_phy, int chioce)
 		break;
 	}
 	default:
-		TEEC_Error("%s :cmd err!\n", __func__);
+		pr_err("%s :cmd err!\n", __func__);
 		ret = -1;
 		goto exit;
 	}
 
 	if(result != TEEC_SUCCESS) {
-		TEEC_Error("InvokeCommand failed, ReturnCode=0x%x, \
+		pr_err("InvokeCommand failed, ReturnCode=0x%x, \
 					ReturnOrigin=0x%x\n", result, origin);
 		ret = result;
 		goto exit;
 	} else {
-		TEEC_Debug("InvokeCommand success\n");
+		pr_debug("InvokeCommand success\n");
 		ret = 0;
 	}
 
@@ -393,6 +397,8 @@ exit:
 	if (init)
 		hisi_teesmmu_exit();
 out:
+	up(&tee_lock);
+
 	return ret;
 
 }
@@ -405,7 +411,7 @@ int hisi_secmem_alloc(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iommu, u32 *sec_sm
 	TEE_MEMBLOCKS *tz_mblock = NULL;
 
 	if (NULL == teebuf) {
-		TEEC_Error("%s : err args!\n", __func__);
+		pr_err("%s : err args!\n", __func__);
 		ret = -1;
 		goto err;
 	}
@@ -413,7 +419,7 @@ int hisi_secmem_alloc(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iommu, u32 *sec_sm
 	down(&smmu_lock);
 	buf_phy = _hisi_tee_smmumem_into_ta(teebuf, addr, iommu);
 	if (!buf_phy) {
-		TEEC_Error("_hisi_tee_smmumem_into_ta failed!\n");
+		pr_err("_hisi_tee_smmumem_into_ta failed!\n");
 		up(&smmu_lock);
 		goto err;
 	}
@@ -445,7 +451,7 @@ int hisi_secmem_free(u32 sec_addr, int flag)
 
 	buf_phy = hisi_get_tee_meminfo(sec_addr, flag); 
 	if (INVALIDATE_ADDR == buf_phy) {
-		TEEC_Error("%s cannot find memblock, sec_addr:0x%x flag:%d\n",
+		pr_err("%s cannot find memblock, sec_addr:0x%x flag:%d\n",
 						__func__, sec_addr, flag);
 		goto exit;
 
@@ -475,14 +481,14 @@ int hisi_secmem_mapto_secsmmu(TEE_MEM_BUFFER_S *teebuf, u32 addr, int iommu, u32
 
 	down(&smmu_lock);
 	if (NULL == teebuf) {
-		TEEC_Error("%s : err args!\n", __func__);
+		pr_err("%s : err args!\n", __func__);
 		ret = -1;
 		goto err;
 	}
 
 	buf_phy = _hisi_tee_smmumem_into_ta(teebuf, addr, iommu);
 	if (!buf_phy) {
-		TEEC_Error("_hisi_tee_smmumem_into_ta failed!\n");
+		pr_err("_hisi_tee_smmumem_into_ta failed!\n");
 		goto err;
 	}
 	up(&smmu_lock);
@@ -509,7 +515,7 @@ int hisi_secmem_unmap_from_secsmmu(u32 sec_smmu)
 
 	buf_phy = hisi_get_tee_meminfo(sec_smmu, 1); 
 	if (INVALIDATE_ADDR == buf_phy) {
-		TEEC_Error("%s cannot find memblock, sec_smmu:0x%x \n",
+		pr_err("%s cannot find memblock, sec_smmu:0x%x \n",
 							__func__, sec_smmu);
 		goto exit;
 
@@ -531,7 +537,7 @@ int hisi_secmem_agent_end(void)
 
 	ret = hisi_secmem_handle(0, SECSMMU_AGENT_CLOSED);
 	if (ret) {
-		TEEC_Error("%s failed!\n", __func__);
+		pr_err("%s failed!\n", __func__);
 		return -1;
 	}
 
@@ -548,8 +554,8 @@ void hisi_sec_mem_proc(void)
 
 	ret = hisi_secmem_handle(0, SECSMMU_MEM_PROC);
 	if (ret) {
-		TEEC_Error("%s failed!\n", __func__);
-		return -1;
+		pr_err("%s failed!\n", __func__);
+		return ;
 	}
 
 	return;

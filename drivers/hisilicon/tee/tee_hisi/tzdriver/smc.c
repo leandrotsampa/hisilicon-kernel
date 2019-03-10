@@ -139,8 +139,37 @@ static noinline int smc_send(uint32_t cmd, phys_addr_t cmd_addr,
 	return x0;
 }
 #else
+#if defined(CONFIG_TEE_VMX_ULTRA) || defined(CONFIG_ARM32_ATF_SUPPORT)
+static noinline int smc_send(uint32_t cmd, phys_addr_t cmd_addr,
+		uint32_t cmd_type, uint8_t wait)
+{
+	/*TCDEBUG("start to send smc to secure\n");*/
+	register u32 r0 asm("r0") = cmd;
+	register u32 r1 asm("r1") = cmd_addr;
+	register u32 r2 asm("r2") = cmd_type;
+	register u32 r3 asm("r3") = cmd_addr >> 32;
+
+	do {
+		asm volatile(
+				__asmeq("%0", "r0")
+				__asmeq("%1", "r0")
+				__asmeq("%2", "r1")
+				__asmeq("%3", "r2")
+				__asmeq("%4", "r3")
+#if GCC_VERSION >= 40600//for hisi linux:by sdk
+				".arch_extension sec\n"
+#endif
+				"smc   #0\n"
+				: "+r" (r0)
+				: "r" (r0), "r" (r1), "r" (r2), "r" (r3));
+	}while(r0 == TSP_REQUEST && wait);
+
+	return r0;
+}
+
+#else
 static unsigned int smc_send(uint32_t cmd, phys_addr_t cmd_addr,
-			     uint32_t cmd_type, uint8_t wait)
+		uint32_t cmd_type, uint8_t wait)
 {
 	register unsigned int r0 asm("r0") = MAPI_TZ_API;
 	register unsigned int r1 asm("r1") = cmd_addr;
@@ -150,7 +179,7 @@ static unsigned int smc_send(uint32_t cmd, phys_addr_t cmd_addr,
 			      __asmeq("%1", "r0")
 			      __asmeq("%2", "r1")
 			      __asmeq("%3", "r2")
-#if GCC_VERSION >= 40600//for hisi linux:by fangjian00208632
+#if GCC_VERSION >= 40600//for hisi linux:by sdk
 			      ".arch_extension sec\n"
 #endif
 			      "smc    #0  @ switch to secure world\n"
@@ -168,6 +197,7 @@ static unsigned int smc_send(uint32_t cmd, phys_addr_t cmd_addr,
 
 	return r0;
 }
+#endif
 #endif
 
 static int siq_thread_fn(void *arg)
@@ -233,6 +263,8 @@ static int smc_thread_fn(void *arg)
 			/* Reset consecutive empty runs */
 			cmd_count = 0;
 			tlogd("processing answer %d\n", last_out);
+			isb();
+			wmb();
 
 			/* Get copy of answer so there is no
 			 * risk of changing in the foreach */
@@ -413,6 +445,7 @@ static void smc_work_func(struct kthread_work *work)
 		tloge("memcpy_s failed,%s line:%d", __func__, __LINE__);
 	isb();
 	wmb();
+
 	if (++last_in >= MAX_SMC_CMD)
 		last_in = 0;
 	cmd_data->last_in = last_in;
@@ -438,15 +471,16 @@ static unsigned int smc_send_func(TC_NS_SMC_CMD *cmd, uint32_t cmd_type,
 		.we = we,
 	};
 
-	if (!cmd) {
-		TCERR("invalid cmd\n");
-		return (unsigned int)-ENOMEM;
-	}
-
 	if (we == NULL) {
 		tloge("failed to malloc memory!\n");
 		return (unsigned int)-ENOMEM;
 	}
+	if (!cmd) {
+		TCERR("invalid cmd\n");
+		kfree(we);
+		return (unsigned int)-ENOMEM;
+	}
+
 	we->event_nr = cmd->event_nr;
 	we->cmd = cmd;
 	init_completion(&we->done);
@@ -740,7 +774,7 @@ int smc_init_data(struct device *class_dev)
 	atomic_set(&event_nr, 0);
 	atomic_set(&outstading_cmds, 0);
 
-	if (!class_dev)
+	if (NULL == class_dev || IS_ERR(class_dev))
 		return -ENOMEM;
 
 	cmd_data = (TC_NS_SMC_QUEUE *) __get_free_page(GFP_KERNEL | __GFP_ZERO);

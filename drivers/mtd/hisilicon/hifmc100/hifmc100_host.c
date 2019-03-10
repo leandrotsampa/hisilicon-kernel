@@ -32,14 +32,18 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/mtd/mtd.h>
-#include <mach/platform.h>
 #include <linux/hisilicon/freq.h>
 #include <linux/delay.h>
-#include <dt-bindings/clock/hi3798mv200-clock.h>
-
 #include "hifmc100_reg.h"
 #include "hifmc100_host.h"
 
+/*****************************************************************************/
+#define REG_BASE_CRG	0xF8A22000
+#if defined(CONFIG_ARCH_S40) || defined(CONFIG_ARCH_HI3716MV420N)
+#  define REG_PERI_CRG_FMC   0x005C
+#else
+#  define REG_PERI_CRG_FMC   0x0380
+#endif
 /******************************************************************************/
 
 static struct hifmc_host *hifmc100_get_resource(struct platform_device *pdev)
@@ -246,7 +250,10 @@ int hifmc100_write_reg(struct flash_regop_info *info)
 		hifmc_write(hifmc, 0, HIFMC100_ADDRL);
 	}
 
-	regval = HIFMC100_OP_REG_OP_START;
+	/* for syncmode, need to config HIFMC100_OP_RW_REG. 
+	 * for asyncmode, do not care this bit.
+	 */
+	regval = HIFMC100_OP_REG_OP_START | HIFMC100_OP_RW_REG;
 
 	if (info->dummy)
 		regval |= HIFMC100_OP_DUMMY_EN;
@@ -341,7 +348,10 @@ int hifmc100_read_reg(struct flash_regop_info *info)
 	hifmc_write(hifmc, HIFMC100_DATA_NUM_CNT(info->sz_buf),
 		HIFMC100_DATA_NUM);
 
-	regval = HIFMC100_OP_REG_OP_START;
+	/* for syncmode, need to config HIFMC100_OP_RW_REG. 
+	 * for asyncmode, do not care this bit.
+	 */
+	regval = HIFMC100_OP_REG_OP_START | HIFMC100_OP_RW_REG;
 
 	if (info->dummy)
 		regval |= HIFMC100_OP_DUMMY_EN;
@@ -361,6 +371,12 @@ int hifmc100_read_reg(struct flash_regop_info *info)
 
 	if (info->addr_cycle)
 		regval |= HIFMC100_OP_ADDR_EN;
+
+	/* for syncmode, need to config HIFMC100_OP_RW_REG, 
+	 * for asyncmode, do not care this bit.
+	 */
+	if (info->cmd == NAND_CMD_READID)
+		regval |= HIFMC100_OP_READID;
 
 	hifmc_write(hifmc, regval, HIFMC100_OP);
 
@@ -429,7 +445,11 @@ static int hifmc100_driver_probe(struct platform_device *pdev)
 	host->wait_dma_finish = hifmc100_wait_dma_finish;
 	host->wait_host_ready = hifmc100_wait_host_ready;
 
-	host->fmc_crg_addr = ioremap_nocache(REG_BASE_CRG + PERI_CRG224_FMC, sizeof(u32));
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3798MV310) || defined(CONFIG_ARCH_HI3796MV2X)
+	host->caps |= NAND_MODE_SYNC;
+#endif
+
+	host->fmc_crg_addr = ioremap_nocache(REG_BASE_CRG + REG_PERI_CRG_FMC, sizeof(u32));
 	if (!host->fmc_crg_addr) {
 		pr_err("fmc_crg_addr ioremap fail.\n");
 		ret = -ENODEV;
@@ -444,6 +464,15 @@ static int hifmc100_driver_probe(struct platform_device *pdev)
 	host->reg.fmc_cfg_ecc_type = HIFMC100_CFG_ECC_TYPE_MASK & regval;
 	host->reg.fmc_cfg_page_size = HIFMC100_CFG_PAGE_SIZE_MASK & regval;
 
+#ifdef CONFIG_MTD_HIFMC100_NAND
+	if ((host->caps)&NAND_MODE_SYNC) {
+		/* check if controler is in syncmode. */
+		regval &= HIFMC100_CFG_NF_MODE_MASK;
+		if (regval)
+			host->flags |= hifmc100_syncmode_reg(regval, 0);
+	}
+#endif
+
 	mutex_init(&host->lock);
 
 	ret = request_irq(host->irq, hifmc100_irq_handle, 0, DEVNAME"-irq", host);
@@ -453,18 +482,23 @@ static int hifmc100_driver_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
+#ifdef CONFIG_MTD_HIFMC100_SPINOR
 	ret = hifmc100_spinor_probe(pdev, host);
 	if (ret)
 		pr_info("no found spi-nor device.\n");
+#endif
 
+#ifdef CONFIG_MTD_HIFMC100_NAND
 	ret = hifmc100_xnand_probe(pdev, host, HIFMC_IFMODE_NAND);
 	if (ret)
 		pr_info("no found nand device.\n");
+#endif
 
+#ifdef CONFIG_MTD_HIFMC100_SPINAND
 	ret = hifmc100_xnand_probe(pdev, host, HIFMC_IFMODE_SPINAND);
 	if (ret)
 		pr_info("no found spi-nand device.\n");
-
+#endif
 	if (!host->spinor && !host->nand && !host->spinand) {
 		clk_disable(host->clk);
 		ret = -ENODEV;

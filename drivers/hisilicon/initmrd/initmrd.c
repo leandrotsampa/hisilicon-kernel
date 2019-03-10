@@ -51,7 +51,7 @@ extern void dump_stack(void);
 /*****************************************************************************/
 int parse_initmrd_bootargs(char *bootargs)
 {
-	unsigned int index;
+	unsigned int ix, index;
 	struct ramdisk *rd;
 	char *endp;
 	char *p;
@@ -61,31 +61,35 @@ int parse_initmrd_bootargs(char *bootargs)
 		return 0;
 	}
 
-	p = strstr(bootargs, "initmrd=");
-	if (!p) {
-		pr_notice("found no initmrd.\n");
-		return 0;
+	p = bootargs;
+	for (ix = 0; ix < CONFIG_BLK_DEV_RAM_COUNT; ix++) {
+		p = strstr(p, "initmrd=");
+		if (!p) {
+			pr_notice("found no initmrd.\n");
+			return 0;
+		}
+
+		p += strlen("initmrd=");
+		index = memparse(p, &endp);
+		if (*endp != ',')
+			return 0;
+
+		if (index >= CONFIG_BLK_DEV_RAM_COUNT) {
+			pr_notice("index %d out of range, CONFIG_BLK_DEV_RAM_COUNT is %d.\n", index, CONFIG_BLK_DEV_RAM_COUNT);
+			return 0;
+		}
+
+		rd = &ramdisks[index];
+
+		rd->start = memparse(endp + 1, &endp);
+		if (*endp != ',')
+			return 0;
+
+		rd->size = memparse(endp + 1, NULL);
+		if (rd->size) {
+			rd->status = RD_STATUS_SETUP;
+		}
 	}
-
-	p += strlen("initmrd=");
-	index = memparse(p, &endp);
-	if (*endp != ',')
-		return 0;
-
-	if (index >= CONFIG_BLK_DEV_RAM_COUNT) {
-		pr_notice("index %d out of range, CONFIG_BLK_DEV_RAM_COUNT is %d.\n", index, CONFIG_BLK_DEV_RAM_COUNT);
-		return 0;
-	}
-
-	rd = &ramdisks[index];
-
-	rd->start = memparse(endp + 1, &endp);
-	if (*endp != ',')
-		return 0;
-
-	rd->size = memparse(endp + 1, NULL);
-	if (rd->size)
-		rd->status = RD_STATUS_SETUP;
 
 	return 0;
 }

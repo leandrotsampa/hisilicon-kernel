@@ -31,6 +31,7 @@
 #include <linux/hisilicon/freq.h>
 #include <hiflash.h>
 
+#include "../syncnand/nand_sync.h"
 #include "hifmc100_reg.h"
 #include "hifmc100_host.h"
 
@@ -384,8 +385,9 @@ static int hifmc100_xnand_dma_transfer(struct hifmc_xnand *xnand,
 
 static int hifmc100_set_nand_fast_timing(struct hifmc_xnand *nand)
 {
-#ifndef CONFIG_HI3798MV2X_FPGA
-#ifndef CONFIG_HI3796MV2X_FPGA
+#if defined(CONFIG_HI3798MV2X_FPGA) || defined(CONFIG_HI3798MV310_FPGA) || defined(CONFIG_HI3796MV2X_FPGA)
+    return 0;
+#else
 	u32 regval;
 	struct hifmc_host *hifmc = nand->host;
 
@@ -398,7 +400,6 @@ static int hifmc100_set_nand_fast_timing(struct hifmc_xnand *nand)
 
 	hifmc_write(hifmc, HIFMC100_READ_TIMING_TUNE_VALUE,
 		    HIFMC100_READ_TIMING_TUNE);
-#endif
 #endif
 	return 0;
 }
@@ -557,9 +558,10 @@ static void hifmc100_nand_cmd_readid(struct hifmc_xnand *xnand)
 static void hifmc100_nand_cmd_reset(struct hifmc_xnand *xnand)
 {
 	struct flash_regop_info info = {0};
+	struct hifmc_host *host = xnand->host;
 
 	info.priv = xnand->host;
-	info.cmd = NAND_CMD_RESET;
+	info.cmd = IS_NAND_SYNCMODE_ONFI(host) ? NAND_CMD_SYNC_RESET : NAND_CMD_RESET;
 	info.nr_cmd = 1;
 	info.wait_ready = true;
 	xnand->regop->write_reg(&info);
@@ -853,10 +855,13 @@ static uint8_t hifmc100_xnand_read_byte(struct mtd_info *mtd)
 
 	offset = cmdfunc->column + cmdfunc->offset - 1;
 
-	if (offset < mtd->writesize)
+	if (offset < mtd->writesize) {
+		isb();
 		retval = readb(xnand->pagebuf + offset);
-	else
+	} else {
+		isb();
 		retval = readb(xnand->oobbuf + offset - mtd->writesize);
+	}
 
 exit:
 	if (cmdfunc->command == NAND_CMD_READOOB) {
@@ -1015,6 +1020,30 @@ static u32 hifmc100_pagesize_reg(u32 value, bool _to_reg)
 }
 /******************************************************************************/
 
+u32 hifmc100_syncmode_reg(u32 value, u32 _to_reg)
+{
+	int ix;
+	u32 syncmode_reg[] = {
+		NAND_MODE_SYNC_ONFI23,  HIFMC100_CFG_NFMODE_ONFI23,
+		NAND_MODE_SYNC_ONFI30,  HIFMC100_CFG_NFMODE_ONFI30,
+		NAND_MODE_SYNC_TOGGLE10, HIFMC100_CFG_NFMODE_TOGGLE10,
+		NAND_MODE_SYNC_TOGGLE20, HIFMC100_CFG_NFMODE_TOGGLE20,
+	};
+
+	if (_to_reg) {
+		for (ix = 0; ix < ARRAY_SIZE(syncmode_reg); ix += 2)
+			if (syncmode_reg[ix] == value)
+				return syncmode_reg[ix+1];
+	} else {
+		for (ix = 0; ix < ARRAY_SIZE(syncmode_reg); ix += 2)
+			if (syncmode_reg[ix+1] == value)
+				return syncmode_reg[ix];
+	}
+
+	return 0;
+}
+/******************************************************************************/
+
 static void hifmc100_dump_bitflip(void *host, u8 ecc[16], int *max_bitsflip)
 {
 	u32 *e = (u32 *)ecc;
@@ -1124,6 +1153,15 @@ static int hifmc100_xnand_sanely_check(struct mtd_info *mtd, struct nand_chip *c
 
 	if (xnand->read_retry)
 		printk("read-retry ");
+
+	if (xnand->host->flags & NAND_MODE_SYNC_ONFI23)
+		printk("ONFI DDR 2.3 ");
+	else if (xnand->host->flags & NAND_MODE_SYNC_ONFI30)
+		printk("ONFI DDR 3.0 ");
+	else if (xnand->host->flags & NAND_MODE_SYNC_TOGGLE10)
+		printk("Toggle DDR 1.0 ");
+	else if (xnand->host->flags & NAND_MODE_SYNC_TOGGLE20)
+		printk("Toggle DDR 2.0 ");
 
 	printk("\n");
 
@@ -1598,14 +1636,110 @@ static void hifmc100_spinand_set_xfer(struct hifmc_xnand *xnand)
 }
 /******************************************************************************/
 
+static int hifmc100_host_set_syncmode(struct hifmc_xnand *xnand,
+		struct nand_sync_timing *timing, unsigned int enable)
+{
+	u32 regval;
+	char sync_mode = 0;
+	unsigned int sync_clk;
+	unsigned int sync_timming;
+
+	struct hifmc_host *host = xnand->host;
+
+	regval = hifmc_read(host, HIFMC100_CFG);
+	regval &= ~HIFMC100_CFG_NFMODE_MASK;
+
+	if (!enable) {
+		hifmc_write(host, regval, HIFMC100_CFG);
+		xnand->clk_rate = (unsigned long)-1;
+		host->flags &= ~(NAND_MODE_SYNC_TYPE_MASK);
+		return 0;
+	}
+
+	if (timing) {
+		sync_mode = timing->syncmode;
+		sync_clk = timing->clock;
+		sync_timming = timing->timing;
+	}
+
+	switch (sync_mode) {
+	case NAND_MODE_SYNC_ONFI23:
+		regval |= HIFMC100_CFG_NFMODE_ONFI23;
+		break;
+	case NAND_MODE_SYNC_ONFI30:
+		regval |= HIFMC100_CFG_NFMODE_ONFI30;
+		break;
+	case NAND_MODE_SYNC_TOGGLE10:
+		regval |= HIFMC100_CFG_NFMODE_TOGGLE10;
+		break;
+	case NAND_MODE_SYNC_TOGGLE20:
+		regval |= HIFMC100_CFG_NFMODE_TOGGLE20;
+		break;
+	default:
+		break;
+	}
+
+	hifmc_write(host, regval, HIFMC100_CFG);
+
+	hifmc_write(host, sync_timming, HIFMC100_SYNC_TIMING);
+
+	xnand->clk_rate = sync_clk * 1000000;
+
+	host->flags &= ~(NAND_MODE_SYNC_TYPE_MASK);
+	host->flags |= sync_mode;
+
+	clk_set_rate(host->clk, xnand->clk_rate);
+
+	host->fmc_crg_value = readl(host->fmc_crg_addr);
+
+	return 0;
+}
+/******************************************************************************/
+
+static int hifmc100_xnand_set_syncmode(struct hifmc_xnand *xnand)
+{
+	struct hifmc_host *host = xnand->host;
+
+	struct nand_sync *nand_sync;
+	struct nand_sync_timing *nand_sync_timing;
+
+	if (!((host->caps)&NAND_MODE_SYNC)) {
+		return 0;
+	}
+
+	nand_sync_timing = nand_get_sync_timing(hifmc100_nand_sync_timing,
+				xnand->id, sizeof(xnand->id));
+	if (!nand_sync_timing)
+		return 0;
+
+	/* check if nand chip support sync mode only. */
+	if (nand_sync_timing->syncmode & NAND_MODE_SYNC_ONLY)
+		host->flags |= NAND_MODE_SYNC_ONLY;
+
+	if (!IS_NANDC_SYNCMODE(host) && !IS_NAND_SYNCMODE_ONLY(host)) {
+		nand_sync = nand_get_sync(nand_sync_timing->syncmode);
+		if (!nand_sync || !nand_sync->enable_sync)
+			panic(DEVNAME "Driver not support this sync type.\n");
+		nand_sync->enable_sync(xnand->regop);
+	}
+
+	hifmc100_set_sync_timing(nand_sync_timing);
+	hifmc100_host_set_syncmode(xnand, nand_sync_timing, 1);
+
+	return 0;
+}
+/******************************************************************************/
+
 static int hifmc100_xnand_probe_device(struct platform_device *pdev,
 				       struct hifmc_xnand *xnand)
 {
 	int ret;
+	int devid = xnand->id[1];
 	struct mtd_info *mtd = xnand->mtd;
 	struct nand_chip *chip = xnand->chip;
 	struct nand_ecc_ctrl *ecc = &chip->ecc;
 	struct nand_flash_dev *nand_id_table;
+	struct nand_flash_dev *nand_dev;
 
 	chip->options = NAND_SKIP_BBTSCAN | NAND_NO_SUBPAGE_WRITE;
 	chip->cmdfunc = hifmc100_xnand_cmdfunc;
@@ -1615,10 +1749,26 @@ static int hifmc100_xnand_probe_device(struct platform_device *pdev,
 	chip->read_buf = hifmc100_xnand_read_buf;
 	chip->write_buf = hifmc100_xnand_write_buf;
 
-	if (xnand->ifmode == HIFMC_IFMODE_NAND)
+	if (xnand->ifmode == HIFMC_IFMODE_NAND) {
+		hifmc100_xnand_set_syncmode(xnand);
 		nand_id_table = nand_flash_ids_hisi;
-	else
+	} else
 		nand_id_table = spinand_flash_ids_hisi;
+
+	for (nand_dev = nand_id_table; nand_dev->name; nand_dev++) {
+		if (nand_dev->id_len) {
+			if (memcmp(xnand->id, nand_dev->id, nand_dev->id_len))
+				continue;
+		} else {
+			if (nand_dev->ids.dev_id != devid)
+				continue;
+		}
+
+		break;
+	}
+
+	if (!nand_dev->name)
+		return -ENODEV;
 
 	ret = nand_scan_ident(mtd, HIFMC100_OP_CFG_NUM_CS, nand_id_table);
 	if (ret)
@@ -1847,6 +1997,20 @@ static void hifmc100_spinand_resume(struct hifmc_xnand *xnand)
 		xnand->spinand_drv->chip_prepare(xnand->regop);
 	}
 
+	writel(hifmc->fmc_crg_value, hifmc->fmc_crg_addr);
+	mutex_unlock(&hifmc->lock);
+}
+/******************************************************************************/
+
+static void hifmc100_nand_suspend(struct hifmc_xnand *xnand)
+{
+	struct hifmc_host *hifmc = xnand->host;
+
+	mutex_lock(&hifmc->lock);
+
+	/* controler disable sync mode. */
+	hifmc100_host_set_syncmode(xnand, NULL, 0);
+
 	mutex_unlock(&hifmc->lock);
 }
 /******************************************************************************/
@@ -1872,6 +2036,7 @@ static void hifmc100_nand_resume(struct hifmc_xnand *xnand)
 
 	for (nrchip = 0; nrchip < chip->numchips; nrchip++) {
 		chip->select_chip(xnand->mtd, nrchip);
+		hifmc100_xnand_set_syncmode(xnand);
 		xnand->cmd_reset(xnand);
 	}
 
@@ -1924,6 +2089,7 @@ static void hifmc100_nand_setup(struct hifmc_xnand *xnand)
 	xnand->cmd_erase = hifmc100_nand_cmd_erase;
 
 	xnand->resume = hifmc100_nand_resume;
+	xnand->suspend = hifmc100_nand_suspend;
 
 	xnand->clk_rate = (ulong)(-1); /* max clock do read id, reset */
 }
@@ -1982,7 +2148,7 @@ int hifmc100_xnand_probe(struct platform_device *pdev, struct hifmc_host *host,
 	hifmc100_xnand_select_chip(xnand->mtd, 0);
 	xnand->cmd_reset(xnand);
 	xnand->cmd_readid(xnand);
-	if (!xnand->id[0])
+	if (!xnand->id[0] || (xnand->id[0] == 0xff) || (xnand->id[0] == xnand->id[1]))
 		goto fail;
 
 	xnand->ecc_strength = 
@@ -2036,10 +2202,10 @@ int hifmc100_xnand_probe(struct platform_device *pdev, struct hifmc_host *host,
 
 	strncpy(regop_intf->name, xnand->name, sizeof(regop_intf->name) - 1);
 
-	regop_intf->sz_buf = host->sz_iobase;
-	regop_intf->args = xnand;
-	regop_intf->regop = xnand->regop;
-	regop_intf->open = hifmc100_xnand_regop_open;
+	regop_intf->sz_buf  = host->sz_iobase;
+	regop_intf->args    = xnand;
+	regop_intf->regop   = xnand->regop;
+	regop_intf->open    = hifmc100_xnand_regop_open;
 	regop_intf->release = hifmc100_xnand_regop_release;
 	regop_intf_create(regop_intf);
 

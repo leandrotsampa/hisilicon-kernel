@@ -41,36 +41,59 @@
 		bootargs = "rw";
 	};
 
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
 	cpus {
-		cluster0: cluster0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 
 			/* cooling options */
 			#cooling-cells = <2>; /* min followed by max */
 
-			cpu@0 {
+			cpu-map {
+				cluster0: cluster0 {
+					core0 {
+						cpu = <&CPU0>;
+					};
+					core1 {
+						cpu = <&CPU1>;
+					};
+					core2 {
+						cpu = <&CPU2>;
+					};
+					core3 {
+						cpu = <&CPU3>;
+					};
+				};
+			};
+
+			CPU0: cpu@0 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <0>;
+				enable-method = "psci";
 			};
-			cpu@1 {
+			CPU1: cpu@1 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <1>;
+				enable-method = "psci";
 			};
-			cpu@2 {
+			CPU2: cpu@2 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <2>;
+				enable-method = "psci";
 			};
-			cpu@3 {
+			CPU3: cpu@3 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <3>;
+				enable-method = "psci";
 			};
 
-		}; /* cluster0 */
 	}; /* cpus */
 
 	gic: interrupt-controller {
@@ -101,6 +124,13 @@
 	trusted_core {
 		compatible = "trusted_core";
 		interrupts = <0 64 4>;
+	};
+
+	firmware {
+		optee {
+		compatible = "linaro,optee-tz";
+		method = "smc";
+		};
 	};
 
 	soc {
@@ -438,6 +468,14 @@
 				clocks = <&hisilicon_clock HIIR_CLK>;
 				linux,rc-map-name = "rc-hisi";
 			};
+
+			armv7-pmu {
+				compatible = "arm,cortex-a17-pmu";
+				interrupts = <0 8 4>,
+					     <0 9 4>,
+					     <0 10 4>,
+					     <0 11 4>;
+			};
 #if 0
 			arm-timer {
 				compatible = "arm,armv7-timer";
@@ -508,7 +546,8 @@
 			ldo-addr  = <0xf8a2011c>;
 			ldo-shift = <0>;
 
-			caps = <0x80000007>;
+			caps = <0x8000000f>;
+			caps2 = <0x4000>;
 			max-frequency = <50000000>;
 			status = "okay";
 		};
@@ -521,7 +560,8 @@
 			clocks = <&hisilicon_clock PERI_CRG163_SDIO2>;
 			clock-names = "clk";
 
-			caps = <0x80000007>;
+			caps = <0x8000000f>;
+			caps2 = <0x4000>;
 			max-frequency = <50000000>;
 			status = "okay";
 		};
@@ -771,11 +811,11 @@
 						 <0 141 4>, /* "gpu_mmu"       */
 						 <0 142 4>, /* "gpu_job"       */
 						 <0 143 4>, /* "gpu"           */
+						 <0 146 4>, /* "SecInvokeirq"  */
 						 <0 147 4>, /* "hdmi_cec"      */
 						 <0 148 4>, /* "mmu_vdh_safe"  */
 						 <0 149 4>, /* "mmu_vdh"       */
-						 <0 150 4>, /* "pastc"         */
-						 <0 158 4>; /* "SecInvokeirq"  */
+						 <0 150 4>; /* "pastc"         */
 			interrupt-names = /* 36  */ "sci0",
 							  /* 47  */ "ir_std",
 							  /* 47  */ "ir_s2",
@@ -803,11 +843,11 @@
 							  /* 141 */ "gpu_mmu",
 							  /* 142 */ "gpu_job",
 							  /* 143 */ "gpu",
+							  /* 146 */ "SecInvokeirq",
 							  /* 147 */ "hdmi_cec",
 							  /* 148 */ "mmu_vdh_safe",
 							  /* 149 */ "mmu_vdh",
-							  /* 150 */ "pastc",
-							  /* 158 */ "SecInvokeirq";
+							  /* 150 */ "pastc";
 		};
 	};
 };

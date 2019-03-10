@@ -81,6 +81,70 @@ static atomic_t dev_open_cnt = {
 };
 /******************************************************************************/
 
+static void inno_phy_config_2p(struct hiclk_hw *clk)
+{
+	/* config PHY clock */
+	writel(0xA00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xE00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xA00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	mdelay(10);
+
+	/* 0x02[6:4] 3'b100:412.5mV phy0/1 */
+	writel(0xa0024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe0024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa0024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	writel(0xa1024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe1024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa1024c, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	/* driver slew rate tunning 0x1d[3:1] phy0/1 */
+	writel(0xa01d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe01d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa01d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	writel(0xa11d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe11d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa11d1e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	/* disconnects 0x04[7:4] 4'b0001:625mV phy0/1 */
+	writel(0xa00417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe00417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa00417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+	writel(0xa10417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe10417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa10417, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	/* EOP pre-emphasis off */
+	writel(0xa00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	writel(0xa10018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe10018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa10018, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	/* the second handshake config phy0/1 */
+	writel(0xa01f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe01f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa01f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+
+	writel(0xa11f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xe11f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	writel(0xa11f0e, clk->peri_ctrl_base + PERI_CTRL_USB1);
+	udelay(100);
+}
+/******************************************************************************/
+
 static int hiclk_enable_usb2(struct clk_hw *hw)
 {
 	u32 reg;
@@ -144,37 +208,7 @@ static int hiclk_enable_usb2(struct clk_hw *hw)
 		writel(reg, clk->peri_crg_base + PERI_CRG47_USB2PHY);
 		udelay(300);
 
-		/* config PHY clock */
-		writel(0xA00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xE00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xA00604, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		mdelay(10);
-
-		/* Icomp=212.5mV */
-		writel(0xa00abb, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xe00abb, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xa00abb, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		udelay(1000);
-		/* Rcomp=212.5mV */
-		writel(0xa00606, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xe00606, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xa00606, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		udelay(1000);
-		writel(0xa00592, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xe00592, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xa00592, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		/* EOP pre-emphasis off */
-		writel(0xa00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xe00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xa00018, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		udelay(1000);
-		writel(0xA1001c, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xE1001c, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xA1001c, clk->peri_ctrl_base + PERI_CTRL_USB1);
-
-		writel(0xA10904, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xE10904, clk->peri_ctrl_base + PERI_CTRL_USB1);
-		writel(0xA10904, clk->peri_ctrl_base + PERI_CTRL_USB1);
+		inno_phy_config_2p(clk);
 
 		/* cancel port reset */
 		reg = readl(clk->peri_crg_base + PERI_CRG47_USB2PHY);

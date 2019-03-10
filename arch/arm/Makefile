@@ -226,6 +226,7 @@ machine-$(CONFIG_ARCH_S40)		+= s40
 machine-$(CONFIG_ARCH_HI3798MX)		+= hi3798mx
 machine-$(CONFIG_ARCH_HI3798CV2X)	+= hi3798cv2x
 machine-$(CONFIG_ARCH_HI3798MV2X)	+= hi3798mv2x
+machine-$(CONFIG_ARCH_HI3798MV310) 	+= hi3798mv310
 machine-$(CONFIG_ARCH_HI3796MV2X)	+= hi3796mv2x
 machine-$(CONFIG_ARCH_HI3716MV420N)	+= hi3716mv420n
 

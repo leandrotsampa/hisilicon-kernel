@@ -274,8 +274,6 @@ err2:
 void ion_buffer_destroy(struct ion_buffer *buffer)
 {
 	if (buffer->iommu_map) {
-		pr_info("%s: iommu map not released, do unmap now!\n",
-								__func__);
 		buffer->heap->ops->unmap_iommu(buffer->iommu_map);
 		kfree(buffer->iommu_map);
 		buffer->iommu_map = NULL;
@@ -484,12 +482,16 @@ static int ion_handle_add(struct ion_client *client, struct ion_handle *handle)
 		parent = *p;
 		entry = rb_entry(parent, struct ion_handle, node);
 
-		if (handle->buffer < entry->buffer)
+		if (handle->buffer < entry->buffer) {
+			isb();
 			p = &(*p)->rb_left;
-		else if (handle->buffer > entry->buffer)
+		} else if (handle->buffer > entry->buffer) {
+			isb();
 			p = &(*p)->rb_right;
-		else
+		} else {
+			isb();
 			WARN(1, "%s: buffer already found.", __func__);
+		}
 	}
 
 	rb_link_node(&handle->node, parent, p);
@@ -959,6 +961,44 @@ int ion_unmap_sec_iommu(struct ion_client *client, struct ion_handle *handle)
 
 	return 0;
 }
+
+int ion_iommu_map_ref(struct ion_client *client, struct ion_handle *handle,
+							unsigned int *ref)
+{
+	struct ion_iommu_map *iommu_map;
+	struct ion_buffer *buffer;
+
+	mutex_lock(&client->lock);
+
+	/* check if the handle belongs to client. */
+	if (!ion_handle_validate(client, handle)) {
+		pr_err("%s: invalid handle passed to iommu unmap.\n", __func__);
+		mutex_unlock(&client->lock);
+		return -EINVAL;
+	}
+
+	buffer = handle->buffer;
+
+	mutex_lock(&buffer->lock);
+
+	iommu_map = buffer->iommu_map;
+	if (!iommu_map) {
+		/*
+		 * There is no iommu map or iommu map is del
+		 */
+		*ref = 0;
+		goto out;
+	}
+
+	*ref = atomic_read(&iommu_map->ref.refcount);
+
+out:
+	mutex_unlock(&buffer->lock);
+	mutex_unlock(&client->lock);
+
+	return 0;
+}
+EXPORT_SYMBOL(ion_iommu_map_ref);
 
 static int ion_debug_client_show(struct seq_file *s, void *unused)
 {
@@ -1487,7 +1527,9 @@ EXPORT_SYMBOL(ion_import_dma_buf);
 static int ion_sync_for_device(struct ion_client *client, int fd)
 {
 	struct dma_buf *dmabuf;
-	struct ion_buffer *buffer;
+	struct ion_buffer *buffer = NULL;
+	struct ion_heap *heap = NULL;
+	struct device *dev = NULL;
 
 	dmabuf = dma_buf_get(fd);
 	if (IS_ERR(dmabuf))
@@ -1501,13 +1543,17 @@ static int ion_sync_for_device(struct ion_client *client, int fd)
 		return -EINVAL;
 	}
 	buffer = dmabuf->priv;
-
+	dev = buffer->heap->pdev;
+	if (!dev) {
+		printk("dev is null, %s %d\n", __func__, __LINE__);
+		return -EINVAL;
+	}
 	/* clean cache*/
-	dma_sync_sg_for_device(NULL, buffer->sg_table->sgl,
+	dma_sync_sg_for_device(dev, buffer->sg_table->sgl,
 			       buffer->sg_table->nents, DMA_BIDIRECTIONAL);
 #ifdef CONFIG_ION_HISI
 	/* invalidate cache*/
-	dma_sync_sg_for_cpu(NULL, buffer->sg_table->sgl,
+	dma_sync_sg_for_cpu(dev, buffer->sg_table->sgl,
 				buffer->sg_table->nents, DMA_FROM_DEVICE);
 #endif
 	dma_buf_put(dmabuf);
@@ -1542,6 +1588,7 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		struct ion_custom_data custom;
 		struct ion_phys_data phys;
 		struct ion_map_iommu_data map_iommu;
+		struct ion_ref ref;
 	} data;
 
 	dir = ion_ioctl_dir(cmd);
@@ -1707,6 +1754,22 @@ static long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		data.map_iommu.format.iova_start = 0;
 		data.map_iommu.format.iova_size = 0;
 
+		ion_handle_put(handle);
+		break;
+	}
+	case ION_IOC_IOMMU_REF_CNT:
+	{
+		struct ion_handle *handle;
+
+		handle = ion_handle_get_by_id(client, data.ref.handle);
+		if (IS_ERR(handle)) {
+			pr_err("%s: map iommu but handle invalid!\n", __func__);
+			return PTR_ERR(handle);
+		}
+		ret = ion_iommu_map_ref(client, handle, &data.ref.ref);
+		if (ret) {
+			pr_err("%s: get iommu map ref failed!\n", __func__);
+		}
 		ion_handle_put(handle);
 		break;
 	}

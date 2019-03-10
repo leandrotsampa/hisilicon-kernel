@@ -87,16 +87,6 @@ static void __init hi3798mv2x_map_io(void)
 static void __init hi3798mv2x_reserve(void)
 {
 	initfile_reserve_memory();
-
-#ifdef CONFIG_SUPPORT_DSP_RUN_MEM
-	/* Reserve memory for DSP */
-	BUG_ON(memblock_reserve(CONFIG_DSP_RUN_MEM_ADDR,
-		CONFIG_DSP_RUN_MEM_SIZE));
-
-	printk(KERN_NOTICE "DSP run memory space at 0x%08X, size: 0x%08x Bytes.\n",
-		CONFIG_DSP_RUN_MEM_ADDR,
-		CONFIG_DSP_RUN_MEM_SIZE);
-#endif
 }
 /******************************************************************************/
 

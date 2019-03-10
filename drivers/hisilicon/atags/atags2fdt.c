@@ -28,9 +28,9 @@
 
 #include "setup.h"
 
-#define FDT_SIZE           0x4000
-static char newfdt[FDT_SIZE << 1]; /* total 32K */
-static char  cmd_line[COMMAND_LINE_SIZE+3]; 
+#define FDT_SIZE           0x8000
+static char newfdt[FDT_SIZE << 1]; /* total 64K */
+static char  cmd_line[COMMAND_LINE_SIZE+3];
 char no_usb3_0 = 0;
 char no_usb3_1 = 0;
 
@@ -271,7 +271,7 @@ static int __init deal_atags(void *atag_list, void *fdt,
 	 * address and size for each bank */
 	uint32_t mem_reg_property[2 * 2 * 16];
 	int memcount = 0;
-	int memsize;
+	int memsize, node;
 
 	/* make sure we've got an aligned pointer */
 	if ((ulong)atag_list & 0x3)
@@ -335,6 +335,7 @@ static int __init deal_atags(void *atag_list, void *fdt,
 		} else
 			parse(atag, fdt);
 	}
+
 #ifdef CONFIG_BLK_DEV_RAM
 	/* initmrd reserve. */
 	initmrd_reserve_memory();
@@ -342,6 +343,30 @@ static int __init deal_atags(void *atag_list, void *fdt,
 
 	pdm_reserve_mem();
 	pcie_reserve_memory();
+#ifdef CONFIG_TEE_RESERVED_MEM
+	BUG_ON(fdt_add_memory_reserve((u64)CONFIG_TEE_RESERVED_MEM_ADDR,
+			(u64)CONFIG_TEE_RESERVED_MEM_SIZE));
+#else
+#ifdef CONFIG_SUPPORT_ATF_MEM
+	BUG_ON(fdt_add_memory_reserve((u64)CONFIG_ATF_MEM_ADDR,
+			(u64)CONFIG_ATF_MEM_SIZE));
+#endif
+
+#ifdef CONFIG_SUPPORT_SMCU_MEM
+	BUG_ON(fdt_add_memory_reserve((u64)CONFIG_SMCU_MEM_ADDR,
+			(u64)CONFIG_SMCU_MEM_SIZE));
+#endif
+#endif
+
+#ifdef CONFIG_SUPPORT_DSP_RUN_MEM
+        /* Reserve memory for DSP */
+        BUG_ON(fdt_add_memory_reserve((u64)CONFIG_DSP_RUN_MEM_ADDR,
+                (u64)CONFIG_DSP_RUN_MEM_SIZE));
+
+        printk(KERN_NOTICE "DSP run memory space at 0x%08X, size: 0x%08x Bytes.\n",
+                CONFIG_DSP_RUN_MEM_ADDR,
+                CONFIG_DSP_RUN_MEM_SIZE);
+#endif
 
 	if (memcount) {
 		setprop(fdt, "/memory", "reg", mem_reg_property,

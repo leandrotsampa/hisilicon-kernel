@@ -86,7 +86,39 @@ int usb_gadget_ep_match_desc(struct usb_gadget *gadget,
 		struct usb_ep *ep, struct usb_endpoint_descriptor *desc,
 		struct usb_ss_ep_comp_descriptor *ep_comp)
 {
-	/* do nothing ,only make */
+	u8		type;
+	const char	*tmp;
+
+	/* endpoint already claimed? */
+	if (NULL != ep->driver_data)
+		return 0;
+
+	/* only support ep0 for portable CONTROL traffic */
+	type = usb_endpoint_type(desc);
+	if (USB_ENDPOINT_XFER_CONTROL == type)
+		return 0;
+
+	/* some other naming convention */
+	if ('e' != ep->name[0])
+		return 0;
+
+	/* type-restriction:  "-iso", "-bulk", or "-int".
+	 * direction-restriction:  "in", "out".
+	 */
+	tmp = ep->name + strlen (ep->name);
+
+	/* direction-restriction:  "..in-..", "out-.." */
+	tmp--;
+	if (!isdigit (*tmp)) {
+		if (desc->bEndpointAddress & USB_DIR_IN) {
+			if ('n' != *tmp)
+				return 0;
+		} else {
+			if ('t' != *tmp)
+				return 0;
+		}
+	}
+
 	return 1;
 }
 EXPORT_SYMBOL_GPL(usb_gadget_ep_match_desc);
@@ -1246,6 +1278,7 @@ static struct gadget_wrapper *alloc_wrapper(
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
 	d->gadget.is_dualspeed = dwc_otg_pcd_is_dualspeed(otg_dev->pcd);
 #endif
+
 	d->gadget.is_otg = dwc_otg_pcd_is_otg(otg_dev->pcd);
 
 	d->driver = 0;

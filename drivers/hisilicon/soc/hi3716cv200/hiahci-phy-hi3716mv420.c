@@ -211,7 +211,17 @@ static struct phy_ops hiahci_phy_ops = {
 	.owner = THIS_MODULE,
 };
 /******************************************************************************/
+static struct phy *phy_hisi_sata_phy_xlate(struct device *dev,
+					     struct of_phandle_args *args)
+{
+	struct phy *phy = dev_get_drvdata(dev);
 
+	if (NULL == phy || IS_ERR(phy))
+		return ERR_PTR(-ENODEV);
+
+	return phy;
+}
+/******************************************************************************/
 static int hiahci_phy_probe(struct platform_device *pdev)
 {
 	struct phy *phy;
@@ -244,8 +254,9 @@ static int hiahci_phy_probe(struct platform_device *pdev)
 	}
 
 	phy_set_drvdata(phy, priv);
+	dev_set_drvdata(&pdev->dev, phy);
 	phy_provider = devm_of_phy_provider_register(&pdev->dev,
-		of_phy_simple_xlate);
+		phy_hisi_sata_phy_xlate);
 	if (IS_ERR_OR_NULL(phy_provider)) {
 		pr_err("failed to register phy provider, %ld\n", PTR_ERR(phy_provider));
 		return PTR_ERR(phy_provider);

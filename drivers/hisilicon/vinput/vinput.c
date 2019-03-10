@@ -98,6 +98,10 @@ void vinput_multi_tc_event_report(void *data)
 {
 	struct multi_touch_info *info = NULL;
 	int i = 0;
+
+	if (NULL == data) {
+		return;
+	}
 	info = (struct multi_touch_info *)data;
 
 	if (info->fingernr > 0) {
@@ -186,6 +190,9 @@ void vinput_tc_event_report(int *data)
 {
 	int x = 0, y = 0, pres = 0;
 
+	if(NULL == data || NULL == vinput_tc_dev) {
+		return;
+	}
 	x = data[0];
 	y = data[1];
 	pres = data[2];
@@ -283,6 +290,9 @@ static int __init vinput_mouse_init(void)
 
 void vinput_mouse_event_report(int *data)
 {
+	if(NULL == data) {
+		return;
+	}
 	input_report_key(vinput_mouse_dev, BTN_LEFT, data[0] & 0x01);
 	input_report_key(vinput_mouse_dev, BTN_RIGHT, data[0] & 0x02);
 	input_report_key(vinput_mouse_dev, BTN_MIDDLE, data[0] & 0x04);
@@ -320,6 +330,8 @@ static long vinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case IOCTL_MOUSE_STATUS:
 		if (down_interruptible(&input_mutex))
 			return -ERESTARTSYS;
+		if (NULL == arg)
+			return -ERESTARTSYS;
 		ret = copy_from_user(data, (int *)arg, sizeof(data));
 		vinput_mouse_event_report(data);
 		up(&input_mutex);
@@ -328,7 +340,8 @@ static long vinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case IOCTK_KBD_STATUS:
 		if (down_interruptible(&input_mutex))
 			return -ERESTARTSYS;
-
+		if (NULL == arg)
+			return -ERESTARTSYS;
 		ret = copy_from_user(data, (int *)arg, sizeof(data));
 		vinput_kbd_report(data[0], data[1]);
 		up(&input_mutex);
@@ -337,6 +350,8 @@ static long vinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	case IOCTK_TC_STATUS:
 		if (down_interruptible(&input_mutex))
 			return -ERESTARTSYS;
+		if (NULL == arg)
+			return -ERESTARTSYS;
 		ret = copy_from_user(data, (int *)arg, sizeof(data));
 		vinput_tc_event_report(data);
 		up(&input_mutex);
@@ -344,6 +359,8 @@ static long vinput_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	case IOCTK_MUTITC_STATUS:
 		if (down_interruptible(&input_mutex))
+			return -ERESTARTSYS;
+		if (NULL == arg)
 			return -ERESTARTSYS;
 		ret = copy_from_user(&info, (struct multi_touch_info *)arg,
 				     sizeof(info));

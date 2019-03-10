@@ -41,9 +41,6 @@ struct stv0288_config {
 	int min_delay_ms;
 
 	int (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);
-
-	/* Hook for Lock LED */
-	void (*set_lock_led)(struct dvb_frontend *fe, int offon);
 };
 
 #if IS_REACHABLE(CONFIG_DVB_STV0288)

@@ -35,25 +35,5 @@ config MMZ_PARAM
 	  This is the parameter of mmz memory manager, which now is for CMA 
 	  and ION memory manager.
 
-menuconfig SUPPORT_DSP_RUN_MEM
-	bool "Support DSP run memory"
-	default y
-	help 
-	  Support DSP run memory
-
-config DSP_RUN_MEM_ADDR
-	hex "DSP run memory address"
-	depends on SUPPORT_DSP_RUN_MEM
-	default "0x2000000" 
-	help
-	  The start address of DSP run memory.
-
-config DSP_RUN_MEM_SIZE
-	hex "DSP run memory size"
-	depends on SUPPORT_DSP_RUN_MEM
-	default "0x800000"
-	help
-	  The size of DSP run memory.
-
 endmenu
 endif

@@ -24,7 +24,7 @@ static int hinfc610_micron_set_rr_reg(struct hinfc_host *host, int rr)
 
 	host->enable_ecc_randomizer(host, DISABLE, DISABLE);
 
-	hinfc_write(host, 1, HINFC610_DATA_NUM);
+	hinfc_write(host, 4, HINFC610_DATA_NUM);
 
 	writel(rr, host->chip->IO_ADDR_W);
 	hinfc_write(host, MICRON_RR_ADDR, HINFC610_ADDRL);
@@ -51,7 +51,7 @@ static int hinfc610_micron_set_rr_reg(struct hinfc_host *host, int rr)
 static int hinfc610_micron_get_rr_param(struct hinfc_host *host)
 {
 #define MICRON_GET_RR          0xEE
-	hinfc_write(host, 1, HINFC610_DATA_NUM);
+	hinfc_write(host, 4, HINFC610_DATA_NUM);
 
 	hinfc_write(host, MICRON_RR_ADDR, HINFC610_ADDRL);
 	hinfc_write(host, MICRON_GET_RR, HINFC610_CMD);

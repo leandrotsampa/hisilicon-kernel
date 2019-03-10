@@ -174,7 +174,7 @@ enum TEEC_LoginMethod {
 #endif
 /**
  * History: \n
- * 2013-4-12 h00211444: Create this file\n
+ * 2013-4-12 sdk: Create this file\n
  *
  * vi: set expandtab ts=4 sw=4 tw=80:
 */

@@ -19,6 +19,7 @@
 /* add for CMA malloc framebuffer */
 #include <linux/of.h>
 #include <linux/of_fdt.h>
+#include <linux/fs.h>
 
 #include "tee_client_constants.h"	/*lint !e451 */
 #include "agent.h"
@@ -29,10 +30,13 @@
 #include "hisi_fb.h"
 #include "libhwsecurec/securec.h"
 #include "tc_ns_log.h"
+#include "mailbox_mempool.h"
+
 
 static void tui_poweroff_work_func(struct work_struct *work);
 static ssize_t tui_status_show(struct kobject *kobj,
 			       struct kobj_attribute *attr, char *buf);
+static void tui_msg_del(char *name);
 static DECLARE_DELAYED_WORK(tui_poweroff_work, tui_poweroff_work_func);
 
 static struct kobject *tui_kobj;
@@ -46,6 +50,7 @@ static struct attribute *attrs[] = {
 static struct attribute_group tui_attr_group = {
 	.attrs = attrs,
 };
+
 static struct task_struct *tui_task;
 static struct tui_ctl_shm *tui_ctl;
 
@@ -61,34 +66,37 @@ static unsigned int tui_attached_device;
 
 static wait_queue_head_t tui_state_wq;
 static int tui_state_flag;
+static int ttf_load_flag;
 
 static wait_queue_head_t tui_msg_wq;
-static wait_queue_head_t wait_event_get_keyCode;
-static int get_keyCode_flag;
 static int tui_msg_flag;
-struct hisi_fb_data_type *dss_fd;
+static struct hisi_fb_data_type *dss_fd;
 
 #define TUI_DSS_NAME "DSS"
 #define TUI_GPIO_NAME "fff0d000.gpio"
 #define TUI_TP_NAME "tp"
 #define TUI_FP_NAME "fp"
 
+#define TTF_BUFF_SIZE		(4 * 1024 * 1024)
+#define TTF_FILE_PATH	"/vendor/etc/DroidSansFallbackTui.ttf"
 #define DRIVER_NUM 4
 /*do fp init(disable fp irq) before gpio init in order not response
 * sensor in normal world(when gpio secure status is set)*/
 static char *init_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_TP_NAME,
-				 TUI_FP_NAME, TUI_GPIO_NAME
-				};
+					TUI_FP_NAME, TUI_GPIO_NAME
+				       };
 static char *deinit_driver[DRIVER_NUM] = {TUI_DSS_NAME, TUI_GPIO_NAME,
-				   TUI_FP_NAME, TUI_TP_NAME
-				  };
+					  TUI_FP_NAME, TUI_TP_NAME
+					 };
 #define TIME_OUT_FOWER_ON 100
 
+#define DOWN_VAL 22  //4M
+#define UP_VAL       27  //64M
 #define COLOR_TYPE	4  /*ARGB*/
 #define BUFFER_NUM 2
 
 /*tui-need-memory is calculated dynamically according to the screen resolution*/
-struct tui_mem{
+struct tui_mem {
 	unsigned int tui_addr_size;
 	unsigned int tui_addr;
 	unsigned int tui_addr_h;
@@ -96,10 +104,18 @@ struct tui_mem{
 	char *tui_virt;
 };
 
+struct ttf_mem {
+	unsigned int ttf_addr_h;
+	unsigned int ttf_addr_l;
+	char *ttf_buff_virt;
+	unsigned int ttf_file_size;
+};
+
 static struct tui_mem g_tui_mem;
+static struct ttf_mem g_ttf_mem;
 
 extern void create_mapping_late(phys_addr_t phys, unsigned long virt,
-		                                phys_addr_t size, pgprot_t prot);
+				phys_addr_t size, pgprot_t prot);
 
 static int tui_mem_alloc(struct device *class_dev)
 {
@@ -120,23 +136,23 @@ static int tui_mem_alloc(struct device *class_dev)
 	}
 
 	ret = of_property_read_string(node, "status", &status);
-	if(ret){
+	if (ret) {
 		tloge("get status error\n");
 		return -1;
 	}
 
-	if (status && strncmp(status, "ok",strlen("ok")) != 0){
+	if (status && strncmp(status, "ok", strlen("ok")) != 0) {
 		tloge("status is error\n");
 		return -1;
 	}
 
-	if(of_property_read_u64(node, "size", &len)) {
+	if (of_property_read_u64(node, "size", &len)) {
 		tloge("get tui-mem size error");
 		return -1;
 	}
 
 	buff_virt = (void *)dma_alloc_coherent(class_dev, len,
-		&buff_phy, GFP_KERNEL);
+					       &buff_phy, GFP_KERNEL);
 	if (NULL == buff_virt) {
 		tloge("tui dma_alloc_coherent failed\n");
 		return -1;
@@ -145,39 +161,174 @@ static int tui_mem_alloc(struct device *class_dev)
 	create_mapping_late((phys_addr_t)buff_phy,
 			(unsigned long)phys_to_virt(buff_phy), (phys_addr_t)len,
 			__pgprot(PROT_DEVICE_nGnRE));
+
 	g_tui_mem.tui_addr = buff_phy;
 	g_tui_mem.tui_addr_h = buff_phy >> 32;
 	g_tui_mem.tui_virt = buff_virt;
 	g_tui_mem.tui_addr_size = len;
 	g_tui_mem.tui_dev = class_dev;
-	tloge("tui_addr=0x%x h_addr=0x%x\n", g_tui_mem.tui_addr, g_tui_mem.tui_addr_h);
+
+	tloge("malloc tui memory\n");
 	return 0;
 }
 
 static void tui_mem_free(void)
 {
+	phys_addr_t buff_phy_addr;
 	if (!g_tui_mem.tui_addr)
 		return;
-	create_mapping_late((phys_addr_t)g_tui_mem.tui_addr,
-			(unsigned long)phys_to_virt(g_tui_mem.tui_addr),
-			(phys_addr_t)g_tui_mem.tui_addr_size, __pgprot(PAGE_KERNEL));
+	buff_phy_addr = (phys_addr_t)g_tui_mem.tui_addr_h << 32 | g_tui_mem.tui_addr; /*lint !e63 */
+	create_mapping_late(buff_phy_addr,
+			    (unsigned long)phys_to_virt(buff_phy_addr), /*lint !e571 */
+			    (phys_addr_t)g_tui_mem.tui_addr_size, __pgprot(PAGE_KERNEL));
 	dma_free_coherent(g_tui_mem.tui_dev,
-		g_tui_mem.tui_addr_size, g_tui_mem.tui_virt, g_tui_mem.tui_addr);
+			  g_tui_mem.tui_addr_size, g_tui_mem.tui_virt, buff_phy_addr);
+}
+
+static int copy_ttf_file(void)
+{
+	struct file *filep;
+	mm_segment_t old_fs;
+	loff_t pos = 0;
+	unsigned int count;
+	int ret = 0;
+
+	filep = filp_open(TTF_FILE_PATH, O_RDONLY, 0);
+	if(IS_ERR(filep) || !filep) {
+		tloge("Failed to open ttf file.\n");
+		return -1;
+	}
+
+	old_fs = get_fs();
+	set_fs(KERNEL_DS); /*lint !e501 */
+
+	count = (unsigned int)vfs_read(filep, (char __user *)g_ttf_mem.ttf_buff_virt,
+		(size_t)g_ttf_mem.ttf_file_size, &pos);
+	if (g_ttf_mem.ttf_file_size != count) {
+		tloge("read ttf file failed.\n");
+		ret = -1;
+	}
+
+	set_fs(old_fs);
+	filp_close(filep, 0);
+
+	return ret;
+}
+
+
+int TC_NS_register_ttf_mem(void)
+{
+	TC_NS_SMC_CMD smc_cmd = {0};
+	int ret;
+	struct mb_cmd_pack *mb_pack;
+
+	mb_pack = mailbox_alloc_cmd_pack();
+	if (!mb_pack) {
+		tloge("alloc cmd pack failed\n");
+		return -ENOMEM;
+	}
+
+	mb_pack->uuid[0] = 1;
+	smc_cmd.uuid_phys = (unsigned int)virt_to_phys(mb_pack->uuid);
+	smc_cmd.uuid_h_phys = virt_to_phys(mb_pack->uuid) >> 32; /*lint !e572*/
+	smc_cmd.cmd_id = GLOBAL_CMD_ID_REGISTER_TTF_MEM;
+
+	mb_pack->operation.paramTypes = TEE_PARAM_TYPE_VALUE_INPUT | TEE_PARAM_TYPE_VALUE_INPUT << 4;
+	mb_pack->operation.params[0].value.a = g_ttf_mem.ttf_addr_l;
+	mb_pack->operation.params[0].value.b = g_ttf_mem.ttf_addr_h;
+	mb_pack->operation.params[1].value.a = g_ttf_mem.ttf_file_size;
+
+	smc_cmd.operation_phys = (unsigned int)virt_to_phys(&mb_pack->operation);
+	smc_cmd.operation_h_phys = virt_to_phys(&mb_pack->operation) >> 32; /*lint !e572*/
+
+	ret = (int)TC_NS_SMC(&smc_cmd, 0);
+	if (ret) {
+	    tloge("Send ttf mem info failed. 0x%x\n",ret);
+	}
+	mailbox_free(mb_pack);
+
+	return ret;
+}
+
+
+unsigned int get_tui_size(unsigned int num)
+{
+	unsigned int i;
+	for (i = DOWN_VAL; i < UP_VAL; i++)
+		if (!(num >> i))
+			break;
+	return (unsigned int)1 << i; /*lint !e701 */
+}
+
+
+int load_ttf_file(unsigned int ttf_file_size)
+{
+	int ret = 0;
+	phys_addr_t buff_phy;
+	phys_addr_t ttf_addr_phy;
+	unsigned int ttf_buff_offset;
+
+	if (ttf_load_flag) {
+	    tlogi("ttf file has been loaded, no need load it again!\n");
+	    return ret;
+	}
+
+	if (0 == g_tui_mem.tui_addr || !dss_fd) {
+		tlogw("not alloc mem for tui.\n");
+		return ret;
+	}
+
+	if (ttf_file_size > TTF_BUFF_SIZE || 0 == ttf_file_size) {
+		tloge("The size of ttf file is too large or zero!!!\n");
+		return -1;
+	}
+
+	ttf_buff_offset = get_tui_size(dss_fd->panel_info.xres *
+	    dss_fd->panel_info.yres*COLOR_TYPE*BUFFER_NUM);
+
+	if (g_tui_mem.tui_addr_size < TTF_BUFF_SIZE + ttf_buff_offset) {
+		tloge("tui mem is less than fonts+framebuffer memory\n");
+		return -1;
+	}
+
+	buff_phy = (phys_addr_t)g_tui_mem.tui_addr_h << 32 | g_tui_mem.tui_addr;
+	ttf_addr_phy = buff_phy + ttf_buff_offset;
+
+	g_ttf_mem.ttf_addr_h = ttf_addr_phy >> 32;
+	g_ttf_mem.ttf_addr_l = (unsigned int)ttf_addr_phy;
+	g_ttf_mem.ttf_buff_virt = g_tui_mem.tui_virt + ttf_buff_offset;
+	g_ttf_mem.ttf_file_size = ttf_file_size;
+
+	ret = copy_ttf_file();
+	if (ret) {
+		tloge("failed to load ttf file.\n");
+		return -1;
+	}
+
+	ret = TC_NS_register_ttf_mem();
+	if(ret) {
+		tloge("send ttf mem info to secure os failed.\n");
+	}
+
+	ttf_load_flag = 1;
+	tlogi("Now load ttf_file end!\n");
+
+	return ret;
 }
 
 static unsigned int get_frame_addr(void)
 {
-	u64 num=1;
+	u64 num = 1;
 	int screen_r;
 
-	if(!dss_fd)
+	if (!dss_fd)
 		return 0;
 
 	screen_r = dss_fd->panel_info.xres *
-	    dss_fd->panel_info.yres*COLOR_TYPE*BUFFER_NUM;
-	if(g_tui_mem.tui_addr_size < (num<<fls(screen_r))){
+		   dss_fd->panel_info.yres * COLOR_TYPE * BUFFER_NUM;
+	if (g_tui_mem.tui_addr_size < (num << fls(screen_r))) {
 		tloge("tui memory is not enough size=0x%x screen=(%d*%d)\n",
-			g_tui_mem.tui_addr_size,dss_fd->panel_info.xres,dss_fd->panel_info.yres);
+		      g_tui_mem.tui_addr_size, dss_fd->panel_info.xres, dss_fd->panel_info.yres);
 		return 0;
 	} else {
 		return g_tui_mem.tui_addr;
@@ -185,7 +336,7 @@ static unsigned int get_frame_addr(void)
 }
 
 int register_tui_driver(tui_drv_init fun, const char *name,
-			void *pdata, int priority)
+			void *pdata)
 {
 	struct tui_drv_node *tui_drv, *pos;
 	int rc;
@@ -210,7 +361,7 @@ int register_tui_driver(tui_drv_init fun, const char *name,
 
 	/* name should not have been registered */
 	list_for_each_entry(pos, &tui_drv_head, list) {
-		if (!strncmp(pos->name, name, TUI_DRV_NAME_MAX-1)) {
+		if (!strncmp(pos->name, name, TUI_DRV_NAME_MAX - 1)) {
 			tloge("this drv(%s) have registered\n", name);
 			mutex_unlock(&tui_drv_lock);
 			return -EINVAL;
@@ -226,9 +377,8 @@ int register_tui_driver(tui_drv_init fun, const char *name,
 	/* Assign content for tui_drv */
 	tui_drv->init_func = fun;
 	tui_drv->pdata = pdata;
-	tui_drv->priority = priority;
 
-	rc = strncpy_s(tui_drv->name, TUI_DRV_NAME_MAX-1, name, TUI_DRV_NAME_MAX-1);
+	rc = strncpy_s(tui_drv->name, TUI_DRV_NAME_MAX - 1, name, TUI_DRV_NAME_MAX - 1);
 	if (rc != 0) {
 		tloge("strncpy_s error\n");
 		kfree(tui_drv);
@@ -247,7 +397,7 @@ int register_tui_driver(tui_drv_init fun, const char *name,
 
 void unregister_tui_driver(const char *name)
 {
-	struct tui_drv_node *pos;
+	struct tui_drv_node *pos=NULL, *tmp;
 
 	/* Return error if name is invalid */
 	if (!name) {
@@ -256,9 +406,9 @@ void unregister_tui_driver(const char *name)
 	}
 
 	mutex_lock(&tui_drv_lock);
-	list_for_each_entry(pos, &tui_drv_head, list) {
-		if (!strncmp(pos->name, name, TUI_DRV_NAME_MAX)) {
-			list_del(&pos->list);
+	list_for_each_entry_safe(pos, tmp, &tui_drv_head, list) { /*lint !e64 !e826 !e530*/
+		if (!strncmp(pos->name, name, TUI_DRV_NAME_MAX)) {/*lint !e413 */
+			list_del(&pos->list); /*lint !e413 */
 			kfree(pos);
 			break;
 		}
@@ -298,14 +448,15 @@ static int add_tui_msg(int type, int val, void *data)
 }
 /*WARNING: Too many leading tabs - consider code refactoring*/
 /* secure : 0-unsecure, 1-secure */
-static int init_tui_driver(int priority, int secure)
+static int init_tui_driver(int secure)
 {
 	struct tui_drv_node *pos;
 	char *drv_name = NULL;
 	char **drv_array = deinit_driver;
 	int count = 0;
 	int i = 0;
-
+	if (!dss_fd)
+		return -1;
 	if (secure)
 		drv_array = init_driver;
 	while (i < DRIVER_NUM) {
@@ -318,8 +469,6 @@ static int init_tui_driver(int priority, int secure)
 			if (!strncmp(drv_name, pos->name, TUI_DRV_NAME_MAX)) {
 				/* The names match. */
 
-				tlogd("init tui drv(%s) state=%d\n",
-					pos->name, secure);
 				if (!strncmp(TUI_TP_NAME, pos->name, TUI_DRV_NAME_MAX)) {
 					/* If the name is "tp", assign pos->pdata to tui_ctl */
 					tui_ctl->n2s.tp_info =
@@ -342,31 +491,34 @@ static int init_tui_driver(int priority, int secure)
 							tloge("wait status time out\n");
 							return -1;
 						}
+						spin_lock(&tui_msg_lock);
+						tui_msg_del(TUI_DSS_NAME);
+						spin_unlock(&tui_msg_lock);
 					}
 					if (!secure) {
-						tlogd("drv(%s) state=%d, priority=%d\n",
-							pos->name, secure, priority);
+						tlogd("drv(%s) state=%d,%d\n",
+							pos->name, secure, pos->state);
 						if (0 == pos->state)
 							continue;
 						if (pos->init_func(pos->pdata, secure)) {
 							/* Process init_func() fail */
 							pos->state = -1;
-							mutex_unlock(&tui_drv_lock);
-							return -1;
+							//return -1;
 						}
 						/* set secure state will be proceed in tui msg */
 						pos->state = 0;
-					} else if (secure && priority == pos->priority) {
-						tlogd("init tui drv(%s) state=%d, priority is %d\n",
-							pos->name, secure, priority);
+					} else {
+						tlogd("init tui drv(%s) state=%d\n",
+							pos->name, secure);
 						/*when init, tp and dss should be async*/
 						if (pos->init_func(pos->pdata, secure)) {
 							pos->state = -1;
 							mutex_unlock(&tui_drv_lock);
 							return -1;
+						} else {
+							if (strncmp(TUI_DSS_NAME, pos->name, TUI_DRV_NAME_MAX))
+								pos->state = 1;
 						}
-					} else {
-						TCERR("others type\n");
 					}
 				}
 			}
@@ -457,7 +609,7 @@ static inline enum poll_class tui_poll_class(int event_type)
 }
 
 int send_tui_msg_config(int type, int val, void *data)
-{
+{/*lint !e31 */
 	int ret;
 
 	if (type >= TUI_POLL_MAX  || type < 0 || !data) {
@@ -468,18 +620,18 @@ int send_tui_msg_config(int type, int val, void *data)
 	/* The tui_state should be CONFIG */
 	if (atomic_read(&tui_state) != TUI_STATE_CONFIG) {
 		tloge("failed to send tui msg(%s)\n",
-			poll_event_type_name[type]);
+		      poll_event_type_name[type]);
 		return -EINVAL;
 	}
 
 	if (CLASS_POLL_RUNNING == tui_poll_class(type)) {
 		tloge("invalid tui event type(%s) in config state\n",
-			poll_event_type_name[type]);
+		      poll_event_type_name[type]);
 		return -EINVAL;
 	}
 
 	tlogd("send config event type %s(%s)\n",
-		poll_event_type_name[type], (char *)data);
+	      poll_event_type_name[type], (char *)data);
 
 	if (TUI_POLL_CFG_OK == type || TUI_POLL_CFG_FAIL == type) {
 		int cfg_ret;
@@ -509,51 +661,50 @@ int send_tui_msg_config(int type, int val, void *data)
 /* Send tui event by smc_cmd */
 int tui_send_event(int event)
 {
-	TC_NS_SMC_CMD smc_cmd = { 0 };
-	unsigned char uuid[17] = { 0 };
-	uint32_t uid;
+	if (!dss_fd)
+		return -1;
+	if (atomic_read(&tui_state) != TUI_STATE_UNUSED
+	    && dss_fd->panel_power_on) {
+		TC_NS_SMC_CMD smc_cmd = { 0 };
+		uint32_t uid;
+		struct mb_cmd_pack *mb_pack;
+		int ret;
+
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 13, 0))
-	kuid_t kuid;
+		kuid_t kuid;
 
-	kuid = current_uid();	/*lint !e666 */
-	uid = kuid.val;
+		kuid = current_uid();	/*lint !e666 !e667 !e64 */
+		uid = kuid.val;
 #else
-	uid = current_uid();
+		uid = current_uid();
 #endif
+		if (uid > 1000 || event != TUI_POLL_CANCEL) {
+			tloge("no permission to send msg\n");
+			return -1;
+		}
 
-	tlogd("need send tui event = %d\n", event);
-	uuid[0] = 1;
-	smc_cmd.uuid_phys = virt_to_phys(uuid);
-	smc_cmd.uuid_h_phys = virt_to_phys(uuid) >> 32;
-	smc_cmd.cmd_id = GLOBAL_CMD_ID_TUI_EXCEPTION;
-	smc_cmd.agent_id = event;
-	smc_cmd.uid = uid;
+		mb_pack = mailbox_alloc_cmd_pack();
+		if (!mb_pack) {
+			tloge("alloc cmd pack failed\n");
+			return -1;
+		}
 
-	return TC_NS_SMC(&smc_cmd, 0);
+		tlogd("need send tui event = %d\n", event);
+		mb_pack->uuid[0] = 1;
+		smc_cmd.uuid_phys = virt_to_phys(mb_pack->uuid);
+		smc_cmd.uuid_h_phys = virt_to_phys(mb_pack->uuid) >> 32; /*lint !e572*/
+		smc_cmd.cmd_id = GLOBAL_CMD_ID_TUI_EXCEPTION;
+		smc_cmd.agent_id = event;
+		smc_cmd.uid = uid;
 
-}
+		ret = TC_NS_SMC(&smc_cmd, 0);
+		mailbox_free(mb_pack);
 
-/* Get key code from tui_ctl->s2n.value */
-int tui_get_keyCode(void)
-{
-	int r;
-
-	if (!tui_ctl) {
-		tlogd("tui ctl abnormal----\n");
-		return -1;
+		return ret;
+	} else {
+		tlogd("tui unused no need send tui event!\n");
+		return 0;
 	}
-
-	tlogd("wait_event_interruptible----------\n");
-	r = wait_event_interruptible(wait_event_get_keyCode, get_keyCode_flag);
-	if (-ERESTARTSYS == r) {
-		tui_send_event(TUI_POLL_CANCEL);
-		return -1;
-	}
-
-	tlogd("get tui keyCode is interrupted and keyCode=%d---\n",
-		tui_ctl->s2n.value);
-	get_keyCode_flag = 0;
-	return tui_ctl->s2n.value;
 }
 
 static void tui_poweroff_work_func(struct work_struct *work)
@@ -564,11 +715,12 @@ static void tui_poweroff_work_func(struct work_struct *work)
 void tui_poweroff_work_start(void)
 {
 	tlogd("tui_poweroff_work_start----------\n");
-
+	if (!dss_fd)
+		return;
 	if (atomic_read(&tui_state) != TUI_STATE_UNUSED
 	    && dss_fd->panel_power_on) {
 		tlogd("come in tui_poweroff_work_start state=%d--\n",
-			atomic_read(&tui_state));
+		      atomic_read(&tui_state));
 		queue_work(system_wq, &tui_poweroff_work.work);
 	}
 }
@@ -627,7 +779,7 @@ static int get_cfg_state(char *name)
 }
 static void tui_msg_del(char *name)
 {
-	struct tui_msg_node *tui_msg;
+	struct tui_msg_node *tui_msg=NULL, *tmp;
 
 	/* Return error if name is invalid */
 	if (!name) {
@@ -635,12 +787,11 @@ static void tui_msg_del(char *name)
 		return;
 	}
 
-	list_for_each_entry(tui_msg, &tui_msg_head, list) {
+	list_for_each_entry_safe(tui_msg, tmp, &tui_msg_head, list) { /*lint !e64 !e826 !e530 !e516 */
 		/* Names match */
-		if (!strncmp(tui_msg->data, name, TUI_DRV_NAME_MAX)) {
-			list_del(&tui_msg->list);
+		if (!strncmp(tui_msg->data, name, TUI_DRV_NAME_MAX)) { /*lint !e413 */
+			list_del(&tui_msg->list); /*lint !e413 */
 			kfree(tui_msg);
-			break;
 		}
 	}
 }
@@ -648,7 +799,7 @@ static void tui_msg_del(char *name)
 #define TP_CONFIG_INDEX (2)
 static void process_tui_msg(void)
 {
-	unsigned int val = 0;
+	int val = 0;
 	int type = TUI_POLL_CFG_OK;
 
 fetch_msg:
@@ -687,7 +838,7 @@ fetch_msg:
 		tui_msg_del(TUI_TP_NAME);
 #if defined (CONFIG_TEE_TUI_HI3650)
 		spin_unlock(&tui_msg_lock);
-		if (0 == init_tui_driver(1, 1)) {
+		if (0 == init_tui_driver(1)) {
 			spin_lock(&tui_msg_lock);
 			while (0 == get_cfg_state(TUI_GPIO_NAME) ||
 			       0 == get_cfg_state(TUI_FP_NAME)) {
@@ -718,10 +869,10 @@ next:
 	/* pre-process tui poll event if needed */
 	switch (type) {
 	case TUI_POLL_CFG_OK:
-		if (DSS_CONFIG_INDEX == tui_ctl->s2n.value){
+		if (DSS_CONFIG_INDEX == tui_ctl->s2n.value) {
 			tui_ctl->n2s.addr = get_frame_addr();
 			tui_ctl->n2s.addr_h = g_tui_mem.tui_addr_h;
-			if(0 == tui_ctl->n2s.addr)
+			if (0 == tui_ctl->n2s.addr)
 				val = -1;
 		}
 		break;
@@ -743,7 +894,7 @@ static int init_tui_agent(void)
 	TC_NS_Shared_MEM tui_tc_shm = { 0 };
 	int ret;
 
-	tui_ctl = (struct tui_ctl_shm *)kzalloc((size_t)SZ_4K, GFP_KERNEL);
+	tui_ctl = (struct tui_ctl_shm *)mailbox_alloc((size_t)SZ_4K, MB_FLAG_ZERO);
 	if (!tui_ctl) {
 		tloge("failed to allocate 4k bytes for tui_ctl\n");
 		return -ENOMEM;
@@ -755,7 +906,7 @@ static int init_tui_agent(void)
 	ret = TC_NS_register_agent(NULL, TEE_TUI_AGENT_ID, &tui_tc_shm);
 	if (ret) {
 		tloge("register tui agent failed\n");
-		kfree(tui_ctl);
+		mailbox_free(tui_ctl);
 		tui_ctl = NULL;
 	}
 
@@ -766,7 +917,7 @@ static void exit_tui_agent(void)
 {
 	if (TC_NS_unregister_agent(TEE_TUI_AGENT_ID))
 		tloge("unregister tui agent failed\n");
-	kfree(tui_ctl);
+	mailbox_free(tui_ctl);
 	tui_ctl = NULL;
 }
 
@@ -776,6 +927,14 @@ static void set_tui_state(int state)
 		atomic_set(&tui_state, state);
 		tui_state_flag = 1;
 		wake_up(&tui_state_wq);
+	}
+}
+
+void do_ns_tui_release(void){
+	if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {  /*lint !e529 !e438 */
+		tlogd("tui disable\n");
+		init_tui_driver(0);
+		set_tui_state(TUI_STATE_UNUSED);
 	}
 }
 
@@ -791,7 +950,7 @@ static int do_tui_work(void)
 			tlogd("tui enable\n");
 			set_tui_state(TUI_STATE_CONFIG);
 			/*do dss and tp init*/
-			if (init_tui_driver(0, 1)) {
+			if (init_tui_driver(1)) {
 				tui_ctl->s2n.ret = -1;
 				set_tui_state(TUI_STATE_ERROR);
 			}
@@ -800,14 +959,14 @@ static int do_tui_work(void)
 	case TUI_CMD_DISABLE:
 		if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {
 			tlogd("tui disable\n");
-			init_tui_driver(0, 0);
+			init_tui_driver(0);
 			set_tui_state(TUI_STATE_UNUSED);
 		}
 		break;
 	case TUI_CMD_PAUSE:
 		if (atomic_read(&tui_state) != TUI_STATE_UNUSED) {
 			tlogd("tui pause\n");
-			init_tui_driver(0, 0);
+			init_tui_driver(0);
 			set_tui_state(TUI_STATE_CONFIG);
 		}
 		break;
@@ -833,8 +992,6 @@ static int do_tui_work(void)
 		break;
 	case TUI_CMD_SEND_INPUT_WORK:
 		tlogd("send input work\n");
-		get_keyCode_flag = 1;
-		wake_up(&wait_event_get_keyCode);
 		break;
 	default:
 		ret = -EINVAL;
@@ -845,9 +1002,9 @@ static int do_tui_work(void)
 }
 
 void set_tui_attach_device(unsigned int id)
-{
+{/*lint !e18 !e31 !e532 */
 	tui_attached_device = id;
-}
+} /*lint !e533 */
 
 unsigned int tui_attach_device(void)
 {
@@ -872,7 +1029,8 @@ static int tui_kthread_work_fn(void *data)
 
 		do_tui_work();
 
-		TC_NS_send_event_response(TEE_TUI_AGENT_ID);
+		if (TC_NS_send_event_response(TEE_TUI_AGENT_ID))
+			tloge("send event response error\n");
 	}
 
 	exit_tui_agent();
@@ -884,7 +1042,7 @@ static int tui_kthread_work_fn(void *data)
 static ssize_t tui_dbg_state_read(struct file *filp, char __user *ubuf,
 				  size_t cnt, loff_t *ppos)
 {
-	char buf[READ_BUF];
+	char buf[READ_BUF] = {0};
 	unsigned int r;
 	int ret;
 	struct tui_drv_node *pos;
@@ -892,22 +1050,29 @@ static ssize_t tui_dbg_state_read(struct file *filp, char __user *ubuf,
 	if (!filp || !ubuf || !ppos)
 		return -EINVAL;
 
-	ret = snprintf_s(buf, READ_BUF, READ_BUF, "tui state:%s\n",
-		     state_name[atomic_read(&tui_state)]);
-	if(ret < 0)
-	    return -EINVAL;
+	ret = snprintf_s(buf, READ_BUF, READ_BUF-1, "tui state:%s\n",
+			 state_name[atomic_read(&tui_state)]);
+	if (ret < 0)
+		return -EINVAL;
 	r = (unsigned int)ret;
 
 	ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "drv config state:");
-	if(ret < 0)
-	    return -EINVAL;
+	if (ret < 0)
+		return -EINVAL;
 	r += (unsigned int)ret;
+
 	mutex_lock(&tui_drv_lock);
-	list_for_each_entry(pos, &tui_drv_head, list)
-	r += snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "%s-%s,", pos->name,
-		      1 == pos->state ? "ok" : "no ok");/* [false alarm]:buffer足够大不会越界  */
-	buf[r - 1] = '\n';
+	list_for_each_entry(pos, &tui_drv_head, list) {
+		ret = snprintf_s(buf + r, READ_BUF - r, READ_BUF - r, "%s-%s,", pos->name,
+				1 == pos->state ? "ok" : "no ok");/* [false alarm]:buffer足够大不会越界  */
+		if (ret < 0) {
+			mutex_unlock(&tui_drv_lock);
+			return -EINVAL;
+		}
+		r += (unsigned int)ret;
+	}
 	mutex_unlock(&tui_drv_lock);
+	buf[r-1]='\n';
 
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
 }
@@ -932,17 +1097,17 @@ static ssize_t tui_status_show(struct kobject *kobj,
 	}
 
 	r = snprintf_s(buf, 32, 32, "%s", state_name[atomic_read(&tui_state)]);
-	if (r)
-		return r;
+	if (r < 0)
+		return -1;
 
-	return strlen(buf);
+	return r;
 }
 
 #define MSG_BUF 512
 static ssize_t tui_dbg_msg_read(struct file *filp, char __user *ubuf,
 				size_t cnt, loff_t *ppos)
 {
-	char buf[MSG_BUF];
+	char buf[MSG_BUF] = {0};
 	unsigned int r;
 	int ret;
 	int i;
@@ -951,31 +1116,46 @@ static ssize_t tui_dbg_msg_read(struct file *filp, char __user *ubuf,
 	if (!filp || !ubuf || !ppos)
 		return -EINVAL;
 
-	ret = snprintf_s(buf, MSG_BUF, MSG_BUF, "%s", "event format: event_type:val\n"
-		     "event type:\n");
-	if(ret < 0)
-	    return -EINVAL;
+	ret = snprintf_s(buf, MSG_BUF, MSG_BUF-1, "%s", "event format: event_type:val\n"
+			 "event type:\n");
+	if (ret < 0)
+		return -EINVAL;
 	r = (unsigned int)ret;
 
 	/* event type list */
-	for (i = 0; i < TUI_POLL_MAX - 1; i++){
+	for (i = 0; i < TUI_POLL_MAX - 1; i++) {
 		ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s, ",
-			      poll_event_type_name[i]);/* [false alarm]:buffer足够大不会越界 */
-		if(ret < 0)
+				 poll_event_type_name[i]);/* [false alarm]:buffer足够大不会越界 */
+		if (ret < 0)
 			return -EINVAL;
 		r += (unsigned int)ret;
 	}
 
-	r += snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s\n", poll_event_type_name[i]);
+	ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s\n", poll_event_type_name[i]);
+	if (ret < 0)
+		return -EINVAL;
+	r += (unsigned int)ret;
 
 	/* cfg drv type list */
-	r += snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "val type for %s or %s:\n",
-		      poll_event_type_name[TUI_POLL_CFG_OK],
-		      poll_event_type_name[TUI_POLL_CFG_FAIL]);
-	list_for_each_entry(pos, &tui_drv_head, list)
-	r += snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s,", pos->name);
+	ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "val type for %s or %s:\n",
+			poll_event_type_name[TUI_POLL_CFG_OK],
+			poll_event_type_name[TUI_POLL_CFG_FAIL]);
+	if (ret < 0)
+		return -EINVAL;
+	r += (unsigned int)ret;
 
+	mutex_lock(&tui_drv_lock);
+	list_for_each_entry(pos, &tui_drv_head, list) {
+		ret = snprintf_s(buf + r, MSG_BUF - r, MSG_BUF - r, "%s,", pos->name);
+		if (ret < 0) {
+			mutex_unlock(&tui_drv_lock);
+			return -EINVAL;
+		}
+		r += (unsigned int)ret;
+	}
+	mutex_unlock(&tui_drv_lock);
 	buf[r - 1] = '\n';
+
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, r);
 }
 
@@ -990,7 +1170,7 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 	int ret;
 
 	if (!ubuf || !filp || !ppos)
-		return-EINVAL;
+		return -EINVAL;
 
 	if (cnt >= sizeof(buf))
 		return -EINVAL;
@@ -1004,7 +1184,7 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 
 	/* event type */
 	tokens = strsep(&begins, ":");
-	if(!tokens)
+	if (!tokens)
 		return -EFAULT;
 
 	tlogd("1: tokens:%s\n", tokens);
@@ -1017,11 +1197,11 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 	}
 
 	/* only for tp and cancel  */
-	if(event_type != TUI_POLL_TP  && event_type != TUI_POLL_CANCEL)
+	if (event_type != TUI_POLL_TP  && event_type != TUI_POLL_CANCEL)
 		return -EFAULT;
 	/* drv type */
 	tokens = strsep(&begins, ":");
-	if(!tokens)
+	if (!tokens)
 		return -EFAULT;
 	tlogd("2: tokens:%s\n", tokens);
 	if (TUI_POLL_TP == event_type) {
@@ -1035,19 +1215,23 @@ static ssize_t tui_dbg_msg_write(struct file *filp,
 		tui_ctl->n2s.status = value;
 
 		tokens = strsep(&begins, ":");
-		if(!tokens)
+		if (!tokens)
 			return -EFAULT;
 		ret = kstrtol(tokens, base, &value);
+		if (ret)
+			return -EFAULT;
 		tui_ctl->n2s.x = value;
 
 		tokens = strsep(&begins, ":");
-		if(!tokens)
+		if (!tokens)
 			return -EFAULT;
 		ret = kstrtol(tokens, base, &value);
+		if (ret)
+			return -EFAULT;
 		tui_ctl->n2s.y = value;
 	}
 	tlogd("status=%d x=%d y=%d\n",
-		tui_ctl->n2s.status, tui_ctl->n2s.x, tui_ctl->n2s.y);
+	      tui_ctl->n2s.status, tui_ctl->n2s.x, tui_ctl->n2s.y);
 
 	if (tui_send_event(event_type))
 		return -EFAULT;
@@ -1075,13 +1259,13 @@ int __init init_tui(struct device *class_dev)
 		return -1;
 
 	retval = tui_mem_alloc(class_dev);
-	if(retval) {
+	if (retval) {
 		tloge("tui alloc fail\n");
 		return -ENOMEM;
 	}
 
 	tui_task = kthread_create(tui_kthread_work_fn, NULL, "tuid");
-	if (IS_ERR(tui_task)) {
+	if (IS_ERR(tui_task)) { /*lint !e413 !e516 */
 		tui_mem_free();
 		return PTR_ERR(tui_task);
 	}
@@ -1096,7 +1280,6 @@ int __init init_tui(struct device *class_dev)
 
 	init_waitqueue_head(&tui_state_wq);
 	init_waitqueue_head(&tui_msg_wq);
-	init_waitqueue_head(&wait_event_get_keyCode);
 	dbg_dentry = debugfs_create_dir("tui", NULL);
 #ifdef DEBUG_TUI
 	debugfs_create_file("message", 0440, dbg_dentry,

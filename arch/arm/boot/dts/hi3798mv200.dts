@@ -40,36 +40,59 @@
 		bootargs = "rw";
 	};
 
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
 	cpus {
-		cluster0: cluster0 {
 			#address-cells = <1>;
 			#size-cells = <0>;
 
 			/* cooling options */
 			#cooling-cells = <2>; /* min followed by max */
 
-			cpu@0 {
+			cpu-map {
+				cluster0: cluster0 {
+					core0 {
+						cpu = <&CPU0>;
+					};
+					core1 {
+						cpu = <&CPU1>;
+					};
+					core2 {
+						cpu = <&CPU2>;
+					};
+					core3 {
+						cpu = <&CPU3>;
+					};
+				};
+			};
+
+			CPU0: cpu@0 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <0>;
+				enable-method = "psci";
 			};
-			cpu@1 {
+			CPU1: cpu@1 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <1>;
+				enable-method = "psci";
 			};
-			cpu@2 {
+			CPU2: cpu@2 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <2>;
+				enable-method = "psci";
 			};
-			cpu@3 {
+			CPU3: cpu@3 {
 				compatible = "arm,cortex-a53";
 				device_type = "cpu";
 				reg = <3>;
+				enable-method = "psci";
 			};
 
-		}; /* cluster0 */
 	}; /* cpus */
 
 	gic: interrupt-controller {
@@ -109,6 +132,12 @@
 		interrupts = <0 64 4>;
 	};
 
+	firmware {
+		optee {
+		compatible = "linaro,optee-tz";
+		method = "smc";
+		};
+	};
 
 	soc {
 		#address-cells = <1>;
@@ -383,6 +412,14 @@
 				clocks = <&hisilicon_clock HIIR_CLK>;
 				linux,rc-map-name = "rc-hisi";
 			};
+
+			armv7-pmu {
+				compatible = "arm,cortex-a17-pmu";
+				interrupts = <0 8 4>,
+					     <0 9 4>,
+					     <0 10 4>,
+					     <0 11 4>;
+			};
 #if 0
 			arm-timer {
 				compatible = "arm,armv7-timer";
@@ -453,7 +490,7 @@
 		};
 
 		sd:himciv200.SD@0xf9820000 {
-			compatible = "hi3798mv200,himciv200";
+			compatible = "hi3798mv200,himciv300_sd";
 			reg = <0xf9820000 0x1000>,<0xF8A210C0 0x40>;
 			interrupts = <0 34 4>;
 
@@ -463,7 +500,7 @@
 			ldo-addr  = <0xf8a2011c>;
 			ldo-shift = <0>;
 
-			caps = <0x80000007>;
+			caps = <0x8007000f>;
 			caps2 = <0x4000>;
 			max-frequency = <50000000>;
 			status = "okay";
@@ -471,13 +508,14 @@
 
 		sdio:himciv200.SD@0xf9c40000 {
 			compatible = "hi3798mv200,himciv200";
-			reg = <0xf9c40000 0x1000>,<0xF8A21060 0x40>;
+			reg = <0xf9c40000 0x1000>,<0xF8A21090 0x20>;
 			interrupts = <0 86 4>;
 
 			clocks = <&hisilicon_clock PERI_CRG163_SDIO2>;
 			clock-names = "clk";
 
-			caps = <0x80000007>;
+			caps = <0x8007000f>;
+			caps2 = <0x4000>;
 			max-frequency = <50000000>;
 			status = "okay";
 		};
@@ -511,6 +549,7 @@
 
 			hieth_phy0: hieth_phy@0 {
 				reg = <2>;
+				interrupts = <0 73 4>, <0 107 4>;
 				mac-address = [00 00 00 00 00 00];
 				phy-mode = "mii";
 				phy-gpio-base = <0>;
@@ -611,46 +650,124 @@
 			interrupts = <0 31 4>;
 		};
 
-                vddgpu: regulator@0xf8a23020 {
-                        compatible = "hisilicon,hi3798mv200-volt";
-                        reg = <0xf8a23020 0x4>;
-                        reg-names = "base-address";
-                        regulator-name = "vdd-gpu";
-                        regulator-min-microvolt = <900000>;
-                        regulator-max-microvolt = <1320000>;
-                        regulator-always-on;
-                        status = "okay";
-                };
+		vddgpu: regulator@0xf8a23020 {
+			compatible = "hisilicon,hi3798mv200-volt";
+			reg = <0xf8a23020 0x4>;
+			reg-names = "Hisilicon GPU Regulator";
+			regulator-name = "vdd-gpu";
+			regulator-min-microvolt = <700000>;
+			regulator-max-microvolt = <1250000>;
+			regulator-always-on;
+			status = "okay";
+		};
 
-                gpu:gpu@0xf9200000 {
-                        compatible = "arm,mali-450", "arm,mali-utgard";
-                        interrupt-parent = <&gic>;
-                        reg = <0xf9200000 0x10000>;
-                        interrupts = <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>;
-                        interrupt-names = "IRQGP", "IRQGPMMU", "IRQPP0", "IRQPPMMU0", "IRQPP1", "IRQPPMMU1", "IRQPMU", "IRQPP";
-                        pmu_domain_config = <0x1 0x2 0x2 0x0 0x0 0x0 0x0 0x0 0x0 0x1 0x2 0x0>;
-                        pmu_switch_delay = <0x1ff>;
+		gpu:gpu@0xf9200000 {
+			compatible = "arm,mali-450", "arm,mali-utgard";
+			interrupt-parent = <&gic>;
+			reg = <0xf9200000 0x10000>;
+			interrupts = <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>, <0 94 4>;
+			interrupt-names = "IRQGP", "IRQGPMMU", "IRQPP0", "IRQPPMMU0", "IRQPP1", "IRQPPMMU1", "IRQPMU", "IRQPP";
+			pmu_domain_config = <0x1 0x2 0x2 0x0 0x0 0x0 0x0 0x0 0x0 0x1 0x2 0x0>;
+			pmu_switch_delay = <0x1ff>;
+			#cooling-cells = <2>;
+			clocks = <&hisilicon_clock PERI_CRG73_GPU_LP>;
+			clock-names = "clk_mali";
+			mali-supply = <&vddgpu>;
 
-                        #cooling-cells = <2>; /* min followed by max */
+			default-frequency = <600000000>;
+			max-utilization   = <60>;
+			min-utilization   = <30>;
+			max-frequency     = <800000000>;
+			min-frequency     = <200000000>;
 
-                        clocks = <&hisilicon_clock PERI_CRG73_GPU_LP>;
-                        clock-names = "clk_mali";
-                        mali-supply = <&vddgpu>;
-                        operating-points = <
-                        150000 000000
-                        200000 000000
-                        250000 000000
-                        300000 000000
-                        345600 000000
-                        400000 000000
-                        432000 000000
-                        500000 000000>;
+			operating-points-tt = <
+				200000000 870000
+				300000000 870000
+				400000000 870000
+				500000000 870000
+				600000000 870000
+				675000000 900000
+				750000000 910000
+				800000000 930000>;
+			operating-points-ss = <
+				200000000 910000
+				300000000 910000
+				400000000 910000
+				500000000 910000
+				600000000 910000
+				675000000 910000
+				750000000 940000
+				800000000 960000>;
+			operating-points-ff = <
+				200000000 830000
+				300000000 830000
+				400000000 830000
+				500000000 830000
+				600000000 830000
+				675000000 850000
+				750000000 890000
+				800000000 900000>;
 
-                        cooling-min-state = <0>;
-                        cooling-max-state = <7>;
-                        status = "okay";
+			operating-points-ff-98mv300 = <
+				200000000 840000
+				300000000 840000
+				400000000 840000
+				500000000 840000
+				540000000 840000
+				600000000 840000
+				675000000 850000
+				860000000 990000>;
 
-                };
+			operating-points-tt-98mv300 = <
+				200000000 880000
+				300000000 880000
+				400000000 880000
+				500000000 880000
+				540000000 880000
+				600000000 880000
+				675000000 900000
+				860000000 990000>;
+
+			operating-points-ss-98mv300 = <
+				200000000 910000
+				300000000 910000
+				400000000 910000
+				500000000 910000
+				540000000 910000
+				600000000 910000
+				675000000 950000
+				860000000 990000>;
+
+			operating-points-tt-youtube = <
+				200000000 870000
+				300000000 870000
+				400000000 870000
+				500000000 870000
+				600000000 870000
+				675000000 900000
+				800000000 930000>;
+			operating-points-ss-youtube = <
+				200000000 910000
+				300000000 910000
+				400000000 910000
+				500000000 910000
+				600000000 910000
+				675000000 910000
+				800000000 960000>;
+			operating-points-ff-youtube = <
+				200000000 830000
+				300000000 830000
+				400000000 830000
+				500000000 830000
+				600000000 830000
+				675000000 850000
+				800000000 900000>;
+
+			cooling-min-state = <0>;
+			cooling-max-state = <7>;
+			status = "okay";
+
+		};
 
 		pcie:pcie@0xF0001000 {
 			compatible = "hisilicon,hisilicon-pcie","snps,dw-pcie";
@@ -693,6 +810,7 @@
 		virtdev {
 			compatible = "virt-device";
 			interrupts = <0 36 4>,  /* "sci0"          */
+						 <0 37 4>,  /* "sci1"          */
 						 <0 47 4>,  /* "ir_std"        */
 						 <0 47 4>,  /* "ir_s2"         */
 						 <0 48 4>,  /* "keyled_ct1642" */
@@ -704,7 +822,7 @@
 						 <0 88 4>,  /* "hdmi"          */
 						 <0 90 4>,  /* "vdp"           */
 						 <0 91 4>,  /* "tde"           */
-                                                 <0 91 4>,  /* "gfx2d"         */
+						 <0 91 4>,  /* "gfx2d"         */
 						 <0 93 4>,  /* "vpss0"         */
 						 <0 94 4>,  /* "gpu"           */
 						 <0 95 4>,  /* "vdec_vdh"      */
@@ -716,12 +834,13 @@
 						 <0 105 4>, /* "vdec_vdh_safe" */
 						 <0 106 4>, /* "vdec_scd_safe" */
 						 <0 126 4>, /* "cipher"        */
+						 <0 146 4>, /* "SecInvokeirq"  */
 						 <0 147 4>, /* "hdmi_cec"      */
 						 <0 148 4>, /* "mmu_vdh_safe"  */
 						 <0 149 4>, /* "mmu_vdh"       */
-						 <0 150 4>, /* "pastc"         */
-						 <0 158 4>; /* "SecInvokeirq"  */
+						 <0 150 4>; /* "pastc"         */
 			interrupt-names = /* 36  */ "sci0",
+							  /* 37  */ "sci1",
 							  /* 47  */ "ir_std",
 							  /* 47  */ "ir_s2",
 							  /* 48  */ "keyled_ct1642",
@@ -733,7 +852,7 @@
 							  /* 88  */ "hdmi",
 							  /* 90  */ "vdp",
 							  /* 91  */ "tde",
-                                                          /* 91  */ "gfx2d",
+							  /* 91  */ "gfx2d",
 							  /* 93  */ "vpss0",
 							  /* 94  */ "gpu",
 							  /* 95  */ "vdec_vdh",
@@ -745,11 +864,11 @@
 							  /* 105 */ "vdec_vdh_safe",
 							  /* 106 */ "vdec_scd_safe",
 							  /* 126 */ "cipher",
+							  /* 146 */ "SecInvokeirq",
 							  /* 147 */ "hdmi_cec",
 							  /* 148 */ "mmu_vdh_safe",
 							  /* 149 */ "mmu_vdh",
-							  /* 150 */ "pastc",
-							  /* 158 */ "SecInvokeirq";
+							  /* 150 */ "pastc";
 		};
 	};
 };

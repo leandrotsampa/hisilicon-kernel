@@ -12,9 +12,7 @@
 #include <linux/kmemleak.h>
 #include <linux/device.h>
 #include <linux/irqchip/arm-gic.h>
-#ifndef CONFIG_ARM64
 #include <mach/hardware.h>
-#endif
 #include <linux/hikapi.h>
 #include <asm/suspend.h>
 #include <asm/bug.h>
@@ -33,14 +31,10 @@ unsigned long hi_ca_ddrwakeupcheck_phys = CA_DDR_WAKEUPCHECK_START;
 #define OTP_IDWORD_ADDR 0xf8ab0128      /* OTP shadow register to indicate if it is advca chipset */
 #define OTP_CA_ID_WORD  0x6EDBE953
 
-#ifdef CONFIG_ARM
 void __iomem *hi_uart_virtbase = NULL;
 
 extern void *hi_otp_idword_addr;
 extern void *hi_mcu_start_ctrl;
-#else
-void  __iomem *hi_otp_idword_addr;
-#endif
 
 asmlinkage int hi_pm_sleep(unsigned long arg);
 
@@ -51,6 +45,7 @@ EXPORT_SYMBOL(ca_pm_suspend);
 static int hi_pm_suspend(void)
 {
 	int ret = 0;
+#ifndef CONFIG_TEE
 	unsigned int regval = readl(hi_otp_idword_addr);
 	if (regval == OTP_CA_ID_WORD) {
 		if (!hi_ca_ddrwakeupcheck_virt) {
@@ -63,12 +58,9 @@ static int hi_pm_suspend(void)
 		if (ca_pm_suspend)
 			ca_pm_suspend(hi_ca_ddrwakeupcheck_virt, CA_DDR_WAKEUPCHECK_LENTH);
 	}
-
-#ifdef CONFIG_ARM64
-	ret = cpu_suspend(1, arm_cpuidle_suspend);
-#else
-	ret = cpu_suspend(0, hi_pm_sleep);
 #endif
+
+	ret = cpu_suspend(0, hi_pm_sleep);
 
 	return ret;
 }
@@ -101,12 +93,10 @@ static const struct platform_suspend_ops hi_pm_ops = {
 
 static int __init hi_pm_init(void)
 {
-#ifdef CONFIG_ARM
 	hi_sc_virtbase = (void __iomem *)IO_ADDRESS(REG_BASE_SCTL);
 	hi_uart_virtbase = (void __iomem *)IO_ADDRESS(REG_BASE_UART0);
 
 	hi_mcu_start_ctrl = (void __iomem *)ioremap_nocache(MCU_START_CTRL, 0x1000);
-#endif
 	hi_otp_idword_addr = (void __iomem *)ioremap_nocache(OTP_IDWORD_ADDR, 0x1000);
 
 	suspend_set_ops(&hi_pm_ops);

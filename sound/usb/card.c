@@ -45,7 +45,9 @@
 #include <linux/usb/audio.h>
 #include <linux/usb/audio-v2.h>
 #include <linux/module.h>
-
+#ifdef CONFIG_SWITCH
+#include <linux/switch.h>
+#endif
 #include <sound/control.h>
 #include <sound/core.h>
 #include <sound/info.h>
@@ -113,6 +115,16 @@ MODULE_PARM_DESC(autoclock, "Enable auto-clock selection for UAC2 devices (defau
 static DEFINE_MUTEX(register_mutex);
 static struct snd_usb_audio *usb_chip[SNDRV_CARDS];
 static struct usb_driver usb_audio_driver;
+
+#ifdef CONFIG_SWITCH
+
+enum {
+	state_usbcard_disconnected = 0,
+	state_usbcard_connected = 1
+};
+
+extern struct switch_dev g_stusbdev;
+#endif
 
 /*
  * disconnect streams
@@ -565,6 +577,17 @@ static int usb_audio_probe(struct usb_interface *intf,
 	if (err < 0)
 		goto __error;
 
+#ifdef CONFIG_SWITCH
+
+	/*
+	 * not sure how to distinguish analog/digital/unknown,
+	 * assume digital for now
+	 */
+	if (0 == chip->index) {
+		switch_set_state(&g_stusbdev, state_usbcard_connected);
+	}
+#endif
+
 	usb_chip[chip->index] = chip;
 	chip->num_interfaces++;
 	usb_set_intfdata(intf, chip);
@@ -608,6 +631,11 @@ static void usb_audio_disconnect(struct usb_interface *intf)
 		 */
 		wait_event(chip->shutdown_wait,
 			   !atomic_read(&chip->usage_count));
+#ifdef CONFIG_SWITCH
+		if (0 == chip->index) {
+			switch_set_state(&g_stusbdev, state_usbcard_disconnected);
+		}
+#endif
 		snd_card_disconnect(card);
 		/* release the pcm resources */
 		list_for_each_entry(as, &chip->pcm_list, list) {

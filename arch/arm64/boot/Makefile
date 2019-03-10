@@ -50,7 +50,7 @@ $(obj)/Image.lzo: $(obj)/Image FORCE
 $(obj)/Image.gz-dtb: $(obj)/Image.gz $(DTB_OBJS) FORCE
 	$(call if_changed,cat)
 
-UIMAGE_LOADADDR=$(TEXT_OFFSET)
+UIMAGE_LOADADDR=0x2000000
 UIMAGE_ENTRYADDR=$(TEXT_OFFSET)
 #UIMAGE_COMPRESSION = gzip
 check_for_multiple_loadaddr = \
@@ -71,6 +71,14 @@ $(obj)/uImage:  $(obj)/Image rm_uimage FORCE
 	$(if $(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),@$(kecho) '  CAT   $(DTB_OBJS) to $@')
 	$(if $(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),@cat $(DTB_OBJS) >>$@,)
 	@$(kecho) '  Image $@ is ready'
+
+ifeq ($(findstring y, $(CONFIG_ARCH_HI3796MV2X)$(CONFIG_ARCH_HI3798MV2X)$(CONFIG_ARCH_HI3798CV2X)),y)
+	@echo "##Enable ARM64 uncompressed"
+	$(AT)test -d $(LINUX_DIR)/arch/arm64/boot/compressed || mkdir -p $(LINUX_DIR)/arch/arm64/boot/compressed
+	@mv $(LINUX_DIR)/arch/$(CFG_HI_CPU_ARCH)/boot/uImage $(LINUX_DIR)/arch/$(CFG_HI_CPU_ARCH)/boot/uImage.bak
+	make -C $(KERNEL_SRC_DIR)/arch/arm64/boot/compressed ARCH=$(CFG_HI_CPU_ARCH) \
+		CROSS_COMPILE=$(CROSS_COMPILE) UIMAGE_NAME=${UIMAGE_NAME}
+endif
 
 install: $(obj)/Image
 	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \

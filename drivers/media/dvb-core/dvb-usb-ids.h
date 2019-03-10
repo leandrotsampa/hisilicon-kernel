@@ -70,7 +70,6 @@
 #define USB_VID_EVOLUTEPC			0x1e59
 #define USB_VID_AZUREWAVE			0x13d3
 #define USB_VID_TECHNISAT			0x14f7
-#define USB_VID_TENOW				0x734c
 
 /* Product IDs */
 #define USB_PID_ADSTECH_USB2_COLD			0xa333
@@ -390,10 +389,4 @@
 #define USB_PID_PCTV_2002E_SE                           0x025d
 #define USB_PID_SVEON_STV27                             0xd3af
 #define USB_PID_TURBOX_DTT_2000                         0xd3a4
-#define USB_PID_TENOW_TBS5910				0x5910
-#define USB_PID_TENOW_TBS5920				0x5920
-#define USB_PID_TENOW_TBS5921				0x5921
-#define USB_PID_TENOW_TBS5925				0x5925
-#define USB_PID_TENOW_TBS5928				0x5928
-#define USB_PID_TENOW_TBS5980				0x5980
 #endif

@@ -37,8 +37,8 @@
 #define COL_SLOT_TIME			0x01c0
 
 #define CRF_MIN_PACKET			0x0210
-#define BIT_OFFSET_TSO_VERSION		28
-#define BIT_MASK_TSO_VERSION		0x03
+#define BIT_OFFSET_TX_MIN_LEN		8
+#define BIT_MASK_TX_MIN_LEN		GENMASK(13, 8)
 
 #define CONTROL_WORD			0x0214
 #define CONTROL_WORD_CONFIG		0x640
@@ -134,13 +134,50 @@
 #define BITS_RX_STOP_EN					BIT(0)
 #define	STOP_RX_TX					(BITS_TX_STOP_EN | BITS_RX_STOP_EN)
 
+#define HW_CAP_EN			0x0c00
+#define RSS_HASH_KEY			0x0c04
+#define RSS_HASH_CONFIG			0x0c08
+#define TCPV4_L3_HASH_EN		BIT(0)
+#define TCPV4_L4_HASH_EN		BIT(1)
+#define TCPV4_VLAN_HASH_EN		BIT(2)
+#define UDPV4_L3_HASH_EN		BIT(4)
+#define UDPV4_L4_HASH_EN		BIT(5)
+#define UDPV4_VLAN_HASH_EN		BIT(6)
+#define IPV4_L3_HASH_EN			BIT(8)
+#define IPV4_VLAN_HASH_EN		BIT(9)
+#define TCPV6_L3_HASH_EN		BIT(12)
+#define TCPV6_L4_HASH_EN		BIT(13)
+#define TCPV6_VLAN_HASH_EN		BIT(14)
+#define UDPV6_L3_HASH_EN		BIT(16)
+#define UDPV6_L4_HASH_EN		BIT(17)
+#define UDPV6_VLAN_HASH_EN		BIT(18)
+#define IPV6_L3_HASH_EN			BIT(20)
+#define IPV6_VLAN_HASH_EN		BIT(21)
+#define DEF_HASH_CFG			0x377377
+
+#define RSS_IND_TBL			0x0c0c
+#define BIT_IND_TBL_READY		BIT(13)
+#define BIT_IND_TLB_WR			BIT(12)
+#define RSS_RAW_PMU_INT			0x0c10
+#define RSS_QUEUE1_START_ADDR		0x0c20
+#define RX_BQ_START_ADDR_QUEUE(i)	(RSS_QUEUE1_START_ADDR + \
+					((i) - 1) * 0x10)
+#define RSS_QUEUE1_DEPTH		0x0c24
+#define RX_BQ_WR_ADDR_QUEUE1		0x0c28
+#define RX_BQ_RD_ADDR_QUEUE1		0x0c2c
+#define RSS_QUEUE1_ENA_INT		0x0c90
+#define RSS_ENA_INT_QUEUE(i)		(RSS_QUEUE1_ENA_INT + ((i) - 1) * 0x4)
+#define RX_BQ_DEPTH_QUEUE(i)		(RSS_QUEUE1_DEPTH + ((i) - 1) * 0x10)
+#define RX_BQ_WR_ADDR_QUEUE(i)		((i) ? (RX_BQ_WR_ADDR_QUEUE1 + \
+					((i) - 1) * 0x10) : RX_BQ_WR_ADDR)
+#define RX_BQ_RD_ADDR_QUEUE(i)		((i) ? (RX_BQ_RD_ADDR_QUEUE1 + \
+					((i) - 1) * 0x10) : RX_BQ_RD_ADDR)
+
+#define DEF_INT_MASK_QUEUE(i)		(0x3 << (2 * ((i) - 1)))
+
 #define GMAC_SPEED_1000			0x05
 #define GMAC_SPEED_100			0x01
 #define GMAC_SPEED_10			0x00
-
-#define	E_MAC_TX_FAIL	2
-#define	E_MAC_SW_GSO	3
-#define E_MAC_UFO_BROADCAST	4
 
 enum higmac_tx_err {
 	ERR_NONE = 0,
@@ -259,6 +296,10 @@ enum {
 #define dma_cnt(n)			((n) >> DESC_BYTE_SHIFT)
 #define dma_byte(n)			((n) << DESC_BYTE_SHIFT)
 
+#define RSS_HASH_KEY_SIZE		4
+#define RSS_INDIRECTION_TABLE_SIZE	128
+#define RSS_NUM_RXQS		4
+
 #if defined(CONFIG_HIGMAC_DESC_4WORD)
 struct higmac_desc {
 	unsigned int data_buff_addr;
@@ -278,8 +319,12 @@ struct higmac_desc {
 	unsigned int fl:2;
 	unsigned int descvid:1;
 
-	unsigned int reserve_desc2;
-	unsigned int reserve3;
+	unsigned int rxhash;
+	unsigned int reserve3:8;
+	unsigned int l3_hash:1;
+	unsigned int has_hash:1;
+	unsigned int skb_id:14;
+	unsigned int reserve31:8;
 };
 
 struct higmac_tso_desc {
@@ -299,14 +344,6 @@ struct higmac_tso_desc {
 			unsigned int sg_flag:1;
 			unsigned int hw_own:1;
 		} tx;
-		struct {
-			unsigned int buffer_len:11;
-			unsigned int reserve2:5;
-			unsigned int data_len:11;
-			unsigned int reserve1:2;
-			unsigned int fl:2;
-			unsigned int descvid:1;
-		} rx;
 		unsigned int val;
 	} desc1;
 	unsigned int reserve_desc2;
@@ -330,8 +367,12 @@ struct higmac_desc {
 	unsigned int fl:2;
 	unsigned int descvid:1;
 
-	unsigned int reserve_desc2;
-	unsigned int reserve3;
+	unsigned int rxhash;
+	unsigned int reserve3:8;
+	unsigned int l3_hash:1;
+	unsigned int has_hash:1;
+	unsigned int skb_id:14;
+	unsigned int reserve31:8;
 
 	unsigned int reserve4;
 	unsigned int reserve5;
@@ -356,14 +397,6 @@ struct higmac_tso_desc {
 			unsigned int sg_flag:1;
 			unsigned int hw_own:1;
 		} tx;
-		struct {
-			unsigned int buffer_len:11;
-			unsigned int reserve2:5;
-			unsigned int data_len:11;
-			unsigned int reserve1:2;
-			unsigned int fl:2;
-			unsigned int descvid:1;
-		} rx;
 		unsigned int val;
 	} desc1;
 	unsigned int reserve_desc2;
@@ -378,6 +411,19 @@ struct higmac_tso_desc {
 
 #define SKB_MAGIC	((struct sk_buff *)0x5a)
 
+struct higmac_napi {
+	struct napi_struct napi;
+	struct higmac_netdev_local *ndev_priv;
+	int rxq_id;
+};
+
+struct higmac_rss_info {
+	u32 hash_cfg;
+	u32 ind_tbl_size;
+	u8 ind_tbl[RSS_INDIRECTION_TABLE_SIZE];
+	u8 key[RSS_HASH_KEY_SIZE];
+};
+
 #define QUEUE_NUMS	(4)
 struct higmac_netdev_local {
 #define HIGMAC_SG_DESC_ADD	(64U)
@@ -391,9 +437,16 @@ struct higmac_netdev_local {
 	void __iomem *macif_base;
 	void __iomem *crg_iobase;
 	void __iomem *peri_iobase;
+	void __iomem *otp_iobase;
 	int index;		/* 0 -- mac0, 1 -- mac1 */
 
 	bool tso_supported;
+	bool has_rxhash_cap;
+	bool has_rss_cap;
+	int num_rxqs;
+	struct higmac_napi q_napi[RSS_NUM_RXQS];
+	int irq[RSS_NUM_RXQS];
+	struct higmac_rss_info rss_info;
 
 	struct reset_control *port_rst;
 	struct reset_control *macif_rst;
@@ -410,7 +463,7 @@ struct higmac_netdev_local {
 
 		/* sizeof(desc) * count */
 		unsigned int size;
-	} pool[QUEUE_NUMS];
+	} pool[QUEUE_NUMS + RSS_NUM_RXQS - 1];
 #define rx_fq		pool[0]
 #define rx_bq		pool[1]
 #define tx_bq		pool[2]
@@ -436,6 +489,7 @@ struct higmac_netdev_local {
 	phy_interface_t phy_mode;
 	bool autoeee;
 	bool internal_phy;
+	u32 trim_params;
 	unsigned int phy_addr;
 	int (*eee_init)(struct phy_device *phy_dev);
         /* gpio reset pin if has */
@@ -453,10 +507,10 @@ struct higmac_netdev_local {
 	/* power management lock */
 	spinlock_t pmtlock;
 
-	struct tasklet_struct bf_recv;
 	int dev_state;		/* INIT/OPEN/CLOSE */
 	char pm_state;
-	bool wol_enable;
+	bool mac_wol_enable;
+	bool phy_wol_enable;
 	u32 msg_enable;
 #define INIT			(0)	/* power off gmac */
 #define OPEN			(1)	/* power on gmac */
@@ -478,6 +532,11 @@ struct send_pkt_info {
 };
 #endif
 
+#if defined(CONFIG_ARCH_HI3796MV2X)
+#define HIGMAC_HAS_INTERNAL_PHY
+#define HIGMAC_INTERNAL_PHY_TRIM
+#endif
+
 int higmac_tx_avail(struct higmac_netdev_local *ld);
 
 /* board related func */
@@ -488,7 +547,8 @@ void higmac_internal_phy_clk_disable(struct higmac_netdev_local *priv);
 void higmac_internal_phy_clk_enable(struct higmac_netdev_local *priv);
 void higmac_hw_all_clk_disable(struct higmac_netdev_local *priv);
 void higmac_hw_all_clk_enable(struct higmac_netdev_local *priv);
-void higmac_internal_fephy_trim(void);
+void higmac_internal_fephy_trim(struct mii_bus *bus, int phyaddr,
+				u32 trim_params);
 
 /* board independent func */
 void higmac_hw_phy_reset(struct higmac_netdev_local *priv);

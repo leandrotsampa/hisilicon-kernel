@@ -21,6 +21,7 @@
 #define FREQ_H
 
 #define _12MHz           (12000000)
+#define _12dot5MHz       (12500000)
 #define _24MHz           (24000000)
 #define _25MHz           (25000000)
 #define _15MHz           (15000000)
@@ -33,6 +34,7 @@
 #define _125MHz         (125000000)
 #define _150MHz         (150000000)
 #define _166dot5MHz     (166500000)
+#define _168dot75MHz    (168750000)
 #define _187MHz         (187000000)
 #define _200MHz         (200000000)
 #define _300MHz         (300000000)

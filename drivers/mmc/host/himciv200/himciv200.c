@@ -18,6 +18,7 @@
 #include <linux/delay.h>
 #include <linux/hikapi.h>
 #include <linux/clk.h>
+#include "../version.h"
 
 #undef  pr_fmt
 #define DRVNAME "himciv200"
@@ -41,13 +42,6 @@ extern u32 emmc_boot_tuning_phase;
 #include "himci_hi3798cv2x.c"
 #endif
 
-#if defined(CONFIG_ARCH_HI3798MV2X)
-#include "himci_hi3798mv2x.c"
-#endif
-
-#if defined(CONFIG_ARCH_HI3796MV200)
-#include "himci_hi3796mv200.c"
-#endif
 static u32 detect_time = HI_MCI_DETECT_TIMEOUT;
 static u32 retry_count = MAX_RETRY_COUNT;
 static u32 request_timeout = HI_MCI_REQUEST_TIMEOUT;
@@ -120,18 +114,22 @@ static void himciv200_host_power(struct himciv200_host *host, u32 power_on,
  *0: card remove
  ******************************************************************************/
 
+static int himciv200_get_card_detect_register(struct himciv200_host *host)
+{
+	u32 regval = mci_readl(host, MCI_CDETECT);
+
+	return (regval & HIMCI_CARD0) ? 0 : 1;
+}
+/******************************************************************************/
+
 static int himciv200_card_detect(struct mmc_host *mmc)
 {
 	struct himciv200_host *host = mmc_priv(mmc);
-	u32 regval;
 
-	regval = mci_readl(host, MCI_CDETECT);
+	if (host->force_unpluged)
+		return 0;
 
-	regval &= HIMCI_CARD0;
-
-	regval = !regval;
-
-	return regval;
+	return himciv200_get_card_detect_register(host);
 }
 /******************************************************************************/
 
@@ -161,6 +159,7 @@ static int himciv200_wait_cmd(struct himciv200_host *host)
 
 			himci_error("hardware locked write error,Other CMD is running\n",
 					host->devid);
+			himciv200_host_reset(host);
 			return 1;
 		}
 		spin_unlock_irqrestore(&host->lock, flags);
@@ -262,8 +261,9 @@ static void himciv200_host_init(struct himciv200_host *host)
 	regval = mci_readl(host, MCI_INTMASK);
 	regval &= ~ALL_INT_MASK;
 	regval |= DTO_INT_MASK
-			| CD_INT_MASK
-			| VOLT_SWITCH_INT_MASK;
+		| CARD_DETECT_IRQ_MASK
+		| CD_INT_MASK
+		| VOLT_SWITCH_INT_MASK;
 	mci_writel(host, MCI_INTMASK, regval);
 
 #if defined(CONFIG_ARCH_HI3798MV2X)
@@ -296,10 +296,11 @@ static void himciv200_detect_card(unsigned long arg)
 	unsigned int curr_status;
 	unsigned int status[3];
 	unsigned int detect_retry_count = 0;
+	unsigned long flags;
 
 	while (1) {
 		for (i = 0; i < 3; i++) {
-			status[i] = himciv200_card_detect(host->mmc);
+			status[i] = himciv200_get_card_detect_register(host);
 			udelay(10);
 		}
 		if ((status[0] == status[1]) && (status[0] == status[2]))
@@ -312,14 +313,42 @@ static void himciv200_detect_card(unsigned long arg)
 	}
 
 	curr_status = status[0];
+
+	spin_lock_irqsave(&host->lock, flags);
+	if (!host->card_detect_change) {
+		spin_unlock_irqrestore(&host->lock, flags);
+		goto err ;
+	}
+
+	host->card_detect_change = 0;
+	host->force_unpluged = 1;
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	if (host->force_unpluged) {
+		/*
+		 * previous      current        force_unpluged
+		 * pluged        pluged         1
+		 * pluged        unpluged       0
+		 * unpluged      unpluged       0
+		 * unpluged      pluged         0
+		 */
+		if (host->card_status == CARD_UNPLUGED ||
+		    curr_status == CARD_UNPLUGED)
+			host->force_unpluged = 0;
+		else
+			curr_status = CARD_UNPLUGED;
+	}
+
 	if (curr_status != host->card_status) {
 		himci_trace(2, "begin card_status = %d\n", host->card_status);
 		host->card_status = curr_status;
 		if (curr_status != CARD_UNPLUGED) {
 			himciv200_host_init(host);
 			printk(KERN_INFO "card connected!\n");
-		} else
+		} else {
 			printk(KERN_INFO "card disconnected!\n");
+			himciv200_host_reset(host);
+		}
 
 		mmc_detect_change(host->mmc, 0);
 	}
@@ -644,6 +673,8 @@ static int himciv200_wait_data_complete(struct himciv200_host *host)
 		spin_unlock_irqrestore(&host->lock, flags);
 		himci_error("wait data request complete is timeout! 0x%08X, CMD%u(%X)\n",
 				host->devid, regval, cmd->opcode, cmd->arg);
+		himciv200_idma_stop(host);
+		himciv200_data_done(host, regval);
 		return -1;
 	}
 
@@ -1027,16 +1058,23 @@ static void himciv200_enable_sdio_irq(struct mmc_host *mmc, int enable)
 {
 	struct himciv200_host *host = mmc_priv(mmc);
 	u32 regval;
+	unsigned long flags;
 
 	himci_trace(2, "begin");
+
+	if (!in_interrupt())
+		spin_lock_irqsave(&host->lock, flags);
 
 	regval = mci_readl(host, MCI_INTMASK);
 	if (enable) {
 		regval |= SDIO_INT_MASK;
 	} else {
-		regval &= ~SDIO_INT_MASK;
+		regval &= (~SDIO_INT_MASK);
 	}
 	mci_writel(host, MCI_INTMASK, regval);
+
+	if (!in_interrupt())
+		spin_unlock_irqrestore(&host->lock, flags);
 }
 /******************************************************************************/
 
@@ -1064,6 +1102,12 @@ static irqreturn_t himciv200_irq(int irq, void *dev_id)
 	spin_lock_irqsave(&host->lock, flags);
 	state = mci_readl(host, MCI_MINTSTS);
 	himci_trace(2, "irq state 0x%08X\n", state);
+
+	if (state & CARD_DETECT_IRQ_STATUS) {
+		mci_writel(host, MCI_RINTSTS, CARD_DETECT_IRQ_STATUS);
+
+		host->card_detect_change = 1;
+	}
 
 	if (state & DTO_INT_STATUS) {
 		regval = mci_readl(host, MCI_INTMASK);
@@ -1108,6 +1152,10 @@ static irqreturn_t himciv200_irq(int irq, void *dev_id)
 	}
 
 	if (state & SDIO_INT_STATUS) {
+		regval = mci_readl(host, MCI_INTMASK);
+		regval &= ~SDIO_INT_MASK;
+		mci_writel(host, MCI_INTMASK, regval);
+
 		mci_writel(host, MCI_RINTSTS, SDIO_INT_STATUS);
 		mmc_signal_sdio_irq(host->mmc);
 	}
@@ -1244,6 +1292,8 @@ static int __init himciv200_pltm_probe(struct platform_device *pdev)
 
 	himciv200_host_init(host);
 
+	host->card_detect_change = 0;
+	host->force_unpluged = 0;
 	host->card_status = himciv200_card_detect(host->mmc);
 	if (!host->card_status) {
 		printk(KERN_NOTICE "%s: eMMC/MMC/SD Device NOT detected!\n",
@@ -1437,7 +1487,7 @@ EXPORT_SYMBOL(himciv200_get_driver);
 
 static int __init himciv200_module_init(void)
 {
-	printk("registered new interface driver himciv200\n");
+	printk("registered new interface driver himci%s\n", HIMCI_VERSION_STRING);
 
 	return platform_driver_register(&himciv200_pltfm_driver);
 }

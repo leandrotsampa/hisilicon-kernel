@@ -155,10 +155,10 @@ static void nano_tx_deemp_sata(struct hiahci_phy_priv *priv, u32 deemp_value)
 
 static int hiahci_phy_init(struct phy *phy)
 {
-	u32 regval, mux;
+	u32 mux;
 	struct hiahci_phy_priv *priv = phy_get_drvdata(phy);
 
-	//TODO: make sure if combphy1 connected
+	//make sure if combphy1 connected
 	mux = readl(priv->peri_ctrl_base + PERI_CTRL);
 	mux &= COMBPHY1_SEL_MASK;
 
@@ -173,13 +173,37 @@ static int hiahci_phy_init(struct phy *phy)
 	hisata_write(0x131, priv->peri_ctrl_base + 0x1074);
 #endif
 
+
+
+	return 0;
+}
+/******************************************************************************/
+
+static int hiahci_phy_power_on(struct phy *phy)
+{
+	u32 regval, mux;
+	struct hiahci_phy_priv *priv = phy_get_drvdata(phy);
+
+	//make sure if combphy1 connected
+	mux = readl(priv->peri_ctrl_base + PERI_CTRL);
+	mux &= COMBPHY1_SEL_MASK;
+
+	if (mux != COMBPHY1_SEL_SATA) {
+		return -1;
+	}
+
+	/* Power on SATA disk */
+	regval = readl(priv->peri_ctrl_base + 0x08);
+	regval |= BIT(10);
+	writel(regval, priv->peri_ctrl_base + 0x08);
+
 	/* Nano PHY Internal Config */
 	/* SSC off*/
-//	nano_reg_write(priv, 0x2, 0x8);
+	//nano_reg_write(priv, 0x2, 0x8);
 
 	/*top_rate=1*/
 	nano_reg_write(priv, 0x1, 0x4);
-	
+
 	/*release SATA controller reset*/
 	hisata_write(0xf, priv->peri_ctrl_base + 0x20a8);
 
@@ -199,6 +223,7 @@ static int hiahci_phy_init(struct phy *phy)
 	/* Config Spin-up */
 	hisata_write(0x600000, priv->iobase + HI_SATA_PORT0_OFF + 0x18);
 	hisata_write(0x600002, priv->iobase + HI_SATA_PORT0_OFF + 0x18);
+
 	msleep(100);//need to wait for sata link up
 
 	/* read link status */
@@ -213,20 +238,6 @@ static int hiahci_phy_init(struct phy *phy)
 		/* 6G_IDLE_DET_TRIM=2'b11' */
 		nano_reg_write(priv,0x19,0x3);
 	}
-
-	return 0;
-}
-/******************************************************************************/
-
-static int hiahci_phy_power_on(struct phy *phy)
-{
-	u32 regval;
-	struct hiahci_phy_priv *priv = phy_get_drvdata(phy);
-
-	/* Power on SATA disk */
-	regval = readl(priv->peri_ctrl_base + 0x08);
-	regval |= BIT(10);
-	writel(regval, priv->peri_ctrl_base + 0x08);
 
 	return 0;
 }
@@ -253,7 +264,17 @@ static struct phy_ops hiahci_phy_ops = {
 	.owner = THIS_MODULE,
 };
 /******************************************************************************/
+static struct phy *phy_hisi_sata_phy_xlate(struct device *dev,
+					     struct of_phandle_args *args)
+{
+	struct phy *phy = dev_get_drvdata(dev);
 
+	if (NULL == phy || IS_ERR(phy))
+		return ERR_PTR(-ENODEV);
+
+	return phy;
+}
+/******************************************************************************/
 static int hiahci_phy_probe(struct platform_device *pdev)
 {
 	struct phy *phy;
@@ -286,8 +307,9 @@ static int hiahci_phy_probe(struct platform_device *pdev)
 	}
 
 	phy_set_drvdata(phy, priv);
+	dev_set_drvdata(&pdev->dev, phy);
 	phy_provider = devm_of_phy_provider_register(&pdev->dev,
-		of_phy_simple_xlate);
+		phy_hisi_sata_phy_xlate);
 	if (IS_ERR_OR_NULL(phy_provider)) {
 		pr_err("failed to register phy provider, %ld\n", PTR_ERR(phy_provider));
 		return PTR_ERR(phy_provider);

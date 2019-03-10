@@ -108,7 +108,7 @@ static int hiclk_enable_usb3(struct clk_hw *hw)
 	mdelay(5);
 
 	writel(0x23100000, XHCI_HOST_ADDR + GTXTHRCFG);
-	writel(0x23100000, XHCI_HOST_ADDR + GRXTHRCFG);
+	writel(0x23180000, XHCI_HOST_ADDR + GRXTHRCFG);
 	mdelay(1);
 
 	/* USB3.0 eye config */

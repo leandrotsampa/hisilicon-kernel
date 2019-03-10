@@ -425,6 +425,7 @@ struct ion_heap *ion_heap_create(struct ion_platform_heap *heap_data)
 
 	heap->name = heap_data->name;
 	heap->id = heap_data->id;
+	heap->pdev = heap_data->priv;
 	return heap;
 }
 EXPORT_SYMBOL(ion_heap_create);

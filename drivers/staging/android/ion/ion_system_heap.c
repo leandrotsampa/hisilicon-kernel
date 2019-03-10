@@ -23,12 +23,14 @@
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+#include <linux/sizes.h>
+#include <linux/hikapi.h>
 #include "ion.h"
 #include "ion_priv.h"
 
-static gfp_t high_order_gfp_flags = (GFP_HIGHUSER | __GFP_ZERO | __GFP_NOWARN |
+static gfp_t high_order_gfp_flags = (__GFP_ZERO | __GFP_NOWARN |
 				     __GFP_NORETRY) & ~__GFP_DIRECT_RECLAIM;
-static gfp_t low_order_gfp_flags  = (GFP_HIGHUSER | __GFP_ZERO | __GFP_NOWARN);
+static gfp_t low_order_gfp_flags  = (__GFP_ZERO | __GFP_NOWARN);
 static const unsigned int orders[] = {8, 4, 0};
 static const int num_orders = ARRAY_SIZE(orders);
 static int order_to_index(unsigned int order)
@@ -59,9 +61,13 @@ static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 	bool cached = ion_buffer_cached(buffer);
 	struct ion_page_pool *pool = heap->pools[order_to_index(order)];
 	struct page *page;
+	struct device *dev = buffer->heap->pdev;
+	size_t size;
+
 
 	if (!cached) {
 		page = ion_page_pool_alloc(pool);
+		size = PAGE_SIZE << pool->order;
 	} else {
 		gfp_t gfp_flags = low_order_gfp_flags;
 
@@ -70,9 +76,11 @@ static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 		page = alloc_pages(gfp_flags | __GFP_COMP, order);
 		if (!page)
 			return NULL;
-		ion_pages_sync_for_device(NULL, page, PAGE_SIZE << order,
-						DMA_BIDIRECTIONAL);
+		size = PAGE_SIZE << order;
 	}
+	if (page)
+		ion_pages_sync_for_device(dev, page, size,
+						DMA_BIDIRECTIONAL);
 
 	return page;
 }
@@ -281,6 +289,45 @@ struct ion_heap *ion_system_heap_create(struct ion_platform_heap *unused)
 {
 	struct ion_system_heap *heap;
 	int i;
+	gfp_t flags = 0u;
+
+#ifdef CONFIG_ARM64
+	extern phys_addr_t dma_zone_total_size;
+	/*
+	 * this is for long-short-leg
+	 */
+	if (dma_zone_total_size) {
+		high_order_gfp_flags = high_order_gfp_flags | GFP_DMA;
+		low_order_gfp_flags = low_order_gfp_flags | GFP_DMA;
+	} else {
+		high_order_gfp_flags = high_order_gfp_flags | GFP_HIGHUSER;
+		low_order_gfp_flags = low_order_gfp_flags | GFP_HIGHUSER;
+	}
+#else
+	unsigned int size = 0;
+	unsigned int ret = 0;
+	ret = get_mem_size(&size, HIKAPI_GET_RAM_SIZE);
+	if (ret) {
+		printk("creat ion system heap failed, get ddr size failed!\n");
+		return ERR_PTR(-ENOMEM);
+	}
+	size = size << 20;
+
+	/* 1.5G long-short-leg  */
+	if ((size > 0x40000000) && (size <= 0x60000000)){
+                flags = GFP_KERNEL;
+	}else{
+                flags = GFP_HIGHUSER;
+	}
+
+#if defined(CONFIG_TEE)
+	if (size > 0x80000000 ) {
+		flags = GFP_KERNEL;
+	}
+#endif
+	high_order_gfp_flags = high_order_gfp_flags | flags;
+	low_order_gfp_flags  = low_order_gfp_flags  | flags;
+#endif
 
 	heap = kzalloc(sizeof(struct ion_system_heap) +
 			sizeof(struct ion_page_pool *) * num_orders,
@@ -336,6 +383,7 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 	struct sg_table *table;
 	unsigned long i;
 	int ret;
+	struct device *dev = buffer->heap->pdev;
 
 	if (align > (PAGE_SIZE << order))
 		return -EINVAL;
@@ -364,7 +412,7 @@ static int ion_system_contig_heap_allocate(struct ion_heap *heap,
 
 	buffer->priv_virt = table;
 
-	ion_pages_sync_for_device(NULL, page, len, DMA_BIDIRECTIONAL);
+	ion_pages_sync_for_device(dev, page, len, DMA_BIDIRECTIONAL);
 
 	return 0;
 

@@ -67,11 +67,10 @@ static int hiclk_set_rate_hifmc100(struct clk_hw *hw, unsigned long rate,
 }
 /******************************************************************************/
 
-static long hiclk_determine_rate_hifmc100(struct clk_hw *hw, unsigned long rate,
-					  unsigned long *best_parent_rate,
-					  struct clk **best_parent_clk)
+static int hiclk_determine_rate_hifmc100(struct clk_hw *hw,
+							struct clk_rate_request *req)
 {
-	return rate;
+	return 0;
 }
 /******************************************************************************/
 

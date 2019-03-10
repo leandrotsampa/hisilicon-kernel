@@ -41,6 +41,16 @@ struct nand_flash_dev nand_flash_ids_hisi[] = {
 		.options   = 0,
 		.ecc       = NAND_ECC_INFO(4, SZ_512),
 	}, {
+		.name      = "S34ML02G200TFI000",
+		.id        = {0x01, 0xda, 0x90, 0x95, 0x46, 0x00, 0x00, 0x00},
+		.id_len    = 5,
+		.pagesize  = SZ_2K,
+		.chipsize  = SZ_256,
+		.erasesize = SZ_128K,
+		.oobsize   = 128,
+		.options   = 0,
+		.ecc       = NAND_ECC_INFO(4, SZ_512),
+	}, {
 		.name      = "TC58NVG5D2 32G 3.3V 8-bit",
 		.id        = {0x98, 0xD7, 0x94, 0x32, 0x76, 0x56, 0x09, 0x00},
 		.id_len    = 8,
@@ -184,7 +194,7 @@ struct nand_flash_dev nand_flash_ids_hisi[] = {
 		.options   = 0,
 		.ecc       = NAND_ECC_INFO(24, SZ_1K),
 	}, {
-		.name      = "MT29F256G08CMCBB",
+		.name      = "MT29F64G08CBAAB",
 		.id        = {0x2C, 0x64, 0x44, 0x4B, 0xA9, 0x00, 0x00, 0x00},
 		.id_len    = 8,
 		.chipsize  = SZ_8K,
@@ -350,6 +360,17 @@ struct nand_flash_dev nand_flash_ids_hisi[] = {
 		.ecc       = NAND_ECC_INFO(60, SZ_1K),
 		.read_retry_type = NAND_RR_TOSHIBA_V2013,
 	}, {
+		.name      = "TC58TEG5DClTA0C",
+		.id        = {0x98, 0xD7, 0x84, 0x93, 0x72, 0x51, 0x08, 0x04},
+		.id_len    = 8,
+		.chipsize  = SZ_4K,
+		.pagesize  = SZ_16K,
+		.erasesize = SZ_4M,
+		.oobsize   = 1280,
+		.options   = 0,
+		.ecc       = NAND_ECC_INFO(60, SZ_1K),
+		.read_retry_type = NAND_RR_TOSHIBA_V2013,
+	},{
 		.name      = "Tx58TEGxDDKTAx0",
 		.id        = {0x98, 0xDE, 0x94, 0x93, 0x76, 0x50},
 		.id_len    = 6,
@@ -452,7 +473,17 @@ struct nand_flash_dev nand_flash_ids_hisi[] = {
 		.oobsize   = 218,
 		.options   = 0,
 		.ecc       = NAND_ECC_INFO(4, SZ_512),
-	}, {        /* SLC 1bit/512 */
+	}, {        /* SLC 4bit/512 */
+                .name      = "FMND1G08U3B",
+                .id        = {0xF8, 0xF1, 0x80, 0x91, },
+                .id_len    = 4,
+                .chipsize  = SZ_128,
+                .pagesize  = SZ_2K,
+                .erasesize = SZ_128K,
+                .oobsize   = 64,
+                .options   = 0,
+                .ecc       = NAND_ECC_INFO(4, SZ_512),
+        }, {        /* SLC 1bit/512 */
 		.name      = "PSU2GA30AT",
 		.id        = {0x7F, 0x7F, 0x7F, 0x7F, 0xC8, 0xDA, 0x00, 0x15, },
 		.id_len    = 8,

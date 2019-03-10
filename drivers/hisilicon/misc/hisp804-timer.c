@@ -94,7 +94,7 @@ static void hisp804_clocksource_resume(struct clocksource *cs)
 }
 /******************************************************************************/
 
-static u64 hisp804_sched_clock_read(void)
+static u64 notrace hisp804_sched_clock_read(void)
 {
 	return ~readl_relaxed(hisp804_sched_clock_base + TIMER_VALUE);
 }
@@ -111,7 +111,7 @@ static void __init hisp804_clocksource_init(void __iomem *base,
 {
 	hisp804_clksrc.base = base;
 	hisp804_clksrc.clksrc.name = "hisp804";
-	hisp804_clksrc.clksrc.rating = 200;
+	hisp804_clksrc.clksrc.rating = 499;
 	hisp804_clksrc.clksrc.read = hisp804_clocksource_read;
 	hisp804_clksrc.clksrc.resume = hisp804_clocksource_resume;
 	hisp804_clksrc.clksrc.mask = CLOCKSOURCE_MASK(32);
@@ -142,6 +142,9 @@ static int hisp804_clockevent_set_next_event(unsigned long next,
 	unsigned long ctrl;
 	struct hisp804_clockevent_device *hiclkevt = to_hiclkevt(clkevt);
 
+	writel(TIMER_CTRL_32BIT, hiclkevt->base + TIMER_CTRL);
+
+	writel(next, hiclkevt->base + TIMER_LOAD);
 	writel(next, hiclkevt->base + TIMER_LOAD);
 
 	ctrl = TIMER_CTRL_32BIT |
@@ -159,8 +162,9 @@ static int sp804_clockevent_set_periodic(struct clock_event_device *clkevt)
 	unsigned long ctrl;
 	struct hisp804_clockevent_device *hiclkevt = to_hiclkevt(clkevt);
 
-	writel(0, hiclkevt->base + TIMER_CTRL);
+	writel(TIMER_CTRL_32BIT, hiclkevt->base + TIMER_CTRL);
 
+	writel(hiclkevt->reload, hiclkevt->base + TIMER_LOAD);
 	writel(hiclkevt->reload, hiclkevt->base + TIMER_LOAD);
 
 	ctrl = TIMER_CTRL_32BIT |
@@ -256,7 +260,7 @@ static void __init clockevent_init(struct hisp804_clockevent_device *hiclkevt,
 	snprintf(hiclkevt->name, sizeof(hiclkevt->name), "clockevent %d", cpu);
 
 	clkevt = &hiclkevt->clkevt;
-	
+
 	clkevt->name = hiclkevt->name;
 	clkevt->cpumask = cpumask_of(cpu);
 	clkevt->irq = irq;
@@ -269,7 +273,7 @@ static void __init clockevent_init(struct hisp804_clockevent_device *hiclkevt,
 	clkevt->rating = 400;
 
 	action = &hiclkevt->action;
-	
+
 	action->name = hiclkevt->name;
 	action->dev_id = hiclkevt;
 	action->irq = irq;

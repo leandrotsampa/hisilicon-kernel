@@ -44,7 +44,7 @@ int32_t TEEC_StartApp(
 #endif
 /**
  * History: \n
- * 2013-5-12 l00202565: Create this file\n
+ * 2013-5-12 sdk: Create this file\n
  *
  * vi: set expandtab ts=4 sw=4 tw=80:
  */

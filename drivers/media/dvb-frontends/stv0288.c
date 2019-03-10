@@ -382,9 +382,6 @@ static int stv0288_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		dprintk("stv0288 has locked\n");
 	}
 
-	if (state->config->set_lock_led)
-		state->config->set_lock_led(fe, *status & FE_HAS_LOCK);
-
 	return 0;
 }
 
@@ -418,9 +415,6 @@ static int stv0288_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 static int stv0288_sleep(struct dvb_frontend *fe)
 {
 	struct stv0288_state *state = fe->demodulator_priv;
-
-	if (state->config->set_lock_led)
-		state->config->set_lock_led(fe, 0);
 
 	stv0288_writeregI(state, 0x41, 0x84);
 	state->initialised = 0;
@@ -539,10 +533,6 @@ static int stv0288_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 static void stv0288_release(struct dvb_frontend *fe)
 {
 	struct stv0288_state *state = fe->demodulator_priv;
-
-	if (state->config->set_lock_led)
-		state->config->set_lock_led(fe, 0);
-
 	kfree(state);
 }
 

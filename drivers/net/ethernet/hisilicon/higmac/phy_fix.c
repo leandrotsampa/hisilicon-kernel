@@ -1,5 +1,6 @@
 #include "higmac.h"
 #include "phy_fix.h"
+#include "mdio.h"
 
 static const u32 phy_fix_param[] = {
 #include "festa_v200.h"
@@ -8,6 +9,121 @@ static const u32 phy_fix_param[] = {
 static const u32 phy_v300_fix_param[] = {
 #include "festa_v300_2204.h"
 };
+
+#ifdef HIGMAC_INTERNAL_PHY_TRIM
+#define REG_LD_AM		0x3050
+#define LD_AM_MASK		GENMASK(4, 0)
+#define REG_LDO_AM		0x3051
+#define LDO_AM_MASK		GENMASK(2, 0)
+#define REG_R_TUNING		0x3052
+#define R_TUNING_MASK		GENMASK(5, 0)
+#define REG_WR_DONE		0x3053
+#define REG_DEF_ATE		0x3057
+#define DEF_LD_AM		0x0f
+#define DEF_LDO_AM		0x7
+#define DEF_R_TUNING		0x15
+
+static inline int higmac_phy_expanded_read(struct mii_bus *bus, int phyaddr,
+					   u32 reg_addr)
+{
+	int ret;
+
+	higmac_mdio_write(bus, phyaddr, MII_EXPMA, reg_addr);
+	ret = higmac_mdio_read(bus, phyaddr, MII_EXPMD);
+
+	return ret;
+}
+
+static inline int higmac_phy_expanded_write(struct mii_bus *bus, int phyaddr,
+					    u32 reg_addr, u16 val)
+{
+	int ret;
+
+	higmac_mdio_write(bus, phyaddr, MII_EXPMA, reg_addr);
+	ret = higmac_mdio_write(bus, phyaddr, MII_EXPMD, val);
+
+	return ret;
+}
+
+void higmac_use_default_trim(struct mii_bus *bus, int phyaddr)
+{
+	unsigned short v;
+	int timeout = 3;
+
+	pr_info("No OTP data, festa PHY use default ATE parameters!\n");
+
+	do {
+		msleep(250);
+		v = higmac_phy_expanded_read(bus, phyaddr, REG_DEF_ATE);
+		v &= BIT(0);
+	} while (!v && --timeout);
+	WARN(!timeout, "festa PHY 0x3057 wait bit0 timeout!\n");
+
+	mdelay(5);
+}
+#endif
+
+#ifdef HIGMAC_INTERNAL_PHY_TRIM
+void higmac_internal_fephy_trim(struct mii_bus *bus, int phyaddr,
+				u32 trim_params)
+{
+	unsigned short ld_amptlitude;
+	unsigned short ldo_amptlitude;
+	unsigned short r_tuning_val;
+	unsigned short v;
+	int timeout = 3000;
+
+	ld_amptlitude = DEF_LD_AM;
+	ldo_amptlitude = DEF_LDO_AM;
+	r_tuning_val = DEF_R_TUNING;
+
+	if (!trim_params) {
+		higmac_use_default_trim(bus, phyaddr);
+		return;
+	}
+
+	ld_amptlitude = trim_params & LD_AM_MASK;
+	ldo_amptlitude = (trim_params >> 8) & LDO_AM_MASK;
+	r_tuning_val = (trim_params >> 16) & R_TUNING_MASK;
+
+	v = higmac_phy_expanded_read(bus, phyaddr, REG_LD_AM);
+	v = (v & ~LD_AM_MASK) | (ld_amptlitude & LD_AM_MASK);
+	higmac_phy_expanded_write(bus, phyaddr, REG_LD_AM, v);
+
+	v = higmac_phy_expanded_read(bus, phyaddr, REG_LDO_AM);
+	v = (v & ~LDO_AM_MASK) | (ldo_amptlitude & LDO_AM_MASK);
+	higmac_phy_expanded_write(bus, phyaddr, REG_LDO_AM, v);
+
+	v = higmac_phy_expanded_read(bus, phyaddr, REG_R_TUNING);
+	v = (v & ~R_TUNING_MASK) | (r_tuning_val & R_TUNING_MASK);
+	higmac_phy_expanded_write(bus, phyaddr, REG_R_TUNING, v);
+
+	v = higmac_phy_expanded_read(bus, phyaddr, REG_WR_DONE);
+	WARN(v & BIT(1), "festa PHY 0x3053 bit1 CFG_ACK value: 1\n");
+	v = v | BIT(0);
+	higmac_phy_expanded_write(bus, phyaddr, REG_WR_DONE, v);
+
+	do {
+		usleep_range(100, 150);
+		v = higmac_phy_expanded_read(bus, phyaddr, REG_WR_DONE);
+		v &= BIT(1);
+	} while (!v && --timeout);
+	WARN(!timeout, "festa PHY 0x3053 wait bit1 CFG_ACK timeout!\n");
+
+	mdelay(5);
+
+	pr_info("FEPHY:addr=%d, la_am=0x%x, ldo_am=0x%x, r_tuning=0x%x\n",
+		phyaddr,
+		higmac_phy_expanded_read(bus, phyaddr, REG_LD_AM),
+		higmac_phy_expanded_read(bus, phyaddr, REG_LDO_AM),
+		higmac_phy_expanded_read(bus, phyaddr, REG_R_TUNING));
+}
+#else
+void higmac_internal_fephy_trim(struct mii_bus *bus, int phyaddr,
+				u32 trim_params)
+{
+}
+#endif
 
 static int __maybe_unused set_phy_expanded_access_mode(struct phy_device *phy_dev, int access_mode)
 {
@@ -257,4 +373,18 @@ void phy_register_fixups(void)
 			ATH_PHY_ID_MASK, at803x_phy_fix);
 	phy_register_fixup_for_uid(PHY_ID_RTL8211F,
 			PHY_ID_MASK_RTL8211F, rtl8211f_phy_fix);
+}
+
+void phy_unregister_fixups(void)
+{
+	phy_unregister_fixup_for_uid(REALTEK_PHY_ID_8211EG, REALTEK_PHY_MASK);
+	phy_unregister_fixup_for_uid(HISILICON_PHY_ID_FESTAV200,
+				     HISILICON_PHY_MASK);
+	phy_unregister_fixup_for_uid(HISILICON_PHY_ID_FESTAV300,
+				     HISILICON_PHY_MASK);
+	phy_unregister_fixup_for_uid(PHY_ID_KSZ8051MNL, DEFAULT_PHY_MASK);
+	phy_unregister_fixup_for_uid(PHY_ID_KSZ8081RNB, DEFAULT_PHY_MASK);
+	phy_unregister_fixup_for_uid(PHY_ID_KSZ9031RNX, DEFAULT_PHY_MASK);
+	phy_unregister_fixup_for_uid(ATH8035_PHY_ID, ATH_PHY_ID_MASK);
+	phy_unregister_fixup_for_uid(PHY_ID_RTL8211F, PHY_ID_MASK_RTL8211F);
 }

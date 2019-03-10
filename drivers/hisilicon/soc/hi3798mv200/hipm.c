@@ -51,6 +51,7 @@ EXPORT_SYMBOL(ca_pm_suspend);
 static int hi_pm_suspend(void)
 {
 	int ret = 0;
+#ifndef CONFIG_TEE
 	unsigned int regval = readl(hi_otp_idword_addr);
 	if (regval == OTP_CA_ID_WORD) {
 		if (!hi_ca_ddrwakeupcheck_virt) {
@@ -63,6 +64,7 @@ static int hi_pm_suspend(void)
 		if (ca_pm_suspend)
 			ca_pm_suspend(hi_ca_ddrwakeupcheck_virt, CA_DDR_WAKEUPCHECK_LENTH);
 	}
+#endif
 
 #ifdef CONFIG_ARM64
 	ret = cpu_suspend(1, arm_cpuidle_suspend);

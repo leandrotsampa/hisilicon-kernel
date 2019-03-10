@@ -68,6 +68,7 @@
 #define VOLT_SWITCH_INT_MASK              BIT(10)
 #define SBE_INT_MASK                      BIT(13)
 #define SDIO_INT_MASK                     BIT(16)
+#define CARD_DETECT_IRQ_MASK              BIT(0)
 
 /* MCI_CMD REG(0X2C) */
 #define CMD_START                         BIT(31)
@@ -106,6 +107,7 @@
 #define DTO_INT_STATUS                    BIT(3)
 #define CD_INT_STATUS                     BIT(2)
 #define RE_INT_STATUS                     BIT(1)
+#define CARD_DETECT_IRQ_STATUS            BIT(0)
 #define ALL_INT_CLR                       (0x1efff)
 
 /* MCI_STATUS(0x48) details */
@@ -116,7 +118,7 @@
 
 #ifdef CONFIG_ARCH_GODBOX
 #define FIFO_DEPTH                         16
-#elif defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
+#elif defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X) || defined(CONFIG_ARCH_HI3798MV310)
 #define FIFO_DEPTH                         256
 #endif
 
@@ -163,4 +165,7 @@
 #define SD_LDO_BYPASS                      BIT(6)
 #define SD_LDO_ENABLE                      BIT(5)
 #define SD_LDO_VOLTAGE                     BIT(4)
+
+/*MMC_GPIO details*/
+#define DTO_FIX_ENABLE						BIT(23)
 #endif

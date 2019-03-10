@@ -64,6 +64,14 @@ static int hisi_ion_probe(struct platform_device *pdev)
 		ion_device_add_heap(idev, heaps[i]);
 	}
 	platform_set_drvdata(pdev, idev);
+
+#ifdef CONFIG_ARM64
+	/*
+	 * set dma_ops in arm64.
+	 * The default ops is used.
+	 */
+	arch_setup_dma_ops(&(pdev->dev), 0, 0, NULL, false);
+#endif
 	return 0;
 err:
 	for (i = 0; i < num_heaps; i++) {

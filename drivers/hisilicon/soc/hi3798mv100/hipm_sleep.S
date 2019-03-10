@@ -250,9 +250,9 @@ ca_pm_suspend:
 	mov	r2, #0
 	str	r2, [r3, #48]
 
-	add	r2, r2, #40
+	add	r2, r2, #46
 	str	r2, [r3, #36]
-	mov	r2, #44
+	mov	r2, #32
 	str	r2, [r3, #40]
 
 	movw	a3, #112

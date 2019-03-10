@@ -42,3 +42,32 @@ u64 get_chipid(u64 mask)
 	return (mask == 0ULL) ? cpu_chipid : (cpu_chipid & mask);
 }
 EXPORT_SYMBOL(get_chipid);
+
+const char * get_cpu_version(void)
+{
+	u32 val = 0;
+	char * cpuversion;
+	
+	val = readl(__io_address(REG_BASE_PERI_CTRL + REG_PERI_SOC_FUSE));
+	val = ((val>>16) & 0x1F);
+
+	switch(val) {
+		case 0x00:
+			cpuversion = "BGA_23_23";
+			break;
+		case 0x01:
+			cpuversion = "BGA_19_19";
+			break;
+		case 0x03:
+			cpuversion = "BGA_15_15";
+			break;
+		case 0x07:
+			cpuversion = "QFP_216";
+			break;
+		default:
+			break;
+	}
+
+	return cpuversion;
+}
+EXPORT_SYMBOL(get_cpu_version);

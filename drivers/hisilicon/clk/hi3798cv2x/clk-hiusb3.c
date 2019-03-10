@@ -112,7 +112,7 @@ static void nano_phy_config_0(struct hiclk_hw *clk)
 	* GUSB3PIPECTL0[2:1] = 01 : Tx Deemphasis = -3.5dB, refer to spec
 	*/
 	reg = readl(xhci_host0_regbase + REG_GUSB3PIPECTL0);
-//	reg &= ~USB3_SUSPEND_EN;
+	reg &= ~USB3_SUSPEND_EN;
 	reg &= ~USB3_DEEMPHASIS_MASK;
 	reg |= USB3_DEEMPHASIS0;
 	reg |= USB3_TX_MARGIN1;
@@ -130,7 +130,7 @@ static void nano_phy_config_1(struct hiclk_hw *clk)
 	* GUSB3PIPECTL0[2:1] = 01 : Tx Deemphasis = -3.5dB, refer to spec
 	*/
 	reg = readl(xhci_host1_regbase + REG_GUSB3PIPECTL0);
-//	reg &= ~USB3_SUSPEND_EN;
+	reg &= ~USB3_SUSPEND_EN;
 	reg &= ~USB3_DEEMPHASIS_MASK;
 	reg |= USB3_DEEMPHASIS0;
 	reg |= USB3_TX_MARGIN1;
@@ -251,7 +251,7 @@ static int hiclk_enable_usb3_host0(struct clk_hw *hw)
 	}
 
 	/* init usb2 phy */
-	clk_enable(usb2clk);
+	clk_prepare_enable(usb2clk);
 
 	inno_phy_config_2p_0(clk);
 
@@ -330,7 +330,7 @@ static int hiclk_enable_usb3_host0(struct clk_hw *hw)
 	mdelay(1);
 
 	writel(0x23100000, xhci_host0_regbase + GTXTHRCFG);
-	writel(0x23100000, xhci_host0_regbase + GRXTHRCFG);
+	writel(0x23180000, xhci_host0_regbase + GRXTHRCFG);
 
 	udelay(200);
 
@@ -451,7 +451,7 @@ static int hiclk_enable_usb3_host1(struct clk_hw *hw)
 	mdelay(1);
 
 	writel(0x23100000, xhci_host1_regbase + GTXTHRCFG);
-	writel(0x23100000, xhci_host1_regbase + GRXTHRCFG);
+	writel(0x23180000, xhci_host1_regbase + GRXTHRCFG);
 
 	udelay(200);
 

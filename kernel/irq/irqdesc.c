@@ -91,6 +91,8 @@ static void desc_set_defaults(unsigned int irq, struct irq_desc *desc, int node,
 	for_each_possible_cpu(cpu)
 		*per_cpu_ptr(desc->kstat_irqs, cpu) = 0;
 	desc_smp_init(desc, node);
+	desc->flood_irqs = 0;
+	desc->flood_msecs = 0;
 }
 
 int nr_irqs = NR_IRQS;
@@ -336,6 +338,57 @@ void irq_init_desc(unsigned int irq)
 
 #endif /* !CONFIG_SPARSE_IRQ */
 
+static unsigned int irqflood __read_mostly = 0;
+
+static int irqflood_setup(char *str)
+{
+	get_option(&str, &irqflood);
+	printk(KERN_INFO "irq flood detection enabled, threshold:%d\n", irqflood);
+	return 1;
+}
+__setup("irqflood=", irqflood_setup);
+
+static void check_irq_flood(unsigned int irq, struct irq_desc *desc)
+{
+	int cpu;
+	int secs;
+	int irqs;
+	unsigned int sum = 0;
+	u64 msecs = sched_clock();
+
+	do_div(msecs, NSEC_PER_MSEC);
+	raw_spin_lock(&desc->lock);
+
+	if ((desc->flood_msecs + 1000) > (unsigned int)msecs
+	    || !desc->kstat_irqs)
+		goto out;
+
+	for_each_possible_cpu(cpu)
+		sum += *per_cpu_ptr(desc->kstat_irqs, cpu);
+
+	secs  = ((unsigned int)msecs - desc->flood_msecs) / 1000;
+	irqs = (sum - desc->flood_irqs) / secs;
+
+	desc->flood_msecs = (unsigned int)msecs;
+	desc->flood_irqs = sum;
+
+	if (irqs >= irqflood) {
+		char name[128];
+
+		name[0] = '\0';
+		if (desc->action && desc->action->name)
+			snprintf(name, sizeof(name), "%s", desc->action->name);
+
+		raw_spin_unlock(&desc->lock);
+
+		printk("*** interrupt flood detect, irq(%d,\"%s\") %d per second\n", irq, name, irqs);
+
+		raw_spin_lock(&desc->lock);
+	}
+out:
+	raw_spin_unlock(&desc->lock);
+}
+
 /**
  * generic_handle_irq - Invoke the handler for a particular irq
  * @irq:	The irq number to handle
@@ -347,6 +400,8 @@ int generic_handle_irq(unsigned int irq)
 
 	if (!desc)
 		return -EINVAL;
+	if (irqflood)
+		check_irq_flood(irq, desc);
 	generic_handle_irq_desc(desc);
 	return 0;
 }

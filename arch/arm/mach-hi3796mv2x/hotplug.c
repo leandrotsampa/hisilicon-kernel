@@ -93,33 +93,39 @@ void hi3798mv2x_cpu_die(unsigned int cpu)
 void set_scu_boot_addr(unsigned int start_addr, unsigned int jump_addr)
 {
 	unsigned int *virtaddr;
-#ifdef CONFIG_SECURE_EXTENSION
+	uint32_t *soc_tee_en_reg = ioremap(REG_SOC_TEE_ENABLE, PAGE_SIZE);
 
-	virtaddr = ioremap(REG_BASE_SCTL + REG_SC_GEN1, PAGE_SIZE);
+	BUG_ON(!soc_tee_en_reg);
 
-	*virtaddr = jump_addr;  /* pc jump phy address */
+	printk(KERN_INFO "SOC TEE EN = 0x%X\n", readl(soc_tee_en_reg));
+	if (0x42 != (readl(soc_tee_en_reg) >> 8 & 0xFF)) {
+		virtaddr = ioremap(REG_BASE_SCTL + REG_SC_GEN1, PAGE_SIZE);
 
-	smp_wmb();
-	__cpuc_flush_dcache_area((void *)virtaddr,
-				(size_t)sizeof(*virtaddr));
-	outer_clean_range(__pa(virtaddr), __pa(virtaddr + sizeof(*virtaddr)));
+		*virtaddr = jump_addr;  /* pc jump phy address */
 
-	iounmap(virtaddr);
-#else
-	unsigned int *p_virtaddr;
+		smp_wmb();
+		__cpuc_flush_dcache_area((void *)virtaddr,
+					(size_t)sizeof(*virtaddr));
+		outer_clean_range(__pa(virtaddr), __pa(virtaddr + sizeof(*virtaddr)));
 
-	p_virtaddr = virtaddr = ioremap(start_addr, PAGE_SIZE);
+		iounmap(virtaddr);
+	}else {
+		unsigned int *p_virtaddr;
 
-	*p_virtaddr++ = 0xe51ff004; /* ldr  pc, [pc, #-4] */
-	*p_virtaddr++ = jump_addr;  /* pc jump phy address */
+		p_virtaddr = virtaddr = ioremap(start_addr, PAGE_SIZE);
 
-	smp_wmb();
-	__cpuc_flush_dcache_area((void *)virtaddr,
-		(size_t)((char *)p_virtaddr - (char *)virtaddr));
-	outer_clean_range(__pa(virtaddr), __pa(p_virtaddr));
+		*p_virtaddr++ = 0xe51ff004; /* ldr  pc, [pc, #-4] */
+		*p_virtaddr++ = jump_addr;  /* pc jump phy address */
 
-	iounmap(virtaddr);
-#endif
+		smp_wmb();
+		__cpuc_flush_dcache_area((void *)virtaddr,
+					(size_t)((char *)p_virtaddr - (char *)virtaddr));
+		outer_clean_range(__pa(virtaddr), __pa(p_virtaddr));
+
+		iounmap(virtaddr);
+	}
+
+	iounmap(soc_tee_en_reg);
 }
 
 

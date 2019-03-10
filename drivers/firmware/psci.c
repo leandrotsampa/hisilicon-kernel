@@ -155,10 +155,15 @@ static int psci_cpu_suspend(u32 state, unsigned long entry_point)
 {
 	int err;
 	u32 fn;
-
+#ifdef CONFIG_TEE_VMX_ULTRA
+	fn = 0x8400000E;
+	err = invoke_psci_fn(fn, entry_point, 0, 0);
+	return psci_to_linux_errno(err);
+#else
 	fn = psci_function_id[PSCI_FN_CPU_SUSPEND];
 	err = invoke_psci_fn(fn, state, entry_point, 0);
 	return psci_to_linux_errno(err);
+#endif
 }
 
 static int psci_cpu_off(u32 state)

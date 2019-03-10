@@ -89,8 +89,6 @@ struct stv090x_config {
 
 	bool diseqc_envelope_mode;
 
-	/* Hook for Lock LED */
-	void (*set_lock_led) (struct dvb_frontend *fe, int offon);
 	int (*tuner_init)(struct dvb_frontend *fe);
 	int (*tuner_sleep)(struct dvb_frontend *fe);
 	int (*tuner_set_mode)(struct dvb_frontend *fe, enum tuner_mode mode);

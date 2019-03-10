@@ -5,11 +5,6 @@
 #include <linux/clk.h>
 #include "higmac.h"
 
-#if defined(CONFIG_ARCH_HI3796MV2X)
-#define HIGMAC_HAS_INTERNAL_PHY
-#define HIGMAC_INTERNAL_PHY_TRIM
-#endif
-
 #ifdef HIGMAC_HAS_INTERNAL_PHY
 /* register REG_CRG_FEPHY */
 #define REG_CRG_FEPHY		0x0388
@@ -18,6 +13,7 @@
 /* register REG_PERI_FEPHY */
 #define REG_PERI_FEPHY		0x0118
 #define BIT_MASK_FEPHY_ADDR	0x1F
+#define BIT_MASK_FEPHY_WOL	BIT(5)
 /* register REG_PERI_FEPHY_LDO */
 #define REG_PERI_FEPHY_LDO	0x0844
 #define BIT_LDO_EN		BIT(4)
@@ -45,6 +41,9 @@ void higmac_hw_internal_phy_reset(struct higmac_netdev_local *priv)
 {
 #ifdef HIGMAC_HAS_INTERNAL_PHY
 	unsigned int v = 0;
+
+	/* disable MDCK clock to make sure FEPHY reset success */
+	clk_disable_unprepare(priv->clk);
 
 	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
 	v &= ~BIT_FEPHY_CLK;
@@ -74,6 +73,7 @@ void higmac_hw_internal_phy_reset(struct higmac_netdev_local *priv)
 	v = readl(priv->peri_iobase + REG_PERI_FEPHY);
 	v &= ~BIT_MASK_FEPHY_ADDR;
 	v |= (priv->phy_addr & BIT_MASK_FEPHY_ADDR);
+	v |= BIT_MASK_FEPHY_WOL;
 	writel(v, priv->peri_iobase + REG_PERI_FEPHY);
 
 	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
@@ -87,13 +87,8 @@ void higmac_hw_internal_phy_reset(struct higmac_netdev_local *priv)
 	writel((u32)v, priv->crg_iobase + REG_CRG_FEPHY);
 
 	msleep(20); /* delay at least 15ms for MDIO operation */
-#endif
-}
 
-void higmac_internal_fephy_trim(void)
-{
-#ifdef HIGMAC_INTERNAL_PHY_TRIM
-	msleep(300);
+	clk_prepare_enable(priv->clk);
 #endif
 }
 
@@ -189,7 +184,16 @@ void higmac_internal_phy_clk_disable(struct higmac_netdev_local *priv)
 
 	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
 	v &= ~BIT_FEPHY_CLK;
+	v |= BIT_FEPHY_RST;
 	writel(v, priv->crg_iobase + REG_CRG_FEPHY);/* inside fephy clk disable */
+
+#if defined(CONFIG_ARCH_HI3796MV2X)
+	/* config FEPHY LDO to iddq mode to save power */
+	v = readl(priv->peri_iobase + REG_PERI_FEPHY_LDO);
+	v &= ~(BIT_LDO_EN | BIT_LDO_RSTN);
+	v |= (BIT_LDO_ENZ | BIT_IDDQ_MODE);
+	writel(v, priv->peri_iobase + REG_PERI_FEPHY_LDO);
+#endif
 #endif
 }
 
@@ -206,24 +210,12 @@ void higmac_internal_phy_clk_enable(struct higmac_netdev_local *priv)
 
 void higmac_hw_all_clk_disable(struct higmac_netdev_local *priv)
 {
-	/* If macif clock is enabled when suspend, we should
-	 * disable it here.
-	 * Because when resume, PHY will link up again and
-	 * macif clock will be enabled too. If we don't disable
-	 * macif clock in suspend, macif clock will be enabled twice.
-	 */
-	if (__clk_is_enabled(priv->macif_clk))
+	if (netif_running(priv->netdev)) {
 		clk_disable_unprepare(priv->macif_clk);
-
-	/* This is called in suspend, when net device is down,
-	 * MAC clk is disabled.
-	 * So we need to judge whether MAC clk is enabled,
-	 * otherwise kernel will WARNING if clk disable twice.
-	 */
-	if (__clk_is_enabled(priv->clk))
 		clk_disable_unprepare(priv->clk);
+	}
 
-	if (priv->internal_phy)
+	if (priv->internal_phy && !priv->phy_wol_enable)
 		higmac_internal_phy_clk_disable(priv);
 }
 
@@ -232,11 +224,8 @@ void higmac_hw_all_clk_enable(struct higmac_netdev_local *priv)
 	if (priv->internal_phy)
 		higmac_internal_phy_clk_enable(priv);
 
-	if (!__clk_is_enabled(priv->macif_clk) &&
-	    (priv->netdev->flags & IFF_UP))
+	if (netif_running(priv->netdev)) {
 		clk_prepare_enable(priv->macif_clk);
-
-	/* If net device is down when suspend, we should not enable MAC clk. */
-	if (!__clk_is_enabled(priv->clk) && (priv->netdev->flags & IFF_UP))
 		clk_prepare_enable(priv->clk);
+	}
 }

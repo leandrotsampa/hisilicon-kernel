@@ -59,12 +59,12 @@ static void calc_ddr_address(void)
 #if 1
     hi_ca_ddr_check_start0_phys = virt_to_phys(_text);
     hi_ca_ddr_check_size0 = (virt_to_phys(_end - 1) - hi_ca_ddr_check_start0_phys);
-    hi_ca_ddr_check_size1 = (hi_ca_ddr_check_max_phys - hi_ca_ddr_check_min_phys);
-    writel(0x2, (hi_sc_virtbase + REG_CHECK_AREA_NUM));
+    //hi_ca_ddr_check_size1 = (hi_ca_ddr_check_max_phys - hi_ca_ddr_check_min_phys);
+    writel(0x1, (hi_sc_virtbase + REG_CHECK_AREA_NUM));
     writel(hi_ca_ddr_check_start0_phys, (hi_sc_virtbase + REG_START_ADDR(0)));
     writel(hi_ca_ddr_check_size0, (hi_sc_virtbase + REG_SIZE(0)));
-    writel(hi_ca_ddr_check_min_phys, (hi_sc_virtbase + REG_START_ADDR(1)));
-    writel(hi_ca_ddr_check_size1, (hi_sc_virtbase + REG_SIZE(1)));
+    //writel(hi_ca_ddr_check_min_phys, (hi_sc_virtbase + REG_START_ADDR(1)));
+    //writel(hi_ca_ddr_check_size1, (hi_sc_virtbase + REG_SIZE(1)));
 #else
     writel(0x1, (hi_sc_virtbase + REG_CHECK_AREA_NUM));
     writel(0x0, (hi_sc_virtbase + REG_START_ADDR(0)));

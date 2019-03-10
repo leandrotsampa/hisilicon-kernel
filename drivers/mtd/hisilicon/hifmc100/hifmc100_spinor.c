@@ -307,12 +307,18 @@ static u32 hifmc100_spinor_op_iftype(u32 op)
 {
 	int ix;
 	u32 op_iftype[] = {
-		SPINOR_OP_READ,      HIFMC100_OP_CFG_MEM_IFTYPE_STD,
-		SPINOR_OP_READ_FAST, HIFMC100_OP_CFG_MEM_IFTYPE_STD,
-		SPINOR_OP_PP,        HIFMC100_OP_CFG_MEM_IFTYPE_STD,
-		SPINOR_OP_READ_DUAL, HIFMC100_OP_CFG_MEM_IFTYPE_DUAL,
-		SPINOR_OP_READ_QUAD, HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
-		SPINOR_OP_PP_QUAD,   HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
+		SPINOR_OP_READ,         HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_READ_4B,      HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_READ_FAST,    HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_READ_FAST_4B, HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_PP,           HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_PP_4B,        HIFMC100_OP_CFG_MEM_IFTYPE_STD,
+		SPINOR_OP_READ_DUAL,    HIFMC100_OP_CFG_MEM_IFTYPE_DUAL,
+		SPINOR_OP_READ_DUAL_4B, HIFMC100_OP_CFG_MEM_IFTYPE_DUAL,
+		SPINOR_OP_READ_QUAD,    HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
+		SPINOR_OP_READ_QUAD_4B, HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
+		SPINOR_OP_PP_QUAD,      HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
+		SPINOR_OP_PP_QUAD_4B,   HIFMC100_OP_CFG_MEM_IFTYPE_QUAD,
 	};
 
 	for (ix = 0; ix < ARRAY_SIZE(op_iftype); ix += 2) {
@@ -388,7 +394,7 @@ static int hifmc100_spinor_probe_device(struct hifmc_spinor *spinor)
 	spinor->nr_chips = 0;
 	spinor->erasesize = 0;
 
-	clk_set_rate(spinor->host->clk, 24000000/* 24MHz */);
+	clk_set_rate(spinor->host->clk, 12000000/* 12MHz */);
 
 	for (nrchip = 0; nrchip < HIFMC100_OP_CFG_NUM_CS; nrchip++) {
 		memset(&info, 0, sizeof(info));
@@ -504,6 +510,8 @@ static void hifmc100_spinor_shutdown(struct hifmc_spinor *spinor)
 
 	mutex_lock(&hifmc->lock);
 
+	hifmc->fmc_crg_value = readl(hifmc->fmc_crg_addr);
+
 	hifmc->set_ifmode(hifmc, HIFMC_IFMODE_SPINOR);
 	clk_set_rate(hifmc->clk, 0);
 
@@ -542,6 +550,8 @@ static void hifmc100_spinor_resume(struct hifmc_spinor *spinor)
 	clk_set_rate(hifmc->clk, 0);
 
 	hifmc100_spinor_chip_init(spinor);
+
+	writel(hifmc->fmc_crg_value, hifmc->fmc_crg_addr);
 
 	mutex_unlock(&hifmc->lock);
 }

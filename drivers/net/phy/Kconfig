@@ -156,6 +156,11 @@ config MICROCHIP_PHY
 	help
 	  Supports the LAN88XX PHYs.
 
+config HISILICON_PHY
+	tristate "Drivers for HiSilicon PHYs"
+	---help---
+	  Supports the Festa series PHYs.
+
 config FIXED_PHY
 	tristate "Driver for MDIO Bus/PHY emulation with fixed speed/link PHYs"
 	depends on PHYLIB

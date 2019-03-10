@@ -1,3 +1,4 @@
+//#define TUNING_PROC_DEBUG
 /* Phase details */
 #define SDIO_DRV_PS_MASK                   (0x7 << 16)
 #define SDIO_DRV_PS_0_0                    (0b000 << 16)
@@ -10,7 +11,7 @@
 #define SDIO_DRV_PS_315_167DOT5            (0b111 << 16)
 
 #define SDIO_SAP_PS_SHIFT_BIT              (12)
-#define EMMC_CLK_MODE                	   (0x1 << 19)
+#define EMMC_CLK_MODE                      (0x1 << 19)
 #define SDIO_SAP_PS_NUM                    (8)
 #define SDIO_SAP_PS_MASK                   (0x7 << 12)
 #define SDIO_SAP_PS_OFFSET                 (12)
@@ -26,6 +27,9 @@
 /* Driver caps details */
 #define DRV_CAPS_MASK                       (0xf << 4)
 #define DRV_SLEV_RATE                       BIT(8)
+
+#define DRV_IOSHARE_MASK                   (0x3 << 0)
+#define DRV_IOSHARE_EMMC                   (0x2 << 0)
 
 #define EMMC_DRV_CAP_DDR50_CMD_DATA         (0b1110 << 4)
 #define EMMC_DRV_CAP_DDR50_CLOCK            (0b1101 << 4)
@@ -48,6 +52,19 @@
 #define SDIO_DRV_CAP_1V8_200M_CMD_DATA      (0b011 << 4)
 #define SDIO_DRV_CAP_1V8_200M_CLOCK         (0b0000 << 4)
 
+/* 98mv200 dms sd card */
+#define SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS       (0b111 << 4)
+#define SDIO_DRV_CAP_3V3_50M_CLOCK_DMS          (0b1101 << 4)
+
+#define SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS       (0b111 << 4)
+#define SDIO_DRV_CAP_1V8_50M_CLOCK_DMS          (0b1001 << 4)
+
+#define SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS      (0b111 << 4)
+#define SDIO_DRV_CAP_1V8_100M_CLOCK_DMS         (0b0100 << 4)
+
+#define SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS      (0b110 << 4)
+#define SDIO_DRV_CAP_1V8_200M_CLOCK_DMS         (0b0011 << 4)
+
 #define IOSHARE_OFFSET_EMMC_CLOCK  0x030
 #define IOSHARE_OFFSET_EMMC_CMD    0x038
 #define IOSHARE_OFFSET_EMMC_DATA0  0x018
@@ -65,6 +82,13 @@
 #define IOSHARE_OFFSET_SDIO0_DATA1  0x004
 #define IOSHARE_OFFSET_SDIO0_DATA2  0x018
 #define IOSHARE_OFFSET_SDIO0_DATA3  0x014
+
+#define IOSHARE_OFFSET_SDIO1_CLOCK  0x08
+#define IOSHARE_OFFSET_SDIO1_CMD    0x0c
+#define IOSHARE_OFFSET_SDIO1_DATA0  0x04
+#define IOSHARE_OFFSET_SDIO1_DATA1  0x00
+#define IOSHARE_OFFSET_SDIO1_DATA2  0x14
+#define IOSHARE_OFFSET_SDIO1_DATA3  0x10
 
 #define EMMC_IO_VOLTAGE_MASK               (0x01)
 #define EMMC_IO_VOL_1_8V                   (0x01)
@@ -85,10 +109,13 @@
 #define HIMCI_DLL_TUNING
 #ifdef HIMCI_DLL_TUNING
 #define REG_BASE_CRG	0xF8A22000
+#define REG_BOARD_TYPE		(0xF8000094)
 #define REG_EMMC_SAP_DLL_CTRL			(REG_BASE_CRG + 0x039C)
 #define REG_EMMC_SAP_DLL_STATUS			(REG_BASE_CRG + 0x03A0)
 #define REG_SDIO0_SAP_DLL_CTRL			(REG_BASE_CRG + 0x03A4)
 #define REG_SDIO0_SAP_DLL_STATUS		(REG_BASE_CRG + 0x03A8)
+#define REG_SDIO1_SAP_DLL_CTRL			(REG_BASE_CRG + 0x03AC)
+#define REG_SDIO1_SAP_DLL_STATUS		(REG_BASE_CRG + 0x03B0)
 
 #define SAP_DLL_CTRL_SLAVE_EN		BIT(19)
 #define SAP_DLL_CTRL_STOP			BIT(18)
@@ -110,6 +137,10 @@
 
 //#define MCI_TUNING_TEST
 
+#ifdef SD_KLAD_MUTEX_LOCK
+extern struct mutex sd_klad_mutex;
+#endif
+
 #ifdef CONFIG_ARM64
 #define IOMEM(x)	((void __force __iomem *)(x))
 #endif
@@ -123,10 +154,42 @@
 			(unsigned int)(v)); \
 } while (0)
 
+static const char himci_mmc_name[]= {"f9830000.himciv200.MMC"};
+static const char himci_sdio0_name[]= {"f9820000.himciv200.SD"};
+static const char himci_sdio1_name[]= {"f9c40000.himciv200.SD"};
+
+static int himciv300_send_status(struct mmc_host *mmc)
+{
+	int err;
+	struct mmc_command cmd = {0};
+	struct himciv300_host *host;
+
+	BUG_ON(!mmc);
+
+	host = mmc_priv(mmc);
+	cmd.opcode = MMC_SEND_STATUS;
+	if (!mmc_host_is_spi(mmc))
+		cmd.arg = (host->card_rca << 16);
+	cmd.flags = MMC_RSP_SPI_R2 | MMC_RSP_R1 | MMC_CMD_AC;
+
+	err = mmc_wait_for_cmd(mmc, &cmd, 1);
+	if (err)
+		return err;
+
+	return 0;
+}
 static int himciv300_send_tuning(struct mmc_host * mmc, u32 opcode)
 {
 	int err = 0;
+	struct himciv300_host *host;
 
+	host = mmc_priv(mmc);
+	himciv300_idma_reset(host);
+
+#ifdef SD_KLAD_MUTEX_LOCK
+	if(host->ldoaddr)
+		mutex_unlock(&sd_klad_mutex);
+#endif
 	switch(opcode) {
 		case MMC_SEND_EXT_CSD:
 			//err = mmc_send_hs_ddr_tuning(mmc);
@@ -145,19 +208,28 @@ static int himciv300_send_tuning(struct mmc_host * mmc, u32 opcode)
 			err = -1;
 			break;
 	}
+	himciv300_send_status(mmc);
+
+#ifdef SD_KLAD_MUTEX_LOCK
+	if(host->ldoaddr)
+		mutex_lock(&sd_klad_mutex);
+#endif
 
 	return err;
 }
 
+#ifdef MCI_TUNING_TEST
 static u32 himciv300_edge_tuning_max_dline(struct himciv300_host *host)
 {
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		return 8;
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if ((strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0)||
+			  (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)){
 		return 4;
 	}
 	return 1;
 }
+#endif
 
 static u32 himciv300_get_tuning_phase_num(struct himciv300_host *host)
 {
@@ -165,11 +237,12 @@ static u32 himciv300_get_tuning_phase_num(struct himciv300_host *host)
 	u8 timing = mmc->ios.timing;
 	u32 phase_num = SDIO_SAP_PS_NUM;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		if (timing == MMC_TIMING_MMC_DDR52) {
 			phase_num /= 2;
 		}
-	} else if (strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if ((strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0)||
+			  (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)) {
 		if (timing == MMC_TIMING_UHS_DDR50) {
 			phase_num /= 2;
 		}
@@ -183,14 +256,32 @@ static void himciv300_edge_tuning_enable(struct himciv300_host *host)
 	u32 regval;
 	void __iomem *reg_sap_dll_ctrl;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_EMMC_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval &=~SAP_DLL_CTRL_DLLMODE;
 		himci_writel(regval, reg_sap_dll_ctrl);
 		iounmap(reg_sap_dll_ctrl);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO0_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
+		regval = himci_readl(reg_sap_dll_ctrl);
+		regval &=~SAP_DLL_CTRL_DLLMODE;
+		himci_writel(regval, reg_sap_dll_ctrl);
+		iounmap(reg_sap_dll_ctrl);
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
+		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO1_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval &=~SAP_DLL_CTRL_DLLMODE;
 		himci_writel(regval, reg_sap_dll_ctrl);
@@ -207,14 +298,32 @@ static void himciv300_edge_tuning_disable(struct himciv300_host *host)
 	u32 regval;
 	void __iomem *reg_sap_dll_ctrl;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_EMMC_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval |= SAP_DLL_CTRL_DLLMODE;
 		himci_writel(regval, reg_sap_dll_ctrl);
 		iounmap(reg_sap_dll_ctrl);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO0_SAP_DLL_CTRL, sizeof(u32));
+		regval = himci_readl(reg_sap_dll_ctrl);
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
+		regval |= SAP_DLL_CTRL_DLLMODE;
+		himci_writel(regval, reg_sap_dll_ctrl);
+		iounmap(reg_sap_dll_ctrl);
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
+		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO1_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval |= SAP_DLL_CTRL_DLLMODE;
 		himci_writel(regval, reg_sap_dll_ctrl);
@@ -245,15 +354,34 @@ static void himciv300_set_dll_element(struct himciv300_host *host, u32 element)
 	u32 regval;
 	void __iomem *reg_sap_dll_ctrl;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_EMMC_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval &=~SAP_DLL_CTRL_DLLSSEL;
 		regval |= (element << SAP_DLL_CTRL_DLLSSEL_OFFSET);
 		himci_writel(regval, reg_sap_dll_ctrl);
 		iounmap(reg_sap_dll_ctrl);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO0_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
+		regval = himci_readl(reg_sap_dll_ctrl);
+		regval &=~SAP_DLL_CTRL_DLLSSEL;
+		regval |= (element << SAP_DLL_CTRL_DLLSSEL_OFFSET);
+		himci_writel(regval, reg_sap_dll_ctrl);
+		iounmap(reg_sap_dll_ctrl);
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
+		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO1_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		regval &=~SAP_DLL_CTRL_DLLSSEL;
 		regval |= (element << SAP_DLL_CTRL_DLLSSEL_OFFSET);
@@ -261,57 +389,69 @@ static void himciv300_set_dll_element(struct himciv300_host *host, u32 element)
 		iounmap(reg_sap_dll_ctrl);
 	}
 }
-
+#if 0 //unused
 static u32 himciv300_get_dll_element(struct himciv300_host *host)
 {
 	u32 regval = 0;
 	void __iomem *reg_sap_dll_ctrl;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_EMMC_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
 		regval = himci_readl(reg_sap_dll_ctrl);
 		iounmap(reg_sap_dll_ctrl);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
 		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO0_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
 		regval = himci_readl(REG_SDIO0_SAP_DLL_CTRL);
+		iounmap(reg_sap_dll_ctrl);
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
+		reg_sap_dll_ctrl = ioremap_nocache(REG_SDIO1_SAP_DLL_CTRL, sizeof(u32));
+		if (!reg_sap_dll_ctrl) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
+		regval = himci_readl(REG_SDIO1_SAP_DLL_CTRL);
 		iounmap(reg_sap_dll_ctrl);
 	}
 
 	return (regval & SAP_DLL_CTRL_DLLSSEL);
 }
-
-static u32 himciv300_get_phase22dot5_element(struct himciv300_host *host)
-{
-	u32 regval;
-	u32 mdly_tap_flag,phase22dot5_ele;
-	void __iomem *reg_sap_dll_status;
-
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
-		reg_sap_dll_status = ioremap_nocache(REG_EMMC_SAP_DLL_STATUS, sizeof(u32));
-		regval = himci_readl(reg_sap_dll_status);
-		iounmap(reg_sap_dll_status);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
-		reg_sap_dll_status = ioremap_nocache(REG_SDIO0_SAP_DLL_STATUS, sizeof(u32));
-		regval = himci_readl(reg_sap_dll_status);
-		iounmap(reg_sap_dll_status);
-	}
-
-	mdly_tap_flag = (regval & SAP_DLL_MDLY_TAP_FLAG);
-	phase22dot5_ele = mdly_tap_flag/SDIO_SAP_PS_NUM/2;
-	return phase22dot5_ele;
-}
+#endif
 
 static u32 himciv300_get_sap_dll_taps(struct himciv300_host *host)
 {
-	u32 regval;
+	u32 regval = 0;
 	void __iomem *reg_sap_dll_status;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		reg_sap_dll_status = ioremap_nocache(REG_EMMC_SAP_DLL_STATUS, sizeof(u32));
+		if (!reg_sap_dll_status) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
 		regval = himci_readl(reg_sap_dll_status);
 		iounmap(reg_sap_dll_status);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
 		reg_sap_dll_status = ioremap_nocache(REG_SDIO0_SAP_DLL_STATUS, sizeof(u32));
+		if (!reg_sap_dll_status) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
+		regval = himci_readl(reg_sap_dll_status);
+		iounmap(reg_sap_dll_status);
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
+		reg_sap_dll_status = ioremap_nocache(REG_SDIO1_SAP_DLL_STATUS, sizeof(u32));
+		if (!reg_sap_dll_status) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return 0;
+		}
 		regval = himci_readl(reg_sap_dll_status);
 		iounmap(reg_sap_dll_status);
 	}
@@ -333,26 +473,35 @@ static void himciv300_tuning_feedback(struct mmc_host * mmc)
 	host->pending_events = 0;
 }
 
-/************************************************************
-*************************************************************
-|															|
-|St|<------->|90?? 		Found								|
-|		||||||			[ Start+1 ~ Start+1 + 45??]			|
-|	St+1|<------->|90??	Found								|
-|			||||..											|
-|			||||..											|
-|			End|<------->|90?? 			Found				|
-|				||||||					[ End ~ End+45??]	|
-|				End+1|<------->|90??	unFound				|
-|															|
-************************************************************
-*************************************************************/
-static int himciv300_tuning_edgedll_mode(struct himciv300_host *host, u32 opcode, int startEdge, int endEdge, u32 edgeNum)
+/********************************************
+*********************************************
+EdgeMode A:
+   |<---- totalphases(ele) ---->|
+           _____________
+    ______|||||||||||||||_______
+      edge_p2f       edge_f2p
+      (endp)         (startp)
+
+EdgeMode B:
+   |<---- totalphases(ele) ---->|
+    ________           _________
+   ||||||||||_________|||||||||||
+       edge_f2p     edge_p2f
+       (startp)     (endp)
+
+BestPhase:
+    if(endp < startp)
+        endp = endp + totalphases;
+    Best = ((startp + endp) / 2) % totalphases
+*********************************************
+********************************************/
+static int himciv300_tuning_edgedll_mode(struct himciv300_host *host, u32 opcode, int edge_p2f, int edge_f2p, u32 edgeNum)
 {
 	u32 index;
 	u32 found = 0;
 	u32 startp =-1, endp = -1;
-	u32 curphase,lastphaseoffset = 0,phaseoffset = 0, totalphases = 0;
+	u32 startp_init = 0, endp_init = 0;
+	u32 phaseoffset = 0, totalphases = 0;
 	u16 ele,start_ele, phase_dll_elements;
 	u8 mdly_tap_flag = 0;
 	int prev_err = 0, err = 0;
@@ -364,70 +513,107 @@ static int himciv300_tuning_edgedll_mode(struct himciv300_host *host, u32 opcode
 	phase_dll_elements = mdly_tap_flag/SDIO_SAP_PS_NUM;
 	totalphases = phase_dll_elements*phase_num;
 
-	if (endEdge < startEdge)
-		endEdge += phase_num;
+	startp_init = edge_f2p * phase_dll_elements;
+	endp_init = edge_p2f * phase_dll_elements;
+	startp = startp_init;
+	endp = endp_init;
 
-	phaseoffset = startEdge*phase_dll_elements;
-
-	found = 0;
+	found = 1;
 	start_ele = 2;
-	for (index = startEdge; index <= endEdge; index++) {
 
-		curphase = index%phase_num;
-		phaseoffset %= totalphases;
-		/* set phase shift */
-		himciv300_set_sap_phase(host, curphase);
+	/*Note: edgedll tuning must from edge_p2f to edge_f2p*/
+	if(edge_f2p >=  edge_p2f) {
+		phaseoffset = edge_p2f * phase_dll_elements;
+		for (index = edge_p2f; index < edge_f2p; index++) {
+			/* set phase shift */
+			himciv300_set_sap_phase(host, index);
+			for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
+				himciv300_set_dll_element(host, ele);
+				err = himciv300_send_tuning(host->mmc,opcode);
 
-		for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
+				if (!err)
+					found = 1;
 
-			mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-			himciv300_set_dll_element(host, ele);
+				if (!prev_err && err && (endp == endp_init))
+					endp = phaseoffset + ele;
 
-			err = himciv300_send_tuning(host->mmc,opcode);
-			//printk("\tphase:%02d ele:%02d error:%d\n",curphase,ele,err);
-
-			if (!err) {
-				found = 1;
-			}
-			if (!((index == startEdge)&&(ele == start_ele))) {
-				if (err && !prev_err) {
-					if(ele == start_ele)
-						endp = lastphaseoffset;
-					else
-						endp = phaseoffset + ele - 1;
-				}
-
-				if (!err && prev_err) {
+				if (err)
 					startp = phaseoffset + ele;
-				}
+
+				#ifdef TUNING_PROC_DEBUG
+				printk("\tphase:%01d ele:%02d st:%03d end:%03d error:%d\n", index, ele, startp, endp, err);
+				#endif
+
+				prev_err = err;
+				err = 0;
 			}
-
-			if ((startp != -1) && (endp != -1))
-				goto tuning_out;
-
-			prev_err = err;
-			err = 0;
+			phaseoffset += phase_dll_elements;
 		}
-		lastphaseoffset = phaseoffset;
-		phaseoffset += phase_dll_elements;
-	}
+	} else {
+		phaseoffset = edge_p2f * phase_dll_elements;
+		for (index = edge_p2f ; index < phase_num ; index++) {
+			/* set phase shift */
+			himciv300_set_sap_phase(host, index);
+			for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
+				himciv300_set_dll_element(host, ele);
+				err = himciv300_send_tuning(host->mmc,opcode);
+				if (!err)
+					found = 1;
 
+				if (!prev_err && err && (endp == endp_init))
+					endp = phaseoffset + ele;
+
+				if (err)
+					startp = phaseoffset + ele;
+
+				#ifdef TUNING_PROC_DEBUG
+				printk("\tphase:%02d ele:%02d st:%03d end:%03d error:%d\n", index, ele, startp, endp, err);
+				#endif
+
+				prev_err = err;
+				err = 0;
+			}
+			phaseoffset += phase_dll_elements;
+		}
+
+		phaseoffset = 0;
+		for (index = 0; index < edge_f2p; index++) {
+			/* set phase shift */
+			himciv300_set_sap_phase(host, index);
+			for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
+				himciv300_set_dll_element(host, ele);
+				err = himciv300_send_tuning(host->mmc,opcode);
+				if (!err)
+					found = 1;
+
+				if (!prev_err && err && (endp == endp_init))
+					endp = phaseoffset + ele;
+
+				if (err)
+					startp = phaseoffset + ele;
+
+				#ifdef TUNING_PROC_DEBUG
+				printk("\tphase:%02d ele:%02d st:%03d end:%03d error:%d\n", index, ele, startp, endp, err);
+				#endif
+
+				prev_err = err;
+				err = 0;
+			}
+			phaseoffset += phase_dll_elements;
+		}
+	}
 tuning_out:
 
 	if (found) {
-		printk("scan elemnts /-:%d \\-:%d under edges /-:%d \\-:%d\n",startp,endp,startEdge,endEdge);
-		if (-1 == startp)
-			startp = (startEdge + edgeNum)*phase_dll_elements + start_ele;
-		if (-1 == endp)
-			endp = startEdge*phase_dll_elements - 1;
+		printk("scan elemnts: startp:%d endp:%d\n", startp, endp);
 
-		if (endp < startp)
+		if (endp <= startp)
 			endp += totalphases;
 
 		phaseoffset = (( startp + endp ) / 2) % totalphases;
 		index = (phaseoffset / phase_dll_elements);
 		ele = (phaseoffset % phase_dll_elements);
-		ele = ((ele > start_ele)?ele:start_ele);
+		ele = ((ele > start_ele) ? ele : start_ele);
 
 		himciv300_set_sap_phase(host, index);
 		himciv300_set_dll_element(host,ele);
@@ -441,17 +627,19 @@ tuning_out:
 	return -1;
 }
 
-int himciv300_tuning_mix_mode(struct mmc_host * mmc, u32 opcode)
+static int himciv300_tuning_mix_mode(struct mmc_host * mmc, u32 opcode)
 {
 	struct himciv300_host *host = mmc_priv(mmc);
 	u32 index, regval;
 	u32 found = 0,prefound = 0;
-	u32 startp =-1, endp = -1;
+	u32 edge_p2f, edge_f2p;
 	u32 edgeNum = 0;
 	int err;
 	u32 phase_num = himciv300_get_tuning_phase_num(host);
 
 	himci_trace(3, "begin");
+	edge_p2f = 0;
+	edge_f2p = phase_num;
 
 	himciv300_edge_tuning_enable(host);
 	host->tunning = 1;
@@ -459,8 +647,6 @@ int himciv300_tuning_mix_mode(struct mmc_host * mmc, u32 opcode)
 
 		/* set phase shift */
 		himciv300_set_sap_phase(host, index);
-		mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-
 		err = himciv300_send_tuning(mmc,opcode);
 		if (!err) {
 			regval = mci_readl(host, MCI_TUNING_CONTROL);
@@ -469,57 +655,67 @@ int himciv300_tuning_mix_mode(struct mmc_host * mmc, u32 opcode)
 			found = 1;
 		}
 
-		//printk("\tphase:%02d found:%02d error:%d\n",index,found,err);
 		if(found){
 			edgeNum++;
 		}
 		if (prefound && !found) {
-			endp = index - 1;
+			edge_f2p = index;
 		} else if (!prefound && found) {
-			if(index != 0) {
-				startp = index;
-			}
+			edge_p2f = index;
 		}
-
-		//if ((startp != -1) && (endp != -1))
-		//	break;
+		#ifdef TUNING_PROC_DEBUG
+		printk("\tphase:%02d found:%02d p2f:%d f2p:%d error:%d\n",index, found, edge_p2f, edge_f2p, err);
+		#endif
+		if ((edge_p2f != 0) && (edge_f2p != phase_num))
+			break;
 
 		prefound = found;
 		found = 0;
 	}
 
-	if ((startp == -1)&&(endp == -1))
-	{
+	if ((edge_p2f == 0) && (edge_f2p == phase_num)) {
 		printk("unfound correct edge! check your config is correct!!\n");
 		return -1;
-	}else {
-		printk("scan edges:%d /-:%d \\-:%d\n",edgeNum,startp,endp);
 	}
+	printk("scan edges:%d p2f:%d f2p:%d\n",edgeNum, edge_p2f, edge_f2p);
 
-	if (startp == -1)
-		startp = endp - (edgeNum -1);
-	if (endp == -1)
-		endp = startp + (edgeNum -1);
+	if (edge_f2p < edge_p2f)
+		index = (edge_f2p + edge_p2f)/2%phase_num;
+	else
+		index = (edge_f2p + phase_num + edge_p2f)/2%phase_num;
+	printk("mix set temp-phase %d\n", index);
+	himciv300_set_sap_phase(host, index);
+	err = himciv300_send_tuning(mmc,opcode);
 
 	himciv300_edge_tuning_disable(host);
-	err = himciv300_tuning_edgedll_mode(host, opcode, startp, endp, edgeNum);
+	err = himciv300_tuning_edgedll_mode(host, opcode, edge_p2f, edge_f2p, edgeNum);
 	host->tunning = 0;
 	return err;
 }
 
-int himciv300_tuning_edge_mode(struct mmc_host * mmc, u32 opcode)
+static int himciv300_tuning_edge_mode(struct mmc_host * mmc, u32 opcode)
 {
 	struct himciv300_host *host = mmc_priv(mmc);
 	u32 index, regval;
 	u32 found = 0,prefound = 0;
-	u32 startp =-1, endp = -1, prevp = 0;
-	u32 phaseoffset = 0;
-	u32 eleoffset = 0;
+	u32 startp = 0, endp = 0;
+	u32 edge_p2f, edge_f2p;
+	u32 phaseoffset = 0, totalphases = 0;
+	u32 ele = 0, start_ele = 2;
 	int err = 0;
 	u32 edgeNum = 0;
+	u16 phase_dll_elements;
+	u8 mdly_tap_flag = 0;
 	u32 phase_num = himciv300_get_tuning_phase_num(host);
 
 	himci_trace(3, "begin");
+
+	mdly_tap_flag = himciv300_get_sap_dll_taps(host);
+	phase_dll_elements = mdly_tap_flag/SDIO_SAP_PS_NUM;
+	totalphases = phase_dll_elements*phase_num;
+
+	edge_p2f = 0;
+	edge_f2p = phase_num;
 
 	host->tunning = 1;
 	himciv300_edge_tuning_enable(host);
@@ -528,8 +724,6 @@ int himciv300_tuning_edge_mode(struct mmc_host * mmc, u32 opcode)
 
 		/* set phase shift */
 		himciv300_set_sap_phase(host, index);
-		mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-
 		err = himciv300_send_tuning(mmc,opcode);
 		if (!err) {
 			regval = mci_readl(host, MCI_TUNING_CONTROL);
@@ -538,59 +732,43 @@ int himciv300_tuning_edge_mode(struct mmc_host * mmc, u32 opcode)
 			found = 1;
 		}
 
-		//printk("\tindex:%02d error:%d  found:%d\n",index,err,found);
 		if(found){
 			edgeNum++;
 		}
-
-		if (prefound && !found){
-			endp = prevp;
-		} else if (!prefound && found){
-			if(index != 0){
-				startp = index;
-			}
+		if (prefound && !found) {
+			edge_f2p = index;
+		} else if (!prefound && found) {
+			edge_p2f = index;
 		}
-		if ((startp != -1) && (endp != -1))
-			goto scan_out;
+		//printk("\tphase:%02d found:%02d p2f:%d f2p:%d error:%d\n",index, found, edge_p2f, edge_f2p, err);
 
-		prevp = index;
+		if ((edge_p2f != 0) && (edge_f2p != phase_num ))
+			break;
+
 		prefound = found;
 		found = 0;
 	}
 
-scan_out:
-
-	if ((startp == -1)&&(endp == -1))
-	{
+	if ((edge_p2f == 0) && (edge_f2p == phase_num)) {
 		printk("unfound correct edge! check your config is correct!!\n");
 		return -1;
 	}
+	printk("scan edges:%d p2f:%d f2p:%d\n",edgeNum, edge_p2f, edge_f2p);
+	startp = edge_f2p * phase_dll_elements;
+	endp = edge_p2f * phase_dll_elements;
+	printk("found elemnts: startp:%d endp:%d\n", startp, endp);
+	if (endp < startp)
+		endp += totalphases;
 
-	if (startp == -1)
-		startp = endp - (edgeNum -1);
-	if (endp == -1)
-		endp = startp + (edgeNum -1);
+	phaseoffset = (( startp + endp ) / 2) % totalphases;
+	index = (phaseoffset / phase_dll_elements);
+	ele = (phaseoffset % phase_dll_elements);
+	ele = ((ele > start_ele) ? ele : start_ele);
 
-	if (startp > endp)
-		endp += phase_num;
-
-	if (startp == endp) //one edge
-		phaseoffset = (((startp + endp))/2)%phase_num;
-	else
-		phaseoffset = (((startp + 1) + (endp + 1))/2)%phase_num;
-
-	phaseoffset += phase_num/2;
-	phaseoffset %= phase_num;
-
-	emmc_boot_tuning_phase = phaseoffset;
-	himciv300_set_sap_phase(host, phaseoffset);
-
-	if ((startp == endp)||((endp + 1 - startp)%2)) {
-		eleoffset = himciv300_get_phase22dot5_element(host);
-		himciv300_set_dll_element(host,eleoffset);
-	}
-
-	printk(KERN_NOTICE "Tuning SampleClock. edg set phase:[%02d/%02d] ele:[%02d/%02d] \n",phaseoffset,(phase_num-1),eleoffset,eleoffset*2);
+	himciv300_set_sap_phase(host, index);
+	himciv300_set_dll_element(host,ele);
+	emmc_boot_tuning_phase = index;
+	printk(KERN_NOTICE "Tuning SampleClock. edg set phase:[%02d/%02d] ele:[%02d/%02d] \n",index,(phase_num-1),ele,phase_dll_elements);
 
 	himciv300_edge_tuning_disable(host);
 	mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
@@ -598,14 +776,14 @@ scan_out:
 	return 0;
 }
 
-int himciv300_tuning_dll_mode(struct mmc_host * mmc, u32 opcode)
+static int himciv300_tuning_dll_mode(struct mmc_host * mmc, u32 opcode)
 {
 	struct himciv300_host *host = mmc_priv(mmc);
 	u32 index;
 	u32 found = 0;
-	u32 startp =-1, endp = -1;
-	u32 phaseoffset = 0, lastphaseoffset = 0,totalphases = 0;
-	u16 ele,start_ele, phase_dll_elements;
+	u32 startp = 0, endp = 0;
+	u32 phaseoffset = 0, totalphases = 0;
+	u16 ele, start_ele, phase_dll_elements;
 	u8 mdly_tap_flag = 0;
 	int prev_err = 0, err = 0;
 	u32 phase_num = himciv300_get_tuning_phase_num(host);
@@ -616,60 +794,43 @@ int himciv300_tuning_dll_mode(struct mmc_host * mmc, u32 opcode)
 	phase_dll_elements = mdly_tap_flag/SDIO_SAP_PS_NUM;
 	totalphases = phase_dll_elements*phase_num;
 
+	startp = 0;
+	endp = totalphases;
+
 	host->tunning = 1;
 	found = 0;
 	start_ele = 2;
 	for (index = 0; index < phase_num; index++) {
+			/* set phase shift */
+			himciv300_set_sap_phase(host, index);
+			for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
+				himciv300_set_dll_element(host, ele);
+				err = himciv300_send_tuning(host->mmc,opcode);
+				if (!err)
+					found = 1;
 
-		/* set phase shift */
-		himciv300_set_sap_phase(host, index);
+				if (!prev_err && err)
+					endp = phaseoffset + ele;
 
-		for (ele = start_ele; ele <= phase_dll_elements ; ele++) {
-
-			mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-			himciv300_set_dll_element(host, ele);
-
-			err = himciv300_send_tuning(mmc,opcode);
-			//printk("\tphase:%02d ele:%02d error:%d\n",index,ele,err);
-
-			if (!err) {
-				found = 1;
-			}
-			if (!((index == 0)&&(ele == start_ele))) {
-				if (err && !prev_err) {
-					if(ele == start_ele)
-						endp = lastphaseoffset;
-					else
-						endp = phaseoffset + ele - 1;
-				}
-
-				if (!err && prev_err) {
+				if ( prev_err && !err)
 					startp = phaseoffset + ele;
-				}
+
+				//printk("\tphase:%01d ele:%02d st:%03d end:%03d error:%d\n", index, ele, startp, endp, err);
+				if ((startp != 0) && (endp != totalphases))
+					goto tuning_out;
+
+				prev_err = err;
+				err = 0;
 			}
-
-			if ((startp != -1) && (endp != -1))
-				goto tuning_out;
-
-			prev_err = err;
-			err = 0;
-		}
-		lastphaseoffset = phaseoffset;
-		phaseoffset += phase_dll_elements;
+			phaseoffset += phase_dll_elements;
 	}
 
 tuning_out:
 
 	if (found) {
-
-		if (-1 == startp)
-			startp = 0;
-		if (-1 == endp)
-			endp = totalphases - 1;
-
-		if (endp < startp){
+		printk("scan elemnts: startp:%d endp:%d\n", startp, endp);
+		if (endp < startp)
 			endp += totalphases;
-		}
 
 		phaseoffset = (( startp + endp ) / 2) % totalphases;
 		index = (phaseoffset / phase_dll_elements);
@@ -690,52 +851,45 @@ tuning_out:
 	return -1;
 }
 
+#if 0//unused
 static int himciv300_tuning_normal_mode(struct mmc_host * mmc, u32 opcode)
 {
 	struct himciv300_host *host = mmc_priv(mmc);
 	u32 index;
-	u32 found = 0, startp =-1, endp = -1;
-	int prev_err, err = 0;
+	u32 found = 0, startp = 0, endp = 0;
+	int prev_err = 0, err = 0;
 	u32 phase_num = himciv300_get_tuning_phase_num(host);
 
+	startp = 0;
+	endp = phase_num;
 	host->tunning = 1;
 
 	for (index = 0; index < phase_num; index++) {
 
 		/* set phase shift */
 		himciv300_set_sap_phase(host,index);
-		mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-
 		err = himciv300_send_tuning(mmc,opcode);
-		//printk("\tphase:%02d  error:%d\n",index,err);
 
-		if (!err) {
+		if (!err)
 			found = 1;
-		}
-		if (index > 0) {
-			if (err && !prev_err)
-				endp = index - 1;
 
-			if (!err && prev_err)
-				startp = index;
-		}
+		if (!prev_err && err)
+			endp = index;
 
-		if ((startp != -1) && (endp != -1))
-			goto tuning_out;
+		if ( prev_err && !err)
+			startp = index;
+
+		//printk("\tphase:%01d st:%03d end:%03d error:%d\n", index, startp, endp, err);
+		if ((startp != 0) && (endp != phase_num))
+			break;
 
 		prev_err = err;
 		err = 0;
 	}
 
-tuning_out:
 
 	if (found) {
-
-		if (-1 == startp)
-			startp = 0;
-		if (-1 == endp)
-			endp = phase_num -1;
-
+		printk("scan phase: startp:%d endp:%d\n", startp, endp);
 		if (endp < startp) {
 			endp += phase_num;
 		}
@@ -754,9 +908,10 @@ tuning_out:
 	return 0;
 }
 #endif
+#endif
 
 #ifdef MCI_TUNING_TEST
-int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
+static int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
 {
 	struct himciv300_host *host = mmc_priv(mmc);
 	u32 index, regval;
@@ -770,9 +925,11 @@ int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
 	u32 goodphase, goodele ;
 	int err;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		return 0;
-	} else if (strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if (strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
+		return 0;
+	} else if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0) {
 		return 0;
 	}
 
@@ -794,8 +951,6 @@ int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
 		for (index = 0; index < phase_num; index++) {
 			/* set phase shift */
 			himciv300_set_sap_phase(host, index);
-			mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
-
 			err = himciv300_send_tuning(mmc,opcode);
 			if (!err) {
 				regval = mci_readl(host, MCI_TUNING_CONTROL);
@@ -815,7 +970,6 @@ int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
 			/* set phase shift */
 			himciv300_set_sap_phase(host, index);
 			for (ele = 2; ele <= phase_dll_elements ; ele++) {
-				mci_writel(host,  MCI_RINTSTS, ALL_INT_CLR);
 				himciv300_set_dll_element(host, ele);
 				err = himciv300_send_tuning(mmc,opcode);
 				if (err) {
@@ -839,7 +993,7 @@ int himciv300_tuning_test_mode(struct mmc_host * mmc, u32 opcode)
 
 /******************************************************************************/
 
-u32 iohs[] = {
+static u32 iohs[] = {
 	IOSHARE_OFFSET_EMMC_DATA3, EMMC_DRV_CAP_DDR50_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA4, EMMC_DRV_CAP_DDR50_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA0, EMMC_DRV_CAP_DDR50_CMD_DATA,
@@ -853,7 +1007,7 @@ u32 iohs[] = {
 	0xff, 0xff,
 };
 
-u32 iohs200[] = {
+static u32 iohs200[] = {
 	IOSHARE_OFFSET_EMMC_DATA3, EMMC_DRV_CAP_HS200_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA4, EMMC_DRV_CAP_HS200_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA0, EMMC_DRV_CAP_HS200_CMD_DATA,
@@ -867,7 +1021,7 @@ u32 iohs200[] = {
 	0xff, 0xff,
 };
 
-u32 iohs400[] = {
+static u32 iohs400[] = {
 	IOSHARE_OFFSET_EMMC_DATA3, EMMC_DRV_CAP_HS400_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA4, EMMC_DRV_CAP_HS400_CMD_DATA,
 	IOSHARE_OFFSET_EMMC_DATA0, EMMC_DRV_CAP_HS400_CMD_DATA,
@@ -881,7 +1035,7 @@ u32 iohs400[] = {
 	0xff, 0xff,
 };
 
-u32 io_sdhs[] = {
+static u32 io_sdhs_sdio0[] = {
 	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_3V3_50M_CLOCK,
 	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_3V3_50M_CMD_DATA,
 	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_3V3_50M_CMD_DATA,
@@ -891,7 +1045,7 @@ u32 io_sdhs[] = {
 	0xff,0xff,
 };
 
-u32 io_uhs_sdr25[] = {
+static u32 io_uhs_sdr25_sdio0[] = {
 	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_50M_CLOCK,
 	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_50M_CMD_DATA,
 	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_50M_CMD_DATA,
@@ -901,7 +1055,7 @@ u32 io_uhs_sdr25[] = {
 	0xff,0xff,
 };
 
-u32 io_uhs_sdr50[] = {
+static u32 io_uhs_sdr50_sdio0[] = {
 	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_100M_CLOCK,
 	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_100M_CMD_DATA,
 	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_100M_CMD_DATA,
@@ -911,7 +1065,7 @@ u32 io_uhs_sdr50[] = {
 	0xff,0xff,
 };
 
-u32 io_uhs_sdr104[] = {
+static u32 io_uhs_sdr104_sdio0[] = {
 	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_200M_CLOCK,
 	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_200M_CMD_DATA,
 	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_200M_CMD_DATA,
@@ -921,22 +1075,146 @@ u32 io_uhs_sdr104[] = {
 	0xff,0xff,
 };
 
+static u32 io_sdhs_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_3V3_50M_CLOCK,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_3V3_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_3V3_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_3V3_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_3V3_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_3V3_50M_CMD_DATA,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr25_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_50M_CLOCK,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_50M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_50M_CMD_DATA,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr50_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_100M_CLOCK,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_100M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_100M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_100M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_100M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_100M_CMD_DATA,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr104_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_200M_CLOCK,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_200M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_200M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_200M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_200M_CMD_DATA,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_200M_CMD_DATA,
+	0xff,0xff,
+};
+
+/******************************************************************************/
+static u32 io_sdhs_dms_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_3V3_50M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA1, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA2, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA3, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr25_dms_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_50M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA1, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA2, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA3, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr50_dms_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_100M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA1, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA2, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA3, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr104_dms_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, SDIO_DRV_CAP_1V8_200M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO0_CMD,   SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA0, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA1, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA2, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO0_DATA3, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	0xff,0xff,
+};
 /******************************************************************************/
 
-static void himciv300_set_driver(struct himciv300_host * host, u8 timing)
+static u32 io_sdhs_dms_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_3V3_50M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_3V3_50M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr25_dms_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_50M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_50M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr50_dms_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_100M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_100M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr104_dms_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, SDIO_DRV_CAP_1V8_200M_CLOCK_DMS,
+	IOSHARE_OFFSET_SDIO1_CMD,   SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA0, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA1, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA2, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	IOSHARE_OFFSET_SDIO1_DATA3, SDIO_DRV_CAP_1V8_200M_CMD_DATA_DMS,
+	0xff,0xff,
+};
+/******************************************************************************/
+
+static void himciv300_set_driver_hi3798mv200(struct himciv300_host * host, u8 timing)
 {
 	u32 ix, regval;
+	void __iomem *reg_board_type;
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		 if ((timing == MMC_TIMING_MMC_HS)
 			|| (timing == MMC_TIMING_LEGACY)
 			|| (timing == MMC_TIMING_MMC_DDR52)) {
 
 			for (ix = 0; iohs[ix] != 0xff; ix += 2) {
 				regval = readl( host->ioshare_addr + iohs[ix]);
-				regval &= ~(DRV_CAPS_MASK);
-				regval |= (DRV_SLEV_RATE | iohs[ix+1]);
-				writel(regval, host->ioshare_addr + iohs[ix]);
+				if (DRV_IOSHARE_EMMC == (regval&DRV_IOSHARE_MASK)) {
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE | iohs[ix+1]);
+					writel(regval, host->ioshare_addr + iohs[ix]);
+				}
 			}
 		} else if (timing == MMC_TIMING_MMC_HS200) {
 
@@ -961,39 +1239,172 @@ static void himciv300_set_driver(struct himciv300_host * host, u8 timing)
 				writel(regval, host->ioshare_addr +iohs400[ix]);
 			}
 		}
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
-		if((timing == MMC_TIMING_SD_HS)
-		   || (timing == MMC_TIMING_UHS_SDR12)
-		   || (timing == MMC_TIMING_LEGACY)) {
-			for (ix = 0; io_sdhs[ix] != 0xff; ix += 2) {
-				regval = readl( host->ioshare_addr + io_sdhs[ix]);
-				regval &= ~(DRV_CAPS_MASK);
-				regval |= (DRV_SLEV_RATE |io_sdhs[ix+1]);
-				writel(regval, host->ioshare_addr + io_sdhs[ix]);
+	} else if(strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
+
+		reg_board_type = ioremap_nocache(REG_BOARD_TYPE, sizeof(u32));
+		if (!reg_board_type) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
+
+		regval = readl(reg_board_type);
+		regval &= (0x1<<30);
+		iounmap(reg_board_type);
+
+		/* there is different driver strength on DMS board */
+		if (regval) {
+			if((timing == MMC_TIMING_SD_HS)
+		   		|| (timing == MMC_TIMING_UHS_SDR12)
+		   		|| (timing == MMC_TIMING_LEGACY)) {
+				for (ix = 0; io_sdhs_dms_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_sdhs_dms_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_sdhs_dms_sdio0[ix+1]);
+					writel(regval, host->ioshare_addr + io_sdhs_dms_sdio0[ix]);
+				}
+			} else if ((timing == MMC_TIMING_UHS_DDR50)||
+					(timing == MMC_TIMING_UHS_SDR25)) {
+				for (ix = 0; io_uhs_sdr25_dms_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr25_dms_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_uhs_sdr25_dms_sdio0[ix+1]);
+					writel(regval, host->ioshare_addr + io_uhs_sdr25_dms_sdio0[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR50) {
+				for (ix = 0; io_uhs_sdr50_dms_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr50_dms_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr50_dms_sdio0[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr50_dms_sdio0[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR104) {
+				for (ix = 0; io_uhs_sdr104_dms_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr104_dms_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr104_dms_sdio0[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr104_dms_sdio0[ix]);
+				}
 			}
-		} else if ((timing == MMC_TIMING_UHS_DDR50)||
-		           (timing == MMC_TIMING_UHS_SDR25)){
-			for (ix = 0; io_uhs_sdr25[ix] != 0xff; ix += 2) {
-				regval = readl( host->ioshare_addr + io_uhs_sdr25[ix]);
-				regval &= ~(DRV_CAPS_MASK);
-				regval |= (DRV_SLEV_RATE |io_uhs_sdr25[ix+1]);
-				writel(regval, host->ioshare_addr + io_uhs_sdr25[ix]);
+		} else {
+			if((timing == MMC_TIMING_SD_HS)
+		   	|| (timing == MMC_TIMING_UHS_SDR12)
+		   	|| (timing == MMC_TIMING_LEGACY)) {
+				for (ix = 0; io_sdhs_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_sdhs_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_sdhs_sdio0[ix+1]);
+					writel(regval, host->ioshare_addr + io_sdhs_sdio0[ix]);
+				}
+			} else if ((timing == MMC_TIMING_UHS_DDR50)||
+		           (timing == MMC_TIMING_UHS_SDR25)) {
+				for (ix = 0; io_uhs_sdr25_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr25_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_uhs_sdr25_sdio0[ix+1]);
+					writel(regval, host->ioshare_addr + io_uhs_sdr25_sdio0[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR50) {
+				for (ix = 0; io_uhs_sdr50_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr50_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr50_sdio0[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr50_sdio0[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR104) {
+				for (ix = 0; io_uhs_sdr104_sdio0[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr104_sdio0[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr104_sdio0[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr104_sdio0[ix]);
+				}
 			}
-		} else if (timing == MMC_TIMING_UHS_SDR50) {
-			for (ix = 0; io_uhs_sdr50[ix] != 0xff; ix += 2) {
-				regval = readl( host->ioshare_addr + io_uhs_sdr50[ix]);
-				regval &= ~(DRV_CAPS_MASK);
-				regval &= ~DRV_SLEV_RATE;
-				regval |=  io_uhs_sdr50[ix+1];
-				writel(regval, host->ioshare_addr + io_uhs_sdr50[ix]);
+		}
+	}else if(strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0){
+
+		reg_board_type = ioremap_nocache(REG_BOARD_TYPE, sizeof(u32));
+		if (!reg_board_type) {
+			printk("%s %s iomap fail\n",__func__,dev_name(host->dev));
+			return;
+		}
+
+		regval = readl(reg_board_type);
+		regval &= (0x1<<30);
+		iounmap(reg_board_type);
+
+		/* there is different driver strength on DMS board */
+		if (regval) {
+			if((timing == MMC_TIMING_SD_HS)
+				|| (timing == MMC_TIMING_UHS_SDR12)
+				|| (timing == MMC_TIMING_LEGACY)) {
+				for (ix = 0; io_sdhs_dms_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_sdhs_dms_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_sdhs_dms_sdio1[ix+1]);
+					writel(regval, host->ioshare_addr + io_sdhs_dms_sdio1[ix]);
+				}
+			} else if ((timing == MMC_TIMING_UHS_DDR50)||
+					(timing == MMC_TIMING_UHS_SDR25)) {
+				for (ix = 0; io_uhs_sdr25_dms_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr25_dms_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_uhs_sdr25_dms_sdio1[ix+1]);
+					writel(regval, host->ioshare_addr + io_uhs_sdr25_dms_sdio1[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR50) {
+				for (ix = 0; io_uhs_sdr50_dms_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr50_dms_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr50_dms_sdio1[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr50_dms_sdio1[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR104) {
+				for (ix = 0; io_uhs_sdr104_dms_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr104_dms_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr104_dms_sdio1[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr104_dms_sdio1[ix]);
+				}
 			}
-		} else if (timing == MMC_TIMING_UHS_SDR104) {
-			for (ix = 0; io_uhs_sdr104[ix] != 0xff; ix += 2) {
-				regval = readl( host->ioshare_addr + io_uhs_sdr104[ix]);
-				regval &= ~(DRV_CAPS_MASK);
-				regval &= ~DRV_SLEV_RATE;
-				regval |=  io_uhs_sdr104[ix+1];
-				writel(regval, host->ioshare_addr + io_uhs_sdr104[ix]);
+		} else {
+			if((timing == MMC_TIMING_SD_HS)
+		   	|| (timing == MMC_TIMING_UHS_SDR12)
+		   	|| (timing == MMC_TIMING_LEGACY)) {
+				for (ix = 0; io_sdhs_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_sdhs_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_sdhs_sdio1[ix+1]);
+					writel(regval, host->ioshare_addr + io_sdhs_sdio1[ix]);
+				}
+			} else if ((timing == MMC_TIMING_UHS_DDR50)||
+		           (timing == MMC_TIMING_UHS_SDR25)) {
+				for (ix = 0; io_uhs_sdr25_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr25_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE |io_uhs_sdr25_sdio1[ix+1]);
+					writel(regval, host->ioshare_addr + io_uhs_sdr25_sdio1[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR50) {
+				for (ix = 0; io_uhs_sdr50_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr50_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr50_sdio1[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr50_sdio1[ix]);
+				}
+			} else if (timing == MMC_TIMING_UHS_SDR104) {
+				for (ix = 0; io_uhs_sdr104_sdio1[ix] != 0xff; ix += 2) {
+					regval = readl( host->ioshare_addr + io_uhs_sdr104_sdio1[ix]);
+					regval &= ~(DRV_CAPS_MASK);
+					regval &= ~DRV_SLEV_RATE;
+					regval |=  io_uhs_sdr104_sdio1[ix+1];
+					writel(regval, host->ioshare_addr + io_uhs_sdr104_sdio1[ix]);
+				}
 			}
 		}
 	}
@@ -1001,9 +1412,283 @@ static void himciv300_set_driver(struct himciv300_host * host, u8 timing)
 
 /******************************************************************************/
 
+static u32 iohs_hi3798mv300[] = {
+	IOSHARE_OFFSET_EMMC_DATA3, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA4, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA0, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA5, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA1, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA6, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA2, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_DATA7, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_CLOCK, (0b1101<<4),
+	IOSHARE_OFFSET_EMMC_CMD,   (0b1101<<4),
+	0xff, 0xff,
+};
+
+static u32 iohs200_hi3798mv300[] = {
+	IOSHARE_OFFSET_EMMC_DATA3, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA4, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA0, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA5, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA1, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA6, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA2, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_DATA7, (0b1011<<4),
+	IOSHARE_OFFSET_EMMC_CLOCK, (0b0011<<4),
+	IOSHARE_OFFSET_EMMC_CMD,   (0b1011<<4),
+	0xff, 0xff,
+};
+
+static u32 iohs400_hi3798mv300[] = {
+	IOSHARE_OFFSET_EMMC_DATA3, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA4, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA0, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA5, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA1, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA6, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA2, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_DATA7, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_CLOCK, (0b1010<<4),
+	IOSHARE_OFFSET_EMMC_CMD,   (0b1010<<4),
+	0xff, 0xff,
+};
+
+static u32 io_sdhs_hi3798mv300_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, (0b1101<<4),
+	IOSHARE_OFFSET_SDIO0_CMD,   (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA0, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA1, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA2, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA3, (0b110<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr25_hi3798mv300_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, (0b1101<<4),
+	IOSHARE_OFFSET_SDIO0_CMD,   (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA0, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA1, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA2, (0b110<<4),
+	IOSHARE_OFFSET_SDIO0_DATA3, (0b110<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_ddr50_hi3798mv300_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, (0b1001<<4),
+	IOSHARE_OFFSET_SDIO0_CMD,   (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA0, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA1, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA2, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA3, (0b101<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr50_hi3798mv300_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, (0b0100<<4),
+	IOSHARE_OFFSET_SDIO0_CMD,   (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA0, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA1, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA2, (0b101<<4),
+	IOSHARE_OFFSET_SDIO0_DATA3, (0b101<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr104_hi3798mv300_sdio0[] = {
+	IOSHARE_OFFSET_SDIO0_CLOCK, (0b0011<<4),
+	IOSHARE_OFFSET_SDIO0_CMD,   (0b011<<4),
+	IOSHARE_OFFSET_SDIO0_DATA0, (0b011<<4),
+	IOSHARE_OFFSET_SDIO0_DATA1, (0b011<<4),
+	IOSHARE_OFFSET_SDIO0_DATA2, (0b011<<4),
+	IOSHARE_OFFSET_SDIO0_DATA3, (0b011<<4),
+	0xff,0xff,
+};
+
+static u32 io_sdhs_hi3798mv300_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, (0b1101<<4),
+	IOSHARE_OFFSET_SDIO1_CMD,   (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA0, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA1, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA2, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA3, (0b110<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr25_hi3798mv300_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, (0b1101<<4),
+	IOSHARE_OFFSET_SDIO1_CMD,   (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA0, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA1, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA2, (0b110<<4),
+	IOSHARE_OFFSET_SDIO1_DATA3, (0b110<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_ddr50_hi3798mv300_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, (0b1001<<4),
+	IOSHARE_OFFSET_SDIO1_CMD,   (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA0, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA1, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA2, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA3, (0b101<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr50_hi3798mv300_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, (0b0100<<4),
+	IOSHARE_OFFSET_SDIO1_CMD,   (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA0, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA1, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA2, (0b101<<4),
+	IOSHARE_OFFSET_SDIO1_DATA3, (0b101<<4),
+	0xff,0xff,
+};
+
+static u32 io_uhs_sdr104_hi3798mv300_sdio1[] = {
+	IOSHARE_OFFSET_SDIO1_CLOCK, (0b1010<<4),
+	IOSHARE_OFFSET_SDIO1_CMD,   (0b011<<4),
+	IOSHARE_OFFSET_SDIO1_DATA0, (0b011<<4),
+	IOSHARE_OFFSET_SDIO1_DATA1, (0b011<<4),
+	IOSHARE_OFFSET_SDIO1_DATA2, (0b011<<4),
+	IOSHARE_OFFSET_SDIO1_DATA3, (0b011<<4),
+	0xff,0xff,
+};
+/******************************************************************************/
+
+static void himciv300_set_driver_hi3798mv300(struct himciv300_host * host, u8 timing)
+{
+	u32 ix, regval;
+
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
+		 if ((timing == MMC_TIMING_MMC_HS)
+			|| (timing == MMC_TIMING_LEGACY)
+			|| (timing == MMC_TIMING_MMC_DDR52)) {
+
+			for (ix = 0; iohs_hi3798mv300[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + iohs_hi3798mv300[ix]);
+				if (DRV_IOSHARE_EMMC == (regval&DRV_IOSHARE_MASK)) {
+					regval &= ~(DRV_CAPS_MASK);
+					regval |= (DRV_SLEV_RATE | iohs_hi3798mv300[ix+1]);
+					writel(regval, host->ioshare_addr + iohs_hi3798mv300[ix]);
+				}
+			}
+		} else if (timing == MMC_TIMING_MMC_HS200) {
+
+			for (ix = 0; iohs200_hi3798mv300[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + iohs200_hi3798mv300[ix]);
+				regval &= ~(DRV_CAPS_MASK | DRV_SLEV_RATE);
+				if (IOSHARE_OFFSET_EMMC_CLOCK != iohs200_hi3798mv300[ix]) {
+					regval |= DRV_SLEV_RATE;
+				}
+				regval |= iohs200_hi3798mv300[ix+1];
+				writel(regval, host->ioshare_addr +iohs200_hi3798mv300[ix]);
+			}
+		} else if (timing == MMC_TIMING_MMC_HS400) {
+
+			for (ix = 0; iohs400_hi3798mv300[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr +iohs400_hi3798mv300[ix]);
+				regval &= ~(DRV_CAPS_MASK | DRV_SLEV_RATE);
+				regval |= iohs400_hi3798mv300[ix+1];
+				writel(regval, host->ioshare_addr +iohs400_hi3798mv300[ix]);
+			}
+		}
+	}else if(strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) {
+		if((timing == MMC_TIMING_SD_HS)
+		   || (timing == MMC_TIMING_UHS_SDR12)
+		   || (timing == MMC_TIMING_LEGACY)) {
+			for (ix = 0; io_sdhs_hi3798mv300_sdio0[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_sdhs_hi3798mv300_sdio0[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_sdhs_hi3798mv300_sdio0[ix+1]);
+				writel(regval, host->ioshare_addr + io_sdhs_hi3798mv300_sdio0[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR25) {
+			for (ix = 0; io_uhs_sdr25_hi3798mv300_sdio0[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr25_hi3798mv300_sdio0[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_uhs_sdr25_hi3798mv300_sdio0[ix+1]);
+				writel(regval, host->ioshare_addr + io_uhs_sdr25_hi3798mv300_sdio0[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_DDR50) {
+			for (ix = 0; io_uhs_ddr50_hi3798mv300_sdio0[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_ddr50_hi3798mv300_sdio0[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_uhs_ddr50_hi3798mv300_sdio0[ix+1]);
+				writel(regval, host->ioshare_addr + io_uhs_ddr50_hi3798mv300_sdio0[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR50) {
+			for (ix = 0; io_uhs_sdr50_hi3798mv300_sdio0[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr50_hi3798mv300_sdio0[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				if (IOSHARE_OFFSET_SDIO0_CLOCK != io_uhs_sdr50_hi3798mv300_sdio0[ix]) {
+					regval |= DRV_SLEV_RATE;
+				} else {
+					regval &= ~DRV_SLEV_RATE;
+				}
+				regval |=  io_uhs_sdr50_hi3798mv300_sdio0[ix+1];
+				writel(regval, host->ioshare_addr + io_uhs_sdr50_hi3798mv300_sdio0[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR104) {
+			for (ix = 0; io_uhs_sdr104_hi3798mv300_sdio0[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr104_hi3798mv300_sdio0[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval &= ~DRV_SLEV_RATE;
+				regval |=  io_uhs_sdr104_hi3798mv300_sdio0[ix+1];
+				writel(regval, host->ioshare_addr + io_uhs_sdr104_hi3798mv300_sdio0[ix]);
+			}
+		}
+	}else if(strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0){
+		if((timing == MMC_TIMING_SD_HS)
+		   || (timing == MMC_TIMING_UHS_SDR12)
+		   || (timing == MMC_TIMING_LEGACY)) {
+			for (ix = 0; io_sdhs_hi3798mv300_sdio1[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_sdhs_hi3798mv300_sdio1[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_sdhs_hi3798mv300_sdio1[ix+1]);
+				writel(regval, host->ioshare_addr + io_sdhs_hi3798mv300_sdio1[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR25) {
+			for (ix = 0; io_uhs_sdr25_hi3798mv300_sdio1[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr25_hi3798mv300_sdio1[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_uhs_sdr25_hi3798mv300_sdio1[ix+1]);
+				writel(regval, host->ioshare_addr + io_uhs_sdr25_hi3798mv300_sdio1[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_DDR50) {
+			for (ix = 0; io_uhs_ddr50_hi3798mv300_sdio1[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_ddr50_hi3798mv300_sdio1[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval |= (DRV_SLEV_RATE |io_uhs_ddr50_hi3798mv300_sdio1[ix+1]);
+				writel(regval, host->ioshare_addr + io_uhs_ddr50_hi3798mv300_sdio1[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR50) {
+			for (ix = 0; io_uhs_sdr50_hi3798mv300_sdio1[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr50_hi3798mv300_sdio1[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				if (IOSHARE_OFFSET_SDIO1_CLOCK != io_uhs_sdr50_hi3798mv300_sdio1[ix]) {
+					regval |= DRV_SLEV_RATE;
+				} else {
+					regval &= ~DRV_SLEV_RATE;
+				}
+				regval |=  io_uhs_sdr50_hi3798mv300_sdio1[ix+1];
+				writel(regval, host->ioshare_addr + io_uhs_sdr50_hi3798mv300_sdio1[ix]);
+			}
+		} else if (timing == MMC_TIMING_UHS_SDR104) {
+			for (ix = 0; io_uhs_sdr104_hi3798mv300_sdio1[ix] != 0xff; ix += 2) {
+				regval = readl( host->ioshare_addr + io_uhs_sdr104_hi3798mv300_sdio1[ix]);
+				regval &= ~(DRV_CAPS_MASK);
+				regval &= ~DRV_SLEV_RATE;
+				regval |=  io_uhs_sdr104_hi3798mv300_sdio1[ix+1];
+				writel(regval, host->ioshare_addr + io_uhs_sdr104_hi3798mv300_sdio1[ix]);
+			}
+		}
+	}
+}
+/******************************************************************************/
+
 static void himciv300_set_crgclk(struct himciv300_host * host, u8 timing)
 {
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 
 		if(timing == MMC_TIMING_MMC_HS) {
 			host->mmc->f_max = 50000000;
@@ -1018,7 +1703,8 @@ static void himciv300_set_crgclk(struct himciv300_host * host, u8 timing)
 		}
 
 		clk_set_rate(host->clk,	(unsigned long)host->mmc->f_max);
-	} else if (strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if ((strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) ||
+			   (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)) {
 		if (timing == MMC_TIMING_LEGACY) {
 			host->mmc->f_max = 25000000;
 		} else if (timing == MMC_TIMING_SD_HS) {
@@ -1032,7 +1718,10 @@ static void himciv300_set_crgclk(struct himciv300_host * host, u8 timing)
 		} else if (timing == MMC_TIMING_UHS_SDR50) {
 			host->mmc->f_max = 100000000;
 		} else if (timing == MMC_TIMING_UHS_SDR104) {
-			host->mmc->f_max = 150000000;
+			if (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)
+				host->mmc->f_max = 200000000;
+			else
+				host->mmc->f_max = 150000000;
 		}
 
 		clk_set_rate(host->clk,	(unsigned long)host->mmc->f_max);
@@ -1040,13 +1729,13 @@ static void himciv300_set_crgclk(struct himciv300_host * host, u8 timing)
 }
 /******************************************************************************/
 
-static void himciv300_set_phase(struct himciv300_host * host, u8 timing)
+static void himciv300_set_phase_hi3798mv200(struct himciv300_host * host, u8 timing)
 {
 	u32 regval;
 
 	himci_trace(3, "begin");
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		/* config sample clk/drv clk phase shift */
 		regval = (u32)clk_get_phase(host->clk);
 		regval = regval << SDIO_SAP_PS_SHIFT_BIT;
@@ -1082,7 +1771,8 @@ static void himciv300_set_phase(struct himciv300_host * host, u8 timing)
 		else
 			regval &= ~ENABLE_SHIFT_01;
 		mci_writel(host, MCI_ENABLE_SHIFT, regval);
-	} else if(strcmp(dev_name(host->dev), "f9820000.himciv200.SD") == 0) {
+	} else if((strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) ||
+			  (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)){
 		regval = (u32)clk_get_phase(host->clk);
 		regval = regval << SDIO_SAP_PS_SHIFT_BIT;
 		if (timing == MMC_TIMING_UHS_SDR104){
@@ -1096,7 +1786,7 @@ static void himciv300_set_phase(struct himciv300_host * host, u8 timing)
 			regval |= (SDIO_DRV_PS_135_67DOT5|SDIO_SAP_PS_90_45);
 		} else if(timing == MMC_TIMING_LEGACY) {
 			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
-			regval |= (SDIO_DRV_PS_180_90|SDIO_SAP_PS_90_45);
+			regval |= (SDIO_DRV_PS_180_90|SDIO_SAP_PS_0_0);
 		} else if (timing == MMC_TIMING_SD_HS){
 			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
 			regval |= (SDIO_DRV_PS_180_90|SDIO_SAP_PS_0_0);
@@ -1114,21 +1804,93 @@ static void himciv300_set_phase(struct himciv300_host * host, u8 timing)
 }
 /******************************************************************************/
 
+static void himciv300_set_phase_hi3798mv300(struct himciv300_host * host, u8 timing)
+{
+	u32 regval;
+
+	himci_trace(3, "begin");
+
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
+		/* config sample clk/drv clk phase shift */
+		regval = (u32)clk_get_phase(host->clk);
+		regval = regval << SDIO_SAP_PS_SHIFT_BIT;
+		if ((timing == MMC_TIMING_MMC_HS) || (timing == MMC_TIMING_LEGACY)) {
+			regval &= ~(SDIO_SAP_PS_MASK | SDIO_DRV_PS_MASK);
+			regval |=  SDIO_SAP_PS_0_0 | SDIO_DRV_PS_180_90;
+		} else if (timing == MMC_TIMING_MMC_DDR52) {
+			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
+			regval |= (SDIO_DRV_PS_90_45 |(emmc_boot_tuning_phase << SDIO_SAP_PS_OFFSET));
+		} else if (timing == MMC_TIMING_MMC_HS200) {
+			regval &= ~(SDIO_DRV_PS_MASK);
+			regval |=  SDIO_DRV_PS_90_45;
+		} else if(timing == MMC_TIMING_MMC_HS400) {
+			regval &= ~(SDIO_SAP_PS_MASK | SDIO_DRV_PS_MASK);
+			if (HS400_MAX_CLK == HS400_CLK_100M) {
+				regval |= (emmc_boot_tuning_phase << SDIO_SAP_PS_OFFSET) | SDIO_DRV_PS_90_45;
+			} else {
+				regval |= EMMC_CLK_MODE|(emmc_boot_tuning_phase << SDIO_SAP_PS_OFFSET) | SDIO_DRV_PS_135_67DOT5;
+			}
+		}
+		/* clk_set_phase has  regval%360, so shifit 12bit */
+		regval = regval >> SDIO_SAP_PS_SHIFT_BIT;
+		clk_set_phase(host->clk, (int)regval);
+
+		/* ddr50 need to enable shift */
+		regval = mci_readl(host, MCI_ENABLE_SHIFT);
+		 if (timing == MMC_TIMING_MMC_DDR52)
+			regval |= ENABLE_SHIFT_01;
+		else
+			regval &= ~ENABLE_SHIFT_01;
+		mci_writel(host, MCI_ENABLE_SHIFT, regval);
+	}  else if((strncmp(dev_name(host->dev), himci_sdio0_name, sizeof(himci_sdio0_name)) == 0) ||
+			  (strncmp(dev_name(host->dev), himci_sdio1_name, sizeof(himci_sdio1_name)) == 0)){
+		regval = (u32)clk_get_phase(host->clk);
+		regval = regval << SDIO_SAP_PS_SHIFT_BIT;
+		if (timing == MMC_TIMING_UHS_SDR104){
+			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
+			regval |= (SDIO_DRV_PS_90_45|SDIO_SAP_PS_225_112DOT5);
+		} else if (timing == MMC_TIMING_UHS_DDR50) {
+			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
+			regval |= (SDIO_DRV_PS_45_22DOT5|SDIO_SAP_PS_135_67DOT5);
+		} else if (timing == MMC_TIMING_UHS_SDR50){
+			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
+			regval |= (SDIO_DRV_PS_90_45|SDIO_SAP_PS_90_45);
+		} else if ((timing == MMC_TIMING_LEGACY)
+			|| (timing == MMC_TIMING_SD_HS)
+			|| (timing == MMC_TIMING_UHS_SDR25)
+			|| (timing == MMC_TIMING_UHS_SDR12)) {
+			regval &= ~(SDIO_SAP_PS_MASK| SDIO_DRV_PS_MASK);
+			regval |= (SDIO_DRV_PS_180_90|SDIO_SAP_PS_0_0);
+		}
+		/* clk_set_phase has  regval%360, so shifit 12bit */
+		regval = regval >> SDIO_SAP_PS_SHIFT_BIT;
+		clk_set_phase(host->clk, (int)regval);
+	}
+}
+
+/******************************************************************************/
+
 static void himciv300_set_timing(struct himciv300_host * host, u8 timing)
 {
-	himciv300_set_driver(host, timing);
-	himciv300_set_crgclk(host, timing);
-	himciv300_set_phase(host, timing);
+	if (_HI3798MV300 == get_chipid(0ULL)) {
+		himciv300_set_driver_hi3798mv300(host, timing);
+		himciv300_set_crgclk(host, timing);
+		himciv300_set_phase_hi3798mv300(host, timing);
+	} else {
+		himciv300_set_driver_hi3798mv200(host, timing);
+		himciv300_set_crgclk(host, timing);
+		himciv300_set_phase_hi3798mv200(host, timing);
+	}
 }
 /******************************************************************************/
 
-static int himciv300_prepare_hs400(struct mmc_host * mmc, struct mmc_ios * ios)
+static int himciv300_prepare_hs400_hi3798mv200(struct mmc_host * mmc, struct mmc_ios * ios)
 {
 	u32 ix, regval;
 	struct himciv300_host *host = mmc_priv(mmc);
 	himci_trace(3, "begin");
 
-	if (strcmp(dev_name(host->dev), "f9830000.himciv200.MMC") == 0) {
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
 		/* config driver strength */
 		for (ix = 0; iohs400[ix] != 0xff; ix += 2) {
 			regval = readl( host->ioshare_addr + iohs400[ix]);
@@ -1159,13 +1921,74 @@ static int himciv300_prepare_hs400(struct mmc_host * mmc, struct mmc_ios * ios)
 
 	return 0;
 }
+
 /******************************************************************************/
 
-int himciv300_execute_tuning(struct mmc_host * mmc, u32 opcode)
+static int himciv300_prepare_hs400_hi3798mv300(struct mmc_host * mmc, struct mmc_ios * ios)
+{
+	u32 ix, regval;
+	struct himciv300_host *host = mmc_priv(mmc);
+	himci_trace(3, "begin");
+
+	if (strncmp(dev_name(host->dev), himci_mmc_name, sizeof(himci_mmc_name)) == 0) {
+		/* config driver strength */
+		for (ix = 0; iohs400_hi3798mv300[ix] != 0xff; ix += 2) {
+			regval = readl( host->ioshare_addr + iohs400_hi3798mv300[ix]);
+			regval &= ~(DRV_CAPS_MASK | DRV_SLEV_RATE);
+			regval |= iohs400_hi3798mv300[ix+1];
+			writel(regval, host->ioshare_addr + iohs400_hi3798mv300[ix]);
+		}
+
+		/* config source clock */
+		host->mmc->f_max = HS400_MAX_CLK;
+		clk_set_rate(host->clk,	(unsigned long)host->mmc->f_max);
+
+		/* config clk phase */
+		regval = (u32)clk_get_phase(host->clk);
+		regval = regval << SDIO_SAP_PS_SHIFT_BIT;
+		regval &= ~(SDIO_DRV_PS_MASK);
+		if (HS400_MAX_CLK == HS400_CLK_100M) {
+			regval |= SDIO_DRV_PS_90_45;
+		} else {
+			regval |= SDIO_DRV_PS_135_67DOT5;
+		}
+		regval = regval >> SDIO_SAP_PS_SHIFT_BIT;
+		clk_set_phase(host->clk, (int)regval);
+	}
+
+	return 0;
+}
+
+/******************************************************************************/
+
+static int himciv300_prepare_hs400(struct mmc_host * mmc, struct mmc_ios * ios)
+{
+	int ret = 0;
+	if (_HI3798MV300 == get_chipid(0ULL)) {
+		ret = himciv300_prepare_hs400_hi3798mv300(mmc, ios);
+	} else {
+		ret = himciv300_prepare_hs400_hi3798mv200(mmc, ios);
+	}
+	return ret;
+}
+
+static int himciv300_check_tuning(struct mmc_host * mmc, u32 opcode)
 {
 	int err;
-
 	struct himciv300_host *host = mmc_priv(mmc);
+
+	host->tunning = 1;
+	err = himciv300_send_tuning(mmc,opcode);
+	host->tunning = 0;
+
+	return 	err;
+}
+
+/******************************************************************************/
+
+static int himciv300_execute_tuning(struct mmc_host * mmc, u32 opcode)
+{
+	int err;
 
 	himci_trace(3, "begin");
 #ifdef MCI_TUNING_TEST
@@ -1173,20 +1996,28 @@ int himciv300_execute_tuning(struct mmc_host * mmc, u32 opcode)
 #endif
 
 	err = himciv300_tuning_mix_mode(mmc,opcode);
-	if (err) {
-		err = himciv300_tuning_dll_mode(mmc,opcode);
-	}
 	himciv300_tuning_feedback(mmc);
-	if (!err) { //double check tuning success
-		host->tunning = 1;
-		err = himciv300_send_tuning(mmc,opcode);
-		host->tunning = 0;
+	if (!err)
+		err = himciv300_check_tuning(mmc,opcode);
+
+	if (err) {
+		err = himciv300_tuning_edge_mode(mmc,opcode);
+		himciv300_tuning_feedback(mmc);
+		if (!err)
+			err = himciv300_check_tuning(mmc,opcode);
+
+		if (err) {
+				err = himciv300_tuning_dll_mode(mmc,opcode);
+				himciv300_tuning_feedback(mmc);
+				if (!err)
+					err = himciv300_check_tuning(mmc,opcode);
+			}
 	}
 	return err;
 }
 /******************************************************************************/
 
-unsigned int get_mmc_io_voltage(void)
+static unsigned int get_mmc_io_voltage(void)
 {
 	unsigned int voltage = 0;
 	void __iomem *virtaddr;

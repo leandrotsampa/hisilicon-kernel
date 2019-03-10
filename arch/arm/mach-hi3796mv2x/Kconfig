@@ -8,7 +8,7 @@ config MACH_HI3796MV2X
 	select ARM_TIMER_SP804
 	select COMMON_CLK
 	select ARCH_REQUIRE_GPIOLIB
-	select DYNAMIC_DEBUG
+	select DYNAMIC_DEBUG if !CA_SUPPORT_ADVCA || DEBUG_FS && PRINTK
 	help
 	  Include support for the hisilion HI3796MV2X platform.
 	  HI3796MV2X support ARM CORTEX-A7 processer,
@@ -26,26 +26,6 @@ config DEFAULT_VMALLOC_SIZE
 	default 240
 	help
 	  Default vmalloc size in MBytes. Use "vmalloc=size" to change it.
-
-menuconfig SUPPORT_DSP_RUN_MEM
-	bool "Support DSP run memory"
-	default y
-	help
-	  Support DSP run memory
-
-config DSP_RUN_MEM_ADDR
-	hex "DSP run memory address"
-	depends on SUPPORT_DSP_RUN_MEM
-	default "0x2000000"
-	help
-	  The start address of DSP run memory.
-
-config DSP_RUN_MEM_SIZE
-	hex "DSP run memory size"
-	depends on SUPPORT_DSP_RUN_MEM
-	default "0x800000"
-	help
-	  The size of DSP run memory.
 
 config HI3796MV2X_FPGA
 	bool "Enable HI3796MV2X Fpga config"

@@ -40,7 +40,7 @@ static int setup_micron(struct nand_read_retry_info *info, int retry_mode)
 	regop_info.addrl = 0x89;
 	regop_info.addr_cycle = 1;
 	regop_info.buf = (u8*)&retry_mode;
-	regop_info.sz_buf = 1;
+	regop_info.sz_buf = 4;
 	regop_info.wait_ready = true;
 
 	info->drv->write_reg(&regop_info);

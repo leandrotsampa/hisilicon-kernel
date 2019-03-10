@@ -55,6 +55,8 @@ struct himciv200_host {
 	u32 irq;
 	u32 devid;
 	u32 card_status;
+	int force_unpluged;
+	int card_detect_change;
 	u32 power_on;  /* bool, true - power is on */
 	u32 ldo_shift;
 	u32 tunning;

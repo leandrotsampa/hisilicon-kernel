@@ -29,7 +29,9 @@ static struct hc_driver __read_mostly xhci_plat_hc_driver;
 
 static int xhci_plat_setup(struct usb_hcd *hcd);
 static int xhci_plat_start(struct usb_hcd *hcd);
-
+#ifdef CONFIG_ARCH_HI3798MX
+extern const char * get_cpu_version(void);
+#endif
 static const struct xhci_driver_overrides xhci_plat_overrides __initconst = {
 	.extra_priv_size = sizeof(struct xhci_hcd),
 	.reset = xhci_plat_setup,
@@ -44,6 +46,9 @@ static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
 	 * dev struct in order to setup MSI
 	 */
 	xhci->quirks |= XHCI_PLAT;
+
+	/* QUIRK: Logic xHC  must be suspended extra slowly */
+ 	xhci->quirks |= XHCI_SLOW_SUSPEND;
 }
 
 /* called during probe() after chip reset completes */
@@ -306,6 +311,11 @@ MODULE_ALIAS("platform:xhci-hcd");
 
 static int __init xhci_plat_init(void)
 {
+#ifdef CONFIG_ARCH_HI3798MX
+	const char * cpuversion = get_cpu_version();
+	if ((cpuversion)&&('Q' == cpuversion[0]))
+		return 0;
+#endif
 	xhci_init_driver(&xhci_plat_hc_driver, &xhci_plat_overrides);
 	return platform_driver_register(&usb_xhci_driver);
 }
@@ -313,6 +323,11 @@ module_init(xhci_plat_init);
 
 static void __exit xhci_plat_exit(void)
 {
+#ifdef CONFIG_ARCH_HI3798MX
+	const char * cpuversion = get_cpu_version();
+	if ((cpuversion)&&('Q' == cpuversion[0]))
+		return;
+#endif
 	platform_driver_unregister(&usb_xhci_driver);
 }
 module_exit(xhci_plat_exit);

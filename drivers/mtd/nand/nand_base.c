@@ -3833,7 +3833,7 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		if (is_full_id_nand(type)) {
 			if (find_full_id_nand(mtd, chip, type, id_data, &busw))
 				goto ident_done;
-		} else if (*dev_id == type->dev_id) {
+		} else if (*dev_id == type->ids.dev_id) {
 			break;
 		}
 	}

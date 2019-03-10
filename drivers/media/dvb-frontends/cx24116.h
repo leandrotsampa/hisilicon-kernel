@@ -39,9 +39,6 @@ struct cx24116_config {
 
 	/* max bytes I2C provider can write at once */
 	u16 i2c_wr_max;
-
-	/* Hook for Lock LED */
-	void (*set_lock_led)(struct dvb_frontend *fe, int offon);
 };
 
 #if IS_REACHABLE(CONFIG_DVB_CX24116)

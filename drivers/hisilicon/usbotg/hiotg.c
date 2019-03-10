@@ -92,6 +92,9 @@ static int usbotg_thread(void *data)
 	u32 reg;
 	struct hiotg_hcd *hcd = (struct hiotg_hcd *)data;
 
+	/* delay 3 second to avoid that android adb mount failed*/
+	msleep(3000);
+	
 	while (!kthread_should_stop()) {
 		reg = readl(hcd->otg_crgx);
 

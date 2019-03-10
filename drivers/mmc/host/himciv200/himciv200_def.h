@@ -67,6 +67,7 @@
 #define DTO_INT_MASK                      BIT(3)
 #define VOLT_SWITCH_INT_MASK              BIT(10)
 #define SDIO_INT_MASK                     BIT(16)
+#define CARD_DETECT_IRQ_MASK              BIT(0)
 
 /* MCI_CMD REG(0X2C) */
 #define CMD_START                         BIT(31)
@@ -105,6 +106,7 @@
 #define DTO_INT_STATUS                    BIT(3)
 #define CD_INT_STATUS                     BIT(2)
 #define RE_INT_STATUS                     BIT(1)
+#define CARD_DETECT_IRQ_STATUS            BIT(0)
 #define ALL_INT_CLR                       (0x1efff)
 
 /* MCI_STATUS(0x48) details */

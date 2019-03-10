@@ -123,9 +123,9 @@ static DEFINE_MUTEX(send_cmd_lock);
 static DEFINE_MUTEX(shared_buf_rel_lock);
 static DEFINE_MUTEX(load_app_lock);
 static int load_app_lock_flag = 0;
-/*DTS2013030508974 q00209673 begin*/
+/*DTS2013030508974 sdk begin*/
 static DEFINE_MUTEX(device_file_cnt_lock);
-/*DTS2013030508974 q00209673 end */
+/*DTS2013030508974 sdk end */
 /************global reference start***********/
 static dev_t tc_ns_client_devt;
 static struct class *driver_class;
@@ -135,20 +135,20 @@ static unsigned int exception_mem_addr;
 
 typedef struct tag_TC_NS_DEV_List{
     unsigned int dev_file_cnt;
-/*DTS2013030508974 q00209673 begin*/
+/*DTS2013030508974 sdk begin*/
     struct mutex dev_lock;
-/*DTS2013030508974 q00209673 end */
+/*DTS2013030508974 sdk end */
     struct list_head dev_file_list;
 
 } TC_NS_DEV_List;
 static TC_NS_DEV_List tc_ns_dev_list;
-/* DTS2013030508974 q00209673 begin
+/* DTS2013030508974 sdk begin
 typedef struct tag_TC_NS_Shared_MEM_List{
     int shared_mem_cnt;
     struct list_head shared_mem_list;
 } TC_NS_Shared_MEM_List;
 static TC_NS_Shared_MEM_List tc_shared_mem_head;
-DTS2013030508974 q00209673 end */
+DTS2013030508974 sdk end */
 #ifdef K_MALLOC
 typedef struct tag_TC_NS_Shared_MEM{
     void*            kernel_addr;
@@ -170,21 +170,21 @@ typedef struct tag_TC_NS_Shared_MEM{
 typedef struct tag_TC_NS_DEV_File{
     unsigned int dev_file_id;
     unsigned int service_cnt;
-/*DTS2013030508974 q00209673 begin*/
+/*DTS2013030508974 sdk begin*/
     unsigned int shared_mem_cnt;
     struct mutex service_lock;
     struct mutex shared_mem_lock;
     struct list_head shared_mem_list;
-/*DTS2013030508974 q00209673 end */
+/*DTS2013030508974 sdk end */
     struct list_head head;
     struct list_head services_list;
 } TC_NS_DEV_File;
 
 typedef struct tag_TC_NS_Service{
     unsigned char uuid[16];
-/*DTS2013030508974 q00209673 begin*/
+/*DTS2013030508974 sdk begin*/
     struct mutex session_lock;
-/*DTS2013030508974 q00209673 end */
+/*DTS2013030508974 sdk end */
     struct list_head head;
     struct list_head session_list;
 } TC_NS_Service;
@@ -260,7 +260,7 @@ static unsigned int smc_send(unsigned int cmd_addr)
             __asmeq("%1", "r0")
             __asmeq("%2", "r1")
             __asmeq("%3", "r2")
-#if GCC_VERSION >= 40600//for hisi linux:by fangjian00208632
+#if GCC_VERSION >= 40600//for hisi linux:by sdk
             ".arch_extension sec\n"
 #endif
             "smc    #0  @ switch to secure world\n"
@@ -1283,12 +1283,12 @@ static int TC_NS_CloseSession(unsigned int dev_id, void* argp)
         }
     }
 #if 0
-/*DTS2013040705065 q00209673 begin for lock*/
+/*DTS2013040705065 sdk begin for lock*/
 session_close_fail:
     if(ret == TEEC_SUCCESS)
         ret = TEEC_ERROR_GENERIC;
     TCDEBUG("close session failed\n");
-/*DTS2013040705065 q00209673 end for lock*/
+/*DTS2013040705065 sdk end for lock*/
 #endif
     mutex_unlock(&tc_ns_dev_list.dev_lock);
     return ret;
@@ -1335,12 +1335,12 @@ int TC_NS_CloseSession_from_kernel(unsigned int dev_id, void* argp)
         }
     }
 #if 0
-/*DTS2013040705065 q00209673 begin for lock*/
+/*DTS2013040705065 sdk begin for lock*/
 session_close_fail:
     if(ret == TEEC_SUCCESS)
         ret = TEEC_ERROR_GENERIC;
     TCDEBUG("close session failed\n");
-/*DTS2013040705065 q00209673 end for lock*/
+/*DTS2013040705065 sdk end for lock*/
 #endif
     mutex_unlock(&tc_ns_dev_list.dev_lock);
     return ret;
@@ -2812,7 +2812,7 @@ EXPORT_SYMBOL(TC_NS_OpenSession_from_kernel);
 EXPORT_SYMBOL(TC_NS_ClientClose_from_kernel);
 EXPORT_SYMBOL(TC_NS_CloseSession_from_kernel);
 
-MODULE_AUTHOR("q00209673");
+MODULE_AUTHOR("sdk");
 MODULE_DESCRIPTION("TrustCore ns-client driver");
 MODULE_VERSION("1.00");
 MODULE_LICENSE("GPL");

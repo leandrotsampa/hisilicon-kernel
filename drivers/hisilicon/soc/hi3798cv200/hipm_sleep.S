@@ -166,6 +166,7 @@ store_resume:
 	str	r5, [r4, #REG_SC_GEN30]
 	str	r5, [r4, #REG_SC_GEN9]
 
+#ifndef CONFIG_TEE
 	/* if it is not advca chipset, jump to enable_mcu */
 	ldr	r1, =hi_otp_idword_addr
 	ldr	r1, [r1]
@@ -224,12 +225,12 @@ ca_pm_suspend:
 	str	r4, [r3]
 
 	/* disable MMU */
-	mrc p15, 0, r1, c1, c0, 0 
+	mrc p15, 0, r1, c1, c0, 0
 	bic r1, #1
 	mcr p15, 0, r1, c1, c0, 0
 
 	bx	lr
-
+#endif
 enable_mcu:
 //	LED1_ON r10, r11
 	ldr	r1, =hi_mcu_start_ctrl
@@ -242,6 +243,8 @@ enable_mcu:
 	ldr	r1, [r1]
 	ldr	r2, =0x12345678
 	str	r2, [r1, #REG_SC_GEN13]
+	ldr	r2, =0x80510001
+	str	r2, [r1, #REG_SC_GEN15]
 
 go_wfi:
 	mov	r1, #0x10

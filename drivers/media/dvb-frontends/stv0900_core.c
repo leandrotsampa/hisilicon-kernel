@@ -1551,25 +1551,12 @@ static int stv0900_status(struct stv0900_internal *intp,
 	return locked;
 }
 
-static int stv0900_set_pls(struct stv0900_internal *intp,
-				enum fe_stv0900_demod_num demod, u8 pls_mode, u32 pls_code)
-{
-	enum fe_stv0900_error error = STV0900_NO_ERROR;
-
-	dprintk("Set PLS code %d (mode %d)", pls_code, pls_mode);
-	stv0900_write_reg(intp, PLROOT2, (pls_mode<<2) | (pls_code>>16));
-	stv0900_write_reg(intp, PLROOT1, pls_code>>8);
-	stv0900_write_reg(intp, PLROOT0, pls_code);
-
-	return error;
-}
-
 static int stv0900_set_mis(struct stv0900_internal *intp,
 				enum fe_stv0900_demod_num demod, int mis)
 {
 	dprintk("%s\n", __func__);
 
-	if (mis == NO_STREAM_ID_FILTER) {
+	if (mis < 0 || mis > 255) {
 		dprintk("Disable MIS filtering\n");
 		stv0900_write_bits(intp, FILTER_EN, 0);
 	} else {
@@ -1603,7 +1590,6 @@ static enum dvbfe_search stv0900_search(struct dvb_frontend *fe)
 	if (state->config->set_ts_params)
 		state->config->set_ts_params(fe, 0);
 
-	stv0900_set_pls(intp, demod, (c->stream_id>>26) & 0x3, (c->stream_id>>8) & 0x3FFFF);
 	stv0900_set_mis(intp, demod, c->stream_id);
 
 	p_result.locked = FALSE;

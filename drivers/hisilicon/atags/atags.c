@@ -50,6 +50,7 @@ static struct tagtable *tagtable[] __initdata = {
 	&tag_phygpio,
 	&tag_chiptrim,
 	&tag_emmc,
+	&tag_bootreg,
 	NULL,
 };
 /******************************************************************************/

@@ -2165,18 +2165,38 @@ static void yaffs_bg_stop(struct yaffs_dev *dev)
 
 static void yaffs_flush_inodes(struct super_block *sb)
 {
-	struct inode *iptr;
+	struct inode *iptr, *old_iptr = NULL;
 	struct yaffs_obj *obj;
+	struct yaffs_dev *dev = yaffs_super_to_dev(sb);
 
+	spin_lock(&sb->s_inode_list_lock);
 	list_for_each_entry(iptr, &sb->s_inodes, i_sb_list) {
 		obj = yaffs_inode_to_obj(iptr);
+		__iget(iptr);
+		spin_unlock(&sb->s_inode_list_lock);
+
 		if (obj) {
 			yaffs_trace(YAFFS_TRACE_OS,
 				"flushing obj %d",
 				obj->obj_id);
 			yaffs_flush_file(obj, 1, 0, 0);
 		}
+		/* We hold a reference to 'iptr' so it couldn't have been
+		 * removed from s_inodes list while we dropped the inode lock.
+		 * We cannot iput the iptr now as we can be holding the last
+		 * reference and we cannot iput it under inode lock. So we
+		 * keep the reference and iput it later. And iput may call
+		 * yaffs_delete_inode which will lock the yaffs gross lock
+		 * so we should unlock it firstly and lock again after iput.
+		 */
+		yaffs_gross_unlock(dev);
+		iput(old_iptr);
+		yaffs_gross_lock(dev);
+		old_iptr = iptr;
+		spin_lock(&sb->s_inode_list_lock);
 	}
+	spin_unlock(&sb->s_inode_list_lock);
+	iput(old_iptr);
 }
 
 static void yaffs_flush_super(struct super_block *sb, int do_checkpoint)

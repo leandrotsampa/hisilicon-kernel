@@ -63,11 +63,24 @@
 
 #define PCIE_LTSSM_STATE_MASK            (0x3f)
 #define PCIE_LTSSM_STATE_ACTIVE          (0x11)
+
+#define PCIE_BAK_REG_LOCK                (0x0B50)
+#define PCIE_SYS_STATE_SHW7              (0X0BC0)
+#define PCIE_SYS_STATE_SHW8              (0X0BC4)
+#define PCIE_SYS_STATE_SHW9              (0X0BC8)
+
+#define PCIE_BAK_REG_LOCK_EN             (0x1 << 0)
+
+#define PCIE_PERI_COMBPHY1_CFG           (0xf8a20858)
+#define PCIE_LINK_CTRL_2_REG             (0xf00000a0)
+#define PCIE_LINk2_TRANSMIT_MASK         (0x7 << 7)
+#define PCIE_LINk2_TRANSMIT_700          (0x3 << 7)
 /******************************************************************************/
 
 struct hipcie_host {
 	void __iomem *sys_addr;
 	void __iomem *ca_reg_addr;
+	void __iomem *ctrl_addr;
 	struct clk *clk;
 	struct pcie_port pp;
 };
@@ -75,19 +88,8 @@ struct hipcie_host {
 #define to_hipcie(x) container_of(x, struct hipcie_host, pp)
 /******************************************************************************/
 
-/*
-* pcieaddr=0x10000000,0x500000,0x10500000,0x500000
-*/
-struct pcie_dma_addr {
-	u32 start;   /* phy address. */
-	u32 size;
-};
-
-static struct pcie_dma_addr pcie_dma_addr_read 
-	= {CONFIG_PCIE_DMA_ADDR_READ, CONFIG_PCIE_DMA_SIZE_READ};
-static struct pcie_dma_addr pcie_dma_addr_write 
-	= {CONFIG_PCIE_DMA_ADDR_WRITE, CONFIG_PCIE_DMA_SIZE_WRITE};
-/******************************************************************************/
+extern struct pcie_alloc_ctrl_t pcie_read_ctrl;
+extern struct pcie_alloc_ctrl_t pcie_write_ctrl;
 #if 0
 static int __init early_pcie_dma_addr(char *p)
 {
@@ -169,38 +171,13 @@ fail:
 	pcie_dma_addr_write.start = 0;
 	pcie_dma_addr_write.size =0;
 	return;
-#else
-	return;
 #endif
 }
 /*****************************************************************************/
 
-int pcie_get_dma_phyaddr(u32 *read, u32 *sz_read, u32 *write, u32 *sz_write)
-{
-	if ((!pcie_dma_addr_read.size) && (!pcie_dma_addr_write.size)
-		&& (!pcie_dma_addr_read.start) && (!pcie_dma_addr_write.start)) {
-		pr_err("Not config pcieaddr or config err\n");
-		dump_stack();
-		return -1;
-	}
-
-	if (read)
-		*read = pcie_dma_addr_read.start;
-	if (sz_read)
-		*sz_read = pcie_dma_addr_read.size;
-	if (write)
-		*write = pcie_dma_addr_write.start;
-	if (sz_write)
-		*sz_write = pcie_dma_addr_write.size;
-
-	return 0;
-}
-EXPORT_SYMBOL(pcie_get_dma_phyaddr);
-/*****************************************************************************/
-
 static void hipcie_dbi_w_mode(struct pcie_port *pp, bool on)
 {
-#ifndef CONFIG_ARCH_HI3798MV2X
+#if !defined (CONFIG_ARCH_HI3798MV2X) && !defined(CONFIG_ARCH_HI3796MV2X)
 	u32 val;
 	struct hipcie_host *hipcie = to_hipcie(pp);
 
@@ -219,7 +196,7 @@ static void hipcie_dbi_w_mode(struct pcie_port *pp, bool on)
 
 static void hipcie_dbi_r_mode(struct pcie_port *pp, bool on)
 {
-#ifndef CONFIG_ARCH_HI3798MV2X
+#if !defined (CONFIG_ARCH_HI3798MV2X) && !defined(CONFIG_ARCH_HI3796MV2X)
 	u32 val;
 	struct hipcie_host *hipcie = to_hipcie(pp);
 
@@ -304,13 +281,15 @@ static int hipcie_establish_link(struct pcie_port *pp)
 	u32 regval;
 	int count = 0;
 	struct hipcie_host *hipcie = to_hipcie(pp);
+	u32 reg = 0;
+	void __iomem *pcie_host0_regbase = NULL;
 
 	if (dw_pcie_link_up(pp)) {
 		dev_err(pp->dev, "Link already up\n");
 		return 0;
 	}
 
-#ifdef CONFIG_ARCH_HI3798MV2X
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
 	/* dbi read/write enable */
 	regval = readl(hipcie->sys_addr + PCIE_SYS_CTRL7);
 	regval |= PCIE_DBI_ENABLE;
@@ -325,6 +304,26 @@ static int hipcie_establish_link(struct pcie_port *pp)
 
 	/* setup root complex */
 	dw_pcie_setup_rc(pp);
+
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
+	/* ioremap pcie Link Control 2 Register */
+	if (!pcie_host0_regbase) {
+		pcie_host0_regbase = ioremap_nocache(PCIE_LINK_CTRL_2_REG, 0x20);
+		if (!pcie_host0_regbase) {
+			printk("ioremap pcie link control 2 register failed.\n");
+			return -1;
+		}
+	}
+	/* config pcie link control 2 transmit margin bit[9:7],011 for 700mv,000 for 1000mv */
+	reg = readl(pcie_host0_regbase);
+	reg &= ~PCIE_LINk2_TRANSMIT_MASK;
+	reg |= PCIE_LINk2_TRANSMIT_700;
+	writel(reg, pcie_host0_regbase);
+	if (pcie_host0_regbase) {
+		iounmap(pcie_host0_regbase);
+		pcie_host0_regbase = NULL;
+	}
+#endif
 
 	/* assert LTSSM enable */
 	regval = readl(hipcie->sys_addr + PCIE_SYS_CTRL7);
@@ -341,6 +340,26 @@ static int hipcie_establish_link(struct pcie_port *pp)
 			return -EINVAL;
 		}
 	}
+
+#if defined(CONFIG_ARCH_HI3798CV2X)
+	/* only for HI3798CV200 */
+	void __iomem *combophy1_cfg = NULL;
+	combophy1_cfg = ioremap_nocache(PCIE_PERI_COMBPHY1_CFG, 0x20);
+	if (!combophy1_cfg) {
+		printk("ioremap combophy1_cfg failed.\n");
+		return -1;
+	}
+	regval=readl(combophy1_cfg);
+	printk("ComboPHY CFG:%#x\n",regval);
+	/* if pcie linkup, config PWON to auto mode */
+	writel(0x1203001,combophy1_cfg);
+	/* release test_write */
+	writel(0x0203001,combophy1_cfg);
+	if(combophy1_cfg){
+		iounmap(combophy1_cfg);
+		combophy1_cfg = NULL;
+	}
+#endif
 
 	dev_info(pp->dev, "Link up\n");
 
@@ -363,11 +382,21 @@ static struct pcie_host_ops hipcie_host_ops = {
 	.host_init = hipcie_host_init,
 };
 /******************************************************************************/
+static void hipcie_config_ddr_bank(u32 writeaddr, u32 readadddr, void *reg_addr_base)
+{
+	writel(writeaddr, reg_addr_base + PCIE_SYS_CTRL15);
+
+	writel(readadddr, reg_addr_base + PCIE_SYS_CTRL16);
+
+	writel(0x11, reg_addr_base + PCIE_SYS_CTRL17);
+}
+/******************************************************************************/
 
 static int __init hipcie_pltm_probe(struct platform_device *pdev)
 {
 	int ret;
-	u32 regval;
+	u32 regvalrd;
+	u32 regvalwt;
 	struct hipcie_host *hipcie;
 	struct pcie_port *pp;
 	struct resource *res;
@@ -395,11 +424,20 @@ static int __init hipcie_pltm_probe(struct platform_device *pdev)
 		goto fail_clk;
 	}
 
-#ifdef CONFIG_ARCH_HI3798MV2X
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
 	hipcie->ca_reg_addr = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(hipcie->ca_reg_addr)) {
 		ret = PTR_ERR(hipcie->ca_reg_addr);
+		goto fail_clk;
+	}
+#endif
+
+#ifdef CONFIG_ARCH_HI3796MV2X
+	res = platform_get_resource(pdev, IORESOURCE_MEM, 3);
+	hipcie->ctrl_addr = devm_ioremap_resource(&pdev->dev, res);
+	if (IS_ERR(hipcie->ctrl_addr)) {
+		ret = PTR_ERR(hipcie->ctrl_addr);
 		goto fail_clk;
 	}
 #endif
@@ -416,31 +454,33 @@ static int __init hipcie_pltm_probe(struct platform_device *pdev)
 		return PTR_ERR(hipcie->clk);
 	}
 
-	get_mem_size(&size,  HIKAPI_GET_RAM_SIZE);
-	pcie_dma_addr_write.size = size<<20;
-	pcie_dma_addr_read.size = size<<20;
+	if ((!pcie_read_ctrl.size) && (!pcie_write_ctrl.size)) {
+		get_mem_size(&size,  HIKAPI_GET_RAM_SIZE);
+		pcie_write_ctrl.size = size<<20;
+		pcie_read_ctrl.size = size<<20;
+	}
+
+	regvalwt = (pcie_write_ctrl.phyaddr >> 20)
+		| (pcie_write_ctrl.phyaddr+ pcie_write_ctrl.size);
+
+	regvalrd = (pcie_read_ctrl.phyaddr>> 20)
+		| (pcie_read_ctrl.phyaddr + pcie_read_ctrl.size);
 
 	/* ca: config ddr bank for ep dma before cancel reset */
-#ifdef CONFIG_ARCH_HI3798MV2X
-	regval = (pcie_dma_addr_write.start >> 20)
-		| (pcie_dma_addr_write.start + pcie_dma_addr_write.size);
-	writel(regval, hipcie->ca_reg_addr + PCIE_SYS_CTRL15);
-
-	regval = (pcie_dma_addr_read.start >> 20)
-		| (pcie_dma_addr_read.start + pcie_dma_addr_read.size);
-	writel(regval, hipcie->ca_reg_addr + PCIE_SYS_CTRL16);
-
-	writel(0x11, hipcie->ca_reg_addr + PCIE_SYS_CTRL17);
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
+	hipcie_config_ddr_bank(regvalwt, regvalrd, hipcie->ca_reg_addr);
 #else
-	regval = (pcie_dma_addr_write.start >> 20)
-		| (pcie_dma_addr_write.start + pcie_dma_addr_write.size);
-	writel(regval, hipcie->sys_addr + PCIE_SYS_CTRL15);
+	hipcie_config_ddr_bank(regvalwt, regvalrd, hipcie->sys_addr);
+#endif
+	/*ca: config DDR read and write protected address to bakeup register*/
+#ifdef CONFIG_ARCH_HI3796MV2X
+	writel(regvalwt, hipcie->ctrl_addr + PCIE_SYS_STATE_SHW7);
 
-	regval = (pcie_dma_addr_read.start >> 20)
-		| (pcie_dma_addr_read.start + pcie_dma_addr_read.size);
-	writel(regval, hipcie->sys_addr + PCIE_SYS_CTRL16);
+	writel(regvalrd, hipcie->ctrl_addr + PCIE_SYS_STATE_SHW8);
 
-	writel(0x11, hipcie->sys_addr + PCIE_SYS_CTRL17);
+	writel(0x11, hipcie->ctrl_addr + PCIE_SYS_STATE_SHW9);
+
+	writel(PCIE_BAK_REG_LOCK_EN, hipcie->ctrl_addr + PCIE_BAK_REG_LOCK);
 #endif
 
 	ret = clk_prepare_enable(hipcie->clk);
@@ -490,32 +530,23 @@ static bool hipci_power_manageable(struct pci_dev *dev)
 static int hipci_set_power_state(struct pci_dev *dev, pci_power_t state)
 {
 	int ret;
-	u32 regval;
+	u32 regvalrd;
+	u32 regvalwt;
 	struct hipcie_host *hipcie = dev_get_drvdata(dev->bus->bridge->parent);
 
 	clk_disable_unprepare(hipcie->clk);
+	
+	regvalwt = (pcie_write_ctrl.phyaddr >> 20)
+		| (pcie_write_ctrl.phyaddr + pcie_write_ctrl.size);
+	
+	regvalrd = (pcie_read_ctrl.phyaddr >> 20)
+		| (pcie_read_ctrl.phyaddr + pcie_read_ctrl.size);
 
 	/* ca: config ddr bank for ep dma before cancel reset */
-#ifdef CONFIG_ARCH_HI3798MV2X
-	regval = (pcie_dma_addr_write.start >> 20)
-		| (pcie_dma_addr_write.start + pcie_dma_addr_write.size);
-	writel(regval, hipcie->ca_reg_addr + PCIE_SYS_CTRL15);
-
-	regval = (pcie_dma_addr_read.start >> 20)
-		| (pcie_dma_addr_read.start + pcie_dma_addr_read.size);
-	writel(regval, hipcie->ca_reg_addr + PCIE_SYS_CTRL16);
-
-	writel(0x11, hipcie->ca_reg_addr + PCIE_SYS_CTRL17);
+#if defined(CONFIG_ARCH_HI3798MV2X) || defined(CONFIG_ARCH_HI3796MV2X)
+	hipcie_config_ddr_bank(regvalwt, regvalrd, hipcie->ca_reg_addr);
 #else
-	regval = (pcie_dma_addr_write.start >> 20)
-		| (pcie_dma_addr_write.start + pcie_dma_addr_write.size);
-	writel(regval, hipcie->sys_addr + PCIE_SYS_CTRL15);
-
-	regval = (pcie_dma_addr_read.start >> 20)
-		| (pcie_dma_addr_read.start + pcie_dma_addr_read.size);
-	writel(regval, hipcie->sys_addr + PCIE_SYS_CTRL16);
-
-	writel(0x11, hipcie->sys_addr + PCIE_SYS_CTRL17);
+	hipcie_config_ddr_bank(regvalwt, regvalrd, hipcie->sys_addr);
 #endif
 
 	ret = clk_prepare_enable(hipcie->clk);
