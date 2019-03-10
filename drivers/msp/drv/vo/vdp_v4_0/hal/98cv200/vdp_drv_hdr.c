@@ -1824,11 +1824,10 @@ HI_S32 VDP_DRV_SetComposer(rpu_ext_config_fixpt_main_t* pstCompCfg)
     VDP_VID_SetComposerBlEn              ( 1 );
 		
     if(pstCompCfg->el_spatial_resampling_filter_flag == 1)
-        VDP_VID_SetHdrElZme(VDP_LAYER_VID1, HI_TRUE);
+	VDP_VID_SetHdrElZme(VDP_LAYER_VID1, HI_TRUE);
     else
-        VDP_VID_SetHdrElZme(VDP_LAYER_VID1, HI_FALSE);        
-
-	return HI_SUCCESS;
+	VDP_VID_SetHdrElZme(VDP_LAYER_VID1, HI_FALSE);        
+    return HI_SUCCESS;
 }
 
 

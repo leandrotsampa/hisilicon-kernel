@@ -49,6 +49,9 @@ struct tda10071_platform_data {
 	u8 pll_multiplier;
 	u8 tuner_i2c_addr;
 
+	/* Hook for Lock LED */
+	void (*set_lock_led)(struct dvb_frontend *fe, int offon);
+
 	struct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);
 };
 

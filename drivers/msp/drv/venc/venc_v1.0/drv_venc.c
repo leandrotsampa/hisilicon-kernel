@@ -986,7 +986,7 @@ HI_VOID VENC_DRV_BoardInit(HI_VOID)
 
 #ifdef  VENC_98M_CONFIG
    #ifdef VENC98CV200_B_EXT
-        /* 98cv200_a/b: 0:500Mkz, 01:DPLL postdiv输出，466/533MHz；10:跟mde1 axi总线时钟同频；11:保留*/
+        /* 98cv200_a/b: 0:500Mkz, 01:DPLL postdiv\CA\E4\B3\F6\A3\AC466/533MHz\A3\BB10:\B8\FAmde1 axi\D7\DC\CF\DF时\D6\D3同频\A3\BB11:\B1\A3\C1\F4*/
         unTmpValue.bits.venc_clk_sel  = 2;
    #else
         /* 98M:config vedu clock frequency: 0:200Mhz  2: 150M*/
@@ -994,7 +994,7 @@ HI_VOID VENC_DRV_BoardInit(HI_VOID)
    #endif
 #else
    #ifndef  VENC_S5V200L_EXT_CONFIG
-       unTmpValue.bits.venc_clk_sel  = 0;   //选用默认频率
+       unTmpValue.bits.venc_clk_sel  = 0;   //选\D3\C3默\C8\CF频\C2\CA
    #endif
 
    #ifdef VENC_98CV200_CONFIG
@@ -2514,7 +2514,7 @@ HI_S32 VENC_DRV_QueueFrame(VeduEfl_EncPara_S* hVencChn, HI_UNF_VIDEO_FRAME_INFO_
 
     if (HI_TRUE == pstEncChnPara->bNeverEnc)
     {
-        if (HI_ID_BUTT == g_stVencChn[u32VeChn].enSrcModId)   //如果未绑定则设置
+        if (HI_ID_BUTT == g_stVencChn[u32VeChn].enSrcModId)   //\C8\E7\B9\FB未\B0\F3\B6\A8\D4\F2\C9\E8\D6\C3
         {
             pstEncChnPara->stSrcInfo.pfGetImage = VENC_DRV_EflGetImage;
             pstEncChnPara->stSrcInfo.pfPutImage = VENC_DRV_EflPutImage;
@@ -2583,9 +2583,9 @@ HI_S32 VENC_DRV_DequeueFrame(VeduEfl_EncPara_S* hVencChn, HI_UNF_VIDEO_FRAME_INF
     return s32Ret;
 }
 
-/
+
 /*new function interface  for openTV 5*/
-/
+
 HI_DECLARE_MUTEX(g_VencDrvMutex);
 extern atomic_t g_VencCount;
 extern struct timer_list vencTimer;

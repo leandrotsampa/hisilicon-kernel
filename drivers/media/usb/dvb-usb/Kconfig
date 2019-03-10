@@ -320,3 +320,23 @@ config DVB_USB_TECHNISAT_USB2
 	select DVB_STV6110x if MEDIA_SUBDRV_AUTOSELECT
 	help
 	  Say Y here to support the Technisat USB2 DVB-S/S2 device
+
+config DVB_USB_TBS
+	tristate "TurboSight DVB-S/S2 USB2.0 support"
+	depends on DVB_USB
+	select DVB_PLL if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_STV090x if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_STB6100 if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_CX24116 if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_TDA10071 if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_STV0288 if MEDIA_SUBDRV_AUTOSELECT
+	select DVB_STB6000 if MEDIA_SUBDRV_AUTOSELECT
+	help
+	  Say Y here to support TurboSight (TBS) DVB-S/S2 USB2.0 receivers.
+	  Required firmware can be found at http://www.tbsdtv.com/download/
+	  The tda10071 (TBS5921) firmware can be downloaded by executing:
+	  Documentation/dvb/get_dvb_firmware tda10071
+
+	  Supported devices are:
+	  TBS5980 TBS5928 TBS5925 TBS5921 TBS5920 TBS5910

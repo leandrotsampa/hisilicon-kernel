@@ -41,6 +41,18 @@
 static unsigned int verbose;
 module_param(verbose, int, 0644);
 
+/* define how SNR measurement is reported */
+static int esno;
+module_param(esno, int, 0644);
+MODULE_PARM_DESC(esno, "SNR is reported in 0:Percentage, "\
+	"1:(EsNo dB)*10 (default:0)");
+
+/* define how signal measurement is reported */
+static int dbm;
+module_param(dbm, int, 0644);
+MODULE_PARM_DESC(dbm, "Signal is reported in 0:Percentage, "\
+	"1:-1*dBm (default:0)");
+
 /* internal params node */
 struct stv090x_dev {
 	/* pointer for internal params, one for each pair of demods */
@@ -1688,6 +1700,7 @@ static u32 stv090x_get_srate(struct stv090x_state *state, u32 clk)
 		((int_1 * tmp_2) >> 16) +
 		((int_2 * tmp_1) >> 16);
 
+	state->srate = srate;
 	return srate;
 }
 
@@ -2600,6 +2613,94 @@ static int stv090x_get_viterbi(struct stv090x_state *state)
 static enum stv090x_signal_state stv090x_get_sig_params(struct stv090x_state *state)
 {
 	struct dvb_frontend *fe = &state->frontend;
+	struct dtv_frontend_properties *props = &fe->dtv_property_cache;
+
+	int fe_stv0900_tracking_standard_return[] = {
+		SYS_UNDEFINED,
+		SYS_DVBS,
+		SYS_DVBS2,
+		SYS_DSS
+	};
+
+	int fe_stv0900_rolloff_return[] = {
+		ROLLOFF_35,
+		ROLLOFF_25,
+		ROLLOFF_20,
+		ROLLOFF_AUTO
+	};
+
+	int fe_stv0900_modulation_return[] = {
+		QPSK,
+		PSK_8,
+		APSK_16,
+		APSK_32
+	};
+
+	int fe_stv0900_modcod_return_dvbs[] = {
+		FEC_NONE,
+		FEC_AUTO,
+		FEC_AUTO,
+		FEC_AUTO,
+		FEC_1_2,
+		FEC_3_5,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_6_7,
+		FEC_7_8,
+		FEC_3_5,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_AUTO
+	};
+
+	int fe_stv0900_modcod_return_dvbs2[] = {
+		FEC_NONE,
+		FEC_AUTO,
+		FEC_AUTO,
+		FEC_AUTO,
+		FEC_1_2,
+		FEC_3_5,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_3_5,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_2_3,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_3_4,
+		FEC_4_5,
+		FEC_5_6,
+		FEC_8_9,
+		FEC_9_10,
+		FEC_AUTO
+	};
 
 	u8 tmg;
 	u32 reg;
@@ -2639,10 +2740,71 @@ static enum stv090x_signal_state stv090x_get_sig_params(struct stv090x_state *st
 	state->modcod = STV090x_GETFIELD_Px(reg, DEMOD_MODCOD_FIELD);
 	state->pilots = STV090x_GETFIELD_Px(reg, DEMOD_TYPE_FIELD) & 0x01;
 	state->frame_len = STV090x_GETFIELD_Px(reg, DEMOD_TYPE_FIELD) >> 1;
-	reg = STV090x_READ_DEMOD(state, TMGOBS);
-	state->rolloff = STV090x_GETFIELD_Px(reg, ROLLOFF_STATUS_FIELD);
-	reg = STV090x_READ_DEMOD(state, FECM);
-	state->inversion = STV090x_GETFIELD_Px(reg, IQINV_FIELD);
+	reg = STV090x_READ_DEMOD(state, MATSTR1);
+	state->rolloff = STV090x_GETFIELD_Px(reg, MATYPE_ROLLOFF_FIELD);
+
+	switch (state->delsys) {
+	case STV090x_DVBS2:
+		if (state->modcod <= STV090x_QPSK_910)
+			state->modulation = STV090x_QPSK;
+		else if (state->modcod <= STV090x_8PSK_910)
+			state->modulation = STV090x_8PSK;
+		else if (state->modcod <= STV090x_16APSK_910)
+			state->modulation = STV090x_16APSK;
+		else if (state->modcod <= STV090x_32APSK_910)
+			state->modulation = STV090x_32APSK;
+		else
+			state->modulation = STV090x_UNKNOWN;
+		reg = STV090x_READ_DEMOD(state, PLHMODCOD);
+		state->inversion = STV090x_GETFIELD_Px(reg, SPECINV_DEMOD_FIELD);
+		break;
+	case STV090x_DVBS1:
+	case STV090x_DSS:
+		switch(state->fec) {
+		case STV090x_PR12:
+			state->modcod = STV090x_QPSK_12;
+			break;
+		case STV090x_PR23:
+			state->modcod = STV090x_QPSK_23;
+			break;
+		case STV090x_PR34:
+			state->modcod = STV090x_QPSK_34;
+			break;
+		case STV090x_PR45:
+			state->modcod = STV090x_QPSK_45;
+			break;
+		case STV090x_PR56:
+			state->modcod = STV090x_QPSK_56;
+			break;
+		case STV090x_PR67:
+			state->modcod = STV090x_QPSK_89;
+			break;
+		case STV090x_PR78:
+			state->modcod = STV090x_QPSK_910;
+			break;
+		default:
+			state->modcod = STV090x_DUMMY_PLF;
+			break;
+		}
+		state->modulation = STV090x_QPSK;
+		reg = STV090x_READ_DEMOD(state, FECM);
+		state->inversion = STV090x_GETFIELD_Px(reg, IQINV_FIELD);
+		break;
+	default:
+		break;
+	}
+
+	props->frequency		= state->frequency;
+	props->symbol_rate		= state->srate;
+	if (state->delsys == 2)
+		props->fec_inner	= fe_stv0900_modcod_return_dvbs2[state->modcod];
+	else
+		props->fec_inner	= fe_stv0900_modcod_return_dvbs[state->modcod];
+	props->pilot            	= state->pilots;
+	props->rolloff          	= fe_stv0900_rolloff_return[state->rolloff];
+	props->modulation		= fe_stv0900_modulation_return[state->modulation];
+	props->inversion		= state->inversion;
+	props->delivery_system		= fe_stv0900_tracking_standard_return[state->delsys];
 
 	if ((state->algo == STV090x_BLIND_SEARCH) || (state->srate < 10000000)) {
 
@@ -2852,6 +3014,7 @@ static int stv090x_optimize_track(struct stv090x_state *state)
 {
 	struct dvb_frontend *fe = &state->frontend;
 
+	enum stv090x_rolloff rolloff;
 	enum stv090x_modcod modcod;
 
 	s32 srate, pilots, aclc, f_1, f_0, i = 0, blind_tune = 0;
@@ -2859,6 +3022,28 @@ static int stv090x_optimize_track(struct stv090x_state *state)
 
 	srate  = stv090x_get_srate(state, state->internal->mclk);
 	srate += stv090x_get_tmgoffst(state, srate);
+
+	if (state->delsys == STV090x_DVBS2 && srate > 10000000) {
+		reg = stv090x_read_reg(state, STV090x_P1_TSSTATEM);
+		STV090x_SETFIELD_Px(reg, TSOUT_NOSYNC, 1);
+		if (stv090x_write_reg(state, STV090x_P1_TSSTATEM, reg) < 0)
+			goto err;
+
+		reg = stv090x_read_reg(state, STV090x_P1_TSSYNC);
+		STV090x_SETFIELD_Px(reg, TSFIFO_SYNCMODE, 2);
+		if (stv090x_write_reg(state, STV090x_P1_TSSYNC, reg) < 0)
+			goto err;
+	} else {
+		reg = stv090x_read_reg(state, STV090x_P1_TSSTATEM);
+		STV090x_SETFIELD_Px(reg, TSOUT_NOSYNC, 0);
+		if (stv090x_write_reg(state, STV090x_P1_TSSTATEM, reg) < 0)
+			goto err;
+
+		reg = stv090x_read_reg(state, STV090x_P1_TSSYNC);
+		STV090x_SETFIELD_Px(reg, TSFIFO_SYNCMODE, 0);
+		if (stv090x_write_reg(state, STV090x_P1_TSSYNC, reg) < 0)
+			goto err;
+	}
 
 	switch (state->delsys) {
 	case STV090x_DVBS1:
@@ -2975,6 +3160,7 @@ static int stv090x_optimize_track(struct stv090x_state *state)
 	f_1 = STV090x_READ_DEMOD(state, CFR2);
 	f_0 = STV090x_READ_DEMOD(state, CFR1);
 	reg = STV090x_READ_DEMOD(state, TMGOBS);
+	rolloff = STV090x_GETFIELD_Px(reg, ROLLOFF_STATUS_FIELD);
 
 	if (state->algo == STV090x_BLIND_SEARCH) {
 		STV090x_WRITE_DEMOD(state, SFRSTEP, 0x00);
@@ -3435,18 +3621,40 @@ err:
 	return -1;
 }
 
+static int stv090x_set_pls(struct stv090x_state *state, u8 pls_mode, u32 pls_code)
+{
+	if (pls_mode == 0 && pls_code == 0)
+		pls_code = 1;
+	pls_mode &= 0x03;
+	pls_code &= 0x3FFFF;
+
+	dprintk(FE_DEBUG, 1, "Set PLS code %d (mode %d)", pls_code, pls_mode);
+	if (STV090x_WRITE_DEMOD(state, PLROOT2, (pls_mode<<2) | (pls_code>>16)) < 0)
+		goto err;
+	if (STV090x_WRITE_DEMOD(state, PLROOT1, pls_code>>8) < 0)
+		goto err;
+	if (STV090x_WRITE_DEMOD(state, PLROOT0, pls_code) < 0)
+		goto err;
+	return 0;
+err:
+	dprintk(FE_ERROR, 1, "I/O error");
+	return -1;
+}
+
 static int stv090x_set_mis(struct stv090x_state *state, int mis)
 {
 	u32 reg;
 
-	if (mis < 0 || mis > 255) {
+	if (mis == NO_STREAM_ID_FILTER) {
 		dprintk(FE_DEBUG, 1, "Disable MIS filtering");
+		stv090x_set_pls(state, 0, 0);
 		reg = STV090x_READ_DEMOD(state, PDELCTRL1);
 		STV090x_SETFIELD_Px(reg, FILTER_EN_FIELD, 0x00);
 		if (STV090x_WRITE_DEMOD(state, PDELCTRL1, reg) < 0)
 			goto err;
 	} else {
 		dprintk(FE_DEBUG, 1, "Enable MIS filtering - %d", mis);
+		stv090x_set_pls(state, (mis>>26) & 0x3, (mis>>8) & 0x3FFFF);
 		reg = STV090x_READ_DEMOD(state, PDELCTRL1);
 		STV090x_SETFIELD_Px(reg, FILTER_EN_FIELD, 0x01);
 		if (STV090x_WRITE_DEMOD(state, PDELCTRL1, reg) < 0)
@@ -3487,20 +3695,24 @@ static enum dvbfe_search stv090x_search(struct dvb_frontend *fe)
 	state->frequency = props->frequency;
 	state->srate = props->symbol_rate;
 	state->search_mode = STV090x_SEARCH_AUTO;
-	state->algo = STV090x_COLD_SEARCH;
+	state->algo = STV090x_BLIND_SEARCH;
 	state->fec = STV090x_PRERR;
-	if (state->srate > 10000000) {
-		dprintk(FE_DEBUG, 1, "Search range: 10 MHz");
-		state->search_range = 10000000;
-	} else {
-		dprintk(FE_DEBUG, 1, "Search range: 5 MHz");
-		state->search_range = 5000000;
-	}
+	state->search_range = 0;
 
 	stv090x_set_mis(state, props->stream_id);
 
+	dprintk(FE_DEBUG, 1, "Search started...");
 	if (stv090x_algo(state) == STV090x_RANGEOK) {
+		stv090x_get_sig_params(state);
 		dprintk(FE_DEBUG, 1, "Search success!");
+		dprintk(FE_DEBUG, 1, "frequency       = %d", props->frequency);
+		dprintk(FE_DEBUG, 1, "symbol_rate     = %d", props->symbol_rate);
+		dprintk(FE_DEBUG, 1, "fec_inner       = %d, %d", props->fec_inner, state->modcod);
+		dprintk(FE_DEBUG, 1, "pilot           = %d", props->pilot);
+		dprintk(FE_DEBUG, 1, "rolloff         = %d", props->rolloff);
+		dprintk(FE_DEBUG, 1, "modulation      = %d, %d", props->modulation, state->modulation);
+		dprintk(FE_DEBUG, 1, "inversion       = %d", props->inversion);
+		dprintk(FE_DEBUG, 1, "delivery_system = %d, %d", props->delivery_system, state->delsys);
 		return DVBFE_ALGO_SEARCH_SUCCESS;
 	} else {
 		dprintk(FE_DEBUG, 1, "Search failed!");
@@ -3543,6 +3755,7 @@ static int stv090x_read_status(struct dvb_frontend *fe, enum fe_status *status)
 					*status |= FE_HAS_SYNC | FE_HAS_LOCK;
 			}
 		}
+		stv090x_get_sig_params(state);
 		break;
 
 	case 3: /* DVB-S1/legacy mode */
@@ -3556,8 +3769,12 @@ static int stv090x_read_status(struct dvb_frontend *fe, enum fe_status *status)
 					*status |= FE_HAS_SYNC | FE_HAS_LOCK;
 			}
 		}
+		stv090x_get_sig_params(state);
 		break;
 	}
+
+	if (state->config->set_lock_led)
+		state->config->set_lock_led(fe, *status & FE_HAS_LOCK);
 
 	return 0;
 }
@@ -3668,7 +3885,10 @@ static int stv090x_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 		str = 0;
 	else if (agc < stv090x_rf_tab[ARRAY_SIZE(stv090x_rf_tab) - 1].read)
 		str = -100;
-	*strength = (str + 100) * 0xFFFF / 100;
+	if (dbm)
+		*strength = -str;
+	else
+		*strength = (str + 100) * 0xFFFF / 100;
 
 	return 0;
 }
@@ -3679,8 +3899,7 @@ static int stv090x_read_cnr(struct dvb_frontend *fe, u16 *cnr)
 	u32 reg_0, reg_1, reg, i;
 	s32 val_0, val_1, val = 0;
 	u8 lock_f;
-	s32 div;
-	u32 last;
+	s32 snr;
 
 	switch (state->delsys) {
 	case STV090x_DVBS2:
@@ -3697,10 +3916,14 @@ static int stv090x_read_cnr(struct dvb_frontend *fe, u16 *cnr)
 				msleep(1);
 			}
 			val /= 16;
-			last = ARRAY_SIZE(stv090x_s2cn_tab) - 1;
-			div = stv090x_s2cn_tab[0].read -
-			      stv090x_s2cn_tab[last].read;
-			*cnr = 0xFFFF - ((val * 0xFFFF) / div);
+			snr = stv090x_table_lookup(stv090x_s2cn_tab,
+				ARRAY_SIZE(stv090x_s2cn_tab) - 1, val);
+			if (snr < 0) snr = 0;
+			if (snr > 200) snr = 200;
+			if (esno)
+				*cnr = snr;
+			else
+				*cnr = snr * 0xFFFF / 200;
 		}
 		break;
 
@@ -3719,10 +3942,14 @@ static int stv090x_read_cnr(struct dvb_frontend *fe, u16 *cnr)
 				msleep(1);
 			}
 			val /= 16;
-			last = ARRAY_SIZE(stv090x_s1cn_tab) - 1;
-			div = stv090x_s1cn_tab[0].read -
-			      stv090x_s1cn_tab[last].read;
-			*cnr = 0xFFFF - ((val * 0xFFFF) / div);
+			snr = stv090x_table_lookup(stv090x_s1cn_tab,
+				ARRAY_SIZE(stv090x_s1cn_tab) - 1, val);
+			if (snr < 0) snr = 0;
+			if (snr > 200) snr = 200;
+			if (esno)
+				*cnr = snr;
+			else
+				*cnr = snr * 0xFFFF / 200;
 		}
 		break;
 	default:
@@ -3906,6 +4133,9 @@ static int stv090x_sleep(struct dvb_frontend *fe)
 	struct stv090x_state *state = fe->demodulator_priv;
 	u32 reg;
 	u8 full_standby = 0;
+
+	if (state->config->set_lock_led)
+		state->config->set_lock_led(fe, 0);
 
 	if (stv090x_i2c_gate_ctrl(state, 1) < 0)
 		goto err;
@@ -4138,6 +4368,9 @@ static void stv090x_release(struct dvb_frontend *fe)
 {
 	struct stv090x_state *state = fe->demodulator_priv;
 
+	if (state->config->set_lock_led)
+		state->config->set_lock_led(fe, 0);
+
 	state->internal->num_used--;
 	if (state->internal->num_used <= 0) {
 
@@ -4311,10 +4544,6 @@ static int stv0900_set_tspath(struct stv090x_state *state)
 			case STV090x_TSMODE_PARALLEL_PUNCTURED:
 			case STV090x_TSMODE_DVBCI:
 				if (stv090x_write_reg(state, STV090x_TSGENERAL, 0x06) < 0) /* Mux'd stream mode */
-					goto err;
-				reg = stv090x_read_reg(state, STV090x_P1_TSCFGM);
-				STV090x_SETFIELD_Px(reg, TSFIFO_MANSPEED_FIELD, 3);
-				if (stv090x_write_reg(state, STV090x_P1_TSCFGM, reg) < 0)
 					goto err;
 				reg = stv090x_read_reg(state, STV090x_P2_TSCFGM);
 				STV090x_SETFIELD_Px(reg, TSFIFO_MANSPEED_FIELD, 3);

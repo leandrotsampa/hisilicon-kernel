@@ -304,7 +304,7 @@ extern HI_S8 PriorityTab[2][MAX_VEDU_CHN];                //add by l00228308
             x = (def);\
         }\
     } while (0)
-/add by ckf77439
+//add by ckf77439
 
 #define D_VENC_RC_ABS(x,y) (((x) > (y)) ? ((x) - (y)):((y) - (x)))
 
@@ -1742,7 +1742,7 @@ static void Venc_SetRegDefault( VeduEfl_EncPara_S*  pEncPara )
     pEncPara->cscout2       =   16      ;
 #endif
 
-    / add for 98cv200 mmu config
+    // add for 98cv200 mmu config
     pEncPara->ch00_rrmax = 0;
     pEncPara->ch01_rrmax = 0;
     pEncPara->ch02_rrmax = 0;
@@ -1803,7 +1803,7 @@ static void Venc_SetRegDefault( VeduEfl_EncPara_S*  pEncPara )
     pEncPara->vcpi_rcnc_bypass = 1;
     pEncPara->vcpi_strm_bypass = 1;
 #endif
-      add end
+      //add end
     pEncPara->StartQpType      = 0;
 
     pEncPara->RcQpDelta        = 4;
