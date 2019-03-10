@@ -38,7 +38,7 @@
  * TASK_UNMAPPED_BASE - the lower boundary of the mmap VM area
    zhaobaoren modify
  */
-#define TASK_SIZE		(UL(CONFIG_PAGE_OFFSET) - UL(0x01800000))
+#define TASK_SIZE		(UL(CONFIG_PAGE_OFFSET) - UL(0x01000000))
 #define TASK_UNMAPPED_BASE	ALIGN(TASK_SIZE / 3, SZ_16M)
 
 
@@ -52,7 +52,7 @@
  * and PAGE_OFFSET - it must be within 32MB of the kernel text.
  */
 #ifndef CONFIG_THUMB2_KERNEL
-#define MODULES_VADDR		(PAGE_OFFSET - 24*1024*1024)
+#define MODULES_VADDR		(PAGE_OFFSET - 16*1024*1024)
 #else
 /* smaller range for Thumb-2 symbols relocation (2^24)*/
 #define MODULES_VADDR		(PAGE_OFFSET - SZ_8M)

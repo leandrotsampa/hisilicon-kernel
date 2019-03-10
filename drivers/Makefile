@@ -7,6 +7,8 @@
 
 obj-y				+= hisilicon/
 
+CONFIG_MSP := y
+
 ifeq ($(CONFIG_MSP),y)
 obj-y += common/
 obj-y += msp/
