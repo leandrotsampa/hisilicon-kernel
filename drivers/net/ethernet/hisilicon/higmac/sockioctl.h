@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef _SOCKIOCTL_H_
 #define _SOCKIOCTL_H_
 

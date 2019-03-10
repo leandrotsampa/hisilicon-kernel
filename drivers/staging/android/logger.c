@@ -426,8 +426,8 @@ static ssize_t logger_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	struct logger_entry header;
 	struct timespec now;
 	size_t len, count, w_off;
-
-	count = min_t(size_t,  iov_iter_count(from), LOGGER_ENTRY_MAX_PAYLOAD); //be care for this ,modyfied by hisi
+	
+	count = min_t(size_t,  iov_iter_count(from), LOGGER_ENTRY_MAX_PAYLOAD); //be care for this ,modyfied by hisi 
 
 	now = current_kernel_time();
 

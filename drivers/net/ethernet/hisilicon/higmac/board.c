@@ -1,13 +1,32 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/kernel.h>
 #include <linux/reset.h>
 #include <linux/clk-provider.h>
 #include <linux/hikapi.h>
 #include <linux/clk.h>
 #include "higmac.h"
+
+#if defined(CONFIG_ARCH_HI3796MV2X)
+#define HIGMAC_HAS_INTERNAL_PHY
+#define HIGMAC_INTERNAL_PHY_TRIM
+#endif
+
+#ifdef HIGMAC_HAS_INTERNAL_PHY
+/* register REG_CRG_FEPHY */
+#define REG_CRG_FEPHY		0x0388
+#define BIT_FEPHY_CLK		BIT(0)
+#define BIT_FEPHY_RST		BIT(4)
+/* register REG_PERI_FEPHY */
+#define REG_PERI_FEPHY		0x0118
+#define BIT_MASK_FEPHY_ADDR	0x1F
+/* register REG_PERI_FEPHY_LDO */
+#define REG_PERI_FEPHY_LDO	0x0844
+#define BIT_LDO_EN		BIT(4)
+#define BIT_LDO_ENZ		BIT(5)
+#define BIT_LDO_RSTN		BIT(6)
+#define BIT_IDDQ_MODE		BIT(7)
+#define LDO_VSET_MASK		0xF
+#define LDO_VSET_VAL		0x8
+#endif
 
 void higmac_mac_core_reset(struct higmac_netdev_local *priv)
 {
@@ -24,10 +43,58 @@ void higmac_mac_core_reset(struct higmac_netdev_local *priv)
 
 void higmac_hw_internal_phy_reset(struct higmac_netdev_local *priv)
 {
+#ifdef HIGMAC_HAS_INTERNAL_PHY
+	unsigned int v = 0;
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v &= ~BIT_FEPHY_CLK;
+	writel(v, priv->crg_iobase + REG_CRG_FEPHY);/* disable clk */
+
+	v = readl(priv->peri_iobase + REG_PERI_FEPHY_LDO);
+#if defined(CONFIG_ARCH_HI3796MV2X)
+	v |= (BIT_LDO_EN | BIT_LDO_RSTN);
+	v &= ~(BIT_LDO_ENZ | BIT_IDDQ_MODE);
+#else
+	/* set internal FEPHY LDO_VSET value, LDO output 1.1V */
+	v = (v & ~LDO_VSET_MASK) | LDO_VSET_VAL;
+#if defined(CONFIG_ARCH_HIFONE)
+	/* enalbe internal FEPHY LDO_EN for hifone_b02 */
+	v |= BIT_LDO_EN;
+#endif
+#endif
+	writel(v, priv->peri_iobase + REG_PERI_FEPHY_LDO);
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v |= BIT_FEPHY_CLK; /* use 25MHz clock, enable clk */
+	writel((u32)v, priv->crg_iobase + REG_CRG_FEPHY);
+
+	udelay(10);
+
+	/* suppose internal phy can only be used as mac0's phy */
+	v = readl(priv->peri_iobase + REG_PERI_FEPHY);
+	v &= ~BIT_MASK_FEPHY_ADDR;
+	v |= (priv->phy_addr & BIT_MASK_FEPHY_ADDR);
+	writel(v, priv->peri_iobase + REG_PERI_FEPHY);
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v |= BIT_FEPHY_RST; /* set reset bit */
+	writel((u32)v, priv->crg_iobase + REG_CRG_FEPHY);
+
+	udelay(10);
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v &= ~BIT_FEPHY_RST; /* clear reset bit */
+	writel((u32)v, priv->crg_iobase + REG_CRG_FEPHY);
+
+	msleep(20); /* delay at least 15ms for MDIO operation */
+#endif
 }
 
 void higmac_internal_fephy_trim(void)
 {
+#ifdef HIGMAC_INTERNAL_PHY_TRIM
+	msleep(300);
+#endif
 }
 
 void higmac_hw_phy_reset(struct higmac_netdev_local *priv)
@@ -63,7 +130,7 @@ void higmac_hw_external_phy_reset(struct higmac_netdev_local *priv)
 	u64 chipid;
 	bool rst_when_set;
 
-	/* 98cv200 uses CRG register to reset phy */
+	/* HIFONE or 98cv200 use CRG register to reset phy */
 	/* RST_BIT, write 0 to reset phy, write 1 to cancel reset */
 	chipid = get_chipid(0ULL);
 	if (chipid == _HI3798CV200)
@@ -117,10 +184,24 @@ void higmac_hw_external_phy_reset(struct higmac_netdev_local *priv)
 
 void higmac_internal_phy_clk_disable(struct higmac_netdev_local *priv)
 {
+#ifdef HIGMAC_HAS_INTERNAL_PHY
+	u32 v = 0;
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v &= ~BIT_FEPHY_CLK;
+	writel(v, priv->crg_iobase + REG_CRG_FEPHY);/* inside fephy clk disable */
+#endif
 }
 
 void higmac_internal_phy_clk_enable(struct higmac_netdev_local *priv)
 {
+#ifdef HIGMAC_HAS_INTERNAL_PHY
+	u32 v = 0;
+
+	v = readl(priv->crg_iobase + REG_CRG_FEPHY);
+	v |= BIT_FEPHY_CLK;
+	writel(v, priv->crg_iobase + REG_CRG_FEPHY);/* inside fephy clk enable */
+#endif
 }
 
 void higmac_hw_all_clk_disable(struct higmac_netdev_local *priv)

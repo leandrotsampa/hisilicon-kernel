@@ -127,7 +127,7 @@ static void __dma_free_coherent(struct device *dev, size_t size,
 		WARN_ONCE(1, "Use an actual device structure for DMA allocation\n");
 		return;
 	}
-
+	size = PAGE_ALIGN(size);
 	freed = dma_release_from_contiguous(dev,
 					phys_to_page(paddr),
 					size >> PAGE_SHIFT);

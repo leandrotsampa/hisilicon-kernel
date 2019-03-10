@@ -1,9 +1,21 @@
 /******************************************************************************
- * Copyright (C) 2015 Cai Zhiyong
+ *  Copyright (C) 2015 Cai Zhiyong
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Cai Zhiying 2015.8.10
+ *
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #define pr_fmt(fmt) "flashstats: " fmt
 
@@ -130,7 +142,7 @@ static void flash_stats_items_resolve(struct flash_stats_ctrl *ctrl, char *buf,
 
 		if (item->enable == enable)
 			continue;
-
+			
 		if (enable) {
 			BUG_ON(item->dentry);
 
@@ -264,7 +276,7 @@ void flash_stats_resolve_key(char *buf, char *ptail, u64 *addr, u64 *len,
 static void flash_stats_erase(struct flash_stats *stats, u64 addr, u64 len)
 {
 	int ix;
-	struct flash_stats_ctrl *ctrl =
+	struct flash_stats_ctrl *ctrl = 
 		container_of(stats, struct flash_stats_ctrl, stats);
 
 	for (ix = 0; ix < ctrl->nr_items; ix++) {
@@ -282,7 +294,7 @@ static void flash_stats_read(struct flash_stats *stats, u64 addr, u64 len,
 			     u8 *ecc)
 {
 	int ix;
-	struct flash_stats_ctrl *ctrl =
+	struct flash_stats_ctrl *ctrl = 
 		container_of(stats, struct flash_stats_ctrl, stats);
 
 	for (ix = 0; ix < ctrl->nr_items; ix++) {
@@ -299,7 +311,7 @@ static void flash_stats_read(struct flash_stats *stats, u64 addr, u64 len,
 static void flash_stats_write(struct flash_stats *stats, u64 addr, u64 len)
 {
 	int ix;
-	struct flash_stats_ctrl *ctrl =
+	struct flash_stats_ctrl *ctrl = 
 		container_of(stats, struct flash_stats_ctrl, stats);
 
 	for (ix = 0; ix < ctrl->nr_items; ix++) {
@@ -317,7 +329,7 @@ static void flash_stats_read_retry(struct flash_stats *stats, u64 addr,
 				   int read_retries)
 {
 	int ix;
-	struct flash_stats_ctrl *ctrl =
+	struct flash_stats_ctrl *ctrl = 
 		container_of(stats, struct flash_stats_ctrl, stats);
 
 	for (ix = 0; ix < ctrl->nr_items; ix++) {
@@ -471,7 +483,7 @@ struct flash_stats *flash_stats_create(char *name, int pagesize, int blocksize,
 void flash_stats_destory(struct flash_stats *stats)
 {
 	int ix;
-	struct flash_stats_ctrl *ctrl =
+	struct flash_stats_ctrl *ctrl = 
 		container_of(stats, struct flash_stats_ctrl, stats);
 
 	for (ix = 0; ix < ctrl->nr_items; ix++) {

@@ -233,4 +233,6 @@ config BCH_CONST_T
 	default 4
 endif
 
+source "drivers/mtd/devices/hisfc350/Kconfig"
+
 endmenu

@@ -3063,7 +3063,7 @@ generic_ip_connect(struct TCP_Server_Info *server)
 		rc = __sock_create(cifs_net_ns(server), sfamily, SOCK_STREAM,
 				   IPPROTO_TCP, &socket, 1);
 		if (rc < 0) {
-			cifs_dbg(VFS, "Error %d creating socket\n", rc);
+            cifs_dbg(VFS, "Error %d creating socket\n", rc);
 			server->ssocket = NULL;
 			return rc;
 		}

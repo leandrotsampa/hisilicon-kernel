@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/unistd.h>
@@ -445,6 +441,10 @@ static int higmac_net_set_mac_address(struct net_device *dev, void *p)
 
 	return ret;
 }
+
+#if defined(CONFIG_ARCH_S40) || defined(CONFIG_ARCH_HI3716MV420N)
+#define HIGMAC_LINK_CHANGE_PROTECT
+#endif
 
 #ifdef HIGMAC_LINK_CHANGE_PROTECT
 #define HIGMAC_MS_TO_NS (1000000ULL)

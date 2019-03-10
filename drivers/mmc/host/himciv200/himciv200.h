@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef _HI_MCI_H_
 #define _HI_MCI_H_
 

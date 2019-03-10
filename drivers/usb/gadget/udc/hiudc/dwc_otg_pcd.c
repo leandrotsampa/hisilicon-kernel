@@ -568,7 +568,7 @@ void dwc_otg_iso_ep_start_buf_transfer(dwc_otg_core_if_t * core_if,
 			/* Program the transfer size and packet count
 			 *      as follows: xfersize = N * maxpacket +
 			 *      short_packet pktcnt = N + (short_packet
-			 *      exist ? 1 : 0)
+			 *      exist ? 1 : 0) 
 			 */
 			deptsiz.b.mc = ep->pkt_per_frm;
 			deptsiz.b.xfersize = ep->xfer_len;
@@ -651,7 +651,7 @@ static void dwc_otg_iso_ep_start_transfer(dwc_otg_core_if_t * core_if,
 
 /**
  * This function stops transfer for an EP and
- * resets the ep's variables.
+ * resets the ep's variables. 
  *
  * @param core_if Programming view of DWC_otg controller.
  * @param ep The EP to start the transfer on.
@@ -1140,7 +1140,7 @@ dwc_otg_pcd_t *dwc_otg_pcd_init(dwc_otg_core_if_t * core_if)
 	}
 
 	/*
-	 * Initialized the Core for Device mode here if there is nod ADP support.
+	 * Initialized the Core for Device mode here if there is nod ADP support. 
 	 * Otherwise it will be done later in dwc_otg_adp_start routine.
 	 */
 	if (dwc_otg_is_device_mode(core_if) /*&& !core_if->adp_enable */ ) {
@@ -1261,7 +1261,7 @@ dwc_otg_pcd_t *dwc_otg_pcd_init(dwc_otg_core_if_t * core_if)
 	core_if->srp_timer = DWC_TIMER_ALLOC("SRP TIMER", srp_timeout, core_if);
 
 	if (core_if->core_params->dev_out_nak) {
-		/**
+		/** 
 		* Initialize xfer timeout timer. Implemented for
 		* 2.93a feature "Device DDMA OUT NAK Enhancement"
 		*/
@@ -1380,18 +1380,18 @@ uint32_t dwc_otg_pcd_is_otg(dwc_otg_pcd_t * pcd)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,6,0)
 	if (!usbcfg.b.srpcap || !usbcfg.b.hnpcap)
 		return 0;
-	else
+	else 
 		return 1;
 # else
 	if (!usbcfg.b.srpcap)
 		return 0;
-	else
+	else 
 		retval |= 1;
 
 	if (usbcfg.b.hnpcap)
 		retval |= 2;
-
-	if (core_if->adp_enable)
+	
+	if (core_if->adp_enable) 
 		retval |= 4;
 #endif
 
@@ -1457,7 +1457,7 @@ static void release_tx_fifo(dwc_otg_core_if_t * core_if, uint32_t fifo_num)
 }
 
 /**
- * This function is being called from gadget
+ * This function is being called from gadget 
  * to enable PCD endpoint.
  */
 int dwc_otg_pcd_ep_enable(dwc_otg_pcd_t * pcd,
@@ -1643,7 +1643,7 @@ out:
 }
 
 /**
- * This function is being called from gadget
+ * This function is being called from gadget 
  * to disable PCD endpoint.
  */
 int dwc_otg_pcd_ep_disable(dwc_otg_pcd_t * pcd, void *ep_handle)
@@ -1692,7 +1692,7 @@ int dwc_otg_pcd_ep_disable(dwc_otg_pcd_t * pcd, void *ep_handle)
 			dptxfsiz.d32 =
 			    (DWC_READ_REG32
 			     (&GET_CORE_IF(pcd)->
-			core_global_regs->dtxfsiz[ep->dwc_ep.tx_fifo_num-1]) >> 16);
+		      		core_global_regs->dtxfsiz[ep->dwc_ep.tx_fifo_num-1]) >> 16);
 			gdfifocfg.b.epinfobase = gdfifocfgbase.d32 - dptxfsiz.d32;
 			if (GET_CORE_IF(pcd)->snpsid <= OTG_CORE_REV_2_94a) {
 				DWC_WRITE_REG32(&GET_CORE_IF(pcd)->core_global_regs->gdfifocfg,
@@ -1752,7 +1752,7 @@ void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if, dwc_otg_pcd_ep_t * 
 	int j;
 	int sync_request = 4;
 	uint16_t nat;
-	depctl_data_t depctl;
+	depctl_data_t depctl;                                                                                                                                                                                                           
 
 	dwcep = &ep->dwc_ep;
 	dma_desc = dwcep->desc_addr;
@@ -1782,7 +1782,7 @@ void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if, dwc_otg_pcd_ep_t * 
 		}
 
 		frame_num = dwcep->frame_num + (sync_request -1)*dwcep->bInterval;
-
+		
 		DWC_CIRCLEQ_FOREACH(req, &ep->queue, queue_entry) {
 			i = i+1;
 			frame_num = (frame_num + dwcep->bInterval) & 0x3FFF;
@@ -1796,7 +1796,7 @@ void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if, dwc_otg_pcd_ep_t * 
 			dma_desc->status.b_iso_in.ioc = 1;
 			dma_desc->status.b_iso_in.pid = nat + 1;
 			dma_desc->status.b_iso_in.l = 0;
-
+			
 			if (req == DWC_CIRCLEQ_LAST(&ep->queue)) {
 				dma_desc->status.b_iso_in.l = 1;
 			}
@@ -1809,7 +1809,7 @@ void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if, dwc_otg_pcd_ep_t * 
 			dma_desc++;
 		}
 		DWC_WRITE_REG32(&core_if->dev_if->in_ep_regs[dwcep->num]->diepdma, dwcep->dma_desc_addr);
-		DWC_DEBUGPL(DBG_PCD, "%d ISOC IN descs were programmed\n", i-1);
+ 		DWC_DEBUGPL(DBG_PCD, "%d ISOC IN descs were programmed\n", i-1);
 		depctl.d32 = 0;
 		depctl.b.epena = 1;
 		depctl.b.cnak = 1;
@@ -1874,7 +1874,7 @@ static void program_next_iso_request_ddma (dwc_otg_pcd_ep_t * ep, dwc_otg_pcd_re
 	if (index > MAX_DMA_DESC_CNT/2) {
 		DWC_PRINTF("There are no free descs in the chain!\n");
 		return;
-	}
+	} 
 
 	if (ep->dwc_ep.use_add_buf) {
 		dma_desc = &ep->dwc_ep.desc_addr1[ep->dwc_ep.iso_desc_second];
@@ -1906,7 +1906,7 @@ static void program_next_iso_request_ddma (dwc_otg_pcd_ep_t * ep, dwc_otg_pcd_re
 		if (index > 1) {
 			dma_desc--;
 			dma_desc->status.b_iso_in.l = 0;
-		}
+		}					
 	}  else {
 		/** DMA Descriptor Setup */
 		dma_desc->status.b_iso_out.bs = BS_HOST_BUSY;
@@ -1963,7 +1963,7 @@ int dwc_otg_pcd_xiso_start_next_request(dwc_otg_pcd_t * pcd,
 	if (dwcep->xiso_active_xfers > 0) {
 #if 0	//Disable this to decrease s/w overhead that is crucial for Isoc transfers
 		DWC_WARN("There are currently active transfers for EP%d \
-				(active=%d; queued=%d)", dwcep->num, dwcep->xiso_active_xfers,
+				(active=%d; queued=%d)", dwcep->num, dwcep->xiso_active_xfers, 
 				dwcep->xiso_queued_xfers);
 #endif
 		return 0;
@@ -2030,7 +2030,7 @@ int dwc_otg_pcd_xiso_start_next_request(dwc_otg_pcd_t * pcd,
 			/* Setup DMA Descriptor chain for OUT Isoc request */
 			for (i = 0; i < ereq->pio_pkt_count; i++) {
 				//if ((i % (nat + 1)) == 0)
-				dwcep->xiso_frame_num = (dwcep->xiso_bInterval +
+				dwcep->xiso_frame_num = (dwcep->xiso_bInterval + 
 										dwcep->xiso_frame_num) & 0x3FFF;
 				dwcep->desc_addr[i].buf =
 				    req->dma + ddesc_iso[i].offset;
@@ -2047,14 +2047,14 @@ int dwc_otg_pcd_xiso_start_next_request(dwc_otg_pcd_t * pcd,
 				dwcep->desc_addr[i].status.b_iso_out.ioc = 0;
 				dwcep->desc_addr[i].status.b_iso_out.pid = nat + 1;
 				dwcep->desc_addr[i].status.b_iso_out.l = 0;
-
+				
 				/* Process the last descriptor */
 				if (i == ereq->pio_pkt_count - 1) {
 					dwcep->desc_addr[i].status.b_iso_out.ioc = 1;
 					dwcep->desc_addr[i].status.b_iso_out.l = 1;
-				}
+				}			
 			}
-
+			
 			/* Setup and start the transfer for this endpoint */
 			dwcep->xiso_active_xfers++;
 			DWC_WRITE_REG32(&GET_CORE_IF(pcd)->
@@ -2358,7 +2358,7 @@ int dwc_otg_pcd_ep_queue(dwc_otg_pcd_t * pcd, void *ep_handle,
 
 	/*
 	 * After adding request to the queue for IN ISOC wait for In Token Received
-	 * when TX FIFO is empty interrupt and for OUT ISOC wait for OUT Token
+	 * when TX FIFO is empty interrupt and for OUT ISOC wait for OUT Token 
 	 * Received when EP is disabled interrupt to obtain starting microframe
 	 * (odd/even) start transfer
 	 */
@@ -2379,16 +2379,16 @@ int dwc_otg_pcd_ep_queue(dwc_otg_pcd_t * pcd, void *ep_handle,
 			}
 			if (GET_CORE_IF(pcd)->dma_desc_enable) {
 				if (ep->dwc_ep.iso_transfer_started) {
-					/*
-					 * Add next request to the descriptor chain
-					 * currently not in use by HW
+					/* 
+					 * Add next request to the descriptor chain 
+					 * currently not in use by HW 
 					 */
 					program_next_iso_request_ddma(ep, req);
 				} else if (!ep->dwc_ep.is_in)
 					/* For OUT start first request immediately after queue */
 					dwc_otg_pcd_start_iso_ddma(GET_CORE_IF(pcd), ep);
 			}
-
+			
 			DWC_SPINUNLOCK_IRQRESTORE(pcd->lock, flags);
 		}
 		return 0;
@@ -2738,7 +2738,7 @@ void dwc_otg_pcd_rem_wkup_from_sleep(dwc_otg_pcd_t * pcd, int set)
 {
 	glpmcfg_data_t lpmcfg;
 	pcgcctl_data_t pcgcctl = {.d32 = 0 };
-
+	
 	dwc_otg_core_if_t *core_if = GET_CORE_IF(pcd);
 
 	lpmcfg.d32 = DWC_READ_REG32(&core_if->core_global_regs->glpmcfg);
@@ -2764,11 +2764,11 @@ void dwc_otg_pcd_rem_wkup_from_sleep(dwc_otg_pcd_t * pcd, int set)
 	lpmcfg.d32 = DWC_READ_REG32(&core_if->core_global_regs->glpmcfg);
 	lpmcfg.b.en_utmi_sleep = 0;
 	lpmcfg.b.hird_thres &= (~(1 << 4));
-
+	
 	/* Clear Enbl_L1Gating bit. */
 	pcgcctl.b.enbl_sleep_gating = 1;
 	DWC_MODIFY_REG32(core_if->pcgcctl, pcgcctl.d32,0);
-
+			
 	DWC_WRITE_REG32(&core_if->core_global_regs->glpmcfg, lpmcfg.d32);
 
 	if (set) {
@@ -2819,7 +2819,7 @@ void dwc_otg_pcd_disconnect_us(dwc_otg_pcd_t * pcd, int no_of_usecs)
 		DWC_MODIFY_REG32(&core_if->dev_if->dev_global_regs->dctl, 0, dctl.d32);
 		dwc_udelay(no_of_usecs);
 		DWC_MODIFY_REG32(&core_if->dev_if->dev_global_regs->dctl, dctl.d32,0);
-
+		
 	} else{
 		DWC_PRINTF("NOT SUPPORTED IN HOST MODE\n");
 	}

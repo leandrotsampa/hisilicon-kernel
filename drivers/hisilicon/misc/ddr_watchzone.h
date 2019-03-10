@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef DDR_WATCHZONE_H
 #define DDR_WATCHZONE_H
 
@@ -25,5 +21,5 @@
 
 #define hiwz_write(_host, _value, _reg) \
         writel((_value), (char *)_host->regbase + (_reg))
-
+      
 #endif /* #define DDR_WATCHZONE_H */

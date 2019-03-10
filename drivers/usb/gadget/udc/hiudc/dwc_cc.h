@@ -184,7 +184,7 @@ extern uint8_t *dwc_cc_cdid(dwc_cc_if_t *cc_if, int32_t id);
 extern uint8_t *dwc_cc_name(dwc_cc_if_t *cc_if, int32_t id, uint8_t *length);
 
 /** Checks a buffer for non-zero.
- * @param id A pointer to a 16 byte buffer.
+ * @param id A pointer to a 16 byte buffer. 
  * @return true if the 16 byte value is non-zero. */
 static inline unsigned dwc_assoc_is_not_zero_id(uint8_t *id) {
 	int i;
@@ -195,7 +195,7 @@ static inline unsigned dwc_assoc_is_not_zero_id(uint8_t *id) {
 }
 
 /** Checks a buffer for zero.
- * @param id A pointer to a 16 byte buffer.
+ * @param id A pointer to a 16 byte buffer. 
  * @return true if the 16 byte value is zero. */
 static inline unsigned dwc_assoc_is_zero_id(uint8_t *id) {
 	return !dwc_assoc_is_not_zero_id(id);
@@ -222,3 +222,4 @@ static inline int dwc_print_id_string(char *buffer, uint8_t *id) {
 #endif
 
 #endif /* _DWC_CC_H_ */
+

@@ -1,5 +1,7 @@
 menu "Platform selection"
 
+source "arch/arm64/Kconfig.hisilicon"
+
 config ARCH_BCM_IPROC
 	bool "Broadcom iProc SoC Family"
 	help
@@ -38,13 +40,6 @@ config ARCH_HISI
 	bool "Hisilicon SoC Family"
 	help
 	  This enables support for Hisilicon ARMv8 SoC family
-
-config ARCH_HI3798CV2X
-	bool "Hisilicon Hi3798Cv200 family"
-	select ARM_HAS_SG_CHAIN
-	select PM_OPP
-	help
-	  This enables support for Hisilicon Hi3798Cv200 platform.
 
 config ARCH_MEDIATEK
 	bool "Mediatek MT65xx & MT81xx ARMv8 SoC"

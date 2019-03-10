@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef __HIGMAC_H__
 #define __HIGMAC_H__
 

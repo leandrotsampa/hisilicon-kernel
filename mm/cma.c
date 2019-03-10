@@ -518,7 +518,7 @@ error:
 		bitmap_buf[len++] = '\n';
 		bitmap_buf[len] = '\0';
 		pr_warn("cma area total:%lu pages\n", cma->count);
-		pr_warn("alloc %zu failed: %d\n", count, ret);
+		pr_warn("alloc %d failed: %d\n", count, ret);
 		pr_warn("bitmap: %s\n", bitmap_buf);
 	} else {
 		pr_warn("Interrupted system call!\n");

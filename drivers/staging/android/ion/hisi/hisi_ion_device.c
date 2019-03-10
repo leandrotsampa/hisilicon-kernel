@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/types.h>
 #include <linux/dma-contiguous.h>
 #include <linux/dma-mapping.h>
@@ -28,9 +24,9 @@ struct cma_zone {
 extern struct cma_zone *hisi_get_cma_zone(const char *name);
 
 #ifdef CONFIG_MMZ_PARAM
-static char ion_default_cmd[MMZ_SETUP_CMDLINE_LEN] = CONFIG_MMZ_PARAM;
+static char ion_default_cmd[MMZ_SETUP_CMDLINE_LEN] __initdata = CONFIG_MMZ_PARAM;
 #else
-static char ion_default_cmd[MMZ_SETUP_CMDLINE_LEN] = "ddr,0,0,160M";
+static char ion_default_cmd[MMZ_SETUP_CMDLINE_LEN] __initdata = "ddr,0,0,160M";
 #endif
 
 #define cma_name_len		(10)
@@ -61,13 +57,20 @@ static struct ion_platform_heap hi_ion_heaps[]  = {
 		.type	= ION_HEAP_TYPE_DMA,
 		.name	= "cma",
 	},
+#ifdef CONFIG_TEE_DRIVER
+	[cma_heap_start + 1] = {
+		.id	= ION_HEAP_ID_TEE_SEC_MEM, /* secure mem in TEE */
+		.type	= ION_HEAP_TYPE_TEE_SEC_MEM,
+		.name	= "SEC-MMZ",
+	},
+#endif
 	[cma_heap_start + cma_heap_num - 1] = {
 		.id	= ION_HEAP_ID_CMA,
 		.type	= ION_HEAP_TYPE_DMA,
 	}
 };
 
-static struct ion_platform_data hi_ion_pdata = {
+static struct ion_platform_data hi_ion_pdata __initdata = {
 	.nr = ARRAY_SIZE(hi_ion_heaps),
 	.heaps = hi_ion_heaps,
 };
@@ -80,7 +83,7 @@ static struct platform_device hi_ion_dev = {
 
 static int ion_use_bootargs;
 /* borrow from hisi mmz driver */
-static int hisi_ion_parse_cmdline(char *s)
+static int __init hisi_ion_parse_cmdline(char *s)
 {
 	char *line, *tmp;
 	char tmpline[256];

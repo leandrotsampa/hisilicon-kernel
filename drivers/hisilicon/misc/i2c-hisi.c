@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
+
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>

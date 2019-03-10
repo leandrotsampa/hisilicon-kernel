@@ -155,8 +155,8 @@ int dwc_dh_pk(void *mem_ctx, uint8_t nd, uint8_t *exp, uint8_t *pk, uint8_t *has
 	DWC_MEMCPY(&m3[0], pk, 384);
 	DWC_SHA256(m3, 385, hash);
 
-	dh_dump("PK", pk, 384);
-	dh_dump("SHA-256(M3)", hash, 32);
+ 	dh_dump("PK", pk, 384);
+ 	dh_dump("SHA-256(M3)", hash, 32);
 	return 0;
 }
 
@@ -225,12 +225,12 @@ int dwc_dh_derive_keys(void *mem_ctx, uint8_t nd, uint8_t *pkh, uint8_t *pkd,
 
 	message = "connection key";
 	DWC_HMAC_SHA256(message, DWC_STRLEN(message), dhkey, 32, sha_result);
-	dh_dump("HMAC(SHA-256, DHKey, connection key)", sha_result, 32);
+ 	dh_dump("HMAC(SHA-256, DHKey, connection key)", sha_result, 32);
 	DWC_MEMCPY(ck, sha_result, 16);
 
 	message = "key derivation key";
 	DWC_HMAC_SHA256(message, DWC_STRLEN(message), dhkey, 32, sha_result);
-	dh_dump("HMAC(SHA-256, DHKey, key derivation key)", sha_result, 32);
+ 	dh_dump("HMAC(SHA-256, DHKey, key derivation key)", sha_result, 32);
 	DWC_MEMCPY(kdk, sha_result, 32);
 
 	return 0;

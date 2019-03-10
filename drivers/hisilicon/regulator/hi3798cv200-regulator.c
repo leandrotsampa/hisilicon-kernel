@@ -9,7 +9,6 @@
  * published by the Free Software Foundation.
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #define DRVNAME "hi3798cv2x-regulator"
 #define pr_fmt(fmt) DRVNAME ": " fmt

@@ -189,7 +189,7 @@ static void internal_mod(BignumInt *a, int alen,
 	if (h >= m0) {
 	    /*
 	     * Special case.
-	     *
+	     * 
 	     * To illustrate it, suppose a BignumInt is 8 bits, and
 	     * we are dividing (say) A1:23:45:67 by A1:B2:C3. Then
 	     * our initial division will be 0xA123 / 0xA1, which
@@ -198,7 +198,7 @@ static void internal_mod(BignumInt *a, int alen,
 	     * are not violated, since the full number A1:23:... is
 	     * _less_ than the quotient prefix A1:B2:... and so the
 	     * following correction loop would have sorted it out.
-	     *
+	     * 
 	     * In this situation we set q to be the largest
 	     * quotient we _can_ stomach (0xFF, of course).
 	     */
@@ -591,7 +591,7 @@ static __u32 dh_b[] = {
 	0x6fa452cd,
 	0x2df89d30,
 	0xc75f1b0f,
-	0x8ce3578f,
+	0x8ce3578f, 
 	0x7980a324,
 	0x5daec786,
 };

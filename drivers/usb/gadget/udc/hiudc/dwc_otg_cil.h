@@ -100,7 +100,7 @@ typedef struct dwc_ep {
 	unsigned active:1;
 
 	/**
-	 * Periodic Tx FIFO # for IN EPs For INTR EP set to 0 to use non-periodic
+	 * Periodic Tx FIFO # for IN EPs For INTR EP set to 0 to use non-periodic 
 	 * Tx FIFO. If dedicated Tx FIFOs are enabled Tx FIFO # FOR IN EPs*/
 	unsigned tx_fifo_num:4;
 	/** EP type: 0 - Control, 1 - ISOC,	 2 - BULK,	3 - INTR */
@@ -127,7 +127,7 @@ typedef struct dwc_ep {
 	 * Pointer to the beginning of the transfer buffer -- do not modify
 	 * during transfer.
 	 */
-	dwc_dma_t dma_addr;
+   	dwc_dma_t dma_addr;
 
 	dwc_dma_t dma_desc_addr;
 	dwc_otg_dev_dma_desc_t *desc_addr;
@@ -175,7 +175,7 @@ typedef struct dwc_ep {
 #define MAX_DMA_DESC_CNT 256
 	/** Allocated DMA Desc count */
 	uint32_t desc_cnt;
-
+	
 	/** First ISO Desc in use in the first chain*/
 	uint32_t iso_desc_first;
 	/** Last ISO Desc in use in the second chain */
@@ -460,8 +460,8 @@ typedef struct dwc_otg_core_params {
 	int32_t dma_enable;
 
 	/**
-	 * When DMA mode is enabled specifies whether to use address DMA or DMA
-	 * Descriptor mode for accessing the data FIFOs in device mode. The driver
+	 * When DMA mode is enabled specifies whether to use address DMA or DMA 
+	 * Descriptor mode for accessing the data FIFOs in device mode. The driver 
 	 * will automatically detect the value for this if none is specified.
 	 * 0 - address DMA
 	 * 1 - DMA Descriptor(default, if available)
@@ -660,21 +660,21 @@ typedef struct dwc_otg_core_params {
 	 * Specifies whether LPM (Link Power Management) support is enabled
 	 */
 	int32_t lpm_enable;
-
+		
 	/**
 	* Specifies whether LPM Errata (Link Power Management) support is enabled
 	*/
 	int32_t besl_enable;
-
+	
 	/**
 	* Specifies the baseline besl value
 	*/
 	int32_t baseline_besl;
-
+	
 	/**
 	* Specifies the deep besl value
 	*/
-	int32_t deep_besl;
+	int32_t deep_besl;	
 	/** Per Transfer Interrupt
 	 *	mode enable flag
 	 * 1 - Enabled
@@ -715,22 +715,22 @@ typedef struct dwc_otg_core_params {
 	 */
 	int32_t reload_ctl;
 
-	/** DCFG: Enable device Out NAK
+	/** DCFG: Enable device Out NAK 
 	 * 0 - The core does not set NAK after Bulk Out transfer complete.
 	 * 1 - The core sets NAK after Bulk OUT transfer complete.
 	 */
 	int32_t dev_out_nak;
 
-	/** DCFG: Enable Continue on BNA
+	/** DCFG: Enable Continue on BNA 
 	 * After receiving BNA interrupt the core disables the endpoint,when the
-	 * endpoint is re-enabled by the application the core starts processing
+	 * endpoint is re-enabled by the application the core starts processing 
 	 * 0 - from the DOEPDMA descriptor
 	 * 1 - from the descriptor which received the BNA.
 	 */
 	int32_t cont_on_bna;
 
-	/** GAHBCFG: AHB Single Support
-	 * This bit when programmed supports SINGLE transfers for remainder
+	/** GAHBCFG: AHB Single Support 
+	 * This bit when programmed supports SINGLE transfers for remainder 
 	 * data in a transfer for DMA mode of operation.
 	 * 0 - in this case the remainder data will be sent using INCR burst size.
 	 * 1 - in this case the remainder data will be sent using SINGLE burst size.
@@ -1016,7 +1016,7 @@ struct dwc_otg_core_if {
 	 * also used as counter of disabled NP IN EP's */
 	uint8_t start_predict;
 
-	/** NextEp sequence, including EP0: nextep_seq[] = EP if non-periodic and
+	/** NextEp sequence, including EP0: nextep_seq[] = EP if non-periodic and 
 	 * active, 0xff otherwise */
 	uint8_t nextep_seq[MAX_EPS_CHANNELS];
 
@@ -1024,7 +1024,7 @@ struct dwc_otg_core_if {
 	uint8_t first_in_nextep_seq;
 
 	/** Frame number while entering to ISR - needed for ISOCs **/
-	uint32_t frame_num;
+	uint32_t frame_num; 
 
 	/** Flag to not perform ADP probing if IDSTS event happened */
 	uint8_t stop_adpprb;

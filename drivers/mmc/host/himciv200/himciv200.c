@@ -1,14 +1,10 @@
 /*
  * himci.c - hisilicon MMC Host driver
- *
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -37,13 +33,21 @@
 #endif
 
 
+#define himci_pr_dts DBG_OUT
 extern u32 emmc_boot_tuning_phase;
 /*************************************************************************/
 
-#if defined(CONFIG_ARCH_HI3798CV2X)
+#if defined(CONFIG_ARCH_HIFONE) || defined(CONFIG_ARCH_HI3798CV2X)
 #include "himci_hi3798cv2x.c"
 #endif
 
+#if defined(CONFIG_ARCH_HI3798MV2X)
+#include "himci_hi3798mv2x.c"
+#endif
+
+#if defined(CONFIG_ARCH_HI3796MV200)
+#include "himci_hi3796mv200.c"
+#endif
 static u32 detect_time = HI_MCI_DETECT_TIMEOUT;
 static u32 retry_count = MAX_RETRY_COUNT;
 static u32 request_timeout = HI_MCI_REQUEST_TIMEOUT;
@@ -261,6 +265,13 @@ static void himciv200_host_init(struct himciv200_host *host)
 			| CD_INT_MASK
 			| VOLT_SWITCH_INT_MASK;
 	mci_writel(host, MCI_INTMASK, regval);
+
+#if defined(CONFIG_ARCH_HI3798MV2X)
+	/* set card read threshold */
+	regval = mci_readl(host, MCI_CARDTHRCTL);
+	regval |= RW_THRESHOLD_SIZE;
+	mci_writel(host, MCI_CARDTHRCTL, regval);
+#endif
 
 	/* enable inner DMA mode and close intr of MMC host controler */
 	regval = mci_readl(host, MCI_CTRL);
@@ -929,7 +940,7 @@ static void himciv200_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	if (ios->clock) {
 		himciv200_control_cclk(host, false);
-#if defined(CONFIG_ARCH_HI3798CV2X)
+#if defined(CONFIG_ARCH_HI3798CV2X) || defined (CONFIG_ARCH_HI3798MV2X)
 		himciv200_set_timing(host, ios->timing);
 #endif
 		himciv200_set_cclk(host, ios->clock);
@@ -959,10 +970,14 @@ static void himciv200_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	/* hs200/hs400 cardthrctl reg */
 	regval = mci_readl(host, MCI_CARDTHRCTL);
+#if defined(CONFIG_ARCH_HI3798MV2X)
+	regval = RW_THRESHOLD_SIZE;
+#else
 	if (ios->timing == MMC_TIMING_MMC_HS200)
 		regval = READ_THRESHOLD_SIZE;
 	if (ios->timing  ==  MMC_TIMING_MMC_HS400)
 		regval = RW_THRESHOLD_SIZE;
+#endif
 	mci_writel(host, MCI_CARDTHRCTL, regval);
 
 	/* hs400 ddr reg */
@@ -1114,7 +1129,7 @@ static const struct mmc_host_ops himci_ops = {
 	.enable_sdio_irq = himciv200_enable_sdio_irq,
 	.start_signal_voltage_switch = himciv200_switch_voltage,
 	.card_busy = himciv200_card_busy,
-#if defined(CONFIG_ARCH_HI3798CV2X)
+#if defined(CONFIG_ARCH_HI3798CV2X) || defined (CONFIG_ARCH_HI3798MV2X)
 	.execute_tuning = himciv200_execute_tuning,
 	.prepare_hs400_tuning = himciv200_prepare_hs400,
 #endif
@@ -1123,7 +1138,7 @@ static const struct mmc_host_ops himci_ops = {
 };
 /******************************************************************************/
 
-static int himciv200_pltm_probe(struct platform_device *pdev)
+static int __init himciv200_pltm_probe(struct platform_device *pdev)
 {
 	int ret;
 	struct resource *res;
@@ -1189,7 +1204,7 @@ static int himciv200_pltm_probe(struct platform_device *pdev)
 		goto out;
 	}
 
-#if defined(CONFIG_ARCH_HI3798CV2X)
+#if defined(CONFIG_ARCH_HI3798CV2X) || defined (CONFIG_ARCH_HI3798MV2X)
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	host->ioshare_addr = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR_OR_NULL(host->ioshare_addr)) {

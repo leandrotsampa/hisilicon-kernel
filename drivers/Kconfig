@@ -200,14 +200,4 @@ source "drivers/hwtracing/intel_th/Kconfig"
 
 source "drivers/fpga/Kconfig"
 
-menu "Hisilicon Poplar support"
-
-config POPLAR_MSP
-	bool "Enable support for common and MSP code"
-	depends on ARCH_HI3798CV2X
-	default no
-	help
-	  Include common and MSP code to support the HiSilicon
-	  Poplar board.
-endmenu
 endmenu

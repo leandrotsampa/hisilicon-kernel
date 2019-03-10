@@ -214,28 +214,28 @@
 
  <tr>
  <td> rem_wakeup_pwrdn </td>
- <td> On read, shows the status core - hibernated or not. On write, initiates
+ <td> On read, shows the status core - hibernated or not. On write, initiates 
  a remote wakeup of the device from Hibernation. </td>
  <td> Read/Write</td>
  </tr>
 
  <tr>
  <td> mode_ch_tim_en </td>
- <td> This bit is used to enable or disable the host core to wait for 200 PHY
+ <td> This bit is used to enable or disable the host core to wait for 200 PHY 
  clock cycles at the end of Resume to change the opmode signal to the PHY to 00
  after Suspend or LPM. </td>
  <td> Read/Write</td>
  </tr>
-
+ 
  <tr>
  <td> fr_interval </td>
- <td> On read, shows the value of HFIR Frame Interval. On write, dynamically
+ <td> On read, shows the value of HFIR Frame Interval. On write, dynamically 
  reload HFIR register during runtime. The application can write a value to this
- register only after the Port Enable bit of the Host Port Control and Status
+ register only after the Port Enable bit of the Host Port Control and Status 
  register (HPRT.PrtEnaPort) has been set </td>
  <td> Read/Write</td>
  </tr>
-
+ 
  <tr>
  <td> disconnect_us </td>
  <td> On read, shows the status of disconnect_device_us. On write, sets disconnect_us
@@ -297,13 +297,13 @@
  <td> Shows sleep status of device.
  <td> Read</td>
  </tr>
-
+ 
  <tr>
  <td> hird_thres </td>
  <td> Gets or sets the "HIRD_Thres[3:0]" bits in the Core LPM Configuration Register.
  <td> Read/Write</td>
  </tr>
-
+ 
  <tr>
  <td> besl_reject </td>
  <td> Gets or sets the "besl_reject" bit in the Device Control Register.
@@ -795,7 +795,7 @@ DEVICE_ATTR(remote_wakeup, S_IRUGO | S_IWUSR, remote_wakeup_show,
 	    remote_wakeup_store);
 
 /**
- * Show the whether core is hibernated or not.
+ * Show the whether core is hibernated or not. 					
  */
 static ssize_t rem_wakeup_pwrdn_show(struct device *_dev,
 				     struct device_attribute *attr, char *buf)
@@ -1066,16 +1066,16 @@ static ssize_t beslreject_show(struct device *_dev,
 	struct platform_device *lm_dev = container_of(_dev, struct platform_device, dev);
 	dwc_otg_device_t *otg_dev = platform_get_drvdata(lm_dev);
 
-
+    		
 	if (!dwc_otg_get_param_lpm_enable(otg_dev->core_if))
 		return sprintf(buf, "** LPM is DISABLED **\n");
 	if (!dwc_otg_get_param_besl_enable(otg_dev->core_if))
-		return sprintf(buf, "** EnBesl is DISABLED **\n");
+		return sprintf(buf, "** EnBesl is DISABLED **\n");	
 
 	if (!dwc_otg_is_device_mode(otg_dev->core_if)) {
 		return sprintf(buf, "** Current mode is not device mode\n");
 	}
-
+			
 	return sprintf(buf, "besl_reject = %d\n",
 		        dwc_otg_get_beslreject(otg_dev->core_if));
 }
@@ -1091,13 +1091,13 @@ static ssize_t beslreject_store(struct device *_dev,
 	struct platform_device *lm_dev = container_of(_dev, struct platform_device, dev);
 	dwc_otg_device_t *otg_dev = platform_get_drvdata(lm_dev);
 
-
+	
 	uint32_t val = simple_strtoul(buf, NULL, 16);
 
 	if (!dwc_otg_get_param_lpm_enable(otg_dev->core_if)) {
 		return 0;
 	}
-
+	
 	if (!dwc_otg_get_param_besl_enable(otg_dev->core_if)) {
 		return 0;
 	}
@@ -1105,9 +1105,9 @@ static ssize_t beslreject_store(struct device *_dev,
 	if (!dwc_otg_is_device_mode(otg_dev->core_if)) {
 		return 0;
 	}
-
+	
 	 dwc_otg_set_beslreject(otg_dev->core_if,val);
-
+			
 	return count;
 }
 
@@ -1123,14 +1123,14 @@ static ssize_t hirdthresh_show(struct device *_dev,
 	struct platform_device *lm_dev = container_of(_dev, struct platform_device, dev);
 	dwc_otg_device_t *otg_dev = platform_get_drvdata(lm_dev);
 
-
+    		
 	if (!dwc_otg_get_param_lpm_enable(otg_dev->core_if))
 		return sprintf(buf, "** LPM is DISABLED **\n");
-
+	
 	if (!dwc_otg_is_device_mode(otg_dev->core_if)) {
 		return sprintf(buf, "** Current mode is not device mode\n");
 	}
-
+			
 	return sprintf(buf, "hirdthresh = 0x%x\n",
 		        dwc_otg_get_hirdthresh(otg_dev->core_if));
 }
@@ -1146,19 +1146,19 @@ static ssize_t hirdthresh_store(struct device *_dev,
 	struct platform_device *lm_dev = container_of(_dev, struct platform_device, dev);
 	dwc_otg_device_t *otg_dev = platform_get_drvdata(lm_dev);
 
-
+	
 	uint32_t val = simple_strtoul(buf, NULL, 16);
 
 	if (!dwc_otg_get_param_lpm_enable(otg_dev->core_if)) {
 		return 0;
 	}
-
+	
 	if (!dwc_otg_is_device_mode(otg_dev->core_if)) {
 		return 0;
 	}
-
+	
 	 dwc_otg_set_hirdthresh(otg_dev->core_if,val);
-
+			
 	return count;
 }
 

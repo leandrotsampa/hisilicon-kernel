@@ -96,8 +96,10 @@ all:	$(KBUILD_IMAGE) $(KBUILD_DTBS)
 
 boot := arch/arm64/boot
 
-Image: vmlinux
+uImage Image: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+
+uImage: dtbs
 
 Image.%: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@

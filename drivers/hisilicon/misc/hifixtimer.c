@@ -76,8 +76,8 @@ static irqreturn_t hi_fixtimer_irq(int irq, void *dev_id)
 
 		writel(timer_load, host->fix_base + TIMER_LOAD);
 
-		printk("LOAD: 0x%08x, VALUE: 0x%08x\n",
-			readl(host->fix_base + TIMER_LOAD),
+		printk("LOAD: 0x%08x, VALUE: 0x%08x\n", 
+			readl(host->fix_base + TIMER_LOAD), 
 			readl(host->fix_base + TIMER_VALUE));
 	}
 

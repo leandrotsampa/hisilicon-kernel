@@ -1,9 +1,21 @@
 /******************************************************************************
- * Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *  Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Liu Hui 2015.06.23
+ *
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/delay.h>
 #include <dt-bindings/clock/hi3798cv200-clock.h>
@@ -70,7 +82,7 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 {
 	u32 reg;
 	/* write 0x4 to addr 0x06
-	* config 2P PHY clk output
+	* config 2P PHY clk output 
 	* delay 1ms for waiting PLL stable
 	*/
 	reg = TEST_WRDATA|TEST_ADDR|TEST_WREN|TEST_RSTN;
@@ -81,7 +93,7 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 	writel(reg, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	mdelay(1);
 
-	/* write 0x1c to addr 0x00
+	/* write 0x1c to addr 0x00  
 	* 0x00[0] = 0 : close EOP pre-emphasis
 	* 0x00[2] = 1 : open Data pre-emphasis
 	*/
@@ -90,7 +102,7 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 	writel(0xa1001c, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	udelay(20);
 
-	/* write 0x07 to 0x06
+	/* write 0x07 to 0x06 
 	* {0x06[1:0],0x05[7]} = 110 : Rcomp = 150mV , increase DC level
 	*/
 	writel(0xa00607, clk->peri_ctrl_base + PERI_CTRL_USB0);
@@ -98,8 +110,8 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 	writel(0xa00607, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	udelay(20);
 
-	/* write 0x00 to addr 0x07
-	* 0x07[1] = 0 : Keep Rcomp working
+	/* write 0x00 to addr 0x07  
+	* 0x07[1] = 0 : Keep Rcomp working 
 	*/
 	writel(0xa10700, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	writel(0xe10700, clk->peri_ctrl_base + PERI_CTRL_USB0);
@@ -114,7 +126,7 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 	writel(0xa00aab, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	udelay(20);
 
-	/* write 0x40 to addr 0x11
+	/* write 0x40 to addr 0x11  
 	* 0x11[6:5] = 10 : sovle EMI problem, rx_active will
 	* not stay at 1 when error packets received
 	*/
@@ -123,7 +135,7 @@ static void inno_phy_config_2p_1(struct hiclk_hw *clk)
 	writel(0xa11140, clk->peri_ctrl_base + PERI_CTRL_USB0);
 	udelay(20);
 
-	/* write 0x41 to addr 0x10
+	/* write 0x41 to addr 0x10  
 	* 0x10[0] = 1 : Comp Mode Select
 	*/
 	writel(0xa11041, clk->peri_ctrl_base + PERI_CTRL_USB0);
@@ -158,8 +170,8 @@ static int hiclk_enable_usb2(struct clk_hw *hw)
 		udelay(200);
 
 		reg = readl(clk->peri_ctrl_base + PERI_CTRL_USB3);
-		reg |= ULPI_BYPASS_EN_PORT0;
-		reg &= ~(WORDINTERFACE);
+		reg |= ULPI_BYPASS_EN_PORT0;  
+		reg &= ~(WORDINTERFACE);   
 		reg &= ~(SS_BURST16_EN);
 		writel(reg, clk->peri_ctrl_base + PERI_CTRL_USB3);
 		udelay(100);
@@ -178,7 +190,7 @@ static int hiclk_enable_usb2(struct clk_hw *hw)
 
 		inno_phy_config_2p_1(clk);
 
-		/* cancel port reset
+		/* cancel port reset 
 		* delay 2ms for waiting comp circuit stable
 		*/
 		reg = readl(clk->peri_crg_base + PERI_CRG47_USB2PHY);
@@ -196,7 +208,7 @@ static int hiclk_enable_usb2(struct clk_hw *hw)
 			| USB2_UTMI0_CKEN);
 		writel(reg, clk->peri_crg_base + PERI_CRG46_USB2CTRL);
 		udelay(200);
-
+		
 		/* cancel control reset */
 		reg = readl(clk->peri_crg_base + PERI_CRG46_USB2CTRL);
 		reg &= ~(USB2_BUS_SRST_REQ

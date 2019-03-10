@@ -1,9 +1,21 @@
 /******************************************************************************
- * Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *  Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Liu Hui 2015.07.10
+ *
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/delay.h>
 #include <dt-bindings/clock/hi3798cv200-clock.h>
@@ -45,7 +57,7 @@
 
  /******************************************************************************/
 
-static void nano_register_write(struct hiclk_hw *clk, u32 addr,
+static void nano_register_write(struct hiclk_hw *clk, u32 addr, 
 				u32 offset, u32 value)
 {
 	u32 reg;
@@ -80,7 +92,7 @@ static int hiclk_enable_pcie(struct clk_hw *hw)
 
 	if (mux != COMBPHY1_SEL_PCIE)
 		return -1;
-
+	
 #ifdef TESTBOARD
 	/* Config Power on PCIe,use GPIO3_4*/
 	writel(0x10,IO_ADDRESS(0xf8b23400));//Set GPIO3_4 output

@@ -1089,7 +1089,7 @@ static int c_show(struct seq_file *m, void *v)
 		 */
 		seq_printf(m, "processor\t: %d\n", i);
 		cpuid = is_smp() ? per_cpu(cpu_data, i).cpuid : read_cpuid_id();
-		seq_printf(m, "model name\t: %s rev %d (%s)\n",
+		seq_printf(m, "Processor\t: %s rev %d (%s)\n",
 			   cpu_name, cpuid & 15, elf_platform);
 
 #if defined(CONFIG_SMP)

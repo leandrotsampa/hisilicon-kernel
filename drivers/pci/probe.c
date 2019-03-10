@@ -2270,7 +2270,7 @@ struct pci_bus *pci_scan_root_bus_msi(struct device *parent, int bus,
 	struct pci_bus *b;
 	int max;
 	struct pcie_port *pp = (struct pcie_port *)sysdata;
-
+	
 	resource_list_for_each_entry(window, resources)
 		if (window->res->flags & IORESOURCE_BUS) {
 			found = true;
@@ -2292,7 +2292,7 @@ struct pci_bus *pci_scan_root_bus_msi(struct device *parent, int bus,
 
 	if(0 > pp->irq)
 		pp->irq = 0;
-
+	
 	max = pci_scan_child_bus(b, pp->irq);
 
 	if (!found)

@@ -669,7 +669,7 @@ extern void *dwc_alloc_atomic_debug(void *mem_ctx, uint32_t size, char const *fu
 extern void dwc_free_debug(void *mem_ctx, void *addr, char const *func, int line);
 extern void *dwc_dma_alloc_debug(void *dma_ctx, uint32_t size, dwc_dma_t *dma_addr,
 				 char const *func, int line);
-extern void *dwc_dma_alloc_atomic_debug(void *dma_ctx, uint32_t size, dwc_dma_t *dma_addr,
+extern void *dwc_dma_alloc_atomic_debug(void *dma_ctx, uint32_t size, dwc_dma_t *dma_addr, 
 				char const *func, int line);
 extern void dwc_dma_free_debug(void *dma_ctx, uint32_t size, void *virt_addr,
 			       dwc_dma_t dma_addr, char const *func, int line);

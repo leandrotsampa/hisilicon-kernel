@@ -4,3 +4,4 @@ config CPU_IDLE_HI3798CV2X
 	depends on ARCH_HI3798CV2X
 	help
 	  Select this to enable cpuidle on Hi3798cv2x processors.
+

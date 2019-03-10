@@ -346,6 +346,11 @@ void ion_chunk_heap_destroy(struct ion_heap *);
 struct ion_heap *ion_cma_heap_create(struct ion_platform_heap *);
 void ion_cma_heap_destroy(struct ion_heap *);
 
+#ifdef CONFIG_TEE_DRIVER
+struct ion_heap *ion_tee_sec_heap_create(struct ion_platform_heap *);
+void ion_tee_sec_heap_destory(struct ion_heap *);
+#endif
+
 /**
  * kernel api to allocate/free from carveout -- used when carveout is
  * used to back an architecture specific custom heap

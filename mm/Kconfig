@@ -61,6 +61,48 @@ config SPARSEMEM_MANUAL
 
 endchoice
 
+config VM_MIN_FREE_KBYTES
+	int "config min_free_kbytes"
+	default 0
+	help
+	  This is used to force the Linux VM to keep a minimum number, of kilobytes free.
+	  The VM uses this number to compute a watermark[WMARK_MIN] value for each lowmem
+	  zone in the system. Each lowmem zone gets a number of reserved free pages based
+	  proportionally on its size.
+
+	  Some minimal amount of memory is needed to satisfy PF_MEMALLOC allocations; 
+	  if you set this to lower than 1024KB, your system will become subtly broken, 
+	  and prone to deadlock under high loads.
+
+	  Setting this too high will OOM your machine instantly.
+
+config VM_OVERCOMMIT_GUESS
+	int "config overcommit_guess"
+	default 0
+	help
+	  This value contains a flag that enables memory overcommitment.
+
+	  When this flag is 0, the kernel attempts to estimate the amount of free memory
+	  left when userspace requests more memory.
+
+	  When this flag is 1, the kernel pretends there is always enough memory until
+	  it actually runs out.
+
+	  When this flag is 2, the kernel uses a "never overcommit" policy that attempts
+	  to prevent any overcommit of memory.
+	  This feature can be very useful because there are a lot of programs that malloc()
+	  huge amounts of memory "just-in-case" and don't use much of it.
+
+	  See Documentation/vm/overcommit-accounting and security/commoncap.c::cap_vm_enough_memory()
+	  for more information.
+
+config VM_DIRTY_RATIO
+	int "config dirty_ratio"
+	default 20
+	help
+	  Contains, as a percentage of total system memory, the number of pages at which a
+	  process which is generating disk writes will itself start writing out dirty data.
+
 config DISCONTIGMEM
 	def_bool y
 	depends on (!SELECT_MEMORY_MODEL && ARCH_DISCONTIGMEM_ENABLE) || DISCONTIGMEM_MANUAL

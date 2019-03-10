@@ -550,4 +550,6 @@ config MTD_NAND_HISI504
 	help
 	  Enables support for NAND controller on Hisilicon SoC Hip04.
 
+source "drivers/mtd/nand/hinfc610/Kconfig"
+
 endif # MTD_NAND

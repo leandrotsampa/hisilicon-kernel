@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/kernel.h>
 #include <linux/version.h>
 #include <linux/module.h>

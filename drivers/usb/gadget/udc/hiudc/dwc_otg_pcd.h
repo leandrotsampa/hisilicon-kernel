@@ -260,7 +260,7 @@ extern void dwc_otg_request_done(dwc_otg_pcd_ep_t * ep,
 
 void dwc_otg_iso_buffer_done(dwc_otg_pcd_t * pcd, dwc_otg_pcd_ep_t * ep,
 			    void *req_handle);
-extern void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if,
+extern void dwc_otg_pcd_start_iso_ddma(dwc_otg_core_if_t * core_if, 
 				dwc_otg_pcd_ep_t * ep);
 
 extern void do_test_mode(void *data);

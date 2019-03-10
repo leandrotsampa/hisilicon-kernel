@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/slab.h>
 #include <linux/scatterlist.h>
 #include <linux/errno.h>

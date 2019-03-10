@@ -701,10 +701,10 @@ static void __init build_mem_type_table(void)
 pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
 			      unsigned long size, pgprot_t vma_prot)
 {
-	if (!pfn_valid(pfn))
-		return pgprot_noncached(vma_prot);
+	if (!pfn_valid(pfn) && !is_ddr(__pfn_to_phys(pfn)))
+		return pgprot_noncached(vma_prot);/* strong order */
 	else if (file->f_flags & O_SYNC)
-		return pgprot_writecombine(vma_prot);
+		return pgprot_writecombine(vma_prot);/* normal non-cached */
 	return vma_prot;
 }
 EXPORT_SYMBOL(phys_mem_access_prot);
@@ -1046,7 +1046,7 @@ static void __init fill_pmd_gaps(void)
 #define fill_pmd_gaps() do { } while (0)
 #endif
 
-#if defined(CONFIG_PCI) && !defined(CONFIG_NEED_MACH_IO_H)
+#if defined(CONFIG_PCI) && defined(CONFIG_NEED_MACH_IO_H)
 static void __init pci_reserve_io(void)
 {
 	struct static_vm *svm;
@@ -1078,7 +1078,7 @@ void __init debug_ll_io_init(void)
 #endif
 
 static void * __initdata vmalloc_min =
-	(void *)(VMALLOC_END - (240 << 20) - VMALLOC_OFFSET);
+	(void *)(VMALLOC_END - (CONFIG_DEFAULT_VMALLOC_SIZE << 20) - VMALLOC_OFFSET);
 
 /*
  * vmalloc=size forces the vmalloc area to be exactly 'size'

@@ -719,8 +719,15 @@ static int __mmc_blk_ioctl_cmd(struct mmc_card *card, struct mmc_blk_data *md,
 	if (!card || !md || !idata)
 		return -EINVAL;
 
-	if (md->area_type & MMC_BLK_DATA_AREA_RPMB)
+	if (md->area_type & MMC_BLK_DATA_AREA_RPMB) {
+#ifdef CONFIG_TZDRIVER
+		/* enable secure rpmb will block access rpmb from ioctl */
+		err = -EINVAL;
+		return err;
+#else
 		is_rpmb = true;
+#endif
+	}
 
 	cmd.opcode = idata->ic.opcode;
 	cmd.arg = idata->ic.arg;
@@ -946,6 +953,35 @@ cmd_err:
 	kfree(idata);
 	return ioc_err ? ioc_err : err;
 }
+
+#if defined(CONFIG_TZDRIVER)
+
+struct mmc_blk_data *mmc_blk_get_ext(struct gendisk *disk)
+{
+	return mmc_blk_get(disk);
+}
+EXPORT_SYMBOL(mmc_blk_get_ext);
+
+void mmc_blk_put_ext(struct mmc_blk_data *md)
+{
+	mmc_blk_put(md);
+}
+EXPORT_SYMBOL(mmc_blk_put_ext);
+
+int mmc_blk_part_switch_ext(struct mmc_card *card,
+				      struct mmc_blk_data *md)
+{
+	return mmc_blk_part_switch(card, md);
+}
+EXPORT_SYMBOL(mmc_blk_part_switch_ext);
+
+int ioctl_rpmb_card_status_poll_ext(struct mmc_card *card, u32 *status,
+				       u32 retries_max)
+{
+	return ioctl_rpmb_card_status_poll(card, status, retries_max);
+}
+EXPORT_SYMBOL(ioctl_rpmb_card_status_poll_ext);
+#endif
 
 static int mmc_blk_ioctl(struct block_device *bdev, fmode_t mode,
 	unsigned int cmd, unsigned long arg)

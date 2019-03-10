@@ -278,6 +278,7 @@ config BQL
 	bool
 	depends on SYSFS
 	select DQL
+	default n if CA_NET_CONFIG && !INET
 	default y
 
 config BPF_JIT

@@ -11,8 +11,6 @@
  * (at your option) any later version.
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/module.h>

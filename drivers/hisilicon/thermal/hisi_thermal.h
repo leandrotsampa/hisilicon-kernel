@@ -1,11 +1,9 @@
 /**
  * hisi_thermal.h
  *
- * Copyright (c) 2009-2015, HiSilicon Technologies Co., Ltd.
+ * Copyright (c) 2009-2015, HiSilicon Technologies Co., Ltd. 
  * All rights reserved.
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef __HISI_THERMAL_H__
 #define __HISI_THERMAL_H__

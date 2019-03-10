@@ -537,7 +537,7 @@ static struct mtd_part *allocate_partition(struct mtd_info *master,
 	slave->mtd.ecc_step_size = master->ecc_step_size;
 	slave->mtd.ecc_strength = master->ecc_strength;
 	slave->mtd.bitflip_threshold = master->bitflip_threshold;
-
+#if 0
 	if (master->_block_isbad) {
 		uint64_t offs = 0;
 
@@ -549,7 +549,7 @@ static struct mtd_part *allocate_partition(struct mtd_info *master,
 			offs += slave->mtd.erasesize;
 		}
 	}
-
+#endif
 out_register:
 	return slave;
 }
@@ -814,3 +814,78 @@ uint64_t mtd_get_device_size(const struct mtd_info *mtd)
 	return PART(mtd)->master->size;
 }
 EXPORT_SYMBOL_GPL(mtd_get_device_size);
+
+#include <linux/cmdline-parser.h>
+
+static struct mtd_info *find_master_by_name(const char *mtd_id)
+{
+	struct mtd_part *part;
+	struct mtd_info *mtd;
+
+	mutex_lock(&mtd_partitions_mutex);
+
+	list_for_each_entry(part, &mtd_partitions, list) {
+		mtd = part->master;
+
+		if (!mtd->name || !*mtd->name)
+			continue;
+
+		if (!strncmp(mtd_id, mtd->name, BDEVNAME_SIZE)) {
+			mutex_unlock(&mtd_partitions_mutex);
+			return mtd;
+		}
+	}
+
+	mutex_unlock(&mtd_partitions_mutex);
+
+	return NULL;
+}
+
+static int mtd_add_part(int slot, struct cmdline_subpart *subpart, void *param)
+{
+	struct mtd_partition *mtdpart = &((struct mtd_partition *)param)[slot];
+
+	mtdpart->name = subpart->name;
+	mtdpart->offset = subpart->from;
+	mtdpart->size = subpart->size;
+	mtdpart->mask_flags = 0;
+	mtdpart->ecclayout = 0;
+
+	return 0;
+}
+
+#if defined(CONFIG_PART_CHANGE) && defined(CONFIG_BLK_CMDLINE_PARSER)
+int mtd_part_change(struct cmdline_parts *parts)
+{
+	int ret = -ENODEV;
+	struct mtd_info *mtd = NULL;
+	int nr_parts = parts->nr_subparts;
+	struct mtd_partition *mtdparts;
+
+	mtd = find_master_by_name(parts->name);
+	if (!mtd)
+		return -ENODEV;
+
+	mtdparts = kzalloc(sizeof(*mtdparts) * nr_parts, GFP_KERNEL);
+	if (!mtdparts) {
+		pr_err("Can't allocate memory.\n");
+		return -ENOMEM;
+	}
+
+	cmdline_parts_set(parts, mtd->size, 0, mtd_add_part, (void *)mtdparts);
+
+	ret = del_mtd_partitions(mtd);
+	pr_notice("Remove mtd device '%s' partitions %s.\n",
+		mtd->name, (!ret ? "success" : "fail"));
+
+	if (!ret) {
+		ret = add_mtd_partitions(mtd, mtdparts, nr_parts);
+		pr_notice("Add mtd device '%s' partitions %s.\n",
+			mtd->name, (!ret ? "success" : "fail"));
+	}
+
+	kfree(mtdparts);
+	return ret;
+}
+EXPORT_SYMBOL(mtd_part_change);
+#endif

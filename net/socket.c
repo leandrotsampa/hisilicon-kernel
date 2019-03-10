@@ -1117,7 +1117,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	err = security_socket_create(family, type, protocol, kern);
 	if (err)
-		return err;
+        return err;
 
 	/*
 	 *	Allocate the socket and allow the family to set things up. if
@@ -1162,7 +1162,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 
 	err = pf->create(net, sock, protocol, kern);
 	if (err < 0)
-		goto out_module_put;
+        goto out_module_put;
 
 	/*
 	 * Now to bump the refcnt of the [loadable] module that owns this
@@ -1178,7 +1178,7 @@ int __sock_create(struct net *net, int family, int type, int protocol,
 	module_put(pf->owner);
 	err = security_socket_post_create(sock, family, type, protocol, kern);
 	if (err)
-		goto out_sock_release;
+        goto out_sock_release;
 	*res = sock;
 
 	return 0;

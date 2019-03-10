@@ -1,0 +1,142 @@
+------------------------------------------
+CVE : https://cve.mitre.org/index.html
+------------------------------------------
+
+CVE-2017-5576 kernel-4.4.35 海思未使用该代码
+	Integer overflow in the vc4_get_bcl function in drivers/gpu/drm/vc4/vc4_gem.c in the VideoCore DRM driver in the Linux kernel before 4.9.7 allows local users to cause a denial of service or possibly have unspecified other impact via a crafted size value in a VC4_SUBMIT_CL ioctl call.
+
+CVE-2016-10150 kernel-4.4.35 海思未使用该代码
+	Use-after-free vulnerability in the kvm_ioctl_create_device function in virt/kvm/kvm_main.c in the Linux kernel before 4.8.13 allows host OS users to cause a denial of service (host OS crash) or possibly gain privileges via crafted ioctl calls on the /dev/kvm device. 
+
+CVE-2016-9555 kernel-4.4.35 默认包含该补丁 10.0
+	The sctp_sf_ootb function in net/sctp/sm_statefuns.c in the Linux kernel before 4.8.8 lacks chunk-length checking for the first chunk, which allows remote attackers to cause a denial of service (out-of-bounds slab access) or possibly have unspecified other impact via crafted SCTP data. 
+	
+CVE-2016-7117 kernel-4.4.35 默认包含该补丁 10.0	
+	Use-after-free vulnerability in the __sys_recvmmsg function in net/socket.c in the Linux kernel before 4.5.2 allows remote attackers to execute arbitrary code via vectors involving a recvmmsg system call that is mishandled during error processing
+	
+CVE-2016-3955 kernel-4.4.35 默认包含该补丁 10.0	
+	The usbip_recv_xbuff function in drivers/usb/usbip/usbip_common.c in the Linux kernel before 4.5.3 allows remote attackers to cause a denial of service (out-of-bounds write) or possibly have unspecified other impact via a crafted length value in a USB/IP packet. 
+
+CVE-2016-9120 kernel-4.4.35 默认包含该补丁 9.3
+	Race condition in the ion_ioctl function in drivers/staging/android/ion/ion.c in the Linux kernel before 4.6 allows local users to gain privileges or cause a denial of service (use-after-free) by calling ION_IOC_FREE on two CPUs at the same time
+
+CVE-2016-9313 kernel-4.4.35 海思未使用该代码 9.3
+	security/keys/big_key.c in the Linux kernel before 4.8.7 mishandles unsuccessful crypto registration in conjunction with successful key-type registration, which allows local users to cause a denial of service (NULL pointer dereference and panic) or possibly have unspecified other impact via a crafted application that uses the big_key data type.
+	
+CVE-2016-7913 kernel-4.4.35 默认包含该补丁 9.3
+	The xc2028_set_config function in drivers/media/tuners/tuner-xc2028.c in the Linux kernel before 4.6 allows local users to gain privileges or cause a denial of service (use-after-free) via vectors involving omission of the firmware name from a certain data structure.
+
+CVE-2016-7912 kernel-4.4.35 默认包含该补丁 9.3
+	Use-after-free vulnerability in the ffs_user_copy_worker function in drivers/usb/gadget/function/f_fs.c in the Linux kernel before 4.5.3 allows local users to gain privileges by accessing an I/O data structure after a certain callback call. 
+
+CVE-2016-7911 kernel-4.4.35 默认包含该补丁 9.3
+	Race condition in the get_task_ioprio function in block/ioprio.c in the Linux kernel before 4.6.6 allows local users to gain privileges or cause a denial of service (use-after-free) via a crafted ioprio_get system call.
+
+CVE-2016-7910 kernel-4.4.35 默认包含该补丁 9.3
+	Use-after-free vulnerability in the disk_seqf_stop function in block/genhd.c in the Linux kernel before 4.7.1 allows local users to gain privileges by leveraging the execution of a certain stop operation even if the corresponding start operation had failed.
+
+CVE-2016-9919 kernel-4.4.35 不涉及  7.8
+	The icmp6_send function in net/ipv6/icmp.c in the Linux kernel through 4.8.12 omits a certain check of the dst data structure, which allows remote attackers to cause a denial of service (panic) via a fragmented IPv6 packet. 
+
+CVE-2016-8666 kernel-4.4.35 默认包含该补丁 7.8
+	The IP stack in the Linux kernel before 4.6 allows remote attackers to cause a denial of service (stack consumption and panic) or possibly have unspecified other impact by triggering use of the GRO path for packets with tunnel stacking, as demonstrated by interleaved IPv4 headers and GRE headers, a related issue to CVE-2016-7039.
+
+CVE-2016-7039 kernel-4.4.35 默认包含该补丁 7.8
+	The IP stack in the Linux kernel through 4.8.2 allows remote attackers to cause a denial of service (stack consumption and panic) or possibly have unspecified other impact by triggering use of the GRO path for large crafted packets, as demonstrated by packets that contain only VLAN headers, a related issue to CVE-2016-8666.
+
+// 以下暂时未确认。
+CVE-2016-9754 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-9806 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-9793 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-9576 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-8655 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-9083 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-8632 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-5195 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-7425 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-6187 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4997 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-5829 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-5828 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4440 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-1583 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-0758 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4951 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4913 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4805 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4794 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4568 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4565 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-4557 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-1576 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-1575 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-3135 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-3134 kernel-4.4.35 默认包含该补丁 7.2
+CVE-2016-7914 kernel-4.4.35 默认包含该补丁 7.1
+CVE-2016-10088 kernel-4.4.35 默认包含该补丁 6.9
+CVE-2016-9777 kernel-4.4.35 默认包含该补丁 6.9
+CVE-2016-4558 kernel-4.4.35 默认包含该补丁 6.9
+CVE-2016-8633 kernel-4.4.35 默认包含该补丁 6.2
+CVE-2016-5696 kernel-4.4.35 默认包含该补丁 5.8
+CVE-2016-8658 kernel-4.4.35 默认包含该补丁 5.6
+CVE-2016-4998 kernel-4.4.35 默认包含该补丁 5.6
+CVE-2016-3713 kernel-4.4.35 默认包含该补丁 5.6
+CVE-2016-5728 kernel-4.4.35 默认包含该补丁 5.4
+CVE-2016-5244 kernel-4.4.35 默认包含该补丁 5.0
+CVE-2016-4580 kernel-4.4.35 默认包含该补丁 5.0
+CVE-2016-4485 kernel-4.4.35 默认包含该补丁 5.0
+CVE-2016-2117 kernel-4.4.35 默认包含该补丁 5.0
+CVE-2016-9685 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-9191 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-8650 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-8645 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-8630 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-8660 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-7042 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-6828 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-6327 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-6198 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-6197 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-5400 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-1237 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-4470 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-4581 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-3689 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-3140 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-3138 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-3137 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-3136 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2188 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2187 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2186 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2185 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2182 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-2184 kernel-4.4.35 默认包含该补丁 4.9
+CVE-2016-6213 kernel-4.4.35 默认包含该补丁 4.7
+CVE-2016-7916 kernel-4.4.35 默认包含该补丁 4.7
+CVE-2016-6480 kernel-4.4.35 默认包含该补丁 4.7
+CVE-2016-9794 kernel-4.4.35 默认包含该补丁 4.6
+CVE-2016-9755 kernel-4.4.35 默认包含该补丁 4.6
+CVE-2016-9084 kernel-4.4.35 默认包含该补丁 4.6
+CVE-2016-5412 kernel-4.4.35 默认包含该补丁 4.6
+CVE-2016-3672 kernel-4.4.35 默认包含该补丁 4.6
+CVE-2016-6516 kernel-4.4.35 默认包含该补丁 4.4
+CVE-2016-7915 kernel-4.4.35 默认包含该补丁 4.3
+CVE-2015-9844 kernel-4.4.35 默认包含该补丁 4.3
+CVE-2014-9900 kernel-4.4.35 默认包含该补丁 4.3
+CVE-2014-9892 kernel-4.4.35 默认包含该补丁 4.3
+CVE-2016-7097 kernel-4.4.35 默认包含该补丁 3.6
+CVE-2016-9756 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-9588 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-9178 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-8952 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-5243 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-4578 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-4569 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-4486 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-4482 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-3156 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-2383 kernel-4.4.35 默认包含该补丁 2.1
+CVE-2016-6156 kernel-4.4.35 默认包含该补丁 1.9
+CVE-2016-6136 kernel-4.4.35 默认包含该补丁 1.9
+CVE-2016-6130 kernel-4.4.35 默认包含该补丁 1.9

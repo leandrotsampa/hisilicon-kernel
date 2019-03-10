@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef _HI_MCI_REG_H_
 #define _HI_MCI_REG_H_
 
@@ -115,16 +111,29 @@
 #define DATA_BUSY                         BIT(9)
 
 /* MCI_FIFOTH(0x4c) details */
-#if defined(CONFIG_ARCH_HI3798CV2X)
+#if defined(CONFIG_ARCH_HIFONE) || defined(CONFIG_ARCH_HI3798CV2X)
 #define BURST_SIZE                        (0x4<<28)
+#else
+#if defined(CONFIG_ARCH_HI3798MV2X)
+#define BURST_SIZE                        (0x3<<28)
 #else
 #define BURST_SIZE                        (0x2<<28)
 #endif
+#endif
 
+#ifdef CONFIG_ARCH_GODBOX
+#define FIFO_DEPTH                         16
+#else
 #define FIFO_DEPTH                         256
+#endif
 
+#if defined(CONFIG_ARCH_HI3798MV2X)
+#define RX_WMARK                           (0xF << 16)
+#define TX_WMARK                           0x10
+#else
 #define RX_WMARK                           ((FIFO_DEPTH/2 - 1) << 16)
 #define TX_WMARK                           ((FIFO_DEPTH/2) << 0)
+#endif
 
 /* MCI_CDETECT(0x50) */
 #define HIMCI_CARD0                        BIT(0)

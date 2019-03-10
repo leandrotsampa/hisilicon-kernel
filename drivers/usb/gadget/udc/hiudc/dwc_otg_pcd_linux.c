@@ -93,7 +93,7 @@ EXPORT_SYMBOL_GPL(usb_gadget_ep_match_desc);
 #else
 int udc_attach_driver(const char *name, struct usb_gadget_driver *driver)
 {
-	//do nothing ,only make
+	//do nothing ,only make 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(udc_attach_driver);
@@ -656,7 +656,7 @@ static struct usb_isoc_ep_ops dwc_otg_pcd_ep_ops = {
 		   .dequeue = ep_dequeue,
 
 		   .set_halt = ep_halt,
-
+		 
 		    #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
 					.set_wedge = ep_wedge,
 			#endif
@@ -688,7 +688,7 @@ static struct usb_ep_ops dwc_otg_pcd_ep_ops = {
 	.dequeue = ep_dequeue,
 
 	.set_halt = ep_halt,
-
+	
 	#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)
 		.set_wedge = ep_wedge,
     #endif
@@ -795,11 +795,11 @@ static const struct usb_gadget_ops dwc_otg_pcd_ops = {
 	.wakeup = wakeup,
 #ifdef CONFIG_USB_DWC_OTG_LPM
 	.lpm_support = test_lpm_enabled,
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,6,0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,6,0)	
 	.besl_support = test_besl_enabled,
 	.get_baseline_besl = get_param_baseline_besl,
 	.get_deep_besl = get_param_deep_besl,
-#endif
+#endif	
 #endif
 	// current versions must always be self-powered
 };
@@ -941,7 +941,7 @@ static int _complete(dwc_otg_pcd_t * pcd, void *ep_handle,
 						req, ep);
 		req->dma = (dma_addr_t)0;
 	}
-
+	
 	if (req && req->complete) {
 		switch (status) {
 		case -DWC_E_SHUTDOWN:
@@ -1312,7 +1312,7 @@ int pcd_init(struct platform_device *_dev, int irqnum )
 		return -EBUSY;
 	}
 
-
+		
 	dwc_otg_pcd_start(gadget_wrapper->pcd, &fops);
 
 	return retval;
@@ -1335,7 +1335,7 @@ void pcd_remove(	struct platform_device *_dev   )
 	 */
 	free_irq(_dev->resource[1].start, pcd);
 	free_wrapper(gadget_wrapper);
-	dwc_otg_pcd_remove(otg_dev->pcd);
+	dwc_otg_pcd_remove(otg_dev->pcd);	
 	otg_dev->pcd = 0;
 }
 
@@ -1364,7 +1364,7 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 	DWC_DEBUGPL(DBG_PCD, "registering gadget driver '%s'\n",
 		    driver->driver.name);
 
-	if (!driver ||
+	if (!driver || 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(3,3,0)
 		driver->speed == USB_SPEED_UNKNOWN ||
 #else
@@ -1399,7 +1399,7 @@ int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,37)
 	retval = driver->bind(&gadget_wrapper->gadget);
 #elif LINUX_VERSION_CODE >= KERNEL_VERSION(3,7,0)
-	retval = driver->bind(&gadget_wrapper->gadget,gadget_wrapper->driver);
+	retval = driver->bind(&gadget_wrapper->gadget,gadget_wrapper->driver);		
 #else
 	retval = bind(&gadget_wrapper->gadget);
 #endif

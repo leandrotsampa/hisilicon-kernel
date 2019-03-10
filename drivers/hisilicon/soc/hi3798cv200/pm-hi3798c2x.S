@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <asm/assembler.h>
 #include <linux/linkage.h>
 
@@ -59,3 +55,4 @@ loop2:	mov	r3, r0, lsl #6
 	dsb
 	pop	{r0-r6, pc}
 ENDPROC(flash_l1_cache_hi3798cv2x)
+

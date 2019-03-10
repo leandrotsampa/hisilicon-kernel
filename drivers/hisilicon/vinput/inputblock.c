@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,7 +28,7 @@ static ssize_t event_write(struct file *filp, const char __user *buffer,
 	if (copy_from_user(options, buffer, num)) {
 		free_page((unsigned long) options);
 		return -EFAULT;
-	}
+	}   
 
 	memset(state_buff, 0, sizeof(state_buff));
 
@@ -60,7 +56,7 @@ static ssize_t event_read(struct file *filp, char __user *buffer,
 			  size_t count, loff_t *ppos)
 {
 	char *msg, *p;
-
+	
 	if (*ppos != 0)
 		return 0;
 

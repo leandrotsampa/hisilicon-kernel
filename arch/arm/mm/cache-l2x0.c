@@ -228,12 +228,15 @@ static void l2c210_flush_range(unsigned long start, unsigned long end)
 
 static void l2c210_flush_all(void)
 {
+	unsigned long flags;
 	void __iomem *base = l2x0_base;
 
-	BUG_ON(!irqs_disabled());
+	raw_spin_lock_irqsave(&l2x0_lock, flags);
 
 	__l2c_op_way(base + L2X0_CLEAN_INV_WAY);
 	__l2c210_cache_sync(base);
+
+	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
 static void l2c210_sync(void)

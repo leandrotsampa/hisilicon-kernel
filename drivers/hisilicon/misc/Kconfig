@@ -10,6 +10,43 @@ config TIMER_HIFIXTIMER
 	depends on ARM_TIMER_SP804 || TIMER_HISP804
 	default y
 
+config MTD_BLOCK_ROMBLOCK
+	tristate "Readonly(romblock) block device access to MTD devices"
+	depends on BLOCK
+	select MTD_BLKDEVS
+	default y
+	help
+	  Same as readonly block driver, but this allow you to mount read-only
+	  file systems from an MTD device, containing bad blocks.
+
+config PART_CHANGE
+	bool "Support change partition by file '/proc/partchange'"
+	default y
+	select BLK_CMDLINE_PARSER
+	select CMDLINE_PARTITION
+	---help---
+	  Support change partition by file '/proc/partchange'
+
+menu "Hisilicon CPU frequency scaling config"
+
+config MICRO_FREQUENCY_UP_THRESHOLD
+	int "Micro frequency up threshold"
+	default 80
+
+config DEFAULT_GO_HISPEED_LOAD
+	int "Default go hispeed load"
+	default 80
+	help
+	  Go to hi speed when CPU load at or above this value.
+
+config DEFAULT_TARGET_LOAD
+	int "Default target load"
+	default 70
+	help
+	  Target load, lower values result in higher CPU speeds.
+
+endmenu
+
 config HI_I2C
 	tristate "Hisilicon high-speed I2C devices"
 	default n
@@ -19,3 +56,10 @@ config HI_I2C
 
 	This driver can also be built as a module.  If so, the module
 	will be called hi-i2c.
+
+config PAGEALLOC_LOCK
+	bool "lock page when free page, and unlock page when alloc page"
+	default n
+	select DEBUG_PAGEALLOC
+	help
+	  for page alloc debug.

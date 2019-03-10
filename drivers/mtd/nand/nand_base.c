@@ -47,6 +47,7 @@
 #include <linux/io.h>
 #include <linux/mtd/partitions.h>
 #include <linux/of_mtd.h>
+#include "hinfc_gen.h"
 
 /* Define default oob placement schemes for large and small page devices */
 static struct nand_ecclayout nand_oob_8 = {
@@ -92,7 +93,7 @@ static struct nand_ecclayout nand_oob_128 = {
 		 .length = 78} }
 };
 
-static int nand_get_device(struct mtd_info *mtd, int new_state);
+int nand_get_device(struct mtd_info *mtd, int new_state);
 
 static int nand_do_write_oob(struct mtd_info *mtd, loff_t to,
 			     struct mtd_oob_ops *ops);
@@ -130,7 +131,7 @@ static int check_offs_len(struct mtd_info *mtd,
  *
  * Release chip lock and wake up anyone waiting on the device.
  */
-static void nand_release_device(struct mtd_info *mtd)
+void nand_release_device(struct mtd_info *mtd)
 {
 	struct nand_chip *chip = mtd->priv;
 
@@ -319,12 +320,9 @@ static void nand_read_buf16(struct mtd_info *mtd, uint8_t *buf, int len)
  */
 static int nand_block_bad(struct mtd_info *mtd, loff_t ofs, int getchip)
 {
-	int page, chipnr, res = 0, i = 0;
+	int page, chipnr, res = 0;
 	struct nand_chip *chip = mtd->priv;
 	u16 bad;
-
-	if (chip->bbt_options & NAND_BBT_SCANLASTPAGE)
-		ofs += mtd->erasesize - mtd->writesize;
 
 	page = (int)(ofs >> chip->page_shift) & chip->pagemask;
 
@@ -336,30 +334,23 @@ static int nand_block_bad(struct mtd_info *mtd, loff_t ofs, int getchip)
 		/* Select the NAND device */
 		chip->select_chip(mtd, chipnr);
 	}
-
-	do {
-		if (chip->options & NAND_BUSWIDTH_16) {
-			chip->cmdfunc(mtd, NAND_CMD_READOOB,
-					chip->badblockpos & 0xFE, page);
-			bad = cpu_to_le16(chip->read_word(mtd));
-			if (chip->badblockpos & 0x1)
-				bad >>= 8;
-			else
-				bad &= 0xFF;
-		} else {
-			chip->cmdfunc(mtd, NAND_CMD_READOOB, chip->badblockpos,
-					page);
-			bad = chip->read_byte(mtd);
-		}
-
-		if (likely(chip->badblockbits == 8))
-			res = bad != 0xFF;
+	if (chip->options & NAND_BUSWIDTH_16) {
+		chip->cmdfunc(mtd, NAND_CMD_READOOB,
+				chip->badblockpos & 0xFE, page);
+		bad = cpu_to_le16(chip->read_word(mtd));
+		if (chip->badblockpos & 0x1)
+			bad >>= 8;
 		else
-			res = hweight8(bad) < chip->badblockbits;
-		ofs += mtd->writesize;
-		page = (int)(ofs >> chip->page_shift) & chip->pagemask;
-		i++;
-	} while (!res && i < 2 && (chip->bbt_options & NAND_BBT_SCAN2NDPAGE));
+			bad &= 0xFF;
+	} else {
+		chip->cmdfunc(mtd, NAND_CMD_READOOB, chip->badblockpos,
+				page);
+		bad = chip->read_byte(mtd);
+	}
+	if (likely(chip->badblockbits == 8))
+		res = bad != 0xFF;
+	else
+		res = hweight8(bad) < chip->badblockbits;
 
 	if (getchip) {
 		chip->select_chip(mtd, -1);
@@ -383,7 +374,7 @@ static int nand_default_block_markbad(struct mtd_info *mtd, loff_t ofs)
 	struct nand_chip *chip = mtd->priv;
 	struct mtd_oob_ops ops;
 	uint8_t buf[2] = { 0, 0 };
-	int ret = 0, res, i = 0;
+	int ret = 0, res;
 
 	memset(&ops, 0, sizeof(ops));
 	ops.oobbuf = buf;
@@ -396,17 +387,9 @@ static int nand_default_block_markbad(struct mtd_info *mtd, loff_t ofs)
 	}
 	ops.mode = MTD_OPS_PLACE_OOB;
 
-	/* Write to first/last page(s) if necessary */
-	if (chip->bbt_options & NAND_BBT_SCANLASTPAGE)
-		ofs += mtd->erasesize - mtd->writesize;
-	do {
-		res = nand_do_write_oob(mtd, ofs, &ops);
-		if (!ret)
-			ret = res;
-
-		i++;
-		ofs += mtd->writesize;
-	} while ((chip->bbt_options & NAND_BBT_SCAN2NDPAGE) && i < 2);
+	res = nand_do_write_oob(mtd, ofs, &ops);
+	if (!ret)
+		ret = res;
 
 	return ret;
 }
@@ -829,7 +812,7 @@ static void panic_nand_get_device(struct nand_chip *chip,
  *
  * Get the device and lock it for exclusive access
  */
-static int
+int
 nand_get_device(struct mtd_info *mtd, int new_state)
 {
 	struct nand_chip *chip = mtd->priv;
@@ -2542,7 +2525,7 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 	uint8_t *oob = ops->oobbuf;
 	uint8_t *buf = ops->datbuf;
 	int ret;
-	int oob_required = oob ? 1 : 0;
+	// int oob_required = oob ? 1 : 0;
 
 	ops->retlen = 0;
 	if (!writelen)
@@ -2617,7 +2600,7 @@ static int nand_do_write_ops(struct mtd_info *mtd, loff_t to,
 			memset(chip->oob_poi, 0xff, mtd->oobsize);
 		}
 		ret = chip->write_page(mtd, chip, column, bytes, wbuf,
-					oob_required, page, cached,
+					1, page, cached,
 					(ops->mode == MTD_OPS_RAW));
 		if (ret)
 			break;
@@ -3771,6 +3754,12 @@ static bool find_full_id_nand(struct mtd_info *mtd, struct nand_chip *chip,
 		if (!mtd->name)
 			mtd->name = type->name;
 
+		chip->read_retry_type = type->read_retry_type;
+		if (type->read_retry_type == NAND_RR_MICRON) {
+			chip->read_retries = 8;
+			chip->setup_read_retry = nand_setup_read_retry_micron;
+		}
+
 		return true;
 	}
 	return false;
@@ -3823,6 +3812,20 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 		return ERR_PTR(-ENODEV);
 	}
 
+	if (!id_data[0])
+		return ERR_PTR(-ENODEV);
+
+	/*
+	 * some nand, the id bytes signification is nonstandard
+	 * with the linux kernel.
+	 */
+#ifndef CONFIG_MTD_HIFMC100
+	type = hinfc_get_flash_type(mtd, chip, id_data, &busw);
+	if (type)
+		goto ident_done;
+#endif
+
+	/* "type == NULL" we not fount this nand chip in nand spl table. */
 	if (!type)
 		type = nand_flash_ids;
 
@@ -3870,6 +3873,9 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 	if (*maf_id != NAND_MFR_SAMSUNG && !type->pagesize)
 		chip->options &= ~NAND_SAMSUNG_LP_OPTIONS;
 ident_done:
+#ifndef CONFIG_MTD_HIFMC100
+	hinfc_nand_param_adjust(mtd, chip);
+#endif
 
 	/* Try to identify manufacturer */
 	for (maf_idx = 0; nand_manuf_ids[maf_idx].id != 0x0; maf_idx++) {
@@ -3917,9 +3923,12 @@ ident_done:
 	/* Do not replace user supplied command function! */
 	if (mtd->writesize > 512 && chip->cmdfunc == nand_command)
 		chip->cmdfunc = nand_command_lp;
-
+#ifndef CONFIG_MTD_HIFMC100
+	hinfc_show_info(mtd, nand_manuf_ids[maf_idx].name, type->name);
+#else
 	pr_info("device found, Manufacturer ID: 0x%02x, Chip ID: 0x%02x\n",
 		*maf_id, *dev_id);
+#endif
 
 	if (chip->onfi_version)
 		pr_info("%s %s\n", nand_manuf_ids[maf_idx].name,
@@ -3930,10 +3939,11 @@ ident_done:
 	else
 		pr_info("%s %s\n", nand_manuf_ids[maf_idx].name,
 				type->name);
-
-	pr_info("%d MiB, %s, erase size: %d KiB, page size: %d, OOB size: %d\n",
+#ifndef CONFIG_MTD_HIFMC100
+	pr_info("%dMiB, %s, page size: %d, OOB size: %d\n",
 		(int)(chip->chipsize >> 20), nand_is_slc(chip) ? "SLC" : "MLC",
-		mtd->erasesize >> 10, mtd->writesize, mtd->oobsize);
+		mtd->writesize, mtd->oobsize);
+#endif
 	return type;
 }
 
@@ -4034,6 +4044,10 @@ int nand_scan_ident(struct mtd_info *mtd, int maxchips,
 	/* Store the number of chips and calc total size for mtd */
 	chip->numchips = i;
 	mtd->size = i * chip->chipsize;
+
+#ifndef CONFIG_MTD_HIFMC100
+	hinfc_show_chipsize(chip);
+#endif
 
 	return 0;
 }
@@ -4257,7 +4271,9 @@ int nand_scan_tail(struct mtd_info *mtd)
 		break;
 
 	case NAND_ECC_NONE:
+#ifdef CONFIG_MTD_HIFMC100
 		pr_warn("NAND_ECC_NONE selected by board driver. This is not recommended!\n");
+#endif
 		ecc->read_page = nand_read_page_raw;
 		ecc->write_page = nand_write_page_raw;
 		ecc->read_oob = nand_read_oob_std;

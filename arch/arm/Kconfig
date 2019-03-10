@@ -34,41 +34,41 @@ config ARM
 	select HAVE_ARCH_AUDITSYSCALL if (AEABI && !OABI_COMPAT)
 	select HAVE_ARCH_BITREVERSE if (CPU_32v7M || CPU_32v7) && !CPU_32v6
 	select HAVE_ARCH_JUMP_LABEL if !XIP_KERNEL && !CPU_ENDIAN_BE32
-	select HAVE_ARCH_KGDB if !CPU_ENDIAN_BE32
+	select HAVE_ARCH_KGDB if !CPU_ENDIAN_BE32 && !CA_SUPPORT_ADVCA
 	select HAVE_ARCH_MMAP_RND_BITS if MMU
 	select HAVE_ARCH_HARDENED_USERCOPY
 	select HAVE_ARCH_SECCOMP_FILTER if (AEABI && !OABI_COMPAT)
-	select HAVE_ARCH_TRACEHOOK
+	select HAVE_ARCH_TRACEHOOK if !CA_SUPPORT_ADVCA
 	select HAVE_ARM_SMCCC if CPU_V7
-	select HAVE_BPF_JIT
+	select HAVE_BPF_JIT if !CA_SUPPORT_ADVCA
 	select HAVE_CC_STACKPROTECTOR
 	select HAVE_CONTEXT_TRACKING
-	select HAVE_C_RECORDMCOUNT
-	select HAVE_DEBUG_KMEMLEAK
-	select HAVE_DMA_API_DEBUG
+	select HAVE_C_RECORDMCOUNT if !CA_SUPPORT_ADVCA
+	select HAVE_DEBUG_KMEMLEAK if !CA_SUPPORT_ADVCA
+	select HAVE_DMA_API_DEBUG if !CA_SUPPORT_ADVCA
 	select HAVE_DMA_ATTRS
 	select HAVE_DMA_CONTIGUOUS if MMU
-	select HAVE_DYNAMIC_FTRACE if (!XIP_KERNEL) && !CPU_ENDIAN_BE32
+	select HAVE_DYNAMIC_FTRACE if (!XIP_KERNEL) && !CPU_ENDIAN_BE32 && !CA_SUPPORT_ADVCA
 	select HAVE_EFFICIENT_UNALIGNED_ACCESS if (CPU_V6 || CPU_V6K || CPU_V7) && MMU
-	select HAVE_FTRACE_MCOUNT_RECORD if (!XIP_KERNEL)
-	select HAVE_FUNCTION_GRAPH_TRACER if (!THUMB2_KERNEL)
-	select HAVE_FUNCTION_TRACER if (!XIP_KERNEL)
+	select HAVE_FTRACE_MCOUNT_RECORD if ((!XIP_KERNEL) && !CA_SUPPORT_ADVCA)
+	select HAVE_FUNCTION_GRAPH_TRACER if ((!THUMB2_KERNEL) && !CA_SUPPORT_ADVCA)
+	select HAVE_FUNCTION_TRACER if ((!XIP_KERNEL) && !CA_SUPPORT_ADVCA)
 	select HAVE_GENERIC_DMA_COHERENT
-	select HAVE_HW_BREAKPOINT if (PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7))
+	select HAVE_HW_BREAKPOINT if (PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7) && !CA_SUPPORT_ADVCA)
 	select HAVE_IDE if PCI || ISA || PCMCIA
-	select HAVE_IRQ_TIME_ACCOUNTING
+	select HAVE_IRQ_TIME_ACCOUNTING if !CA_SUPPORT_ADVCA
 	select HAVE_KERNEL_GZIP
 	select HAVE_KERNEL_LZ4
 	select HAVE_KERNEL_LZMA
 	select HAVE_KERNEL_LZO
 	select HAVE_KERNEL_XZ
-	select HAVE_KPROBES if !XIP_KERNEL && !CPU_ENDIAN_BE32 && !CPU_V7M
+	select HAVE_KPROBES if !XIP_KERNEL && !CPU_ENDIAN_BE32 && !CPU_V7M && !CA_SUPPORT_ADVCA
 	select HAVE_KRETPROBES if (HAVE_KPROBES)
 	select HAVE_MEMBLOCK
 	select HAVE_MOD_ARCH_SPECIFIC
 	select HAVE_OPROFILE if (HAVE_PERF_EVENTS)
 	select HAVE_OPTPROBES if !THUMB2_KERNEL
-	select HAVE_PERF_EVENTS
+	select HAVE_PERF_EVENTS if !CA_SUPPORT_ADVCA
 	select HAVE_PERF_REGS
 	select HAVE_PERF_USER_STACK_DUMP
 	select HAVE_RCU_TABLE_FREE if (SMP && ARM_LPAE)
@@ -83,7 +83,7 @@ config ARM
 	select OF_RESERVED_MEM if OF
 	select OLD_SIGACTION
 	select OLD_SIGSUSPEND3
-	select PERF_USE_VMALLOC
+	select PERF_USE_VMALLOC if !CA_SUPPORT_ADVCA
 	select RTC_LIB
 	select SYS_SUPPORTS_APM_EMULATION
 	# Above selects are sorted alphabetically; please add new ones
@@ -165,7 +165,7 @@ config SBUS
 
 config STACKTRACE_SUPPORT
 	bool
-	default y
+	default y if !CA_SUPPORT_ADVCA
 
 config HAVE_LATENCYTOP_SUPPORT
 	bool
@@ -174,7 +174,7 @@ config HAVE_LATENCYTOP_SUPPORT
 
 config LOCKDEP_SUPPORT
 	bool
-	default y
+	default y if !CA_SUPPORT_ADVCA
 
 config TRACE_IRQFLAGS_SUPPORT
 	bool
@@ -356,6 +356,8 @@ config ARM_SINGLE_ARMV7M
 	select NO_IOPORT_MAP
 	select SPARSE_IRQ
 	select USE_OF
+
+source "arch/arm/Kconfig.hisilicon"
 
 config ARCH_REALVIEW
 	bool "ARM Ltd. RealView family"
@@ -819,6 +821,13 @@ config ARCH_VIRT
 # Kconfigs may be included either alphabetically (according to the
 # plat- suffix) or along side the corresponding mach-* source.
 #
+source "arch/arm/mach-s40/Kconfig"
+source "arch/arm/mach-hi3716mv420n/Kconfig"
+source "arch/arm/mach-hi3798mx/Kconfig"
+source "arch/arm/mach-hi3798cv2x/Kconfig"
+source "arch/arm/mach-hi3798mv2x/Kconfig"
+source "arch/arm/mach-hi3796mv2x/Kconfig"
+
 source "arch/arm/mach-mvebu/Kconfig"
 
 source "arch/arm/mach-alpine/Kconfig"

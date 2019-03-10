@@ -112,10 +112,10 @@ static struct hc_driver dwc_otg_hc_driver = {
 
 	.flags = HCD_MEMORY | HCD_USB2,
 
-	//.reset =
+	//.reset =              
 	.start = hcd_start,
-	//.suspend =
-	//.resume =
+	//.suspend =            
+	//.resume =             
 	.stop = hcd_stop,
 
 	.urb_enqueue = urb_enqueue,
@@ -128,8 +128,8 @@ static struct hc_driver dwc_otg_hc_driver = {
 
 	.hub_status_data = hub_status_data,
 	.hub_control = hub_control,
-	//.bus_suspend =
-	//.bus_resume =
+	//.bus_suspend =                
+	//.bus_resume =         
 };
 
 /** Gets the dwc_otg_hcd from a struct usb_hcd */
@@ -755,7 +755,7 @@ static void endpoint_disable(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 }
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,30)
-/* Resets endpoint specific parameter values, in current version used to reset
+/* Resets endpoint specific parameter values, in current version used to reset 
  * the data toggle(as a WA). This function can be called from usb_clear_halt routine */
 static void endpoint_reset(struct usb_hcd *hcd, struct usb_host_endpoint *ep)
 {

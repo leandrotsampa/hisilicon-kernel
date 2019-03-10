@@ -2,9 +2,10 @@
 # himci v200 device configuration
 #
 
-config HIMCIV200_SDIO_SYNOPSYS
+config HIMCIV200_SDIO_SYNOPSYS 
 	tristate "Himciv200 SDIO/MMC device support"
-	depends on ARCH_HI3798CV2X
+	depends on ARCH_S40 || ARCH_HI3798MX || ARCH_HIFONE || ARCH_HI3798CV2X || ARCH_HI3716MV420N
+	default n if ARCH_S40 
 	select MMC_UNSAFE_RESUME
 	select MMC_EMBEDDED_SDIO
 	select MMC_BLOCK

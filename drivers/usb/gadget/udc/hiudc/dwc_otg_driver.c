@@ -617,7 +617,7 @@ static int hisi_udc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	dev_dbg(&pdev->dev, "base=%p\n", dwc_otg_device->os_dep.base);
+	dev_dbg(&pdev->dev, "base=0x%08x\n",(unsigned)dwc_otg_device->os_dep.base);
 
 
 	dwc_otg_device->clk = devm_clk_get(&pdev->dev, "clk");

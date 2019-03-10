@@ -8,8 +8,6 @@
  * published by the Free Software Foundation.
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __RDR_TYPES_H__
 #define __RDR_TYPES_H__
 
@@ -20,3 +18,4 @@
 #define RDR_NVE     u64
 
 #endif/* End #define __RDR_TYPES_H__ */
+

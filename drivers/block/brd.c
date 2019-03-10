@@ -293,6 +293,11 @@ static void copy_from_brd(void *dst, struct brd_device *brd,
 	}
 }
 
+#if defined(CONFIG_ARCH_HI3716MV420N)
+unsigned int hi_ca_ddr_check_min_phys;
+unsigned int hi_ca_ddr_check_max_phys;
+static int count = 0;
+#endif
 /*
  * Process a single bvec of a bio.
  */
@@ -316,6 +321,24 @@ static int brd_do_bvec(struct brd_device *brd, struct page *page,
 	} else {
 		flush_dcache_page(page);
 		copy_to_brd(brd, mem + off, sector, len);
+#if defined(CONFIG_ARCH_HI3716MV420N)
+		if (!PageHighMem(page)) {
+			unsigned int phy_addr = virt_to_phys(mem);
+			if (count == 0) {
+				hi_ca_ddr_check_min_phys = phy_addr;
+				hi_ca_ddr_check_max_phys = phy_addr;
+				count = 1;
+			}
+
+			if (phy_addr < hi_ca_ddr_check_min_phys) {
+				hi_ca_ddr_check_min_phys = phy_addr;
+			}
+
+			if (phy_addr > hi_ca_ddr_check_max_phys) {
+				hi_ca_ddr_check_max_phys = phy_addr;
+			}
+		}
+#endif
 	}
 	kunmap_atomic(mem);
 

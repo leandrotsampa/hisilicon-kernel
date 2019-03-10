@@ -1,9 +1,5 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
-/*
- * the drv_vinput.h is connceted with the vinput driver
+/* 
+ * the drv_vinput.h is connceted with the vinput driver 
  * the vinput driver locates at kernel/driver/misc/vinput.c
  *
  * */

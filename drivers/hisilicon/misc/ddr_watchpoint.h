@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef DDR_WATCHPOINT_H
 #define DDR_WATCHPOINT_H
 
@@ -48,5 +44,5 @@
 
 #define hiwp_write(_host, _value, _reg) \
         writel((_value), (char *)_host->regbase + (_reg))
-
+       
 #endif /* #define DDR_WATCHPOINT_H */

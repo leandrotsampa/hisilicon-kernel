@@ -1,11 +1,9 @@
 /**
  * hi3798cvx-thermal.c
  *
- * Copyright (c) 2009-2015, HiSilicon Technologies Co., Ltd.
+ * Copyright (c) 2009-2015, HiSilicon Technologies Co., Ltd. 
  * All rights reserved.
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/cpu.h>
 #include <linux/io.h>
@@ -33,11 +31,11 @@ struct cluster_power_coefficients cluster_data[] = {
 
 /**
  * cpu_opp_table_init
- *
+ * 
  * Used for build_dyn_power_table()
  *
- * TODO: 1)The opp table should be config in
- *		   drivers/msp/pm/opp.c: hi_init_opp_table()
+ * TODO: 1)The opp table should be config in 
+ *		   Code/source/msp/drv/pm/opp.c: hi_init_opp_table()
  *       2)Coulde be parsed by DTS.
  */
 static void cpu_opp_table_init(void)
@@ -45,14 +43,14 @@ static void cpu_opp_table_init(void)
 	int cpu;
 	struct device *dev = NULL;
 	int ret = 0;
-
+	
 	for_each_possible_cpu(cpu) {
 		dev = get_cpu_device(cpu);
 		if (!dev)
 			continue;
 
-		/**
-		 * cat sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies
+		/** 
+		 * cat sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies 
 		 */
 		ret = dev_pm_opp_add(dev, 400 * 1000 * 1000, 800 * 1000);
 		ret += dev_pm_opp_add(dev, 600 * 1000 * 1000, 800 * 1000);
@@ -61,7 +59,7 @@ static void cpu_opp_table_init(void)
 		ret += dev_pm_opp_add(dev, 1200 * 1000 * 1000, 970 * 1000);
 		ret += dev_pm_opp_add(dev, 1500 * 1000 * 1000, 1110 * 1000);
 		ret += dev_pm_opp_add(dev, 1600 * 1000 * 1000, 1150 * 1000);
-
+		                   
 		if (ret)
 			pr_warn("cpu[%d] opp add failed \n",cpu);
 		else

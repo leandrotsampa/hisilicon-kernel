@@ -2,7 +2,7 @@
  * Synopsys HS OTG Linux Software Driver and documentation (hereinafter,
  * "Software") is an Unsupported proprietary work of Synopsys, Inc. unless
  * otherwise expressly agreed to in writing between Synopsys and you.
- *
+ * 
  * The Software IS NOT an item of Licensed Software or Licensed Product under
  * any End User Software License Agreement or Agreement for Licensed Product
  * with Synopsys or any supplement thereto. You are permitted to use and
@@ -12,7 +12,7 @@
  * any information contained herein except pursuant to this license grant from
  * Synopsys. If you do not agree with this notice, including the disclaimer
  * below, then you are not authorized to use the Software.
- *
+ * 
  * THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS" BASIS
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,10 +26,10 @@
  * DAMAGE.
  * ========================================================================== */
 
-/** @file
+/** @file 
  *
- * This file contains the most of the CFI(Core Feature Interface)
- * implementation for the OTG.
+ * This file contains the most of the CFI(Core Feature Interface) 
+ * implementation for the OTG. 
  */
 
 #ifdef DWC_UTE_CFI
@@ -153,10 +153,10 @@ cfi_string_t prop_name_table[] = {
 
 /************************************************************************/
 
-/**
- * Returns the name of the feature by its ID
+/** 
+ * Returns the name of the feature by its ID 
  * or NULL if no featute ID matches.
- *
+ * 
  */
 const uint8_t *get_prop_name(uint16_t prop_id, int *len)
 {
@@ -174,7 +174,7 @@ const uint8_t *get_prop_name(uint16_t prop_id, int *len)
 
 /**
  * This function handles all CFI specific control requests.
- *
+ * 
  * Return a negative value to stall the DCE.
  */
 int cfi_setup(struct dwc_otg_pcd *pcd, struct cfi_usb_ctrlrequest *ctrl)
@@ -189,7 +189,7 @@ int cfi_setup(struct dwc_otg_pcd *pcd, struct cfi_usb_ctrlrequest *ctrl)
 	uint32_t regaddr = 0;
 	uint32_t regval = 0;
 
-	/* Save this Control Request in the CFI object.
+	/* Save this Control Request in the CFI object. 
 	 * The data field will be assigned in the data stage completion CB function.
 	 */
 	cfi->ctrl_req = *ctrl;
@@ -281,7 +281,7 @@ int cfi_setup(struct dwc_otg_pcd *pcd, struct cfi_usb_ctrlrequest *ctrl)
 	case VEN_CORE_READ_REGISTER:
 		CFI_INFO("VEN_CORE_READ_REGISTER\n");
 		/* wValue optionally contains the HI WORD of the register offset and
-		 * wIndex contains the LOW WORD of the register offset
+		 * wIndex contains the LOW WORD of the register offset 
 		 */
 		if (wValue == 0) {
 			/* @TODO - MAS - fix the access to the base field */
@@ -345,7 +345,7 @@ int cfi_setup(struct dwc_otg_pcd *pcd, struct cfi_usb_ctrlrequest *ctrl)
 /**
  * This function prepares the core features descriptors and copies its
  * raw representation into the buffer <buf>.
- *
+ * 
  * The buffer structure is as follows:
  *	all_features_header (8 bytes)
  *	features_#1 (8 bytes + feature name string length)
@@ -497,7 +497,7 @@ static int cfi_ep_init_defaults(struct dwc_otg_pcd *pcd, cfi_ep_t * cfiep)
  * The callback function that notifies the CFI on the activation of
  * an endpoint in the PCD. The following steps are done in this function:
  *
- *	Create a dynamically allocated cfi_ep_t object (a CFI wrapper to the PCD's
+ *	Create a dynamically allocated cfi_ep_t object (a CFI wrapper to the PCD's 
  *		active endpoint)
  *	Create MAX_DMA_DESCS_PER_EP count DMA Descriptors for the EP
  *	Set the Buffer Mode to standard
@@ -542,7 +542,7 @@ static int cfi_ep_enable(struct cfiobject *cfi, struct dwc_otg_pcd *pcd,
 
 		DWC_LIST_INIT(&cfiep->lh);
 
-		/* Set the buffer mode to BM_STANDARD. It will be modified
+		/* Set the buffer mode to BM_STANDARD. It will be modified 
 		 * when building descriptors for a specific buffer mode */
 		ep->dwc_ep.buff_mode = BM_STANDARD;
 
@@ -564,7 +564,7 @@ static int cfi_ep_enable(struct cfiobject *cfi, struct dwc_otg_pcd *pcd,
 /**
  * This function is called when the data stage of a 3-stage Control Write request
  * is complete.
- *
+ * 
  */
 static int cfi_ctrl_write_complete(struct cfiobject *cfi,
 				   struct dwc_otg_pcd *pcd)
@@ -583,7 +583,7 @@ static int cfi_ctrl_write_complete(struct cfiobject *cfi,
 	wIndex = DWC_CONSTANT_CPU_TO_LE16(ctrl_req->wIndex);
 	wValue = DWC_CONSTANT_CPU_TO_LE16(ctrl_req->wValue);
 
-	/*
+	/* 
 	 * Save the pointer to the data stage in the ctrl_req's <data> field.
 	 * The request should be already saved in the command stage by now.
 	 */
@@ -642,7 +642,7 @@ static void cfi_build_sg_descs(struct cfiobject *cfi, cfi_ep_t * cfiep,
 	txsize = sgval->wSize;
 	off = sgval->bOffset;
 
-//      CFI_INFO("%s: %s TXSIZE=0x%08x; OFFSET=0x%08x\n",
+//      CFI_INFO("%s: %s TXSIZE=0x%08x; OFFSET=0x%08x\n", 
 //              __func__, cfiep->ep->ep.name, txsize, off);
 
 	for (i = 0; i < sgval->bCount; i++) {
@@ -834,7 +834,7 @@ int init_cfi(cfiobject_t * cfiobj)
 /**
  * This function reads the required feature's current value into the buffer
  *
- * @retval: Returns negative as error, or the data length of the feature
+ * @retval: Returns negative as error, or the data length of the feature  
  */
 static int cfi_get_feature_value(uint8_t * buf, uint16_t buflen,
 				 struct dwc_otg_pcd *pcd,
@@ -919,7 +919,7 @@ static int cfi_reset_align_val(cfi_ep_t * cfiep)
 
 /**
  * This function resets the Concatenation for the specified EP to its default value
- * This function will also set the value of the wTxBytes field to NULL after
+ * This function will also set the value of the wTxBytes field to NULL after 
  * freeing the memory previously allocated for this field.
  */
 static int cfi_reset_concat_val(cfi_ep_t * cfiep)
@@ -1372,7 +1372,7 @@ static int cfi_ep_set_concat_val(uint8_t * buf, struct dwc_otg_pcd *pcd)
 
 /**
  * This function calculates the total of all FIFO sizes
- *
+ * 
  * @param core_if Programming view of DWC_otg controller
  *
  * @return The total of data FIFO sizes.
@@ -1398,7 +1398,7 @@ static uint16_t get_dfifo_size(dwc_otg_core_if_t * core_if)
 
 /**
  * This function returns Rx FIFO size
- *
+ * 
  * @param core_if Programming view of DWC_otg controller
  *
  * @return The total of data FIFO sizes.
@@ -1422,7 +1422,7 @@ static int32_t get_rxfifo_size(dwc_otg_core_if_t * core_if, uint16_t wValue)
 
 /**
  * This function returns Tx FIFO size for IN EP
- *
+ * 
  * @param core_if Programming view of DWC_otg controller
  *
  * @return The total of data FIFO sizes.
@@ -1466,9 +1466,9 @@ static int32_t get_txfifo_size(struct dwc_otg_pcd *pcd, uint16_t wValue)
 }
 
 /**
- * This function checks if the submitted combination of
+ * This function checks if the submitted combination of 
  * device mode FIFO sizes is possible or not.
- *
+ * 
  * @param core_if Programming view of DWC_otg controller
  *
  * @return 1 if possible, 0 otherwise.
@@ -1526,7 +1526,7 @@ static uint8_t check_fifo_sizes(dwc_otg_core_if_t * core_if)
 
 /**
  * This function resizes Device mode FIFOs
- *
+ * 
  * @param core_if Programming view of DWC_otg controller
  *
  * @return 1 if successful, 0 otherwise
@@ -1727,7 +1727,7 @@ static int cfi_ep_get_sg_val(uint8_t * buf, struct dwc_otg_pcd *pcd,
 }
 
 /**
- * This function reads the Concatenation value of an EP's buffer mode into
+ * This function reads the Concatenation value of an EP's buffer mode into 
  * the buffer buf
  */
 static int cfi_ep_get_concat_val(uint8_t * buf, struct dwc_otg_pcd *pcd,
@@ -1764,7 +1764,7 @@ static int cfi_ep_get_concat_val(uint8_t * buf, struct dwc_otg_pcd *pcd,
 }
 
 /**
- * This function reads the buffer Alignment value of an EP's buffer mode into
+ * This function reads the buffer Alignment value of an EP's buffer mode into 
  * the buffer buf
  *
  * @return The total number of bytes copied to the buffer or negative error code.
@@ -1796,9 +1796,9 @@ static int cfi_ep_get_align_val(uint8_t * buf, struct dwc_otg_pcd *pcd,
 
 /**
  * This function sets a new value for the specified feature
- *
+ * 
  * @param	pcd	A pointer to the PCD object
- *
+ * 
  * @return 0 if successful, negative error code otherwise to stall the DCE.
  */
 static int cfi_set_feature_value(struct dwc_otg_pcd *pcd)

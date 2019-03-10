@@ -8,8 +8,6 @@
  * published by the Free Software Foundation.
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __BB_PUB_H__
 #define __BB_PUB_H__
 
@@ -26,9 +24,9 @@
 #define INT_IN_FLAG             0xAAAAUL
 #define INT_EXIT_FLAG           0xBBBBUL
 
-#define BBOX_SAVE_DONE_FILENAME "/DONE"    /*ï¿½ì³£ï¿½Ä¼ï¿½Ä¿Â¼logï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÄ±ï¿½Ö¾ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½*/
+#define BBOX_SAVE_DONE_FILENAME "/DONE"    /*Òì³£ÎÄ¼þÄ¿Â¼log±£´æÍê±ÏµÄ±êÖ¾ÎÄ¼þÃû×Ö*/
 
-/*ï¿½ì³£Ê±ï¿½ï¿½logï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÏµÄ±ï¿½Ö¾*/
+/*Òì³£Ê±£¬log±£´æÍê±ÏµÄ±êÖ¾*/
 enum SAVE_STEP {
     BBOX_SAVE_STEP1     = 0x1,
     BBOX_SAVE_STEP2     = 0x2,
@@ -372,3 +370,4 @@ void get_exception_info(unsigned long *buf, unsigned long *buf_len);
 #define RDR_REBOOTDUMPINFO_FLAG     0xdd140607
 
 #endif/* End #define __BB_PUB_H__ */
+

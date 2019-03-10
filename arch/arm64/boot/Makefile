@@ -16,7 +16,7 @@
 
 include $(srctree)/arch/arm64/boot/dts/Makefile
 
-targets := Image Image.gz
+targets := Image Image.gz uImage
 
 DTB_NAMES := $(subst $\",,$(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE_NAMES))
 ifneq ($(DTB_NAMES),)
@@ -49,6 +49,28 @@ $(obj)/Image.lzo: $(obj)/Image FORCE
 
 $(obj)/Image.gz-dtb: $(obj)/Image.gz $(DTB_OBJS) FORCE
 	$(call if_changed,cat)
+
+UIMAGE_LOADADDR=$(TEXT_OFFSET)
+UIMAGE_ENTRYADDR=$(TEXT_OFFSET)
+#UIMAGE_COMPRESSION = gzip
+check_for_multiple_loadaddr = \
+if [ $(words $(UIMAGE_LOADADDR)) -ne 1 ]; then \
+	echo 'multiple (or no) load addresses: $(UIMAGE_LOADADDR)'; \
+	echo 'This is incompatible with uImages'; \
+	echo 'Specify LOADADDR on the commandline to build an uImage'; \
+	false; \
+fi
+
+rm_uimage:
+	@rm -f $(obj)/uImage
+
+$(obj)/uImage:  $(obj)/Image rm_uimage FORCE
+	@$(check_for_multiple_loadaddr)
+	@dd if=$< of=$<.dd ibs=4096 conv=sync && mv $<.dd $<
+	$(call if_changed,uimage)
+	$(if $(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),@$(kecho) '  CAT   $(DTB_OBJS) to $@')
+	$(if $(CONFIG_BUILD_ARM64_APPENDED_DTB_IMAGE),@cat $(DTB_OBJS) >>$@,)
+	@$(kecho) '  Image $@ is ready'
 
 install: $(obj)/Image
 	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \

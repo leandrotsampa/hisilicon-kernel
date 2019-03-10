@@ -1,9 +1,21 @@
 /******************************************************************************
  *  Copyright (C) 2017 Hisilicon Technologies CO.,LTD.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Cai Zhiying 2017.2.4
+ *
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #define pr_fmt(fmt) "hisp804: " fmt
 
@@ -244,7 +256,7 @@ static void __init clockevent_init(struct hisp804_clockevent_device *hiclkevt,
 	snprintf(hiclkevt->name, sizeof(hiclkevt->name), "clockevent %d", cpu);
 
 	clkevt = &hiclkevt->clkevt;
-
+	
 	clkevt->name = hiclkevt->name;
 	clkevt->cpumask = cpumask_of(cpu);
 	clkevt->irq = irq;
@@ -257,7 +269,7 @@ static void __init clockevent_init(struct hisp804_clockevent_device *hiclkevt,
 	clkevt->rating = 400;
 
 	action = &hiclkevt->action;
-
+	
 	action->name = hiclkevt->name;
 	action->dev_id = hiclkevt;
 	action->irq = irq;
@@ -334,3 +346,4 @@ out:
 	return;
 }
 CLOCKSOURCE_OF_DECLARE(hisp804, "hisilicon,hisp804",hisp804_timer_init);
+

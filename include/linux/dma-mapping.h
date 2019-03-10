@@ -230,6 +230,12 @@ dma_mark_declared_memory_occupied(struct device *dev,
 #endif
 
 /*
+ * export symbol for cma ram remap
+ */
+extern void hisi_flush_tlb_kernel_range(unsigned long start,
+					unsigned long end);
+
+/*
  * Managed DMA API
  */
 extern void *dmam_alloc_coherent(struct device *dev, size_t size,

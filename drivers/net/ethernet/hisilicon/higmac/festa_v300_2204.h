@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 0x33f9,0xbd,
 0x33fa,0x34,
 0x33fb,0x00,

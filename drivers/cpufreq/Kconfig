@@ -302,6 +302,10 @@ config LOONGSON1_CPUFREQ
 	  If in doubt, say N.
 endif
 
+menu "Hisilicon CPU frequency scaling config"
+source "drivers/cpufreq/Kconfig.hisilicon"
+endmenu
+
 if SPARC64
 config SPARC_US3_CPUFREQ
 	tristate "UltraSPARC-III CPU Frequency driver"

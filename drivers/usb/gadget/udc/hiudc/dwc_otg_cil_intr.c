@@ -102,9 +102,9 @@ int32_t dwc_otg_handle_otg_intr(dwc_otg_core_if_t * core_if)
 
 		if (core_if->op_state == B_HOST) {
 			if (core_if->adp_enable && DWC_WORKQ_PENDING(core_if->wq_otg)) {
-
-				/* During ST_B_ADP test after HNP HSOTG tries to go to B_HOST
-				 * mode but PET is not expecting fully functional host at that
+				
+				/* During ST_B_ADP test after HNP HSOTG tries to go to B_HOST 
+				 * mode but PET is not expecting fully functional host at that 
 				 * point and switches off the VBUS expecting immediate ADP probe */
 				gpwrdn.b.pmuintsel = 1;
 				gpwrdn.b.pmuactv = 1;
@@ -138,7 +138,7 @@ int32_t dwc_otg_handle_otg_intr(dwc_otg_core_if_t * core_if)
 				gotgctl.b.devhnpen = 1;
 				DWC_MODIFY_REG32(&global_regs->gotgctl, gotgctl.d32, 0);
 				if (core_if->test_mode == 6) {
-					DWC_WORKQ_SCHEDULE_DELAYED(core_if->wq_otg,	dwc_otg_initiate_srp,
+					DWC_WORKQ_SCHEDULE_DELAYED(core_if->wq_otg,	dwc_otg_initiate_srp, 
 								core_if, 3000, "initate SRP"); //manukz: old value was 50
 					core_if->test_mode = 0;
 				} else	if (core_if->adp_enable) {
@@ -155,7 +155,7 @@ int32_t dwc_otg_handle_otg_intr(dwc_otg_core_if_t * core_if)
 					gpwrdn.b.pmuactv = 1;
 					DWC_MODIFY_REG32(&core_if->core_global_regs->gpwrdn, 0, gpwrdn.d32);
 					dwc_otg_adp_sense_start(core_if);
-				}
+				} 
 			}
 		}
 exit_interrupt:
@@ -368,7 +368,7 @@ host:
  * This function handles the Connector ID Status Change Interrupt.  It
  * reads the OTG Interrupt Register (GOTCTL) to determine whether this
  * is a Device to Host Mode transition or a Host Mode to Device
- * Transition.
+ * Transition. 
  *
  * This only occurs when the cable is connected/removed from the PHY
  * connector.
@@ -442,7 +442,7 @@ int32_t dwc_otg_handle_session_req_intr(dwc_otg_core_if_t * core_if)
 		else
 			DWC_PRINTF("SRP Fail\n");
 		if (core_if->otg_ver) {
-			gotgctl.d32 = 0 ;
+			gotgctl.d32 = 0 ;	
 			gotgctl.b.devhnpen = 1;
 			DWC_MODIFY_REG32(&core_if->core_global_regs->gotgctl, gotgctl.d32, 0);
 		}
@@ -554,8 +554,8 @@ int32_t dwc_otg_handle_wakeup_detected_intr(dwc_otg_core_if_t * core_if)
 
 			lpmcfg.d32 =
 			    DWC_READ_REG32(&core_if->core_global_regs->glpmcfg);
-			lpmcfg.b.hird_thres &= (~(1 << 4));
-	lpmcfg.b.en_utmi_sleep = 0;
+			lpmcfg.b.hird_thres &= (~(1 << 4));	
+	       	lpmcfg.b.en_utmi_sleep = 0; 
 
 			/* Clear Enbl_L1Gating bit. */
 			pcgcctl.b.enbl_sleep_gating = 1;
@@ -778,10 +778,10 @@ static int32_t dwc_otg_handle_pwrdn_idsts_change(dwc_otg_device_t * otg_dev)
 			DWC_TIMER_CANCEL(core_if->adp.sense_timer);
 		if (core_if->adp.vbuson_timer_started)
 			DWC_TIMER_CANCEL(core_if->adp.vbuson_timer);
-		/* Do not need to reset ADP if we are coming back
-		 * to the device mode after HNP. This is needed
-		 * not to perform SRP after reverse, just do ADP
-		 * probe and compare the RTIM values with the one
+		/* Do not need to reset ADP if we are coming back 
+		 * to the device mode after HNP. This is needed 
+		 * not to perform SRP after reverse, just do ADP 
+		 * probe and compare the RTIM values with the one 
 		 * before HNP */
 		if (core_if->op_state != B_HOST) {
 			core_if->adp.probe_timer_values[0] = -1;
@@ -1004,14 +1004,14 @@ static int32_t dwc_otg_handle_pwrdn_srp_intr(dwc_otg_core_if_t * core_if)
 		dwc_otg_enable_global_interrupts(core_if);
 		cil_hcd_start(core_if);
 	}
-	/* Do not need to du anything if this is "old" SRP and we are already
+	/* Do not need to du anything if this is "old" SRP and we are already 
 	 * in the normal mode of operation */
-	if(core_if->adp_enable) {
+	if(core_if->adp_enable) {	
 		gpwrdn.d32 =  DWC_READ_REG32(&core_if->core_global_regs->gpwrdn);
 		if (!gpwrdn.b.pmuactv) {
 			return 1;
 		}
-
+		
 		dwc_otg_adp_probe_stop(core_if);
 		/* Disable Interrupt from Power Down Logic */
 		gpwrdn.d32 = 0;
@@ -1293,7 +1293,7 @@ int32_t dwc_otg_handle_usb_suspend_intr(dwc_otg_core_if_t * core_if)
 			if (core_if->lx_state != DWC_OTG_L3 && dcfg.b.devaddr) {
 				DWC_DEBUGPL(DBG_ANY, "Start entering to extended hibernation\n");
 				core_if->xhib = 1;
-
+							
 				/* Clear interrupt in gintsts */
 				gintsts.d32 = 0;
 				gintsts.b.usbsuspend = 1;
@@ -1302,7 +1302,7 @@ int32_t dwc_otg_handle_usb_suspend_intr(dwc_otg_core_if_t * core_if)
 
 				dwc_otg_save_global_regs(core_if);
 				dwc_otg_save_dev_regs(core_if);
-
+				
 				/* Wait for 10 PHY clocks */
 				dwc_udelay(10);
 
@@ -1312,7 +1312,7 @@ int32_t dwc_otg_handle_usb_suspend_intr(dwc_otg_core_if_t * core_if)
 				pcgcctl.b.enbl_extnd_hiber = 1;
 				DWC_MODIFY_REG32(core_if->pcgcctl, 0, pcgcctl.d32);
 				DWC_MODIFY_REG32(core_if->pcgcctl, 0, pcgcctl.d32);
-
+				
 				pcgcctl.d32 = 0;
 				pcgcctl.b.extnd_hiber_pwrclmp = 1;
 				DWC_MODIFY_REG32(core_if->pcgcctl, 0, pcgcctl.d32);
@@ -1324,7 +1324,7 @@ int32_t dwc_otg_handle_usb_suspend_intr(dwc_otg_core_if_t * core_if)
 				DWC_MODIFY_REG32(core_if->pcgcctl, 0, pcgcctl.d32);
 
 				DWC_DEBUGPL(DBG_ANY, "Finished entering to extended hibernation\n");
-
+				
 				return 1;
 			}
 		}
@@ -1455,14 +1455,14 @@ static int32_t dwc_otg_handle_lpm_intr(dwc_otg_core_if_t * core_if)
 		lpmcfg.b.en_utmi_sleep = 1;
 
 		pcgcctl.b.enbl_sleep_gating = 1;
-	DWC_MODIFY_REG32(core_if->pcgcctl,0,pcgcctl.d32);
+	   	DWC_MODIFY_REG32(core_if->pcgcctl,0,pcgcctl.d32);
 
 		if(dwc_otg_get_param_besl_enable(core_if)) {
-			lpmcfg.b.en_besl = 1;
+			lpmcfg.b.en_besl = 1;				
 		}
 
 		DWC_WRITE_REG32(&core_if->core_global_regs->glpmcfg,
-				lpmcfg.d32);
+				lpmcfg.d32);		
 	}
 
 	/* Examine prt_sleep_sts after TL1TokenTetry period max (10 us) */
@@ -1556,15 +1556,15 @@ int32_t dwc_otg_handle_common_intr(void *dev)
 	dwc_otg_device_t *otg_dev = dev;
 	dwc_otg_core_if_t *core_if = otg_dev->core_if;
 	gpwrdn.d32 = DWC_READ_REG32(&core_if->core_global_regs->gpwrdn);
-
+	
 	if (dwc_otg_check_haps_status(core_if) == -1 ) {
-		DWC_WARN("HAPS is disconnected");
+		DWC_WARN("HAPS is disconnected");			
 		return retval;
 	}
-
+	
 	if (dwc_otg_is_device_mode(core_if))
 		core_if->frame_num = dwc_otg_get_frame_number(core_if);
-
+		
 	if (core_if->lock)
 		DWC_SPINLOCK(core_if->lock);
 
@@ -1634,7 +1634,7 @@ int32_t dwc_otg_handle_common_intr(void *dev)
 				DWC_WRITE_REG32(&core_if->dev_if->dev_global_regs->dcfg, core_if->dr_backup->dcfg);
 				DWC_WRITE_REG32(&core_if->dev_if->dev_global_regs->dctl, core_if->dr_backup->dctl);
 				dwc_udelay(50);
-
+				
 				dctl.b.pwronprgdone = 1;
 				DWC_MODIFY_REG32(&core_if->dev_if->dev_global_regs->dctl, 0, dctl.d32);
 				dwc_udelay(10);

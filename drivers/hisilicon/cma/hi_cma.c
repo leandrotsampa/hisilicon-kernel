@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/device.h>
 #include <linux/dma-mapping.h>
 #include <linux/dma-contiguous.h>
@@ -124,7 +120,7 @@ struct device *hisi_get_cma_device(const char *name)
 EXPORT_SYMBOL(hisi_get_cma_device);
 
 #ifdef CONFIG_DMA_CMA
-int __init hisi_declare_heap_memory(void)
+int hisi_declare_heap_memory(void)
 {
 	int i;
 	int ret = 0;

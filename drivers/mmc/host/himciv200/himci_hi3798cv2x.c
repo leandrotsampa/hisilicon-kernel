@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 /* Phase details */
 #define SDIO_DRV_PS_MASK                   (0x7 << 16)
 #define SDIO_DRV_PS_0_0                    (0b000 << 16)
@@ -131,8 +127,8 @@ static void himciv200_set_driver(struct himciv200_host * host, u8 timing)
 				regval |=  iohs400[ix+1];
 				writel(regval, host->ioshare_addr +iohs400[ix]*4);
 			}
-		}
-	}
+		} 
+	} 
 }
 
 /******************************************************************************/
@@ -191,9 +187,9 @@ static void himciv200_set_phase(struct himciv200_host * host, u8 timing)
 
 		/* ddr50 need to enable shift */
 		regval = mci_readl(host, MCI_ENABLE_SHIFT);
-		 if (timing == MMC_TIMING_MMC_DDR52)
+		 if (timing == MMC_TIMING_MMC_DDR52) 
 			regval |= ENABLE_SHIFT_01;
-		else
+		else 
 			regval &= ~ENABLE_SHIFT_01;
 		mci_writel(host, MCI_ENABLE_SHIFT, regval);
 	}

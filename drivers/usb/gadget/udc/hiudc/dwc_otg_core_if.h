@@ -629,13 +629,13 @@ extern uint32_t dwc_otg_get_remotewakesig(dwc_otg_core_if_t * core_if);
 /**
  * Get value of besl_reject bit in DCTL register
  */
-
+ 
 extern uint32_t dwc_otg_get_beslreject(dwc_otg_core_if_t * core_if);
 
 /**
  * Set value of besl_reject bit in DCTL register
  */
-
+ 
 extern void dwc_otg_set_beslreject(dwc_otg_core_if_t * core_if, uint32_t val);
 
 /**

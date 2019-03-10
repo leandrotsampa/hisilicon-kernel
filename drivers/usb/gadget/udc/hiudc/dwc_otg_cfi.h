@@ -34,9 +34,9 @@
 
 /**
  * @file
- * This file contains the CFI related OTG PCD specific common constants,
- * interfaces(functions and macros) and data structures.The CFI Protocol is an
- * optional interface for internal testing purposes that a DUT may implement to
+ * This file contains the CFI related OTG PCD specific common constants, 
+ * interfaces(functions and macros) and data structures.The CFI Protocol is an 
+ * optional interface for internal testing purposes that a DUT may implement to 
  * support testing of configurable features.
  *
  */

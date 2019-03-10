@@ -222,6 +222,12 @@ machine-$(CONFIG_ARCH_W90X900)		+= w90x900
 machine-$(CONFIG_ARCH_ZX)		+= zx
 machine-$(CONFIG_ARCH_ZYNQ)		+= zynq
 machine-$(CONFIG_PLAT_SPEAR)		+= spear
+machine-$(CONFIG_ARCH_S40)		+= s40
+machine-$(CONFIG_ARCH_HI3798MX)		+= hi3798mx
+machine-$(CONFIG_ARCH_HI3798CV2X)	+= hi3798cv2x
+machine-$(CONFIG_ARCH_HI3798MV2X)	+= hi3798mv2x
+machine-$(CONFIG_ARCH_HI3796MV2X)	+= hi3796mv2x
+machine-$(CONFIG_ARCH_HI3716MV420N)	+= hi3716mv420n
 
 # Platform directory name.  This list is sorted alphanumerically
 # by CONFIG_* macro name.

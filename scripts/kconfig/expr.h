@@ -13,7 +13,6 @@ extern "C" {
 #include <assert.h>
 #include <stdio.h>
 #include "list.h"
-
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif

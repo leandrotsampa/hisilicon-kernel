@@ -220,7 +220,7 @@ static void cc_clear(void *mem_ctx, dwc_cc_if_t *cc_if)
 	}
 }
 
-dwc_cc_if_t *dwc_cc_if_alloc(void *mem_ctx, void *mtx_ctx,
+dwc_cc_if_t *dwc_cc_if_alloc(void *mem_ctx, void *mtx_ctx, 
 			     dwc_notifier_t *notifier, unsigned is_host)
 {
 	dwc_cc_if_t *cc_if = NULL;

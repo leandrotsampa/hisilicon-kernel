@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/cpu_cooling.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu.h>
@@ -33,7 +29,7 @@ static inline s64 mul_frac(s64 x, s64 y)
 static unsigned long get_temperature_scale(unsigned long temp)
 {
 	int i, t_exp = 1, t_scale = 0;
-
+	
     t_scale = 29;
     t_scale += (897 * temp * temp) / 100000;
     t_scale -= (892 * temp) / 1000;

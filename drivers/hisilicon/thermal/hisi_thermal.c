@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #include <linux/cpu_cooling.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu.h>
@@ -82,7 +78,7 @@ static int get_static_power(cpumask_t *cpumask, int interval,
 		/* cache leakage */
 		*static_power += (cache_coeff * v_scale * t_scale) / 1000000;
 	}
-
+	
 	return 0;
 }
 
@@ -94,7 +90,7 @@ static int get_temp_value(void *data, long *temp)
 	unsigned long est_temp;
 
 	ret = get_sensor_value(&val);
-
+	
 	if (ret)
 		return ret;
 

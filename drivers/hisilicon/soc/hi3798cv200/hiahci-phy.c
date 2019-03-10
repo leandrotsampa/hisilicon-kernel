@@ -1,9 +1,21 @@
 /******************************************************************************
- * Copyright (C) 2015 Hisilicon Technologies CO.,LTD.
+ *  Copyright (C) 2015 Hisilicon Technologies CO.,LTD.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Cai Zhiyong 2015.6.17
+ *
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #define DRVNAME    "hiahci-phy"
 #define pr_fmt(fmt) DRVNAME ": " fmt
@@ -167,7 +179,7 @@ static int hiahci_phy_init(struct phy *phy)
 
 	/*top_rate=1*/
 	nano_reg_write(priv, 0x1, 0x4);
-
+	
 	/*release SATA controller reset*/
 	hisata_write(0xf, priv->peri_ctrl_base + 0x20a8);
 

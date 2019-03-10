@@ -15,8 +15,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mutex.h>

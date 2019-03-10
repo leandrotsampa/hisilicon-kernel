@@ -1,10 +1,21 @@
 /******************************************************************************
- * Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *  Copyright (C) 2014 Hisilicon Technologies CO.,LTD.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * Create By Cai Zhiyong 2014.12.22
+ * init multi ram disk
 ******************************************************************************/
-
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #define pr_fmt(fmt) "initmrd: " fmt
 
 #include <linux/init.h>
@@ -89,7 +100,7 @@ static int __init reserve_one_ramdisk(int index, struct ramdisk *rd)
 	if(ret) {
 		pr_err("reserve memory(0x%lx~0x%lx) failed.\n", rd->start, rd->size);
 		goto fail;
-
+		
 	}
 
 	rd->status = RD_STATUS_RESERVE;
@@ -163,7 +174,7 @@ static int __init init_one_ramdisk(int index, struct ramdisk *rd)
 			break;
 		}
 
-		free_reserved_area((char *)rd->start + offset, (char *)rd->start
+		free_reserved_area((char *)rd->start + offset, (char *)rd->start 
 				   + offset + count, 0, MRD_NAME);
 		offset += SPLIT_SIZE;
 	} while (offset < rd->size);

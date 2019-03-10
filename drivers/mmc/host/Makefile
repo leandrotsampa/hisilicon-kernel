@@ -81,3 +81,4 @@ ifeq ($(CONFIG_CB710_DEBUG),y)
 endif
 
 obj-$(CONFIG_HIMCIV200_SDIO_SYNOPSYS)  += himciv200/
+obj-$(CONFIG_HIMCIV300_SDIO_SYNOPSYS)  += himciv300/
