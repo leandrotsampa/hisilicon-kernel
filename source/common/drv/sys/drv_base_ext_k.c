@@ -45,7 +45,6 @@ HI_S32 HI_DRV_CommonInit(HI_VOID)
     }
 #endif
 
-#if 0
     ret = HI_DRV_DEV_KInit();
     if(HI_SUCCESS != ret)
     {
@@ -87,34 +86,23 @@ HI_S32 HI_DRV_CommonInit(HI_VOID)
 	HI_ERR_SYS("HI_DRV_MMNGR_Init failed:%#x!\n", ret);
 	goto ErrExit_SYS;
     }
-#endif
 
     return HI_SUCCESS;
 
 ErrExit_SYS:
-#if 0
     HI_DRV_STAT_KExit();
-#endif
 
 ErrExit_STAT:
-#if 0
     HI_DRV_PROC_KExit();
-#endif
 
 ErrExit_PROC:
-#if 0
     HI_DRV_LOG_KExit();
-#endif
 
 ErrExit_LOG:
-#if 0
     HI_DRV_REG_KExit();
-#endif
 
 ErrorExit_REG:
-#if 0
     HI_DRV_DEV_KExit();
-#endif
 
 ErrExit_DEV:
     return ret;
@@ -122,7 +110,6 @@ ErrExit_DEV:
 
 HI_VOID HI_DRV_CommonExit(HI_VOID)
 {
-#if 0
     HI_DRV_MMNGR_Exit();
 
     HI_DRV_STAT_KExit();
@@ -134,7 +121,6 @@ HI_VOID HI_DRV_CommonExit(HI_VOID)
     HI_DRV_REG_KExit();
 
     HI_DRV_DEV_KExit();
-#endif
 
 #ifndef MODULE
     platform_driver_unregister(&hi_virt_pltm_driver);

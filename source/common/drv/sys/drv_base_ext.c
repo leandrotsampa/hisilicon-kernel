@@ -124,7 +124,6 @@ static int __init COMMON_DRV_ModInit(void)
     }
 #endif
 
-#if 0
     ret = HI_DRV_PROC_Init();
     if(HI_SUCCESS != ret)
     {
@@ -173,7 +172,6 @@ static int __init COMMON_DRV_ModInit(void)
 	HI_ERR_SYS("userproc init failed:%#x!\n", ret);
 	goto ErrorExit_USRPROC;
     }
-#endif
 
 #if defined(MODULE)
     HI_PRINT("Load hi_common.ko success.\t(%s)\n", VERSION_STRING);
@@ -185,29 +183,19 @@ ErrorExit_USRPROC:
     MEMDEV_DRV_ModExit();
 
 ErrorExit_MEMDEV:
-#if 0
     MMNGR_DRV_ModExit();
-#endif
 
 ErrorExit_Module:
-#if 0
     HI_DRV_STAT_Exit();
-#endif
 
 ErrorExit_STAT:
-#if 0
     HI_DRV_SYS_Exit();
-#endif
 
 ErrorExit_SYS:
-#if 0
     HI_DRV_LOG_Exit();
-#endif
 
 ErrorExit_LOG:
-#if 0
     HI_DRV_PROC_Exit();
-#endif
 
 ErrorExit_PROC:
 #if !defined(KEYLED_CT1642_KERNEL_SUPPORT)
@@ -229,7 +217,6 @@ ErrorExit_MMZ:
 #ifdef MODULE
 static HI_VOID COMMON_DRV_ModExit (HI_VOID)
 {
-#if 0
     USRPROC_DRV_ModExit();
 
     MEMDEV_DRV_ModExit();
@@ -243,7 +230,6 @@ static HI_VOID COMMON_DRV_ModExit (HI_VOID)
     HI_DRV_LOG_Exit();
 
     HI_DRV_PROC_Exit();
-#endif
 
 #ifndef MODULE
     DRV_MMZ_ModExit();
