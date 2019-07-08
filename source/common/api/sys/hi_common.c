@@ -439,6 +439,7 @@ HI_S32 HI_SYS_GetChipAttr(HI_SYS_CHIP_ATTR_S *pstChipAttr)
     }
 
     HI_SYS_LOCK();
+#if 0
     s32Ret = ioctl(s_s32SysFd, SYS_GET_DIEID, &(pstChipAttr->u64ChipID));
     if (HI_SUCCESS != s32Ret)
     {
@@ -446,6 +447,7 @@ HI_S32 HI_SYS_GetChipAttr(HI_SYS_CHIP_ATTR_S *pstChipAttr)
         HI_ERR_SYS("Get ChipAttr DIEID error!\n");
         return HI_FAILURE;
     }
+#endif
     HI_SYS_UNLOCK();
     return HI_SUCCESS;
 
