@@ -14,11 +14,20 @@ CFG_HI_CFLAGS += -I$(COMMON_DIR)/include
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/include
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/drv/include
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/log
+CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/mem
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/module
 
 LIBS := libhi_common
         
-OBJS := ./sys/hi_common.o
+OBJS := ./sys/hi_common.o     \
+        ./mmz/mpi_mmz.o       \
+        ./mem/mpi_mem.o       \
+        ./mem/mpi_memmap.o    \
+        ./module/mpi_module.o \
+        ./log/mpi_log.o       \
+        ./stat/mpi_stat.o     \
+        ./memdev/mpi_memdev.o \
+        ./osal/hi_osal.o
 
 PUB_HEADERS  := $(COMMON_DIR)/include/hi_common.h \
                 $(COMMON_DIR)/include/hi_debug.h \
