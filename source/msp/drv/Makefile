@@ -1,5 +1,5 @@
 
-objects := hdmi
+objects := hdmi vo
 
 objects_install:=${addsuffix _install,${objects}}
 

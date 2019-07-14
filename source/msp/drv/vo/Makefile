@@ -3,12 +3,12 @@
 #===============================================================================
 EXTRA_CFLAGS += -Werror
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
-		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include
+EXTRA_CFLAGS += -I$(SDK_DIR)/source/common/include \
+                -I$(SDK_DIR)/source/common/drv/include  \
+                -I$(SDK_DIR)/source/msp/include \
+                -I$(SDK_DIR)/source/msp/api/higo/include \
+                -I$(SDK_DIR)/source/msp/api/include \
+                -I$(SDK_DIR)/source/msp/drv/include
 
 EXTRA_CFLAGS += -DHI_DISP_BUILD_FULL  -D__DISP_PLATFORM_SDK__ -D__DISP_D0_FOLLOW_D1__ -D__DISP_SELF_START__
 
@@ -82,9 +82,9 @@ endif
 
 MOD_NAME := hi_vou
 
-obj-y += $(MOD_NAME).o
+obj-m += $(MOD_NAME).o
 
-VO_DIR := $(shell cd $(srctree)/drivers/msp/vo && pwd)
+VO_DIR := $(SDK_DIR)/source/msp/drv/vo
 
 EXTRA_CFLAGS += -DFPGA_98CV200
 EXTRA_CFLAGS += -DCFG_VDP_MMU_SUPPORT
@@ -123,3 +123,14 @@ VO_SRCS := $(filter-out %hdr_transfer.c, $(VO_SRCS))
 VO_OBJS := $(patsubst $(VO_DIR)/%.c, %.o, $(VO_SRCS))
 
 $(MOD_NAME)-y = $(VO_OBJS)
+
+#===============================================================================
+#   rules
+#===============================================================================
+
+all:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules
+	
+modules_install:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules_install
+	
