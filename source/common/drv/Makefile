@@ -5,14 +5,10 @@
 ## header search path
 
 EXTRA_CFLAGS := -Werror
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include \
-		-I$(srctree)/drivers/common/include \
-		-I$(srctree)/drivers/common \
-		-I$(srctree)/drivers/common/mmz \
-		-I$(srctree)/drivers/msp/include \
-		-I$(srctree)/drivers/sdk/msp-api/include \
-		-I$(srctree)/drivers/sdk/msp-api/tde/include \
-		-I$(srctree)/drivers/sdk/msp-include
+EXTRA_CFLAGS += -I$(SDK_DIR)/source/common/include \
+                -I$(SDK_DIR)/source/common/drv/include \
+                -I$(SDK_DIR)/source/common/drv/log \
+                -I$(SDK_DIR)/source/common/drv/mem
 EXTRA_CFLAGS += -DCFG_HI_LOG_LEVEL=4
 
 MOD_NAME_CMN   := hi_common

@@ -23,7 +23,7 @@
 *.symtypes
 *.order
 *.elf
-*.bin
+#*.bin
 *.tar
 *.gz
 *.bz2

@@ -1,19 +1,15 @@
 #===============================================================================
 # local variables
 #===============================================================================
-HDMI_DRV_DIR := $(srctree)/drivers/msp/hdmi/hdmi_2_0
+HDMI_DRV_DIR := $(SDK_DIR)/source/msp/drv/hdmi/hdmi_2_0
 
 EXTRA_CFLAGS := -Werror
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
-		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/sdk/msp-api/hdmi			\
-		-I$(srctree)/drivers/msp/hdmi/hdmi_2_0	\
-		-I$(srctree)/drivers/sdk/msp-api/sio			\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include		\
-		-I$(srctree)/drivers/common/include/hi3798cv200
+EXTRA_CFLAGS += -I$(SDK_DIR)/source/common/include \
+                -I$(SDK_DIR)/source/common/drv/include \
+                -I$(SDK_DIR)/source/common/drv/include/hi3798cv200 \
+                -I$(SDK_DIR)/source/msp/include \
+                -I$(SDK_DIR)/source/msp/api/higo/include \
+                -I$(SDK_DIR)/source/msp/drv/include
 
 EXTRA_CFLAGS += -DCONFIG_HDMI_STB_SDK
 
@@ -40,7 +36,7 @@ EXTRA_CFLAGS += -DHDMI_DEBUG_SUPPORT
 
 MOD_NAME := hi_hdmi
 
-obj-y += $(MOD_NAME).o
+obj-m += $(MOD_NAME).o
 
 ####################################################################
 # hi3798cv200 HAL start
@@ -134,3 +130,14 @@ DRV_OBJS += hdmi_2_0/drv_hdmi_infoframe.o \
 	    hdmi_2_0/drv_hdmi_proc.o
 
 $(MOD_NAME)-y := $(DRV_OBJS)
+
+#===============================================================================
+#   rules
+#===============================================================================
+
+all:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules
+	
+modules_install:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules_install
+	
