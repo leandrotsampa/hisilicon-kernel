@@ -7,7 +7,7 @@ MOD_NAME := hi_pq
 HAL_DIR := hal
 MNG_DIR := mng
 
-obj-y += $(MOD_NAME).o
+obj-m += $(MOD_NAME).o
 
 ASM_DST_DIR := mng/64bit
 
@@ -16,19 +16,14 @@ module :=  comm table zme csc gfxzme gfxcsc
 
 EXTRA_CFLAGS += -Werror
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
-		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(MSP_DRV_REG_INCLUDE)		\
-		-I$(srctree)/drivers/sdk/msp-api/pq/include		\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include		\
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/mng	\
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/mng/$(CHIP) \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/hal/$(CHIP) \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)/hal/common  \
-		-I$(srctree)/drivers/msp/pq/$(VERSION)
+EXTRA_CFLAGS += -I$(SDK_DIR)/source/common/include \
+                -I$(SDK_DIR)/source/common/drv/include  \
+                -I$(SDK_DIR)/source/msp/include \
+                -I$(SDK_DIR)/source/msp/api/higo/include \
+                -I$(SDK_DIR)/source/msp/drv/include \
+                -I$(SDK_DIR)/source/msp/drv/pq/$(VERSION)/mng \
+                -I$(SDK_DIR)/source/msp/drv/pq/$(VERSION)/hal/$(CHIP) \
+                -I$(SDK_DIR)/source/msp/drv/pq/$(VERSION)/hal/common
 
 KBUILD_EXTRA_SYMBOLS += $(srctree)/drivers/common/Module.symvers
 
