@@ -21,7 +21,7 @@
 #define __HI_MPI_EDID_H__
 
 
-#include <linux/list.h>
+#include "list.h"
 
 #include "hi_type.h"
 #include "hi_common.h"

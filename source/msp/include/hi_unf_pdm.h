@@ -22,6 +22,7 @@
 
 #include "hi_unf_common.h"
 #include "hi_unf_mce.h"
+#include "hi_go_surface.h"
 
 #ifdef __cplusplus
 #if __cplusplus
