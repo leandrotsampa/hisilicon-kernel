@@ -1,25 +1,23 @@
 #===============================================================================
 # local variables
 #===============================================================================
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
-		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/msp/hifb/include		\
-		-I$(srctree)/drivers/msp/hifb/inc		\
-		-I$(srctree)/drivers/msp/hifb/adp/inc		\
-		-I$(srctree)/drivers/msp/hifb/adp/alg		\
-		-I$(srctree)/drivers/msp/tde/include		\
-		-I$(srctree)/drivers/sdk/msp-api/tde/include		\
-		-I$(srctree)/drivers/sdk/msp-api/higo/include		\
-		-I$(srctree)/drivers/sdk/ha_codec-include	\
-		-I$(srctree)/drivers/msp/jpeg/grc_cmm_inc
+
+DRIVER_PATH := $(SDK_DIR)/source/msp/drv/hifb
 
 HAL_DIR	 := hifb_v2_0
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android \
-		-I$(srctree)/drivers/msp/hifb/adp/$(HAL_DIR)
+EXTRA_CFLAGS += -I$(SDK_DIR)/source/common/include \
+                -I$(SDK_DIR)/source/common/drv/include \
+                -I$(SDK_DIR)/source/msp/include \
+                -I$(SDK_DIR)/source/msp/api/higo/include \
+                -I$(SDK_DIR)/source/msp/api/tde/include \
+                -I$(SDK_DIR)/source/msp/drv/include \
+                -I$(SDK_DIR)/source/msp/drv/jpeg/grc_cmm_inc \
+                -I$(DRIVER_PATH)/include \
+                -I$(DRIVER_PATH)/inc \
+                -I$(DRIVER_PATH)/adp/alg \
+                -I$(DRIVER_PATH)/adp/inc \
+                -I$(DRIVER_PATH)/adp/$(HAL_DIR)
 
 #EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT
 EXTRA_CFLAGS += -DCFG_HIFB_ANDROID_SUPPORT
@@ -47,11 +45,9 @@ EXTRA_CFLAGS += -DCONFIG_GFX_PQ
 
 MOD_NAME := hi_fb
 
-obj-y += $(MOD_NAME).o
+obj-m += $(MOD_NAME).o
 
 EXTRA_CFLAGS += -Werror
-
-DRIVER_PATH := $(srctree)/drivers/msp/hifb
 
 COMMON_FILES := $(wildcard $(DRIVER_PATH)/src/*.c)
 ADAPT_FILES  := $(wildcard $(DRIVER_PATH)/adp/src/*.c)
@@ -80,3 +76,14 @@ DRV_OBJS := $(subst .c,.o,$(DRV_SRCS_C))
 DRV_OBJS += $(subst .S,.o,$(DRV_SRCS_A))
 
 $(MOD_NAME)-y := $(DRV_OBJS)
+
+#===============================================================================
+#   rules
+#===============================================================================
+
+all:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules
+	
+modules_install:
+	$(AT)make -C $(KERNEL_SRC) M=$(CURDIR) modules_install
+	
