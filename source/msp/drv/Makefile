@@ -1,5 +1,5 @@
 
-objects := pq hdmi vo hifb
+objects := pq hdmi vo hifb tde
 
 objects_install:=${addsuffix _install,${objects}}
 

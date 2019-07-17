@@ -9,6 +9,8 @@ include $(SDK_DIR)/base.mak
 #	local varibale
 #=======================================
 
+CFLAGS += -I$(MSP_DIR)/api/tde/include
+
 #--------------- HDMI ------------------
 HDMI_VER := hdmi_2_0
 
@@ -28,6 +30,10 @@ SRCS += vo/unf_vo.c \
         vo/mpi_disp.c \
         vo/win_ratio.c \
         vo/mpi_edid.c
+
+#--------------- TDE ------------------
+
+SRCS += tde/unf_tde.c
 
 #--------------- PQ ------------------
 
@@ -54,7 +60,11 @@ CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
 
 LIBS := libhi_msp
 
-HEADER_FILES := $(wildcard $(MSP_UNF_INCLUDE)/*.h)
+HEADER_FILES := $(wildcard $(MSP_UNF_INCLUDE)/*.h) \
+                $(MSP_DIR)/api/tde/include/hi_tde_api.h \
+                $(MSP_DIR)/api/tde/include/hi_tde_errcode.h \
+                $(MSP_DIR)/api/tde/include/hi_tde_type.h \
+                $(MSP_DIR)/drv/hifb/include/hifb.h
 
 OBJS := $(SRCS:%.c=%.o) $(CPP_SRCS:%.cpp=%.o) $(ASM_SRCS:%.S=%.o)
 
