@@ -10,9 +10,9 @@ include $(SDK_DIR)/base.mak
 #===============================================================================
 #CFLAGS  += $(CFG_HI_CFLAGS)
 
-CFG_HI_CFLAGS += -I$(COMMON_DIR)/include
-CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/include
-CFG_HI_CFLAGS += -I$(COMMON_DIR)/drv/include
+CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE)
+CFG_HI_CFLAGS += -I$(COMMON_API_INCLUDE)
+CFG_HI_CFLAGS += -I$(COMMON_DRV_INCLUDE)
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/log
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/mem
 CFG_HI_CFLAGS += -I$(COMMON_DIR)/api/module

@@ -24,3 +24,5 @@ else
 CFG_MSP_BUILDTYPE := m
 endif
 
+CFG_HI_CFLAGS += -DHI_SMMU_SUPPORT
+
