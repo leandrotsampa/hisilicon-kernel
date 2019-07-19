@@ -217,3 +217,11 @@ ccflags-$(CONFIG_MALI_PLATFORM_DEVICETREE) += -I$(src)/platform/devicetree
 
 # For kutf and mali_kutf_irq_latency_test
 obj-$(CONFIG_MALI_KUTF) += tests/
+
+
+subdir-ccflags-y += -DCONFIG_KDS -DCONFIG_MALI_GATOR_SUPPORT \
+                    -DCONFIG_MALI_PLATFORM_DEVICETREE \
+                    -DCONFIG_MALI_TRACE_TIMELINE \
+                    -DCONFIG_MALI_DEBUG	 \
+                    -DCONFIG_MALI_DEVFREQ=$(CONFIG_PM_DEVFREQ) \
+

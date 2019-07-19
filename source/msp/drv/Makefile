@@ -1,6 +1,8 @@
 
 objects := pq hdmi vo hifb tde
 
+objects += gpu
+
 objects_install:=${addsuffix _install,${objects}}
 
 #=================================================================

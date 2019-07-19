@@ -40,3 +40,6 @@ all:
 
 clean:
 	$(MAKE) -C $(KDIR) M=$(CURDIR) clean
+
+modules_install:
+	$(MAKE) -C $(KDIR) M=$(CURDIR) modules_install
