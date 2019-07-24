@@ -1,5 +1,7 @@
 
-objects := pq hdmi vo hifb tde
+objects := pq hdmi vo hifb tde jpeg
+
+objects += gfx2d
 
 objects += gpu
 

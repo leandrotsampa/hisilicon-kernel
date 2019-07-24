@@ -1,0 +1,216 @@
+#===============================================================================
+# export variable
+#===============================================================================
+ifeq ($(CFG_HI_EXPORT_FLAG),)
+SDK_DIR ?= $(shell cd $(CURDIR)/../../../../.. && /bin/pwd)
+include $(SDK_DIR)/base.mak
+endif
+
+JPEG_CURDIR = $(shell pwd)
+SRC_CURDIR :=
+
+#CFG_HI_ENC_CFLAGS = CONFIG_GFX_JPGE_ENC_ENABLE
+CFG_HI_JPEG_SOFT_ENCODE_SUPPORT=y
+#===============================================================================
+# standard jpeg dir
+#===============================================================================
+SRC_6B       := $(SRC_CURDIR)src_6b
+SRC_SIMD     := $(SRC_CURDIR)src_simd
+SRC_HARD     := $(SRC_CURDIR)src_hard
+SRC_HARD_ENC := $(SRC_CURDIR)src_hard_enc
+
+#===============================================================================
+# local variable
+#===============================================================================
+CFLAGS  +=  -I$(JPEG_CURDIR)                       \
+            -I$(SRC_6B)                            \
+            -I$(SRC_SIMD)                          \
+            -I$(SRC_HARD)                          \
+            -I$(SRC_HARD_ENC)                      \
+            -I$(JPEG_CURDIR)/../inc/inc_6b         \
+            -I$(JPEG_CURDIR)/../inc/inc_hard       \
+            -I$(JPEG_CURDIR)/../inc/inc_test       \
+            -I$(JPEG_CURDIR)/../grc_cmm_inc        \
+            -I$(MSP_DIR)/api/tde/include           \
+            -I$(MSP_DIR)/api/jpge/include          \
+            -I$(MSP_DIR)/drv/include/              \
+            -I$(COMMON_DIR)/api/include            \
+            -I$(MSP_DIR)/drv/jpeg/include
+
+CFLAGS  +=  -DCFG_HI_JPEG6B_STREAMBUFFER_SIZE=$(CFG_HI_JPEG6B_STREAMBUFFER_SIZE)
+
+#=====================================================================================
+#the jpeg use version
+#=====================================================================================
+CFLAGS += -DCONFIG_HI_SDK_JPEG_VERSION
+#CFLAGS += -DCONFIG_HI_FPGA_JPEG_VERSION
+
+#=====================================================================================
+#the platform version
+#=====================================================================================
+ifneq ($(findstring $(CFG_HI_CHIP_TYPE), hi3798cv200 hi3798mv200 hi3796mv200 hi3798mv200_a),)
+CFLAGS += -DCONFIG_GFX_MEM_ION
+else
+CFLAGS += -DCONFIG_GFX_MEM_MMZ
+endif
+
+ifeq ($(CFG_HI_SMMU_SUPPORT),y)
+CFLAGS += -DCONFIG_GFX_MMU_SUPPORT
+endif
+
+ifeq ($(CFG_HI_GFX_DEBUG_LOG_SUPPORT), y)
+CFLAGS += -DCFG_HI_GFX_DEBUG_LOG_SUPPORT
+endif
+
+ifeq ($(CFG_HI_JPEG_SOFT_ENCODE_SUPPORT),y)
+CFLAGS += -DCONFIG_GFX_JPGE_SOFT_ENC_ENABLE
+endif
+
+ifdef CFG_HI_STATIC_LIB_ONLY
+#directfb needed
+CFLAGS += -fPIC
+endif
+
+#=====================================================================================
+#use signal��not use mutex
+#=====================================================================================
+#CFLAGS += -DCONFIG_JPEG_USE_KERNEL_SIGNAL
+
+#=====================================================================================
+#the jpge enc var
+#=====================================================================================
+ifneq ($(findstring $(CFG_HI_ENC_CFLAGS), CONFIG_GFX_JPGE_ENC_ENABLE),)
+CFLAGS += -D$(CFG_HI_ENC_CFLAGS)
+endif
+
+#=====================================================================================
+#the chip env version
+#=====================================================================================
+LIBNAME :=
+LIBPATH := -L$(COMMON_DIR)/api -L$(MSP_DIR)/api
+DEPEND_LIB := $(LIBPATH) $(LIBNAME)
+
+#===============================================================================
+# whether debug and add googlefunction
+#===============================================================================
+#CFLAGS += -DCONFIG_JPEG_DEBUG_INFO
+#CFLAGS += -DCONFIG_JPEG_ADD_GOOGLEFUNCTION
+
+#===============================================================================
+# complie
+#===============================================================================
+CPPFLAGS = 
+LDFLAGS  =
+
+
+#===============================================================================
+#compile encode lib src
+#===============================================================================
+LIB_ENC_SOURCES = $(SRC_6B)/jcapimin.c  $(SRC_6B)/jcapistd.c  $(SRC_6B)/jctrans.c  \
+                  $(SRC_6B)/jcparam.c   $(SRC_6B)/jcmainct.c  $(SRC_6B)/jdatadst.c \
+                  $(SRC_6B)/jcinit.c    $(SRC_6B)/jcmaster.c  $(SRC_6B)/jcmarker.c \
+                  $(SRC_6B)/jchuff.c    $(SRC_6B)/jcprepct.c  $(SRC_6B)/jccoefct.c \
+                  $(SRC_6B)/jccolor.c   $(SRC_6B)/jcsample.c  $(SRC_6B)/jfdctint.c \
+                  $(SRC_6B)/jcphuff.c   $(SRC_6B)/jcdctmgr.c  $(SRC_6B)/jfdctfst.c \
+                  $(SRC_6B)/jfdctflt.c  
+
+ifneq ($(findstring $(CFG_HI_ENC_CFLAGS), CONFIG_GFX_JPGE_ENC_ENABLE),)
+LIB_ENC_SOURCES += $(SRC_HARD_ENC)/jpge_henc_api.c
+endif
+
+#===============================================================================
+#compile decode lib src
+#===============================================================================
+LIB_DEC_SOURCES = $(SRC_6B)/jdapimin.c  $(SRC_6B)/jdapistd.c  $(SRC_6B)/jdtrans.c  \
+                  $(SRC_6B)/jdatasrc.c  $(SRC_6B)/jquant1.c   $(SRC_6B)/jdmaster.c \
+                  $(SRC_6B)/jdinput.c   $(SRC_6B)/jdmarker.c  $(SRC_6B)/jdhuff.c   \
+                  $(SRC_6B)/jdphuff.c   $(SRC_6B)/jdmainct.c  $(SRC_6B)/jdcoefct.c \
+                  $(SRC_6B)/jdpostct.c  $(SRC_6B)/jddctmgr.c  $(SRC_6B)/jquant2.c  \
+                  $(SRC_6B)/jidctfst.c  $(SRC_6B)/jidctflt.c  $(SRC_6B)/jidctint.c \
+                  $(SRC_6B)/jidctred.c  $(SRC_6B)/jdmerge.c   $(SRC_6B)/jdsample.c \
+                  $(SRC_6B)/jdcolor.c   $(SRC_6B)/jdcolor_userbuf.c
+
+LIB_DEC_SOURCES += $(SRC_6B)/transupp.c
+
+LIB_DEC_SOURCES += $(SRC_HARD)/hi_jpeg_hdec_api.c  $(SRC_HARD)/jpeg_hdec_parse.c      \
+                   $(SRC_HARD)/jpeg_hdec_api.c     $(SRC_HARD)/jpeg_hdec_mem.c        \
+                   $(SRC_HARD)/jpeg_hdec_rwreg.c   $(SRC_HARD)/jpeg_hdec_setpara.c    \
+                   $(SRC_HARD)/jpeg_hdec_suspend.c $(SRC_HARD)/jpeg_hdec_table.c      \
+                   $(SRC_HARD)/jpeg_hdec_csc.c     $(SRC_HARD)/jpeg_hdec_sentstream.c \
+                   $(SRC_HARD)/hi_jpeg_hdec_test.c $(SRC_HARD)/jpeg_hdec_support.c    \
+                   $(SRC_HARD)/jpeg_hdec_proc.c    $(SRC_HARD)/jpeg_hdec_savestream.c
+
+#===============================================================================
+#compile encode and decode lib src
+#===============================================================================
+LIB_COM_SOURCES = $(SRC_6B)/jcomapi.c  $(SRC_6B)/jerror.c  \
+                  $(SRC_6B)/jutils.c   $(SRC_6B)/jmemmgr.c
+#===============================================================================
+#compile lib need mem src
+#===============================================================================
+LIB_SYSDEPMEMSRC = $(SRC_6B)/jmemnobs.c
+
+#===============================================================================
+#compile lib need simd src
+#===============================================================================
+#LIB_SIMD_SRC = $(SRC_SIMD)/jsimd_arm_neon.S    \
+               $(SRC_SIMD)/jsimd_neon.c
+
+#===============================================================================
+#compile lib need all src
+#===============================================================================
+ifneq ($(CFG_HI_JPEG_SOFT_ENCODE_SUPPORT),y)
+SOURCES = $(LIB_DEC_SOURCES) $(LIB_COM_SOURCES) $(LIB_SYSDEPMEMSRC) $(LIB_SIMD_SRC)
+else
+SOURCES = $(LIB_ENC_SOURCES) $(LIB_DEC_SOURCES) $(LIB_COM_SOURCES) $(LIB_SYSDEPMEMSRC) $(LIB_SIMD_SRC)
+endif
+
+SRCS := $(SOURCES)
+
+#===============================================================================
+#compile lib need include
+#===============================================================================
+INCLUDES = jdhuff.h jpegint.h  jpeglib.h jversion.h jinclude.h jmemsys.h jmorecfg.h   \
+           jdct.h jerror.h
+
+#===============================================================================
+#compile
+#===============================================================================
+LIB_NAME := libjpeg6b
+
+HEADER_FILES := $(MSP_DIR)/api/jpeg/inc/inc_6b/jpeglib.h
+HEADER_FILES += $(MSP_DIR)/api/jpeg/inc/inc_6b/jmorecfg.h
+HEADER_FILES += $(MSP_DIR)/api/jpeg/inc/inc_6b/jerror.h
+HEADER_FILES += $(MSP_DIR)/api/jpeg/inc/inc_6b/jconfig.h
+HEADER_FILES += $(MSP_DIR)/api/jpeg/inc/inc_hard/hi_jpeg_api.h
+
+OBJS := $(SRCS:%.c=%.o)
+
+OBJ_DIR := $(CURDIR)/obj
+
+OBJS64 += $(addprefix $(OBJ_DIR)/,$(OBJS))
+
+TARGETS += $(OBJ_DIR)/$(LIB_NAME)
+
+CFLAGS += -I$(COMMON_UNF_INCLUDE)
+
+CFLAGS += -fPIC
+
+#===============================================================================
+# rules
+#===============================================================================
+
+all : $(TARGETS)
+	$(AT)cp -f $(HEADER_FILES) $(INCLUDE_DIR)/
+	$(AT)cp -f $(OBJ_DIR)/$(LIB_NAME).a $(STATIC_LIB_DIR)
+	$(AT)cp -f $(OBJ_DIR)/$(LIB_NAME).so $(SHARED_LIB_DIR)/libjpeg.so
+
+$(OBJ_DIR)/%.o : %.c
+	$(AT)test -d $(dir $@) || mkdir -p $(dir $@)
+	$(AT)$(CC) $(CFLAGS) $(FLOAT_OPTIONS) -o $@ -c $^
+	
+$(OBJ_DIR)/$(LIB_NAME): $(OBJS64)
+	$(AT)$(AR) -rcs $@.a $(OBJS64)
+	$(AT)$(CC) -shared -o $@.so $(OBJS64)
+
+

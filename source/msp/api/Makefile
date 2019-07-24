@@ -78,6 +78,7 @@ install: all
 	$(AT)cp -f $(HEADER_FILES) $(INCLUDE_DIR)/
 	$(AT)cp -f $(LIBS).a  $(STATIC_LIB_DIR)
 	$(AT)cp -f $(LIBS).so $(SHARED_LIB_DIR)
+	$(AT)make -C gpu all 
 
 $(LIBS): $(OBJS)
 	$(AT)$(AR) -rcs $@.a $^
