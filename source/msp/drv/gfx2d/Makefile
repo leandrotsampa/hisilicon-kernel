@@ -4,20 +4,16 @@
 
 TARGET := gfx2d
 
-EXTRA_CFLAGS += -I$(srctree)/drivers/sdk/common-include			\
-		-I$(srctree)/drivers/common/include			\
-		-I$(srctree)/drivers/sdk/msp-include			\
-		-I$(srctree)/drivers/sdk/msp-api/include			\
-		-I$(srctree)/drivers/msp/include			\
-		-I$(srctree)/drivers/sdk/msp-api/$(TARGET)/include	\
-		-I$(srctree)/drivers/msp/$(TARGET)		\
-		-I$(srctree)/drivers/msp/$(TARGET)/hwc		\
-		-I$(srctree)/drivers/common/mmz			\
-		-I$(srctree)/drivers/msp/jpeg/grc_cmm_inc
+EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
+                -I$(COMMON_DRV_INCLUDE) \
+                -I$(MSP_UNF_INCLUDE) \
+                -I$(MSP_DIR)/drv/$(TARGET)/hwc \
+                -I$(COMMON_DIR)/drv/mmz \
+                -I$(MSP_DIR)/drv/jpeg/grc_cmm_inc
 
 EXTRA_CFLAGS += -Werror
 EXTRA_CFLAGS += -DCONFIG_GFX_STB_SDK
-EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android
+#EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android
 #EXTRA_CFLAGS += -DGFX2D_FENCE_SUPPORT
 EXTRA_CFLAGS += -DCONFIG_GFX_MMU_SUPPORT
 
