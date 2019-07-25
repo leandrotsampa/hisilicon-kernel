@@ -6,13 +6,11 @@
  *
  * Purpose: omxvdec task functions
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include "task.h"
 #include "channel.h"
@@ -22,6 +20,9 @@
 extern HI_U32	g_DispNum;
 extern HI_BOOL	g_MapFrmEnable;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+extern OMXVDEC_ENTRY  *g_OmxVdec;
+#endif
 /*============== INTERNAL DEFINE ===============*/
 typedef enum
 {
@@ -346,7 +347,7 @@ static HI_U32 task_get_configed_slot_num(OMXVDEC_CHAN_CTX *pchan)
     {
 	pBufSlot = &(pchan->dfs.single_buf[i]);
 
-	//ï¿½ï¿½ï¿½Ò¸Ã·Ö±ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ãµï¿½Ö¡ï¿½ï¿½
+	//²éÕÒ¸Ã·Ö±æÂÊÒÑ¾­ÅäÖÃµÄÖ¡´æ
 	if(pBufSlot->frm_buf.u32Size == pchan->dfs.image_size_only &&
 	   pBufSlot->is_configured == HI_TRUE &&
 	   pBufSlot->is_wait_release == HI_FALSE)
@@ -427,7 +428,7 @@ static HI_S32 task_handle_situation_2(OMXVDEC_CHAN_CTX *pchan)
 
     if (pchan->dfs.alloc_frame_only == 1)
     {
-	//VP9 ï¿½ï¿½Î¿ï¿½Ö¡
+	//VP9 ±ä²Î¿¼Ö¡
 	task_try_release_unused_slot(pchan);
     }
 
@@ -435,7 +436,7 @@ static HI_S32 task_handle_situation_2(OMXVDEC_CHAN_CTX *pchan)
     {
 	if(pchan->dfs.alloc_frame_only == 1 && pchan->dfs.image_size_only != NeededFrmSize)
 	{
-	    //ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð·Ö±ï¿½ï¿½Ê±ä»¯Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹
+	    //·ÖÅä¾ÉÖ¡´æ¹ý³ÌÖÐ·Ö±æÂÊ±ä»¯Ó¦¸ÃÁ¢¼´ÖÕÖ¹
 	    OmxPrint(OMX_ERR, "%s:%d size change when alloc, sizeonly:%d ned size:%d\n", __func__, __LINE__, \
 			      pchan->dfs.image_size_only, NeededFrmSize);
 
@@ -541,7 +542,7 @@ static HI_S32 task_release_channel_mem(OMXVDEC_CHAN_CTX *pchan)
 		omxvdec_release_mem(&pBufSlot->frm_buf, pBufSlot->frm_buf_type);
 	    }
 
-	    /*special frame already record in global list,so clear the channel record here, change by l00228308*/
+	    /*special frame already record in global list,so clear the channel record here, change by sdk*/
 	    pBufSlot->frm_buf_type = ALLOC_INVALID;
 	    pBufSlot->is_available  = HI_FALSE;
 	    pBufSlot->is_configured = HI_FALSE;

@@ -7,13 +7,11 @@
  *
  * Purpose: omxvdec channel interface
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef __CHANNEL_H__
 #define __CHANNEL_H__
@@ -32,6 +30,10 @@
 #define	 REPORT_LAST_FRAME_WITH_ID   (2)
 
 #define	 MAX_DFS_BUF_NUM	     (32)
+
+#ifdef HI_OMX_TEE_SUPPORT
+#define OMXVDEC_SEC_ZONE		"SEC-MMZ"
+#endif
 
 #define VDEC_INIT_MUTEX(pSem)		  \
 do {					  \
@@ -102,7 +104,7 @@ typedef struct {
     eBUFFER_TYPE       buf_type;
     eBUFFER_STATE      status;
     HI_U32	       phy_addr;
-    HI_U32	       private_phy_addr;//VPSS ï¿½ï¿½4Kï¿½ï¿½ï¿½ï¿½ï¿½Òªmetabufï¿½ï¿½ï¿½Ý¶ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+    HI_U32	       private_phy_addr;//VPSS ¼Ù4KÊä³öÐèÒªmetabuf´«µÝ¶îÍâÐÅÏ¢
     HI_U32	       buf_len;
     HI_U32	       act_len;
     HI_U32	       private_len;
@@ -155,7 +157,7 @@ typedef struct {
     MMZ_BUFFER_S       pmv_buf;
     eMEM_ALLOC	       frm_buf_type;
     eMEM_ALLOC	       pmv_buf_type;
-    HI_BOOL	       is_available;	   /* ï¿½ï¿½Ê¾ï¿½Ç²ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmw */
+    HI_BOOL	       is_available;	   /* ±íÊ¾ÊÇ²»ÊÇ¿ÉÒÔÅäÖÃ¸øvfmw£¬¿ÕÏÐµÄÖ¡´æ²ÅÄÜÅäÖÃ¸øvfmw */
     HI_BOOL	       is_configured;
     HI_BOOL	       own_by_decoder;
     HI_BOOL	       is_wait_release;
@@ -222,8 +224,8 @@ typedef struct {
     HI_BOOL	       is_compress;
     HI_U8	       last_frame_processor_got;
     HI_U8	       last_frame_image_id;
-		       /* 0 (0/1)  : vfmw ï¿½Ç·ï¿½ï¿½Ï±ï¿½;
-			  1 (0/1/2): vfmw ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		       /* 0 (0/1)  : vfmw ÊÇ·ñÉÏ±¨;
+			  1 (0/1/2): vfmw ÉÏ±¨µÄÀàÐÍ
 				     0 success,
 				     1 fail,
 				     2+ report last frame image id */
@@ -281,6 +283,17 @@ typedef struct tagVDEC_PREMMZ_NODE_S
     HI_U32  u32NodeState;/*0:have MMZ not used,1:have MMZ but used 2:invalid*/
 }VDEC_PREMMZ_NODE_S;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+typedef struct
+{
+    HI_U32 u32InputWidth;
+    HI_U32 u32InputHeight;
+    HI_DRV_PIX_FORMAT_E enInputPixFormat;
+    HI_U32 u32InputFrameRate;
+    HI_BOOL bVpssBypass;		  //Êä³ö²ÎÊý
+}PROCESSOR_BYPASSATTR_S;
+#endif
+
 HI_S32 channel_init(HI_VOID);
 
 HI_VOID channel_exit(HI_VOID);
@@ -329,6 +342,25 @@ HI_S32 channel_alloc_buf(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
 
 HI_S32 channel_release_buf(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
 
+#ifdef VFMW_VPSS_BYPASS_EN
+HI_S32 channel_record_occupied_frame(OMXVDEC_CHAN_CTX *pchan);
+HI_S32 channel_release_frame(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
+HI_BOOL channel_IsOccupiedFrm(HI_U32 TargetPhyAddr, HI_U32 *pIndex);
+HI_S32 channel_find_nodeId_can_release(OMXVDEC_List_S* pList, HI_U32* pIndex);
+
+#ifdef HI_TVOS_SUPPORT
+HI_S32 channel_global_release_frame(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf);
+#endif
+
+HI_S32 channel_set_processor_bypass(OMXVDEC_CHAN_CTX *pchan);
+HI_S32 channel_get_processor_bypass(OMXVDEC_CHAN_CTX *pchan,OMXVDEC_DRV_CFG *chan_cfg);
+#endif
 HI_S32 channel_Vdec_Report(HI_S32 chan_id, HI_U32 EventID, HI_S32 result, HI_VOID* PrivData);
+/*================ EXTERN FUNCTION ================*/
+
+#if (1 == PRE_ALLOC_VDEC_VDH_MMZ)
+HI_S32 VDEC_Chan_FindPreMMZ(MMZ_BUFFER_S *pstMMZBuffer);
+HI_S32 VDEC_Chan_ReleasePreMMZ(MMZ_BUFFER_S *pstMMZBuffer);
+#endif
 
 #endif

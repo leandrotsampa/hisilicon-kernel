@@ -6,25 +6,27 @@
  *
  * Purpose: omxvdec main entry header file
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __OMXVDEC_H__
 #define __OMXVDEC_H__
 
 #include <linux/cdev.h>
-#include "hi_drv_mmz.h"	      //ÏµÍ³ï¿½á¹©ï¿½Ú´ï¿½ï¿½ï¿½Ø½Ó¿ï¿½
-#include "hi_drv_sys.h"	      //HI_DRV_SYS_GetTimeStampMsï¿½ï¿½ï¿½ï¿½
-#include "hi_drv_proc.h"      //procï¿½ï¿½Ø½Ó¿ï¿½ï¿½ï¿½ï¿½ï¿½
+#include "hi_drv_mmz.h"	      //ÏµÍ³Ìá¹©ÄÚ´æÏà¹Ø½Ó¿Ú
+#include "hi_drv_sys.h"	      //HI_DRV_SYS_GetTimeStampMsÒÀÀµ
+#include "hi_drv_proc.h"      //procÏà¹Ø½Ó¿ÚÒÀÀµ
 #include "drv_omxvdec.h"
 #include "omxvdec_mem.h"
 #include "drv_vdec_ext.h"
-#include "hi_drv_module.h"  // HI_DRV_MODULE_GetFunction ï¿½ï¿½ï¿½ï¿½
+#include "hi_drv_module.h"  // HI_DRV_MODULE_GetFunction ÒÀÀµ
+
+#ifdef VFMW_VPSS_BYPASS_EN
+#include "hi_kernel_adapt.h"	// add by sdk
+#endif
 
 #define MAX_OPEN_COUNT			  (32)
 #define MAX_CHANNEL_NUM			  (MAX_OPEN_COUNT)
@@ -57,11 +59,15 @@
 
 extern HI_U32 g_TraceOption;
 
+#ifndef HI_ADVCA_FUNCTION_RELEASE
 #define OmxPrint(flag, format,arg...) \
     do { \
 	if (OMX_ALWS == flag || (0 != (g_TraceOption & (1 << flag)))) \
 	    printk("<OMXVDEC:%d> " format, __LINE__, ## arg); \
     } while (0)
+#else
+#define OmxPrint(flag, format,arg...)	 ({do{}while(0);0;})
+#endif
 
 
 #define OMXVDEC_ASSERT_RETURN(cond, else_print)			       \
@@ -82,19 +88,39 @@ do {								\
     }								\
 }while(0)
 
+#ifdef VFMW_VPSS_BYPASS_EN
+#define D_OMXVDEC_CHECK_PTR_RET(ptr) \
+    do {\
+	if (HI_NULL == ptr)\
+	{ \
+	    OmxPrint(OMX_ERR, "PTR '%s' is NULL.\n", # ptr); \
+	    return HI_FAILURE;		 \
+	}  \
+    } while (0)
+
+#define D_OMXVDEC_CHECK_PTR(ptr) \
+    do {\
+	if (HI_NULL == ptr)\
+	{ \
+	    OmxPrint(OMX_ERR, "PTR '%s' is NULL.\n", # ptr); \
+	    return;	      \
+	}  \
+    } while (0)
+#endif
+
 /*
-   g_TraceOption ï¿½ï¿½ï¿½ï¿½Öµ
+   g_TraceOption ³£ÓÃÖµ
 
    1:	   OMX_FATAL
    2:	   OMX_ERR
    4:	   OMX_WARN
-   8:	   OMX_INFO	 (ï¿½ï¿½ï¿½ï¿½ï¿½Ú²é¿´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î¼°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½)
+   8:	   OMX_INFO	 (³£ÓÃÓÚ²é¿´´´½¨ÅäÖÃÏî¼°¸ú×Ù×îºóÒ»Ö¡Çé¿ö)
    16:	   OMX_TRACE
    32:	   OMX_INBUF
    64:	   OMX_OUTBUF
-   128:	   OMX_VPSS	 (ï¿½ï¿½ï¿½ï¿½ï¿½Ú¸ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½)
-   256:	   OMX_RAWCTRL	 (Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½ï¿½Ñ·ï¿½ï¿½ï¿½)
-   512:	   OMX_PTS	 (ï¿½ï¿½ï¿½ï¿½ï¿½Ú²é¿´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½PTSÖµ)
+   128:	   OMX_VPSS	 (³£ÓÃÓÚ¸ú×ÙÍ¼Ïñ²»Êä³öÔ­Òò)
+   256:	   OMX_RAWCTRL	 (Ô­ÓÃÓÚÂëÁ÷ÊäÈë¿ØÖÆ£¬ÏÖÒÑ·ÏÆú)
+   512:	   OMX_PTS	 (³£ÓÃÓÚ²é¿´ÊäÈëÊä³öPTSÖµ)
 
    3:	   OMX_FATAL & OMX_ERR
    7:	   OMX_FATAL & OMX_ERR & OMX_WARN
@@ -134,6 +160,41 @@ typedef enum {
     SAVE_FLIE_IMG,
 }eSAVE_FLIE;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+/* vdec remain frame List */
+//add by sdk
+/* vdec remain frame List */
+#define OMXVDEC_MAX_REMAIN_FRM_NUM (32)
+typedef struct BUFMNG_VPSS_LOCK_S
+{
+    spinlock_t	   irq_lock;
+    unsigned long  irq_lockflags;
+    int		   isInit;
+} OMXVDEC_IRQ_LOCK_S;
+
+typedef struct tagVDEC_SPECIAL_INFO_S
+{
+    MMZ_BUFFER_S	frmBufRec;
+    eMEM_ALLOC		enbufferNodeStatus;
+    HI_BOOL		bCanRls;
+}OMXVDEC_FRM_INFO_S;
+
+typedef struct tagVDEC_LIST_S
+{
+    HI_BOOL		 bInit;
+    HI_S32		 s32Num;
+    spinlock_t		 bypass_lock;
+    OMXVDEC_FRM_INFO_S	 stSpecialFrmRec[OMXVDEC_MAX_REMAIN_FRM_NUM];
+}OMXVDEC_List_S;
+
+typedef struct
+{
+    HI_U32  occoupy_frame_num;
+    MMZ_BUFFER_S frmBufRec[VFMW_MAX_RESERVE_NUM];
+} OMXVDEC_PROC_OCCOUPY_FRAME_INFO;
+
+#endif
+
 typedef struct {
     HI_U32		open_count;
     HI_U32		total_chan_num;
@@ -144,6 +205,9 @@ typedef struct {
     spinlock_t		channel_lock;
     struct cdev		cdev;
     struct device      *device;
+#ifdef VFMW_VPSS_BYPASS_EN
+    OMXVDEC_List_S	stRemainFrmList;
+#endif
 }OMXVDEC_ENTRY;
 
 typedef struct {
@@ -167,5 +231,14 @@ typedef struct
 HI_VOID omxvdec_release_mem(HI_VOID *pMMZ_Buf, eMEM_ALLOC eMemAlloc);
 
 UINT32 OMX_GetTimeInMs(VOID);
+
+#ifdef VFMW_VPSS_BYPASS_EN
+
+HI_S32 OMXVDEC_List_FindNode(OMXVDEC_List_S *pList,HI_U32 u32TargetPhyAddr,HI_U32 *pIndex);
+//HI_S32 OMXVDEC_List_FindNodeCanRls(OMXVDEC_List_S *pList, HI_U32 *pIndex);
+HI_S32 OMXVDEC_List_Add(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec);
+HI_S32 OMXVDEC_List_Del(OMXVDEC_List_S *pList,HI_U32 u32Index);
+HI_S32 OMXVDEC_Frame_in_List(OMXVDEC_List_S *pList,OMXVDEC_FRM_INFO_S *pSpecialFrmRec);
+#endif
 
 #endif

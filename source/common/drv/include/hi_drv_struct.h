@@ -430,7 +430,14 @@ History	      :
 #define UMAP_DEV_NUM_CERT	      1
 #define UMAP_MIN_MINOR_CERT	      (UMAP_MAX_MINOR_PLCIPHER + 1)
 #define UMAP_MAX_MINOR_CERT	      (UMAP_MIN_MINOR_CERT + UMAP_DEV_NUM_CERT - 1)
-#define UMAP_DEV_NUM_TOTAL	      UMAP_MAX_MINOR_CERT
+
+#define HI_MOD_VFMW                 "vfmw"
+#define UMAP_DEVNAME_VFMW           UMAP_NAME HI_MOD_VFMW
+#define UMAP_DEV_NUM_VFMW           2
+#define UMAP_MIN_MINOR_VFMW         (UMAP_MAX_MINOR_CERT + 1)
+#define UMAP_MAX_MINOR_VFMW         (UMAP_MIN_MINOR_VFMW + UMAP_DEV_NUM_VFMW - 1)
+
+#define UMAP_DEV_NUM_TOTAL            UMAP_MAX_MINOR_VFMW
 
 /** @} */  /** <!-- ==== Structure Definition End ==== */
 

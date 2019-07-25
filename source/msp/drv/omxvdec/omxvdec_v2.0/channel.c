@@ -6,13 +6,11 @@
  *
  * Purpose: omxvdec channel functions
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #include <linux/dma-buf.h> //for dma buf, ion map
 
@@ -37,6 +35,10 @@ extern HI_BOOL	g_FastOutputMode;
 extern HI_U32	g_LowDelayCountFrame;
 extern HI_BOOL	g_LowDelayStatistics;
 extern VFMW_EXPORT_FUNC_S* pVfmwFunc;
+
+#ifdef VFMW_VPSS_BYPASS_EN
+extern OMXVDEC_ENTRY  *g_OmxVdec;
+#endif
 
 /*=============== INTERNAL VALUE ===============*/
 typedef struct
@@ -250,8 +252,6 @@ static HI_VOID channel_show_chan_config(OMXVDEC_DRV_CFG *pcfg)
     OmxPrint(OMX_INFO, " DecOrderOutput	  = %d\n", pcfg->chan_cfg.s32DecOrderOutput);
     OmxPrint(OMX_INFO, " SupportAllP	  = %d\n", pcfg->chan_cfg.s32SupportAllP);
     OmxPrint(OMX_INFO, " LowdlyEnable	  = %d\n", pcfg->chan_cfg.s32LowdlyEnable);
-    OmxPrint(OMX_INFO, " BtlDbdrEnable	  = %d\n", pcfg->chan_cfg.s32BtlDbdrEnable);
-    OmxPrint(OMX_INFO, " Btl1Dt2DEnable	  = %d\n", pcfg->chan_cfg.s32Btl1Dt2DEnable);
     OmxPrint(OMX_INFO, " CompressEnbale	  = %d\n", pcfg->chan_cfg.s32VcmpEn);
     OmxPrint(OMX_INFO, " WaterMarkerEn	  = %d\n", pcfg->chan_cfg.s32WmEn);
     OmxPrint(OMX_INFO, " MaxRawPacketNum  = %d\n", pcfg->chan_cfg.s32MaxRawPacketNum);
@@ -367,6 +367,75 @@ static HI_S32 channel_unmap_kernel_viraddr(OMXVDEC_BUF_S *puser_buf)
 
     return HI_SUCCESS;
 }
+
+#ifdef VFMW_VPSS_BYPASS_EN
+//add by sdk for smmu ion memory map
+static HI_S32 channel_ion_map_viraddr(OMXVDEC_ION_BUF_S *pIonBuf)
+{
+    HI_U8* pu8VirAddr = HI_NULL;
+    struct dma_buf* bufHhd = HI_NULL;
+    if (pIonBuf == HI_NULL)
+    {
+       OmxPrint(OMX_FATAL, "input null param\n");
+       return HI_FAILURE;
+    }
+
+    bufHhd = dma_buf_get(pIonBuf->BufFd);
+
+    if ( HI_NULL == bufHhd)
+    {
+	OmxPrint(OMX_FATAL,"%s dma_buf_get failed!\n", __func__);
+	return HI_FAILURE;
+    }
+    if (HI_SUCCESS != dma_buf_begin_cpu_access(bufHhd, 0))
+    {
+	OmxPrint(OMX_FATAL,"%s dmabuf map failed!\n", __func__);
+	goto err;
+    }
+
+    pu8VirAddr = dma_buf_kmap(bufHhd,0 /*Offset*/);
+    if (pu8VirAddr == HI_NULL)
+    {
+       OmxPrint(OMX_FATAL,"dma_buf_get return HI_NULL!! fd = 0x%x\n",pIonBuf->BufFd);
+       goto err1;
+    }
+
+    pIonBuf->pu8DmaBuf = (HI_U8*)bufHhd;
+    pIonBuf->pu8StartVirAddr = pu8VirAddr;
+
+    OmxPrint(OMX_INFO, "map success! dmabuf = %p, vir = %p\n", bufHhd, pu8VirAddr);
+
+    return HI_SUCCESS;
+
+err1:
+    dma_buf_end_cpu_access(bufHhd, 0);
+err:
+    dma_buf_put(bufHhd);
+    return HI_FAILURE;
+}
+
+static HI_VOID channel_ion_unmap_viraddr(OMXVDEC_ION_BUF_S *pIonBuf)
+{
+    struct dma_buf* bufHhd = HI_NULL;
+
+    if (pIonBuf == HI_NULL)
+    {
+       OmxPrint(OMX_FATAL,"input null parm\n");
+       return ;
+    }
+
+    bufHhd = (struct dma_buf*)pIonBuf->pu8DmaBuf;
+
+    dma_buf_kunmap(bufHhd,0,0);
+
+    dma_buf_end_cpu_access(bufHhd, 0);
+
+    dma_buf_put(bufHhd);
+
+    return ;
+}
+//add end
+#endif
 
 static OMXVDEC_BUF_S *channel_lookup_addr_table(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf)
 {
@@ -516,6 +585,51 @@ static HI_U32 channel_insert_addr_table(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DES
 	OmxPrint(OMX_OUTBUF, "Insert Output Buffer, PhyAddr = 0x%08x, Success!\n", puser_buf->phyaddr);
     }
 
+#ifdef VFMW_VPSS_BYPASS_EN
+    if (HI_TRUE == pchan->is_overlay && puser_buf->dir == PORT_DIR_OUTPUT)
+    {
+	HI_S32 s32Ret = HI_FAILURE;
+	OMXVDEC_ION_BUF_S stOmxVdecMetaPriv;
+	memset(&stOmxVdecMetaPriv, 0, sizeof(OMXVDEC_ION_BUF_S));
+
+	stOmxVdecMetaPriv.BufFd = puser_buf->private_fd;
+	stOmxVdecMetaPriv.u32Offset = puser_buf->private_offset;
+
+	s32Ret = channel_ion_map_viraddr(&stOmxVdecMetaPriv);
+	if (s32Ret != HI_SUCCESS)
+	{
+	    OmxPrint(OMX_ERR,"channel_ion_map_viraddr fd = 0x%x, phyaddr = 0x%x,failed!\n",puser_buf->private_fd,puser_buf->phyaddr);
+	}
+
+	pbuf->private_vaddr = (HI_VOID*)stOmxVdecMetaPriv.pu8StartVirAddr + stOmxVdecMetaPriv.u32Offset;
+
+	memcpy(&pbuf->Buf_meta_priv, &stOmxVdecMetaPriv, sizeof(OMXVDEC_ION_BUF_S));
+    }
+    else
+    {
+	pbuf->private_vaddr = HI_NULL;
+    }
+#endif
+
+#ifdef HI_TVOS_SUPPORT
+    if (puser_buf->dir == PORT_DIR_OUTPUT)
+    {
+	if (pchan->bVpssBypass)
+	{
+	    pbuf->private_vaddr = pbuf->kern_vaddr;
+	    pbuf->private_phy_addr = pbuf->phy_addr;
+	}
+	else
+	{
+	    pbuf->private_vaddr = 0;
+	    pbuf->private_phy_addr = 0;
+	}
+
+	OmxPrint(OMX_OUTBUF, "bypass:%d set private Buffer, PhyAddr = 0x%08x, vir:%p\n",
+	    pchan->bVpssBypass, pbuf->private_phy_addr, pbuf->private_vaddr);
+    }
+#endif
+
     return HI_SUCCESS;
 }
 
@@ -583,6 +697,15 @@ static HI_U32 channel_delete_addr_table(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DES
     }
 
     pbuf->kern_vaddr = HI_NULL;
+
+#ifdef VFMW_VPSS_BYPASS_EN
+    if ((HI_NULL != pbuf->private_vaddr) && (HI_TRUE == pchan->is_overlay))
+    {
+	/* unmap kernel virtual address */
+	channel_ion_unmap_viraddr(&pbuf->Buf_meta_priv);
+	pbuf->private_vaddr = HI_NULL;
+    }
+#endif
 
     if (i < (*num_of_buffers - 1))
     {
@@ -901,6 +1024,9 @@ HI_VOID channel_init_inst_config(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_DRV_CFG *pcfg)
 {
     channel_show_chan_config(pcfg);
 
+#ifdef HI_OMX_TEE_SUPPORT
+    pchan->is_tvp = pcfg->is_tvp;
+#endif
     pchan->out_width  = pcfg->cfg_width;
     pchan->out_height = pcfg->cfg_height;
     pchan->out_stride = pcfg->cfg_stride;
@@ -937,6 +1063,43 @@ static HI_S32 channel_alloc_inst_memory(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_DRV_CFG
     HI_U32 TableSize;
     HI_U32 TotalSize;
 
+#ifdef HI_OMX_TEE_SUPPORT
+    if (pchan->is_tvp == HI_TRUE)
+    {
+	TableSize = (pcfg->cfg_inbuf_num+pcfg->cfg_outbuf_num)*sizeof(OMXVDEC_BUF_S);
+	TotalSize = TableSize;
+
+	ret = HI_DRV_OMXVDEC_AllocAndMap("OMXVDEC_EXTRA", HI_NULL, TotalSize, 0, &pchan->channel_extra_buf);
+	if (ret != HI_SUCCESS)
+	{
+	    OmxPrint(OMX_FATAL, "%s alloc extra buffer mem failed\n", __func__);
+
+	    return HI_FAILURE;
+	}
+
+	pchan->in_buf_table	   = (HI_VOID *)(pchan->channel_extra_buf.pu8StartVirAddr);
+	pchan->out_buf_table	   = pchan->in_buf_table + pcfg->cfg_inbuf_num*sizeof(OMXVDEC_BUF_S);
+	pchan->max_in_buf_num	   = pcfg->cfg_inbuf_num;
+	pchan->max_out_buf_num	   = pcfg->cfg_outbuf_num;
+	pchan->eEXTRAMemAlloc	   = ALLOC_BY_MMZ;
+
+	ret = HI_DRV_OMXVDEC_Alloc("SEC_OMXVDEC_LAST_FRAME", HI_NULL, LAST_FRAME_BUF_SIZE, 4, &pchan->decoder_eos_buf, 1);
+	if (ret != HI_SUCCESS)
+	{
+	    OmxPrint(OMX_FATAL, "%s alloc sec last frame mem failed\n", __func__);
+	    omxvdec_release_mem(&pchan->channel_extra_buf, pchan->eEXTRAMemAlloc);
+
+	    return HI_FAILURE;
+	}
+
+	pchan->last_frame.kern_vaddr   = (HI_VOID *)(HI_SIZE_T)pchan->decoder_eos_buf.pu8StartVirAddr;
+	pchan->last_frame.phy_addr     = pchan->decoder_eos_buf.u32StartPhyAddr;
+	pchan->last_frame.buf_len      = pchan->decoder_eos_buf.u32Size;
+	pchan->last_frame.u32FrameRate = pcfg->cfg_framerate;
+	pchan->eEOSMemAlloc	       = ALLOC_BY_SEC;
+    }
+    else
+#endif
     {
 	TableSize = (pcfg->cfg_inbuf_num+pcfg->cfg_outbuf_num)*sizeof(OMXVDEC_BUF_S);
 	TotalSize = LAST_FRAME_BUF_SIZE + 16 + TableSize;  // +16 for gap
@@ -2186,6 +2349,302 @@ HI_VOID channel_add_lowdelay_tag_time(OMXVDEC_CHAN_CTX *pchan, HI_U32 tag, HI_U3
 
     return;
 }
+
+#ifdef VFMW_VPSS_BYPASS_EN
+HI_S32 channel_record_occupied_frame(OMXVDEC_CHAN_CTX *pchan)
+{
+    HI_S32 ret = HI_FAILURE;
+
+    OmxPrint(OMX_TRACE, "%s enter\n", __func__);
+
+    if (pchan == HI_NULL)
+    {
+	OmxPrint(OMX_FATAL, "%s param invalid!\n", __func__);
+
+	return HI_FAILURE;
+    }
+
+    ret = decoder_record_occoupied_frame(pchan);
+
+    OmxPrint(OMX_TRACE, "%s exit\n", __func__);
+
+    return ret;
+}
+
+/***********************************************************************************/
+/**函数名:channel_release_frame							  **/
+/**作用:  只用于OMX通路，vpss bypass的情况，外部调用FTB时omxvdec内部给VFMW还帧	  **/
+/**修改人:sdk								    **/
+/***********************************************************************************/
+HI_S32 channel_release_frame(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf)
+{
+    HI_S32	   ret	  = HI_FAILURE;
+    OMXVDEC_BUF_S *pframe = HI_NULL;
+    HI_DRV_VIDEO_FRAME_S stFrame;
+    HI_DRV_VIDEO_FRAME_S *pstFramePriv = NULL;
+
+    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
+
+    memset(&stFrame, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
+
+    if (HI_NULL == pchan || HI_NULL == puser_buf)
+    {
+	OmxPrint(OMX_FATAL, "%s param invalid!\n", __func__);
+	return HI_FAILURE;
+    }
+
+    pframe = channel_lookup_addr_table(pchan, puser_buf);
+    if (HI_NULL == pframe)
+    {
+	OmxPrint(OMX_ERR, "%s call channel_lookup_addr_table failed!\n", __func__);
+	return HI_FAILURE;
+    }
+
+    if (0 != pframe->private_vaddr)
+    {
+	pstFramePriv = (HI_DRV_VIDEO_FRAME_S *)pframe->private_vaddr;
+
+	memcpy(&stFrame, pstFramePriv, sizeof(HI_DRV_VIDEO_FRAME_S));
+	memset(pstFramePriv, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
+    }
+    else
+    {
+	OmxPrint(OMX_ERR, "%s private_vaddr = 0! error phy:%x\n", __func__, pframe->phy_addr);
+	return HI_FAILURE;
+    }
+
+    ret = processor_release_image(pchan, &stFrame);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_ERR, "%s release frame (0x%x) failed!\n", __func__,stFrame.stBufAddr[0].u32PhyAddr_Y);
+	return HI_FAILURE;
+    }
+
+    OmxPrint(OMX_TRACE, "%s exit normally!\n", __func__);
+
+    return HI_SUCCESS;
+}
+
+
+
+#ifdef HI_TVOS_SUPPORT
+HI_S32 channel_global_release_frame(OMXVDEC_CHAN_CTX *pchan, OMXVDEC_BUF_DESC *puser_buf)
+{
+    HI_S32	   ret	  = HI_FAILURE;
+    OMXVDEC_BUF_S *pframe = HI_NULL;
+    HI_DRV_VIDEO_FRAME_S stFrame;
+    HI_DRV_VIDEO_FRAME_S *pstFramePriv = NULL;
+
+    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
+
+    memset(&stFrame, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
+
+    if (HI_NULL == pchan || HI_NULL == puser_buf)
+    {
+	OmxPrint(OMX_FATAL, "%s param invalid!\n", __func__);
+
+	return HI_FAILURE;
+    }
+
+    pframe = channel_lookup_addr_table(pchan, puser_buf);
+    if (HI_NULL == pframe)
+    {
+	OmxPrint(OMX_ERR, "%s call channel_lookup_addr_table failed!\n", __func__);
+
+	return HI_FAILURE;
+    }
+
+    if (0 != pframe->private_vaddr)
+    {
+	pstFramePriv = (HI_DRV_VIDEO_FRAME_S *)pframe->private_vaddr;
+
+	OmxPrint(OMX_INFO, "%s puser_buf:%p pframe:%p pstFramePriv:%p phyaddr_y:0x%x\n", __func__, \
+			    puser_buf, pframe, pstFramePriv, pstFramePriv->stBufAddr[0].u32PhyAddr_Y);
+
+	memcpy(&stFrame, pstFramePriv, sizeof(HI_DRV_VIDEO_FRAME_S));
+	memset(pstFramePriv, 0 , sizeof(HI_DRV_VIDEO_FRAME_S));
+    }
+    else
+    {
+	OmxPrint(OMX_ERR, "%s private_vaddr = 0! error phy:%x\n", __func__, pframe->phy_addr);
+
+	return HI_FAILURE;
+    }
+
+    ret = decoder_global_release_frame(&stFrame);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_ERR, "%s global release frame(0x%x) failed!\n", __func__,stFrame.stBufAddr[0].u32PhyAddr_Y);
+
+	return HI_FAILURE;
+    }
+
+    OmxPrint(OMX_TRACE, "%s exit normally!\n", __func__);
+
+    return HI_SUCCESS;
+}
+#endif
+
+
+/*************************************************************************************/
+/**函数名  : channel_IsSpecialFrm						    **/
+/**作用	   :  只用于OMX通路，判断该帧是否是special帧				    **/
+/**参数说明:									    **/
+/**TargetPhyAddr    : 对比目标物理地址/Smmu地址					    **/
+/**pIndex:	      如果非空，则返回对应找到的OccupiedFrm的索引ID，		    **/
+/**		      如果为空，则意味着外面不需要返回ID，忽略，不报错		    **/
+/**修改人:sdk								      **/
+/*************************************************************************************/
+HI_BOOL channel_IsOccupiedFrm(HI_U32 TargetPhyAddr, HI_U32 *pIndex)
+{
+    HI_U32 specialFrameIndex;
+    HI_BOOL bSpecialFrm = HI_FALSE;
+    unsigned long   flags;
+    OMXVDEC_FRM_INFO_S *pSpecialFrmInfo;
+
+    if ((TargetPhyAddr == 0) || (TargetPhyAddr == 0xffffffff))
+    {
+	OmxPrint(OMX_ERR, "%s TargetPhyAddr invalid\n", __func__);
+
+	return HI_FALSE;
+    }
+
+    spin_lock_irqsave(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+
+    for (specialFrameIndex = 0; specialFrameIndex < OMXVDEC_MAX_REMAIN_FRM_NUM; specialFrameIndex++)
+    {
+       pSpecialFrmInfo = &g_OmxVdec->stRemainFrmList.stSpecialFrmRec[specialFrameIndex];
+       if (pSpecialFrmInfo->frmBufRec.u32StartPhyAddr ==  TargetPhyAddr
+	 && pSpecialFrmInfo->bCanRls == HI_FALSE)
+       {
+	   bSpecialFrm = HI_TRUE;
+	   if (pIndex != HI_NULL)
+	   {
+	      *pIndex = specialFrameIndex;
+	   }
+	   break;
+       }
+    }
+
+    spin_unlock_irqrestore(&g_OmxVdec->stRemainFrmList.bypass_lock, flags);
+
+    return bSpecialFrm;
+}
+
+/*************************************************************************************/
+/**函数名  : channel_find_nodeId_can_release					    **/
+/**作用	   :  只用于OMX通路，判断当前是否有可以被释放的special帧		    **/
+/**参数说明:									    **/
+/**pList   : 全局special帧列表指针						    **/
+/**pIndex:   非空，返回对应找到的OccupiedFrm的索引ID，				    **/
+/**修改人:sdk								      **/
+/*************************************************************************************/
+HI_S32 channel_find_nodeId_can_release(OMXVDEC_List_S* pList, HI_U32* pIndex)
+{
+    HI_U32 index = 0;
+    OMXVDEC_FRM_INFO_S* pSpecialFrmRec;
+
+    if ((HI_NULL == pList) || (HI_NULL == pIndex))
+    {
+	OmxPrint(OMX_FATAL, "%s:pList == null or pIndex == null\n", __func__);
+	return HI_FAILURE;
+    }
+
+
+    for (index = 0; index < OMXVDEC_MAX_REMAIN_FRM_NUM; index++)
+    {
+	pSpecialFrmRec = &pList->stSpecialFrmRec[index];
+	if ( pSpecialFrmRec->bCanRls == HI_TRUE )
+	{
+	    *pIndex = index;
+	    break;
+	}
+    }
+
+    if (index >= OMXVDEC_MAX_REMAIN_FRM_NUM)
+    {
+	return HI_FAILURE;
+    }
+    else
+    {
+	return HI_SUCCESS;
+    }
+}
+
+
+
+/********************************************************************************************************************/
+/**函数名: channel_set_processor_bypass										   **/
+/**作用:  只用于OMX通路，设置VPSS 是否 bypass 的信息								   **/
+/* 参数说明:													   **/
+/* pchan	   : 通道信息上下文										   **/
+/**修改人:sdk												     **/
+/********************************************************************************************************************/
+HI_S32 channel_set_processor_bypass(OMXVDEC_CHAN_CTX *pchan)
+{
+    HI_S32 ret = HI_FAILURE;
+
+    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
+
+    if (HI_NULL == pchan)
+    {
+	OmxPrint(OMX_FATAL, "%s: vdec = NULL, invalid\n", __func__);
+	return HI_NULL;
+    }
+
+    ret = processor_set_bypass(pchan);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s call processor_set_bypass failed!\n", __func__);
+	goto error;
+    }
+
+    OmxPrint(OMX_TRACE, "%s exit normally!\n", __func__);
+
+error:
+    return ret;
+}
+
+
+/********************************************************************************************************************/
+/**函数名: channel_get_processor_bypass										   **/
+/**作用:  只用于OMX通路，获取VPSS 是否 bypass 的信息								   **/
+/* 参数说明:													   **/
+/* pchan	   : 通道信息上下文										   **/
+/* chan_cfg	   : 利用其中的cfg_width和cfg_height								   **/
+/**修改人:sdk												     **/
+/********************************************************************************************************************/
+HI_S32 channel_get_processor_bypass(OMXVDEC_CHAN_CTX *pchan,OMXVDEC_DRV_CFG *chan_cfg)
+{
+    HI_S32 ret	  = HI_FAILURE;
+    PROCESSOR_BYPASSATTR_S stBypassAttr;
+
+    OmxPrint(OMX_TRACE, "%s enter!\n", __func__);
+
+    if (HI_NULL == pchan)
+    {
+	OmxPrint(OMX_FATAL, "%s: vdec = NULL, invalid\n", __func__);
+	return HI_NULL;
+    }
+
+    memset(&stBypassAttr, 0, sizeof(PROCESSOR_BYPASSATTR_S));
+    stBypassAttr.u32InputWidth = chan_cfg->cfg_width;
+    stBypassAttr.u32InputHeight = chan_cfg->cfg_height;
+
+    ret = processor_get_bypass(pchan,&stBypassAttr);
+    if (ret != HI_SUCCESS)
+    {
+	OmxPrint(OMX_FATAL, "%s call processor_get_bypass failed!\n", __func__);
+	goto error;
+    }
+
+    OmxPrint(OMX_TRACE, "%s exit normally!\n", __func__);
+
+error:
+    return ret;
+}
+
+#endif
 
 HI_VOID channel_proc_entry(struct seq_file *p, OMXVDEC_CHAN_CTX *pchan)
 {

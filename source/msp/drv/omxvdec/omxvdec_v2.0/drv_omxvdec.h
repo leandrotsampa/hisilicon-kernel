@@ -7,16 +7,14 @@
  *
  * Purpose: omxvdec export header file
  *
- * Author:  yangyichang 00226912
+ * Author:  sdk
  *
  * Date:    26, 11, 2014
  *
  * NOTICE !!
- * ï¿½ï¿½ï¿½Ä¼ï¿½Í¬Ê±ï¿½ï¿½component ï¿½ï¿½driver ï¿½ï¿½ï¿½ï¿½
- * ï¿½ï¿½ï¿½Þ¸Ä£ï¿½ï¿½ï¿½ï¿½ß¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½ï¿½ï¿½!!!
+ * ¸ÃÎÄ¼þÍ¬Ê±±»component ºÍdriver ÒýÓÃ
+ * ÈçÐÞ¸Ä£¬Á½±ß¾ùÐèÖØÐÂ±àÒë!!!
  */
-
-/* SPDX-License-Identifier: GPL-2.0 */
 
 #ifndef __DRV_OMXVDEC_H__
 #define __DRV_OMXVDEC_H__
@@ -24,12 +22,13 @@
 #include <linux/ioctl.h>
 
 #include "hi_type.h"
+//#include "mpi_mmz.h"
 #include "vfmw.h"
-#include "hi_drv_video.h"  //ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Õ¼ï¿½Ã¶ï¿½ï¿½
+#include "hi_drv_video.h"  //Ö÷ÒªÊÇÊä³öÑÕÉ«¿Õ¼äÃ¶¾Ù
 #include "drv_omxvdec_ext.h"
 
 
-#define OMXVDEC_VERSION			(2017030200)
+#define OMXVDEC_VERSION			(2017072100)
 
 #define OMXVDEC_NAME			"hi_omxvdec"
 #define DRIVER_PATH			"/dev/hi_omxvdec"
@@ -163,13 +162,13 @@ typedef struct {
     HI_U32	     align;
     HI_U32	     data_offset;
     HI_U32	     data_len;
-    HI_U32	     private_phyaddr;//VPSS ï¿½ï¿½4Kï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+    HI_U32	     private_phyaddr;//VPSS ¼Ù4KÊä³öÐèÒª¶îÍâÐÅÏ¢
     HI_U32	     private_len;
     HI_U32	     flags;
     HI_S64	     timestamp;
     eBUFFER_TYPE     buffer_type;
     ePORT_DIR	     dir;
-//@f00241306 for 64 bit
+//@sdk for 64 bit
     HI_VIRT_ADDR_T   bufferaddr;
     HI_VIRT_ADDR_T   client_data;
     OMXVDEC_FRAME_S  out_frame;
@@ -178,7 +177,7 @@ typedef struct {
     HI_HANDLE	     hTunnelSrc;
     HI_U32	     u32FrameRate;
 
-    HI_U32	     private_fd;//add by l00228308
+    HI_U32	     private_fd;//add by sdk
     HI_U32	     private_offset;
     HI_BOOL	     need_release_frame;
     HI_BOOL	     is_sec;
@@ -258,6 +257,21 @@ typedef struct {
 
 #define VDEC_IOCTL_CHAN_RELEASE_BUF \
     _IO(VDEC_IOCTL_MAGIC, 17)
+
+
+#ifdef VFMW_VPSS_BYPASS_EN
+#define VDEC_IOCTL_CHAN_RELEASE_FRAME \
+    _IO(VDEC_IOCTL_MAGIC, 18)
+
+#define VDEC_IOCTL_CHAN_GET_BYPASS_INFO	  \
+    _IO(VDEC_IOCTL_MAGIC, 19)
+
+#define VDEC_IOCTL_CHAN_SET_BYPASS_INFO	  \
+    _IO(VDEC_IOCTL_MAGIC, 20)
+
+#define VDEC_IOCTL_CHAN_GLOBAL_RELEASE_FRAME \
+    _IO(VDEC_IOCTL_MAGIC, 21)
+#endif
 
 #define VDEC_IOCTL_CHAN_PORT_ENABLE \
     _IO(VDEC_IOCTL_MAGIC, 22)

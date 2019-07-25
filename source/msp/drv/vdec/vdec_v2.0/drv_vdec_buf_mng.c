@@ -17,8 +17,6 @@
 
 /******************************* Include Files *******************************/
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 /* Sys headers */
 #include <linux/list.h>
 
@@ -33,6 +31,12 @@
 #include "hi_drv_sys.h"
 /* Local headers */
 #include "drv_vdec_buf_mng.h"
+
+#ifdef __cplusplus
+#if __cplusplus
+extern "C" {
+#endif
+#endif /* __cplusplus */
 
 extern HI_BOOL bSaveoneyuv;
 extern HI_U32  u32SaveCnt;
@@ -145,7 +149,6 @@ do								   \
 	} \
     }
 
-
 /************************ Static Structure Definition ************************/
 
 typedef enum tagBUFMNG_BLOCK_STATUS_E
@@ -204,6 +207,9 @@ typedef struct tagBUFMNG_INST_S
     HI_U32	u32Index;	    /* Index */
 #endif
     BUFMNG_ALLOC_TYPE_E enAllocType;/* MMZ alloc type */
+#ifdef HI_TEE_SUPPORT
+    HI_BOOL	bTvp;
+#endif
     HI_BOOL bMMZMap;		    /* Need unmap when destroy */
     spinlock_t stSpinLock;	    /* Spin lock */
     struct list_head stBlockHead;   /* Buffer manager block list head */
@@ -249,10 +255,18 @@ static BUFMNG_GLOBAL_S s_stBMParam =
 
 
 /*********************************** for SMMU begain************************************/
-/*ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æº¯ï¿½ï¿½ï¿½ï¿½bSec(1:ï¿½ï¿½È«ï¿½Ú´æ£¬0:ï¿½Ç°ï¿½È«ï¿½Ú´ï¿½),bMap(1:ï¿½ï¿½cpuÓ³ï¿½ä£¬0:ï¿½ï¿½ï¿½ï¿½cpuÓ³ï¿½ï¿½)*/
+/*ÉêÇëÄÚ´æº¯Êý£¬bSec(1:°²È«ÄÚ´æ£¬0:·Ç°²È«ÄÚ´æ),bMap(1:×öcpuÓ³Éä£¬0:²»×öcpuÓ³Éä)*/
 HI_S32 HI_DRV_VDEC_AllocMem(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf,
 			    HI_BOOL bTvp, HI_BOOL bMap)
 {
+#ifdef HI_TEE_SUPPORT
+    if (HI_TRUE == bTvp)
+    {
+	return HI_DRV_VDEC_Alloc_TVP(bufname, zone_name, size, align, psMBuf);
+    }
+    else
+#endif
+    {
 	if (HI_TRUE == bMap)
 	{
 	    return HI_DRV_VDEC_AllocAndMap(bufname, zone_name, size, align, psMBuf);
@@ -261,27 +275,52 @@ HI_S32 HI_DRV_VDEC_AllocMem(const char *bufname, char *zone_name, HI_U32 size, i
 	{
 	    return HI_DRV_VDEC_Alloc(bufname, zone_name, size, align, psMBuf);
 	}
+    }
 }
 
-/*ï¿½Í·ï¿½ï¿½Ú´æº¯ï¿½ï¿½ï¿½ï¿½bSec(1:ï¿½ï¿½È«ï¿½Ú´æ£¬0:ï¿½Ç°ï¿½È«ï¿½Ú´ï¿½),bMap(1:ï¿½ï¿½cpuÓ³ï¿½ä£¬0:ï¿½ï¿½ï¿½ï¿½cpuÓ³ï¿½ï¿½)*/
+/*ÊÍ·ÅÄÚ´æº¯Êý£¬bSec(1:°²È«ÄÚ´æ£¬0:·Ç°²È«ÄÚ´æ),bMap(1:×öcpuÓ³Éä£¬0:²»×öcpuÓ³Éä)*/
 HI_VOID HI_DRV_VDEC_ReleaseMem(VDEC_BUFFER_S *psMBuf, HI_BOOL bTvp, HI_BOOL bMap)
 {
-    if (HI_TRUE == bMap)
+#ifdef HI_TEE_SUPPORT
+    if (HI_TRUE == bTvp)
     {
-	HI_DRV_VDEC_UnmapAndRelease(psMBuf);
+	HI_DRV_VDEC_Release_TVP(psMBuf);
     }
     else
+#endif
     {
-	HI_DRV_VDEC_Release(psMBuf);
+	if (HI_TRUE == bMap)
+	{
+	    HI_DRV_VDEC_UnmapAndRelease(psMBuf);
+	}
+	else
+	{
+	    HI_DRV_VDEC_Release(psMBuf);
+	}
     }
 }
 
 HI_S32 HI_DRV_VDEC_AllocAndMap(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf)
 {
     HI_S32 s32Ret = HI_SUCCESS;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+    memset(&stMMZBuf, 0, sizeof(MMZ_BUFFER_S));
+#else
     SMMU_BUFFER_S stSMMUBuf;
     memset(&stSMMUBuf, 0, sizeof(SMMU_BUFFER_S));
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    s32Ret = HI_DRV_MMZ_AllocAndMap(bufname, zone_name, size, align, &stMMZBuf);
+
+    if (s32Ret == HI_SUCCESS)
+    {
+	psMBuf->pu8StartVirAddr	 = stMMZBuf.pu8StartVirAddr;
+	psMBuf->u32StartPhyAddr	 = stMMZBuf.u32StartPhyAddr;
+	psMBuf->u32Size		 = stMMZBuf.u32Size;
+    }
+#else
     s32Ret = HI_DRV_SMMU_AllocAndMap(bufname, size, align, &stSMMUBuf);
 
     if (s32Ret == HI_SUCCESS)
@@ -290,13 +329,18 @@ HI_S32 HI_DRV_VDEC_AllocAndMap(const char *bufname, char *zone_name, HI_U32 size
 	psMBuf->u32StartPhyAddr	 = stSMMUBuf.u32StartSmmuAddr;
 	psMBuf->u32Size		 = stSMMUBuf.u32Size;
     }
+#endif
 
     return s32Ret;
 }
 
 HI_VOID HI_DRV_VDEC_UnmapAndRelease(VDEC_BUFFER_S *psMBuf)
 {
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
     if (HI_NULL == psMBuf)
     {
@@ -304,20 +348,98 @@ HI_VOID HI_DRV_VDEC_UnmapAndRelease(VDEC_BUFFER_S *psMBuf)
 	return;
     }
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.pu8StartVirAddr = psMBuf->pu8StartVirAddr;
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    HI_DRV_MMZ_UnmapAndRelease(&stMMZBuf);
+#else
     stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     HI_DRV_SMMU_UnmapAndRelease(&stSMMUBuf);
-
+#endif
     return;
 }
+
+#ifdef HI_TEE_SUPPORT
+HI_S32 HI_DRV_VDEC_Alloc_TVP(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf)
+{
+    HI_S32 s32Ret = HI_FAILURE;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
+    SMMU_BUFFER_S stSMMUBuf;
+#endif
+    if(HI_NULL == psMBuf)
+    {
+	HI_ERR_VDEC("invalid param!\n");
+	return s32Ret;
+    }
+
+#ifndef HI_SMMU_SUPPORT
+    s32Ret = HI_DRV_SECMMZ_Alloc(bufname, zone_name, size, align, &stMMZBuf);
+    psMBuf->pu8StartVirAddr  = stMMZBuf.pu8StartVirAddr;
+    psMBuf->u32StartPhyAddr  = stMMZBuf.u32StartPhyAddr;
+    psMBuf->u32Size	     = stMMZBuf.u32Size;
+#else
+    s32Ret = HI_DRV_SECSMMU_Alloc(bufname, size, align, &stSMMUBuf);
+    psMBuf->pu8StartVirAddr  = stSMMUBuf.pu8StartVirAddr;
+    psMBuf->u32StartPhyAddr  = stSMMUBuf.u32StartSmmuAddr;
+    psMBuf->u32Size	     = stSMMUBuf.u32Size;
+#endif
+
+    return s32Ret;
+
+}
+HI_VOID HI_DRV_VDEC_Release_TVP(VDEC_BUFFER_S *psMBuf)
+{
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
+    SMMU_BUFFER_S stSMMUBuf;
+#endif
+    if(HI_NULL == psMBuf)
+    {
+	HI_ERR_VDEC("invalid param!\n");
+	return;
+    }
+
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.pu8StartVirAddr = psMBuf->pu8StartVirAddr;
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    HI_DRV_SECMMZ_Release(&stMMZBuf);
+#else
+    stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
+    stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
+    stSMMUBuf.u32Size	       = psMBuf->u32Size;
+    HI_DRV_SECSMMU_Release(&stSMMUBuf);
+#endif
+}
+#endif
 
 HI_S32 HI_DRV_VDEC_Alloc(const char *bufname, char *zone_name, HI_U32 size, int align, VDEC_BUFFER_S *psMBuf)
 {
     HI_S32 s32Ret = HI_SUCCESS;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+    memset(&stMMZBuf, 0, sizeof(MMZ_BUFFER_S));
+#else
     SMMU_BUFFER_S stSMMUBuf;
     memset(&stSMMUBuf, 0, sizeof(SMMU_BUFFER_S));
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    s32Ret = HI_DRV_MMZ_Alloc(bufname, zone_name, size, align, &stMMZBuf);
+
+    if (s32Ret == HI_SUCCESS)
+    {
+	psMBuf->pu8StartVirAddr	 = stMMZBuf.pu8StartVirAddr;
+	psMBuf->u32StartPhyAddr	 = stMMZBuf.u32StartPhyAddr;
+	psMBuf->u32Size		 = stMMZBuf.u32Size;
+    }
+#else
     s32Ret = HI_DRV_SMMU_Alloc(bufname, size, align, &stSMMUBuf);
 
     if (s32Ret == HI_SUCCESS)
@@ -326,6 +448,7 @@ HI_S32 HI_DRV_VDEC_Alloc(const char *bufname, char *zone_name, HI_U32 size, int 
 	psMBuf->u32StartPhyAddr	 = stSMMUBuf.u32StartSmmuAddr;
 	psMBuf->u32Size		 = stSMMUBuf.u32Size;
     }
+#endif
 
     return s32Ret;
 }
@@ -334,12 +457,23 @@ HI_S32 HI_DRV_VDEC_Alloc(const char *bufname, char *zone_name, HI_U32 size, int 
 HI_S32 HI_DRV_VDEC_MapCache(VDEC_BUFFER_S *psMBuf)
 {
     HI_S32 s32Ret = HI_SUCCESS;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    s32Ret = HI_DRV_MMZ_MapCache(&stMMZBuf);
+    psMBuf->pu8StartVirAddr  = stMMZBuf.pu8StartVirAddr;
+#else
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     s32Ret = HI_DRV_SMMU_MapCache(&stSMMUBuf);
     psMBuf->pu8StartVirAddr  = stSMMUBuf.pu8StartVirAddr;
+#endif
 
     return s32Ret;
 }
@@ -348,12 +482,23 @@ HI_S32 HI_DRV_VDEC_MapCache(VDEC_BUFFER_S *psMBuf)
 HI_S32 HI_DRV_VDEC_Flush(VDEC_BUFFER_S *psMBuf)
 {
     HI_S32 s32Ret = HI_SUCCESS;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.pu8StartVirAddr = psMBuf->pu8StartVirAddr;
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    s32Ret = HI_DRV_MMZ_Flush(&stMMZBuf);
+#else
     stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     s32Ret = HI_DRV_SMMU_Flush(&stSMMUBuf);
+#endif
 
     return s32Ret;
 }
@@ -361,34 +506,67 @@ HI_S32 HI_DRV_VDEC_Flush(VDEC_BUFFER_S *psMBuf)
 HI_S32 HI_DRV_VDEC_Map(VDEC_BUFFER_S *psMBuf)
 {
     HI_S32 s32Ret = HI_SUCCESS;
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    s32Ret = HI_DRV_MMZ_Map(&stMMZBuf);
+    psMBuf->pu8StartVirAddr  = stMMZBuf.pu8StartVirAddr;
+#else
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     s32Ret = HI_DRV_SMMU_Map(&stSMMUBuf);
     psMBuf->pu8StartVirAddr  = stSMMUBuf.pu8StartVirAddr;
+#endif
 
     return s32Ret;
 }
 
 HI_VOID HI_DRV_VDEC_Unmap(VDEC_BUFFER_S *psMBuf)
 {
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.pu8StartVirAddr = psMBuf->pu8StartVirAddr;
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    HI_DRV_MMZ_Unmap(&stMMZBuf);
+#else
     stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     HI_DRV_SMMU_Unmap(&stSMMUBuf);
+#endif
 }
 
 HI_VOID HI_DRV_VDEC_Release(VDEC_BUFFER_S *psMBuf)
 {
+#ifndef HI_SMMU_SUPPORT
+    MMZ_BUFFER_S stMMZBuf;
+#else
     SMMU_BUFFER_S stSMMUBuf;
+#endif
 
+#ifndef HI_SMMU_SUPPORT
+    stMMZBuf.pu8StartVirAddr = psMBuf->pu8StartVirAddr;
+    stMMZBuf.u32StartPhyAddr = psMBuf->u32StartPhyAddr;
+    stMMZBuf.u32Size	     = psMBuf->u32Size;
+    HI_DRV_MMZ_Release(&stMMZBuf);
+#else
     stSMMUBuf.pu8StartVirAddr  = psMBuf->pu8StartVirAddr;
     stSMMUBuf.u32StartSmmuAddr = psMBuf->u32StartPhyAddr;
     stSMMUBuf.u32Size	       = psMBuf->u32Size;
     HI_DRV_SMMU_Release(&stSMMUBuf);
+#endif
 }
 
 
@@ -442,9 +620,9 @@ HI_S32 BUFMNG_DeInit(HI_VOID)
     return HI_SUCCESS;
 }
 
-static HI_S32 BUFMNG_CreateCheckPara(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
+static HI_S32 BUFMNG_CreateCheckPara(HI_HANDLE hBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 {
-    if ((HI_NULL == phBuf) || (HI_NULL == pstConfig))
+    if ((HI_NULL == pstConfig))
     {
 	return HI_ERR_BM_INVALID_PARA;
     }
@@ -464,7 +642,16 @@ static HI_S32 BUFMNG_CreateCheckPara(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pst
 
 static HI_VOID BUFMNG_DestroyBuffer(HI_BOOL bTvp, VDEC_BUFFER_S* pstVDECAllocBuf)
 {
-    HI_DRV_VDEC_UnmapAndRelease(pstVDECAllocBuf);
+#ifdef HI_TEE_SUPPORT
+    if (bTvp)
+    {
+	HI_DRV_VDEC_Release_TVP(pstVDECAllocBuf);
+    }
+    else
+#endif
+    {
+	HI_DRV_VDEC_UnmapAndRelease(pstVDECAllocBuf);
+    }
 
     return;
 }
@@ -474,6 +661,23 @@ static HI_S32 BUFMNG_CreatBuffer(BUFMNG_INST_CONFIG_S *pstConfig,
 {
     HI_S32 s32Ret = HI_ERR_BM_FREE_ERR;
 
+#ifdef HI_TEE_SUPPORT
+    if (pstConfig->bTvp == HI_TRUE)
+    {
+	s32Ret = HI_DRV_VDEC_Alloc_TVP(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
+
+	if (s32Ret != HI_SUCCESS)
+	{
+	    HI_FATAL_BUFMNG("%s: Alloc SEC MMU(%s) failed.\n", __func__, pstConfig->aszName);
+	    return HI_ERR_BM_NO_MEMORY;
+	}
+
+	pstConfig->u32PhyAddr = pstVDECAllocBuf->u32StartPhyAddr;
+	pstConfig->pu8KnlVirAddr = (HI_U8*)(HI_SIZE_T)pstVDECAllocBuf->u32StartPhyAddr;
+	pstConfig->pu8UsrVirAddr = (HI_U8*)(HI_SIZE_T)pstVDECAllocBuf->u32StartPhyAddr;
+    }
+    else
+#endif
     {
 	s32Ret = HI_DRV_VDEC_AllocAndMap(pstConfig->aszName, HI_NULL, pstConfig->u32Size, 0, pstVDECAllocBuf);
 
@@ -490,14 +694,14 @@ static HI_S32 BUFMNG_CreatBuffer(BUFMNG_INST_CONFIG_S *pstConfig,
     return s32Ret;
 }
 
-HI_S32 BUFMNG_Create(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
+HI_S32 BUFMNG_Create(HI_HANDLE hBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 {
     HI_S32 s32Ret;
     BUFMNG_INST_S *pstInst;
     VDEC_BUFFER_S stVDECAllocBuf = {0};
     VDEC_BUFFER_S stVDECBuf = {0};
 
-    s32Ret = BUFMNG_CreateCheckPara(phBuf, pstConfig);
+    s32Ret = BUFMNG_CreateCheckPara(hBuf, pstConfig);
     if (s32Ret == HI_ERR_BM_INVALID_PARA)
     {
 	return HI_ERR_BM_INVALID_PARA;
@@ -530,11 +734,11 @@ HI_S32 BUFMNG_Create(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 
     BUFMNG_LOCK(s_stBMParam.stSem);
 
-    /* Allocate handle */
-    *phBuf = s_stBMParam.u16InstHandle;
-
     /* Init instance parameter */
-    pstInst->hBuf = *phBuf;
+    pstInst->hBuf = hBuf;
+#ifdef HI_TEE_SUPPORT
+    pstInst->bTvp = pstConfig->bTvp;
+#endif
     pstInst->u32PhyAddr = pstConfig->u32PhyAddr;
     pstInst->pu8UsrVirAddr = pstConfig->pu8UsrVirAddr;
     if (HI_NULL == pstConfig->pu8KnlVirAddr)
@@ -548,9 +752,7 @@ HI_S32 BUFMNG_Create(HI_HANDLE *phBuf, BUFMNG_INST_CONFIG_S *pstConfig)
 	    HI_ERR_BUFMNG("HI_DRV_VDEC_Map fail!\n");
 	    if (BUFMNG_ALLOC_INNER == pstConfig->enAllocType)
 	    {
-		{
-		    BUFMNG_DestroyBuffer(pstConfig->bTvp, &stVDECAllocBuf);
-		}
+		BUFMNG_DestroyBuffer(pstConfig->bTvp, &stVDECAllocBuf);
 	    }
 	    HI_KFREE_BUFMNG(pstInst);
 	    return HI_FAILURE;
@@ -669,18 +871,34 @@ HI_S32 BUFMNG_Destroy(HI_HANDLE hBuf)
 	stVDECBuf.pu8StartVirAddr = pstInst->pu8KnlVirAddr;
 	stVDECBuf.u32Size = pstInst->u32Size;
 	BUFMNG_SPIN_UNLOCK(pstInst->stSpinLock);
-	HI_DRV_VDEC_Unmap(&stVDECBuf);
+#ifdef HI_TEE_SUPPORT
+
+	if (HI_TRUE == pstInst->bTvp)
+	{
+	}
+	else
+#endif
+	{
+	    HI_DRV_VDEC_Unmap(&stVDECBuf);
+	}
     }
 
     /* If need, free */
     if (BUFMNG_ALLOC_INNER == pstInst->enAllocType)
     {
+	BUFMNG_SPIN_LOCK(pstInst->stSpinLock);
+	stVDECBuf.u32StartPhyAddr = pstInst->u32PhyAddr;
+	stVDECBuf.pu8StartVirAddr = pstInst->pu8KnlVirAddr;
+	stVDECBuf.u32Size = pstInst->u32Size;
+	BUFMNG_SPIN_UNLOCK(pstInst->stSpinLock);
+#ifdef HI_TEE_SUPPORT
+	if (HI_TRUE == pstInst->bTvp)
 	{
-	    BUFMNG_SPIN_LOCK(pstInst->stSpinLock);
-	    stVDECBuf.u32StartPhyAddr = pstInst->u32PhyAddr;
-	    stVDECBuf.pu8StartVirAddr = pstInst->pu8KnlVirAddr;
-	    stVDECBuf.u32Size = pstInst->u32Size;
-	    BUFMNG_SPIN_UNLOCK(pstInst->stSpinLock);
+	    HI_DRV_VDEC_Release_TVP(&stVDECBuf);
+	}
+	else
+#endif
+	{
 	    HI_DRV_VDEC_UnmapAndRelease(&stVDECBuf);
 	}
     }
@@ -1303,7 +1521,10 @@ HI_S32 BUFMNG_Reset(HI_HANDLE hBuf)
 HI_S32 BUFMNG_GetStatus(HI_HANDLE hBuf, BUFMNG_STATUS_S *pstStatus)
 {
     BUFMNG_INST_S *pstInst = HI_NULL;
+    BUFMNG_BLOCK_S *pstBlock = HI_NULL;
     HI_SIZE_T ulFlags;
+    HI_U32 u32ReadOffset;
+    HI_U32 u32WriteOffset;
 
     if (HI_NULL == pstStatus)
     {
@@ -1320,6 +1541,38 @@ HI_S32 BUFMNG_GetStatus(HI_HANDLE hBuf, BUFMNG_STATUS_S *pstStatus)
     BUFMNG_SPIN_LOCK(pstInst->stSpinLock);
     pstStatus->u32Used	  = pstInst->u32Used + pstInst->u32Freeze;
     pstStatus->u32Free	  = pstInst->u32Free;
+
+    if (0 == pstInst->u32Free || list_empty(&pstInst->stBlockHead))
+    {
+	pstStatus->u32Available = pstInst->u32Free;
+    }
+    else
+    {
+	BUFMNG_FIND_TAIL_BLOCK(pstInst, pstBlock);
+
+	if (IS_WRITING(pstBlock))
+	{
+	    pstStatus->u32Available = pstBlock->u32Size;
+	}
+	else
+	{
+	    u32WriteOffset = pstBlock->u32Addr + pstBlock->u32Size - pstInst->u32PhyAddr;
+
+	    BUFMNG_FIND_HEAD_BLOCK(pstInst, pstBlock);
+	    u32ReadOffset = pstBlock->u32Addr - pstInst->u32PhyAddr;
+
+	    if (u32WriteOffset < u32ReadOffset)
+	    {
+		pstStatus->u32Available = pstInst->u32Free;
+	    }
+	    else
+	    {
+		pstStatus->u32Available = pstInst->u32Size - u32WriteOffset;
+		pstStatus->u32Available = max(pstStatus->u32Available, pstInst->u32Free - pstStatus->u32Available);
+	    }
+	}
+    }
+
     pstStatus->u32DataNum = pstInst->u32DataNum;
     pstStatus->u32GetTry  = pstInst->u32GetTry;
     pstStatus->u32GetOK	  = pstInst->u32GetOK;
@@ -1616,6 +1869,7 @@ HI_S32 BUFMNG_CloseFile(HI_S32 Handle, HI_S8 Flag)
 	case 0:
 	    if (Handle == VdecRawChanNum)
 	    {
+		vfs_fsync(VdecSaveRawFile, 0);
 		filp_close(VdecSaveRawFile, HI_NULL);
 		HI_ERR_BUFMNG("Close raw file of inst%d.\n", VdecRawChanNum);
 		VdecSaveRawFile = HI_NULL;
@@ -1628,6 +1882,7 @@ HI_S32 BUFMNG_CloseFile(HI_S32 Handle, HI_S8 Flag)
 	case 1:
 	    if (Handle == VdecYuvChanNum)
 	    {
+		vfs_fsync(VdecSaveYuvFile, 0);
 		filp_close(VdecSaveYuvFile, HI_NULL);
 		HI_ERR_BUFMNG("Close yuv file of inst%d.\n", VdecYuvChanNum);
 		HI_VFREE_BUFMNG(YUV_Array);
@@ -1642,6 +1897,7 @@ HI_S32 BUFMNG_CloseFile(HI_S32 Handle, HI_S8 Flag)
 	case 2:
 	    if (g_VdecRPUChanNum == Handle)
 	    {
+		vfs_fsync(g_VdecSaveRPUFile, 0);
 		filp_close(g_VdecSaveRPUFile, HI_NULL);
 		HI_ERR_BUFMNG("Close RPU file of inst%d.\n", g_VdecRPUChanNum);
 		g_VdecSaveRPUFile = HI_NULL;
@@ -1681,6 +1937,7 @@ HI_S32 BUFMNG_SaveRaw(HI_S32 Handle, HI_S8 *Addr, HI_S32 Length)
     {
 	HI_ERR_BUFMNG("Save Raw Error return :%d,length :%d", len, Length);
 	{
+	    vfs_fsync(VdecSaveRawFile, 0);
 	    set_fs(oldfs);
 	    filp_close(VdecSaveRawFile, HI_NULL);
 	    HI_ERR_BUFMNG("Close RAW file of inst%d.\n", VdecRawChanNum);
@@ -1737,6 +1994,7 @@ HI_S32 BUFMNG_SaveRPU(HI_S32 Handle, HI_DRV_VIDEO_FRAME_S *pstFrame)
     {
 	HI_ERR_BUFMNG("Save Rpu Error return :%d,length :%d", len, Length);
 	{
+	    vfs_fsync(g_VdecSaveRPUFile, 0);
 	    set_fs(oldfs);
 	    filp_close(g_VdecSaveRPUFile, HI_NULL);
 	    HI_ERR_BUFMNG("Close RPU file of inst%d.\n", g_VdecRPUChanNum);
@@ -1761,18 +2019,18 @@ HI_S32 BUFMNG_SaveRPU(HI_S32 Handle, HI_DRV_VIDEO_FRAME_S *pstFrame)
 static HI_S32 row_map_table_y[2][4][16] =
 {
     {
-	//Å¼ï¿½ï¿½tile
-	//{0,2,4,6,8,10,12,14,	1,3,5,7,9,11,13,15},//ï¿½ï¿½0ï¿½ï¿½
+	//Å¼Êýtile
+	//{0,2,4,6,8,10,12,14,	1,3,5,7,9,11,13,15},//µÚ0ÁÐ
 	{0, 8, 1, 9, 2, 10, 3, 11,  4, 12, 5, 13, 6, 14, 7, 15},
-	//{1,3,5,7,9,11,13,15,	8,10,12,14,0,2,4,6},//ï¿½ï¿½1ï¿½ï¿½
+	//{1,3,5,7,9,11,13,15,	8,10,12,14,0,2,4,6},//µÚ1ÁÐ
 	{12, 0, 13, 1, 14, 2, 15, 3, 8, 4, 9, 5, 10, 6, 11, 7 },
-	//{8,10,12,14,0,2,4,6,	9,11,13,15,1,3,5,7},//ï¿½ï¿½2ï¿½ï¿½
+	//{8,10,12,14,0,2,4,6,	9,11,13,15,1,3,5,7},//µÚ2ÁÐ
 	{4, 12, 5, 13, 6, 14, 7, 15,  0, 8, 1, 9, 2, 10, 3, 11},
-	//{9,11,13,15,1,3,5,7,	0,2,4,6,8,10,12,14} //ï¿½ï¿½3ï¿½ï¿½
+	//{9,11,13,15,1,3,5,7,	0,2,4,6,8,10,12,14} //µÚ3ÁÐ
 	{8, 4, 9, 5, 10, 6, 11, 7,  12, 0, 13, 1, 14, 2, 15, 3}
     },
     {
-	//ï¿½ï¿½ï¿½ï¿½tile
+	//ÆæÊýtile
 	//{1,3,5,7,9,11,13,15,	0,2,4,6,8,10,12,14},
 	{8, 0, 9, 1, 10, 2, 11, 3,  12, 4, 13, 5, 14, 6, 15, 7},
 	//{0,2,4,6,8,10,12,14,	9,11,13,15,1,3,5,7},
@@ -1787,7 +2045,7 @@ static HI_S32 row_map_table_y[2][4][16] =
 static HI_S32 row_map_table_uv[2][4][8] =
 {
     {
-	//Å¼ï¿½ï¿½tile
+	//Å¼Êýtile
 	//{0,2,4,6,  1,3,5,7},
 	{0, 4, 1, 5,  2, 6, 3, 7},
 	//{1,3,5,7,  0,2,4,6},
@@ -1798,7 +2056,7 @@ static HI_S32 row_map_table_uv[2][4][8] =
 	{0, 4, 1, 5,  2, 6, 3, 7},
     },
     {
-	//ï¿½ï¿½ï¿½ï¿½tile
+	//ÆæÊýtile
 	//{1,3,5,7,  0,2,4,6},
 	{4, 0, 5, 1,  6, 2, 7, 3},
 	//{0,2,4,6,  1,3,5,7},
@@ -1812,13 +2070,13 @@ static HI_S32 row_map_table_uv[2][4][8] =
 
 static HI_S32 row_map_table_y_2b[4][32] =
 {
-    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31},//ï¿½ï¿½0ï¿½ï¿½
+    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31},//µÚ0ÁÐ
     {0, 16, 1, 17, 2, 18, 3, 19, 4, 20, 5, 21, 6, 22, 7, 23,   8, 24, 9, 25, 10, 26, 11, 27, 12, 28, 13, 29, 14, 30, 15, 31},
-    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//ï¿½ï¿½1ï¿½ï¿½
+    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//µÚ1ÁÐ
     {16, 0, 17, 1, 18, 2, 19, 3, 20, 4, 21, 5, 22, 6, 23, 7,   24, 8, 25, 9, 26, 10, 27, 11, 28, 12, 29, 13, 30, 14, 31, 15},
-    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//ï¿½ï¿½2ï¿½ï¿½
+    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//µÚ2ÁÐ
     {16, 0, 17, 1, 18, 2, 19, 3, 20, 4, 21, 5, 22, 6, 23, 7,   24, 8, 25, 9, 26, 10, 27, 11, 28, 12, 29, 13, 30, 14, 31, 15},
-    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31} //ï¿½ï¿½3ï¿½ï¿½
+    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31} //µÚ3ÁÐ
     {0, 16, 1, 17, 2, 18, 3, 19, 4, 20, 5, 21, 6, 22, 7, 23,   8, 24, 9, 25, 10, 26, 11, 27, 12, 28, 13, 29, 14, 30, 15, 31}
 };
 
@@ -1827,6 +2085,129 @@ static HI_S32 row_map_table_uv_2b[16] =
     //{0,2,4,6,8,10,12,14   1,3,5,7,9,11,13,15},
     0, 8, 1, 9, 2, 10, 3, 11,	4, 12, 5, 13, 6, 14, 7, 15
 };
+
+#if defined(CHIP_TYPE_hi3798mv200) || defined(CHIP_TYPE_hi3798mv300) || defined(CHIP_TYPE_hi3798mv200_a)
+HI_U32 row_map_table_y[2][4][16] =
+{
+    {
+	//Å¼Êýtile
+	{0, 1, 2, 3, 4, 5, 6, 7,  8, 9, 10, 11, 12, 13, 14, 15},
+	{12, 13, 14, 15, 8, 9, 10, 11,	0, 1, 2, 3, 4, 5, 6, 7} ,
+	{4, 5, 6, 7, 0, 1, 2, 3,  12, 13, 14, 15, 8, 9, 10, 11},
+	{8, 9, 10, 11, 12, 13, 14, 15,	4, 5, 6, 7, 0, 1, 2, 3}
+    },
+    {
+	//ÆæÊýtile
+	{8, 9, 10, 11, 12, 13, 14, 15,	0, 1, 2, 3, 4, 5, 6, 7},
+	{0, 1, 2, 3, 4, 5, 6, 7,  12, 13, 14, 15, 8, 9, 10, 11},
+	{12, 13, 14, 15, 8, 9, 10, 11,	4, 5, 6, 7, 0, 1, 2, 3},
+	{4, 5, 6, 7, 0, 1, 2, 3,  8, 9, 10, 11, 12, 13, 14, 15}
+    }
+};
+
+HI_U32 row_map_table_uv[2][4][8] =
+{
+    {
+	//Å¼Êýtile
+	{0, 1, 2, 3,  4, 5, 6, 7},
+	{4, 5, 6, 7,  0, 1, 2, 3},
+	{4, 5, 6, 7,  0, 1, 2, 3},
+	{0, 1, 2, 3,  4, 5, 6, 7},
+    },
+    {
+	//ÆæÊýtile
+	{4, 5, 6, 7,  0, 1, 2, 3},
+	{0, 1, 2, 3,  4, 5, 6, 7},
+	{0, 1, 2, 3,  4, 5, 6, 7},
+	{4, 5, 6, 7,  0, 1, 2, 3},
+    }
+};
+
+HI_U32 row_map_table_y_2b[4][16] =
+{
+    {0, 1, 2, 3, 4, 5, 6, 7,  8, 9, 10, 11, 12, 13, 14, 15}, //µÚ0ÁÐ
+    {8, 9, 10, 11, 12, 13, 14, 15,  0, 1, 2, 3, 4, 5, 6, 7}, //µÚ1ÁÐ
+    {8, 9, 10, 11, 12, 13, 14, 15,  0, 1, 2, 3, 4, 5, 6, 7}, //µÚ2ÁÐ
+    {0, 1, 2, 3, 4, 5, 6, 7,  8, 9, 10, 11, 12, 13, 14, 15}, //µÚ3ÁÐ
+};
+
+HI_U32 row_map_table_uv_2b[8] =
+{
+    0, 1, 2, 3, 4, 5, 6, 7
+};
+#endif
+
+#ifdef CHIP_TYPE_hi3796mv200
+HI_U32 row_map_table_y[2][4][16] =
+{
+    {
+	//Å¼Êýtile
+	//{0,2,4,6,8,10,12,14,	1,3,5,7,9,11,13,15},//µÚ0ÁÐ
+	{0, 12, 1, 13, 2, 14, 3, 15,   4, 8, 5, 9, 6, 10, 7, 11},
+	//{9,11,13,15,1,3,5,7,	0,2,4,6,8,10,12,14} //µÚ3ÁÐ
+	{4, 8, 5, 9, 6, 10, 7, 11,  0, 12, 1, 13, 2, 14, 3, 15} ,
+	//{8,10,12,14,0,2,4,6,	9,11,13,15,1,3,5,7},//µÚ2ÁÐ
+	{8, 4, 9, 5, 10, 6, 11, 7,  12, 0, 13, 1, 14, 2, 15, 3},
+	//{1,3,5,7,9,11,13,15,	8,10,12,14,0,2,4,6},//µÚ1ÁÐ
+	{12, 0, 13, 1, 14, 2, 15, 3,  8, 4, 9, 5, 10, 6, 11, 7}
+    },
+    {
+	//ÆæÊýtile
+	//{0,2,4,6,8,10,12,14,	1,3,5,7,9,11,13,15},//µÚ0ÁÐ
+	{0, 12, 1, 13, 2, 14, 3, 15,   4, 8, 5, 9, 6, 10, 7, 11},
+	//{9,11,13,15,1,3,5,7,	0,2,4,6,8,10,12,14} //µÚ3ÁÐ
+	{4, 8, 5, 9, 6, 10, 7, 11,  0, 12, 1, 13, 2, 14, 3, 15} ,
+	//{8,10,12,14,0,2,4,6,	9,11,13,15,1,3,5,7},//µÚ2ÁÐ
+	{8, 4, 9, 5, 10, 6, 11, 7,  12, 0, 13, 1, 14, 2, 15, 3},
+	//{1,3,5,7,9,11,13,15,	8,10,12,14,0,2,4,6},//µÚ1ÁÐ
+	{12, 0, 13, 1, 14, 2, 15, 3,  8, 4, 9, 5, 10, 6, 11, 7}
+    }
+};
+
+HI_U32 row_map_table_uv[2][4][8] =
+{
+    {
+	//Å¼Êýtile
+	//{0,2,4,6,  1,3,5,7},
+	{0, 4, 1, 5,  2, 6, 3, 7},
+	//{1,3,5,7,  0,2,4,6},
+	{4, 0, 5, 1,  6, 2, 7, 3},
+	//{1,3,5,7,  0,2,4,6},
+	{4, 0, 5, 1,  6, 2, 7, 3},
+	//{0,2,4,6,  1,3,5,7},
+	{0, 4, 1, 5,  2, 6, 3, 7},
+    },
+    {
+	//ÆæÊýtile
+	//{0,2,4,6,  1,3,5,7},
+	{0, 4, 1, 5,  2, 6, 3, 7},
+	//{1,3,5,7,  0,2,4,6},
+	{4, 0, 5, 1,  6, 2, 7, 3},
+	//{1,3,5,7,  0,2,4,6},
+	{4, 0, 5, 1,  6, 2, 7, 3},
+	//{0,2,4,6,  1,3,5,7},
+	{0, 4, 1, 5,  2, 6, 3, 7},
+    }
+};
+
+static HI_U32 row_map_table_y_2b[4][32] =
+{
+    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31},//µÚ0ÁÐ
+    {0, 16, 1, 17, 2, 18, 3, 19, 4, 20, 5, 21, 6, 22, 7, 23,   8, 24, 9, 25, 10, 26, 11, 27, 12, 28, 13, 29, 14, 30, 15, 31},
+    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//µÚ1ÁÐ
+    {16, 0, 17, 1, 18, 2, 19, 3, 20, 4, 21, 5, 22, 6, 23, 7,   24, 8, 25, 9, 26, 10, 27, 11, 28, 12, 29, 13, 30, 14, 31, 15},
+    //{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,  0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30},//µÚ2ÁÐ
+    {16, 0, 17, 1, 18, 2, 19, 3, 20, 4, 21, 5, 22, 6, 23, 7,   24, 8, 25, 9, 26, 10, 27, 11, 28, 12, 29, 13, 30, 14, 31, 15},
+    //{0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,  1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31} //µÚ3ÁÐ
+    {0, 16, 1, 17, 2, 18, 3, 19, 4, 20, 5, 21, 6, 22, 7, 23,   8, 24, 9, 25, 10, 26, 11, 27, 12, 28, 13, 29, 14, 30, 15, 31}
+};
+
+static HI_U32 row_map_table_uv_2b[16] =
+{
+    //{0,2,4,6,8,10,12,14   1,3,5,7,9,11,13,15},
+    0, 8, 1, 9, 2, 10, 3, 11,	4, 12, 5, 13, 6, 14, 7, 15
+};
+#endif
 
 HI_U32 CheckIsSoftDec(HI_UNF_VCODEC_TYPE_E enType)
 {
@@ -1894,6 +2275,7 @@ HI_S32 SaveYuvNV21(HI_DRV_VIDEO_FRAME_S *pstFrame, HI_U8 *Y_Addr, HI_U8 *C_Addr,
 	YUV_Array = HI_VMALLOC_BUFMNG(pstFrame->u32Width * pstFrame->u32Height / 2);
 	if (YUV_Array == HI_NULL)
 	{
+	    vfs_fsync(VdecSaveYuvFile, 0);
 	    set_fs(oldfs);
 	    filp_close(VdecSaveYuvFile, HI_NULL);
 	    VdecSaveYuvFile = HI_NULL;
@@ -1963,6 +2345,7 @@ HI_S32 WriteFile(HI_U8 *Array, HI_U32 Size, mm_segment_t oldfs, HI_BOOL bVcmpFla
     {
 	HI_ERR_BUFMNG("%s write Array failed.len : %d,W*H :%d\n", __func__, len, Size);
 	{
+	    vfs_fsync(VdecSaveYuvFile, 0);
 	    set_fs(oldfs);
 	    filp_close(VdecSaveYuvFile, HI_NULL);
 	    HI_ERR_BUFMNG("Close yuv file of inst%d.\n", VdecYuvChanNum);
@@ -2004,7 +2387,12 @@ static HI_VOID ConvertYPIXForNV21TileCmpOff(HI_DRV_VIDEO_FRAME_S *pstFrame,
 
     Stride = pstFrame->stBufAddr[0].u32Stride_Y * 16;
     SlotWidth = (pstFrame->u32Width + (256 - 1)) & (~(256 - 1));
+
     TileHeight_2b = 32;
+
+#if defined(CHIP_TYPE_hi3798mv200) || defined(CHIP_TYPE_hi3798mv300) || defined(CHIP_TYPE_hi3798mv200_a)
+    TileHeight_2b = 16;
+#endif
     Stride_2b = SlotWidth / 4 * TileHeight_2b;
     Yaddress_2b = (pstFrame->stBufAddr_LB[0].u32PhyAddr_Y - pstFrame->stBufAddr[0].u32PhyAddr_YHead) + pstFrmBuf->pu8StartVirAddr;
 
@@ -2082,7 +2470,12 @@ static HI_VOID ConvertUVPIXForNV21TileCmpOff(HI_DRV_VIDEO_FRAME_S *pstFrame,
     Stride = pstFrame->stBufAddr[0].u32Stride_Y * 16;
     SlotWidth = (pstFrame->u32Width + (256 - 1)) & (~(256 - 1));
     SlotHeight = pstFrame->u32Height;
+
     TileHeight_2b = 16;
+
+#if defined(CHIP_TYPE_hi3798mv200) || defined(CHIP_TYPE_hi3798mv300) || defined(CHIP_TYPE_hi3798mv200_a)
+    TileHeight_2b = 8;
+#endif
 
     //Stride_2b = SlotWidth / 4 * TileHeight_2b;
     Stride_2b = SlotWidth / 4 * 32;
@@ -2185,6 +2578,7 @@ static HI_VOID SaveYUVNV21TileCmpOff(HI_DRV_VIDEO_FRAME_S *pstFrame,
 	YUV_Array = HI_VMALLOC_BUFMNG(WriteSize);
 	if (YUV_Array == HI_NULL)
 	{
+	    vfs_fsync(VdecSaveYuvFile, 0);
 	    set_fs(oldfs);
 	    filp_close(VdecSaveYuvFile, HI_NULL);
 	    VdecSaveYuvFile = HI_NULL;
@@ -2463,3 +2857,10 @@ EXIT:
 
     return len;
 }
+
+
+#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif /* __cplusplus */

@@ -1,7 +1,3 @@
-/*
- * Copyright (C) 2017, Hisilicon Tech. Co., Ltd.
- * SPDX-License-Identifier: GPL-2.0
- */
 #ifndef __HI_VDEC_PRIVATE_H__
 #define __HI_VDEC_PRIVATE_H__
 
@@ -19,9 +15,15 @@
 #include "hi_drv_video.h"
 #include "hi_drv_vdec.h"
 #include "vfmw_ext.h"
+#ifdef __cplusplus
+#if __cplusplus
+extern "C" {
+#endif
+#endif /* __cplusplus */
+
 
 /* VDEC VERSION */
-#define VDEC_VERSION		    (2017031000)
+#define VDEC_VERSION		    (2017031097)
 #define VDEC_DBG_MODULE_VDI	    (0x0)
 #define VDEC_DEBUG		    (0)
 
@@ -143,7 +145,7 @@ typedef struct
     VDEC_BUFFER_S VDECBuf_meta;
     VDEC_ION_BUF_S VDECBuf_meta_priv;
     HI_DRV_VDEC_FRAMEBUFFER_STATE_E enFrameBufferState;
-    HI_U32 u32Stride;			       /**<Stride of external frame buffer *//**<CNcomment:ï¿½â²¿Ö¡ï¿½ï¿½ï¿½stride*/
+    HI_U32 u32Stride;			       /**<Stride of external frame buffer *//**<CNcomment:Íâ²¿Ö¡´æµÄstride*/
 } BUFMNG_VPSS_NODE_S;
 typedef struct
 {
@@ -206,7 +208,7 @@ typedef struct tagCHAN_FRAME_BUFFER_S
     BUFFER_NODE_STATUS	       enFrameBufferNodeStatus;
     BUFFER_NODE_STATUS	       enHdrBufferNodeStatus;
     BUFFER_NODE_STATUS	       enPmvBufferNodeStatus;
-    HI_BOOL		       bAvailable;//ï¿½ï¿½Ê¾ï¿½Ç²ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmw
+    HI_BOOL		       bAvailable;//±íÊ¾ÊÇ²»ÊÇ¿ÉÒÔÅäÖÃ¸øvfmw£¬¿ÕÏÐµÄÖ¡´æ²ÅÄÜÅäÖÃ¸øvfmw
     HI_BOOL		       bConfigured;
     HI_BOOL		       bWaitRelease;
 } CHAN_FRAME_BUFFER_S;
@@ -225,26 +227,33 @@ typedef struct tagCHAN_CONTROL_STATE_LOCK_S
     int		  isInit;
 } CHAN_CONTROL_STATE_LOCK_S;
 
-/*ï¿½ï¿½Â¼vfmwï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ð¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½pmvï¿½ï¿½Ï¢ï¿½ï¿½hdrï¿½ï¿½metadataï¿½ï¿½Ï¢*/
+/*¼ÇÂ¼vfmwÉÏ±¨µÄÐèÒªÉêÇëµÄÄÚ´æÐÅÏ¢´óÐ¡£¬°üÀ¨Ö¡´æÐÅÏ¢£¬pmvÐÅÏ¢£¬hdrµÄmetadataÐÅÏ¢*/
 typedef struct tagVFMW_REPORT_FRAME_BUFFER_INFO_S
 {
-    UINT32  u32OneFrameTotalSize;/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Ü´ï¿½Ð¡*/
-    UINT32  u32ImageSize;/*Ö¡ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½Ð¡*/
-    UINT32  u32ImageNum;/*ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½*/
-    UINT32  u32PmvSize;/*pmvï¿½ï¿½Ï¢ï¿½ï¿½Ð¡*/
-    UINT32  u32PmvNum;/*ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½pmvï¿½ï¿½ï¿½ï¿½*/
-    UINT32  u32HdrMetadataSize;/*hdr metadataï¿½ï¿½Ï¢ï¿½ï¿½Ð¡*/
-    UINT32  u32AllocFrameOnly;/*ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½*/
+    UINT32  u32ImageSize;/*Ö¡´æÐÅÏ¢´óÐ¡*/
+    UINT32  u32ImageNum;/*ÐèÒªÉêÇëµÄÖ¡´æ¸öÊý*/
+    UINT32  u32PmvSize;/*pmvÐÅÏ¢´óÐ¡*/
+    UINT32  u32PmvNum;/*ÐèÒªÉêÇëµÄpmv¸öÊý*/
+    UINT32  u32HdrMetadataSize;/*hdr metadataÐÅÏ¢´óÐ¡*/
+    UINT32  u32AllocFrameOnly;/*½öÐèÒªÉêÇëÖ¡´æ*/
     UINT32  u32ImageSizeOnly;
     UINT32  u32ImageNumOnly;
 } VFMW_REPORT_FRAME_BUFFER_INFO_S;
 
-/*ï¿½ï¿½Â¼ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½ï¿½Ú´ï¿½Úµï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½æ£¬pmvï¿½Ú´æ£¬hdr metadataï¿½Ú´ï¿½*/
+/*¼ÇÂ¼ÒÑ¾­ÅäÖÃ¸øvfmwµÄÄÚ´æ½ÚµãµÄ¸öÊý£¬°üÀ¨Ö¡´æ£¬pmvÄÚ´æ£¬hdr metadataÄÚ´æ*/
 typedef struct tagVFMW_CONFIGURED_BUFFER_NUM_S
 {
-    UINT32  u32ImageNum;/*ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½Ö¡ï¿½ï¿½ï¿½ï¿½ï¿½*/
-    UINT32  u32PmvNum;/*ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½pmvï¿½ï¿½ï¿½ï¿½*/
+    UINT32  u32ImageNum;/*ÒÑ¾­ÅäÖÃ¸øvfmwµÄÖ¡´æ¸öÊý*/
+    UINT32  u32PmvNum;/*ÒÑ¾­ÅäÖÃ¸øvfmwµÄpmv¸öÊý*/
 } VFMW_CONFIGURED_BUFFER_NUM_S;
+
+#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
+typedef struct tagVDEC_SPECIAL_PROC_S
+{
+    HI_U32  u32SpecialFrmNum;
+    VDEC_BUFFER_S frmBufRec[VFMW_MAX_RESERVE_NUM];
+} VDEC_SPECIAL_FRM_PROC_S;
+#endif
 
 typedef struct tagVDEC_CHANNEL_S
 {
@@ -259,8 +268,8 @@ typedef struct tagVDEC_CHANNEL_S
     VDEC_CHAN_CAP_LEVEL_E   enCapToFmw;
     DETAIL_MEM_SIZE	    stMemSize;
     VDEC_CHAN_OPTION_S	    stOption;
-    VDEC_BUFFER_S	     stSCDMMZBuf;
-    VDEC_BUFFER_S	     stVDHMMZBuf;
+    VDEC_BUFFER_S	    stSCDMMZBuf;
+    VDEC_BUFFER_S	    stVDHMMZBuf;
     STREAM_INTF_S	    stStrmIntf ;
     IMAGE_INTF_S	    stImageIntf;
     VDEC_USRDAT_S*	    pu8UsrDataForWaterMark[4];
@@ -283,8 +292,8 @@ typedef struct tagVDEC_CHANNEL_S
 
     HI_U32		    u32BitRate;
     HI_U32		    u32Profile;
-    HI_U32		    u32LastLumaBitdepth;     // proc 10bitï¿½ï¿½Ï¢
-    HI_U32		    u32LastChromaBitdepth;   // proc 10bitï¿½ï¿½Ï¢
+    HI_U32		    u32LastLumaBitdepth;     // proc 10bitÐÅÏ¢
+    HI_U32		    u32LastChromaBitdepth;   // proc 10bitÐÅÏ¢
     HI_U32		    u32Level;
 
     /* Channel status */
@@ -356,14 +365,14 @@ typedef struct tagVDEC_CHANNEL_S
     HI_U32			    u32FrameCnt;
     HI_U32			    u32ErrRatio;
 
-    HI_U32			    u32FrameSize;//l00273086
-    HI_U32			    u32RefFrameNum; //l00273086
-    VFMW_REPORT_FRAME_BUFFER_INFO_S stVFMWReportFrameInfo;//ï¿½ï¿½Â¼vfmwï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½Òªvdecï¿½ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½ï¿½Ð¡ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½pmvï¿½ï¿½hdr metadataï¿½Ö¿ï¿½ï¿½Ï±ï¿½ï¿½ï¿½
-    VFMW_CONFIGURED_BUFFER_NUM_S    stVFMWConfiguredBufferNum;//ï¿½ï¿½Â¼ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ã¸ï¿½vfmwï¿½ï¿½ï¿½Ú´ï¿½(Ö¡ï¿½ï¿½,pmv,hdr metadata)ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½vfmwï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ô±È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã»¹ï¿½ï¿½Òªï¿½ï¿½ï¿½ÃµÄ¶ï¿½Ó¦ï¿½ï¿½ï¿½Ú´ï¿½Ä¸ï¿½ï¿½ï¿½
+    HI_U32			    u32FrameSize;
+    HI_U32			    u32RefFrameNum;
+    VFMW_REPORT_FRAME_BUFFER_INFO_S stVFMWReportFrameInfo;//¼ÇÂ¼vfmwÉÏ±¨µÄÐèÒªvdecÉêÇëµÄÖ¡´æ´óÐ¡ºÍ¸öÊý£¬pmvºÍhdr metadata·Ö¿ªÉÏ±¨¡£
+    VFMW_CONFIGURED_BUFFER_NUM_S    stVFMWConfiguredBufferNum;//¼ÇÂ¼ÒÑ¾­ÅäÖÃ¸øvfmwµÄÄÚ´æ(Ö¡´æ,pmv,hdr metadata)µÄ¸öÊý£¬Í¨¹ý´ËÐÅÏ¢ÓëvfmwÉÏ±¨µÄÐÅÏ¢¶Ô±È£¬À´¼ÆËã»¹ÐèÒªÅäÖÃµÄ¶ÔÓ¦µÄÄÚ´æµÄ¸öÊý
     HI_BOOL			    bDPBFullCtrl;
     VDEC_PROBE_STREAM_INFO_S	    stProbeStreamInfo;
 
-    CHAN_FRAME_BUFFER_S stFrameBufferRecord[VDEC_MAX_BUFFER_RECORD];//ï¿½ï¿½ï¿½ï¿½Ö¡ï¿½ï¿½Úµã£¬ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½Í¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
+    CHAN_FRAME_BUFFER_S stFrameBufferRecord[VDEC_MAX_BUFFER_RECORD];//ËùÓÐÖ¡´æ½Úµã£¬°üÀ¨Ô¤·ÖÅäºÍ¶¯Ì¬·ÖÅä
 
     CHAN_FRAME_BUF_RECORD_LOCK_S frameBufRecLock;
     CHAN_CONTROL_STATE_LOCK_S	 chanControlStateLock;
@@ -373,7 +382,9 @@ typedef struct tagVDEC_CHANNEL_S
     HI_S32 preAllocFrameNum;
     HI_S32 mmzAllocFrameNum;
 
+#ifdef HI_HDR_SUPPORT
     VDEC_HDR_ATTR_S stVdecHdrAttr;
+#endif
     HI_U32 OmxTunnelMode;
     HI_HANDLE  hOmxChn;
     HI_BOOL		bWakeUp;
@@ -392,10 +403,10 @@ typedef struct tagVDEC_CONTROLINFO_S
 
 typedef enum
 {
-    VDEC_VPSS_BYPASSMODE_AUTO = 0,    /*Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½VPSSï¿½ï¿½ï¿½ï¿½*/
-    VDEC_VPSS_BYPASSMODE_ENABLE,      /*PORTÍ¸ï¿½ï¿½Ê¹ï¿½ï¿½*/
-    VDEC_VPSS_BYPASSMODE_DISABLE,     /*PORTï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½Ö¹*/
-    VDEC_VPSS_BYPASSMODE_BUTT	      /*×´Ì¬ï¿½ï¿½ï¿½ï¿½*/
+    VDEC_VPSS_BYPASSMODE_AUTO = 0,    /*Í¸´«Óë·ñÓÉVPSS¾ö²ß*/
+    VDEC_VPSS_BYPASSMODE_ENABLE,      /*PORTÍ¸´«Ê¹ÄÜ*/
+    VDEC_VPSS_BYPASSMODE_DISABLE,     /*PORT²»Í¸´«½ûÖ¹*/
+    VDEC_VPSS_BYPASSMODE_BUTT	      /*×´Ì¬²»Ã÷*/
 } VDEC_BUF_BYPASSMODE_E;
 
 
@@ -456,7 +467,18 @@ HI_S32 VDEC_DRV_Open(struct inode* inode,  struct file*	 filp);
 HI_S32 VDEC_DRV_Release(struct inode* inode,  struct file*  filp);
 HI_S32 VDEC_Ioctl(struct inode* inode,	struct file*  filp,  unsigned int  cmd,	 void* arg);
 HI_S32 VDEC_FindVpssHandleByVdecHandle(HI_HANDLE hVdec, HI_HANDLE* phVpss);
+#ifdef VFMW_VPSS_BYPASS_EN   //specialFrameExist->specialFrameNum
+HI_S32 VDEC_DRV_GetSpecialFrmInfo(VDEC_SPECIAL_FRM_PROC_S* pstSpecialFrmInfo);
+HI_VOID VDEC_DRV_SpecialFrmListInit(HI_VOID);
+HI_VOID VDEC_DRV_SpecialFrmListDeinit(HI_VOID);
+#endif
 HI_S32 VDEC_DRV_CreateTask(HI_VOID);
 HI_VOID VDEC_DRV_DestoryTask(HI_VOID);
+
+#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif /* __cplusplus */
 
 #endif /* __HI_VDEC_KER_TEST_H__ */

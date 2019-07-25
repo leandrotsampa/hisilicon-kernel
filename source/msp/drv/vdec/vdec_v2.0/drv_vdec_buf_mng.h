@@ -15,8 +15,6 @@
 
 *******************************************************************************/
 
-/* SPDX-License-Identifier: GPL-2.0 */
-
 #ifndef __HI_VDEC_BUFFER_MNG_H__
 #define __HI_VDEC_BUFFER_MNG_H__
 
@@ -25,8 +23,14 @@
 #include "hi_type.h"
 #include "hi_error_mpi.h"
 #include "hi_drv_video.h"
+#ifdef __cplusplus
+#if __cplusplus
+extern "C" {
+#endif
+#endif /* __cplusplus */
 
 /****************************** Macro Definition *****************************/
+
 
 #define BUFMNG_DEBUG			(0)
 #define BUFMNG_64BITS_PTS_SUPPORT	(0)
@@ -138,6 +142,7 @@ typedef struct tagBM_STATUS_S
 {
     HI_U32 u32Used;
     HI_U32 u32Free;
+    HI_U32 u32Available;
     HI_U32 u32DataNum;	    /* For stream mode, it is undecoded packet number.
 			       For frame mode, it is undecoded frame number, support BUFMNG_NOT_END_FRAME_BIT.*/
     HI_U32 u32GetTry;	    /* GetWriteBuf try times */
@@ -157,11 +162,37 @@ typedef struct BUFMNG_VPSS_LOCK_S
     int		   isInit;
 } BUFMNG_VPSS_IRQ_LOCK_S;
 
+#ifdef VFMW_VPSS_BYPASS_EN
+//add by l00225186
+/* vdec remain frame List */
+#define VDEC_MAX_REMAIN_FRM_NUM (30)
+
+typedef struct tagVDEC_SPECIAL_INFO_S
+{
+    VDEC_BUFFER_S	 frmBufRec;
+    BUFFER_NODE_STATUS	 enbufferNodeStatus;
+#ifdef HI_TEE_SUPPORT
+    HI_BOOL		 bIsSecFrm;
+#endif
+    VDEC_BUFFER_S	 hdrBufRec;
+    BUFFER_NODE_STATUS	 enhdrNodeStatus;
+    HI_BOOL		 bCanRls;
+} VDEC_SPECIAL_FRM_INFO_S;
+
+typedef struct tagVDEC_LIST_S
+{
+    HI_BOOL	     bInit;
+    HI_S32		      s32Num;
+    VDEC_SPECIAL_FRM_INFO_S   stSpecialFrmRec[VDEC_MAX_REMAIN_FRM_NUM];
+    BUFMNG_VPSS_IRQ_LOCK_S    stIrq;
+} VDEC_List_S;
+#endif
+
 /******************************* API Declaration *****************************/
 
 HI_VOID BUFMNG_Init(HI_VOID);
 HI_S32 BUFMNG_DeInit(HI_VOID);
-HI_S32 BUFMNG_Create(HI_HANDLE* phBuf, BUFMNG_INST_CONFIG_S* pstConfig);
+HI_S32 BUFMNG_Create(HI_HANDLE phBuf, BUFMNG_INST_CONFIG_S* pstConfig);
 HI_S32 BUFMNG_SetUserAddr(HI_HANDLE hBuf, HI_U64 u64Addr);
 HI_S32 BUFMNG_Destroy(HI_HANDLE hBuf);
 HI_S32 BUFMNG_Get(HI_HANDLE hBuf, BUFMNG_INST_CONFIG_S* pstConfig);
@@ -186,6 +217,10 @@ HI_VOID HI_DRV_VDEC_UnmapAndRelease(VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_AllocMem(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf,
 			    HI_BOOL bTvp, HI_BOOL bMap);
 HI_VOID HI_DRV_VDEC_ReleaseMem(VDEC_BUFFER_S* psMBuf, HI_BOOL bTvp, HI_BOOL bMap);
+#ifdef HI_TEE_SUPPORT
+HI_S32 HI_DRV_VDEC_Alloc_TVP(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf);
+HI_VOID HI_DRV_VDEC_Release_TVP(VDEC_BUFFER_S* psMBuf);
+#endif
 HI_S32 HI_DRV_VDEC_Alloc(const char* bufname, char* zone_name, HI_U32 size, int align, VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_MapCache(VDEC_BUFFER_S* psMBuf);
 HI_S32 HI_DRV_VDEC_Flush(VDEC_BUFFER_S* psMBuf);
@@ -197,5 +232,10 @@ HI_VOID HI_DRV_VDEC_Release(VDEC_BUFFER_S* psMBuf);
 #if (BUFMNG_DEBUG==1)
 HI_S32 BUFMNG_Debug(HI_HANDLE hBuf);
 #endif
+#ifdef __cplusplus
+#if __cplusplus
+}
+#endif
+#endif /* __cplusplus */
 
 #endif /* __HI_VDEC_BUFFER_MNG_H__ */
