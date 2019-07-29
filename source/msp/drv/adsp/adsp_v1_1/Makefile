@@ -4,16 +4,13 @@
 
 EXTRA_CFLAGS += -Werror -Wno-error=format-security
 
-EXTRA_CFLAGS += \
-	-I$(srctree)/drivers/sdk/common-include \
-	-I$(srctree)/drivers/common/include \
-	-I$(srctree)/drivers/sdk/msp-include	\
-	-I$(srctree)/drivers/sdk/msp-api/include	\
-	-I$(srctree)/drivers/msp/include
+EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
+                -I$(COMMON_DRV_INCLUDE) \
+                -I$(MSP_UNF_INCLUDE)
 
 HIFIDIR := ./hifi
 
-ADSP_DIR := $(srctree)/drivers/msp/adsp/adsp_v1_1
+ADSP_DIR := $(MSP_DIR)/drv/adsp/adsp_v1_1
 
 EXTRA_CFLAGS += \
 	-I$(ADSP_DIR) \
@@ -27,7 +24,7 @@ EXTRA_CFLAGS += -DHI_SOUND_SPDIF_COMPENSATION_SUPPORT
 
 MOD_NAME := hi_adsp
 
-obj-y += $(MOD_NAME).o
+obj-m += $(MOD_NAME).o
 
 $(MOD_NAME)-y := \
 	drv_adsp_intf.o \
