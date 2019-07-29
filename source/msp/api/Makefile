@@ -53,6 +53,22 @@ SRCS += pq/mpi_pq.c \
 #--------------- SYNC ------------------
 SRCS += sync/mpi_sync.c
         
+#--------------- AO ------------------
+CFLAGS += -I$(MSP_DIR)/drv/adsp/adsp_v1_1/include
+
+ifeq ($(CFG_HI_AI_SUPPORT),y)
+CFLAGS += -DHI_SOUND_AI_SUPPORT
+endif
+
+ifeq ($(CFG_HI_SND_SPDIF_DELAY_SUPPORT),y)
+CFLAGS += -DHI_SOUND_SPDIF_COMPENSATION_SUPPORT
+endif
+
+SRCS += ao/unf_sound.c \
+        ao/mpi_ao.c \
+        ao/mpi_vir.c \
+        ao/mpi_lowlatency.c
+
 #-------------------------------------
 
 CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
@@ -61,6 +77,8 @@ CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
                  -I$(MSP_UNF_INCLUDE) \
                  -I$(MSP_API_INCLUDE) \
                  -I$(MSP_DRV_INCLUDE)
+                 
+CFLAGS += -fPIC
 
 LIBS := libhi_msp
 
