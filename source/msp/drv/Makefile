@@ -1,7 +1,7 @@
 
 objects := pq hdmi vo hifb tde jpeg
 
-objects += vfmw vdec omxvdec
+objects += sync vfmw vdec omxvdec
 
 objects += gfx2d
 
