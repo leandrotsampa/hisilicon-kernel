@@ -49,6 +49,10 @@ SRCS += pq/mpi_pq.c \
         avplay/frame_detect.c \
         avplay/bitstream.c
         
+        
+#--------------- SYNC ------------------
+SRCS += sync/mpi_sync.c
+        
 #-------------------------------------
 
 CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
