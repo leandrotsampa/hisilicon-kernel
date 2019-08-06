@@ -52,7 +52,18 @@ SRCS += pq/mpi_pq.c \
         
 #--------------- SYNC ------------------
 SRCS += sync/mpi_sync.c
+
+#--------------- ADEC ------------------
+
+SRCS += adec/mpi_adec.c \
+        adec/mpi_adec_core.c
         
+ADEC_IMPLE_OBJ := adec/mpi_adec_imple.o
+        
+ADEC_IMPLE_LIBNAME := libhi_adecimple.a
+
+ADEC_IMPLE64_LIB := $(MSP_DIR)/api/adec/lib/$(CFG_HI_AARCH64_TOOLCHAINS_NAME)/$(ADEC_IMPLE_LIBNAME)
+                
 #--------------- AO ------------------
 CFLAGS += -I$(MSP_DIR)/drv/adsp/adsp_v1_1/include
 
@@ -102,7 +113,7 @@ install: all
 	$(AT)cp -f $(LIBS).so $(SHARED_LIB_DIR)
 	$(AT)make -C gpu all 
 
-$(LIBS): $(OBJS)
+$(LIBS): $(OBJS) $(ADEC_IMPLE_OBJ)
 	$(AT)$(AR) -rcs $@.a $^
 ifndef CFG_HI_STATIC_LIB_ONLY
 	$(AT)$(CC) -shared -o $@.so $^
@@ -113,3 +124,8 @@ ${OBJS}: %.o : %.c
 	$(AT)echo "Compiling $@..."
 	$(AT)$(CC) $(CFG_HI_CFLAGS) $(CFLAGS) -c $< -o $@
 
+$(ADEC_IMPLE_OBJ): $(ADEC_IMPLE64_LIB)
+	cd adec; $(AR) -x $(ADEC_IMPLE64_LIB)
+
+	
+	
