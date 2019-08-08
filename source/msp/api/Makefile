@@ -31,6 +31,17 @@ SRCS += vo/unf_vo.c \
         vo/win_ratio.c \
         vo/mpi_edid.c
 
+#--------------- DEMUX ------------------
+
+DEMUX_VER := demux_v2
+
+CFLAGS += -I$(MSP_DIR)/drv/demux/$(DEMUX_VER)
+
+SRCS += demux/$(DEMUX_VER)/mpi_demux.c \
+        demux/$(DEMUX_VER)/unf_demux.c \
+        demux/$(DEMUX_VER)/mpi_descrambler.c \
+        demux/$(DEMUX_VER)/unf_descrambler.c
+        
 #--------------- TDE ------------------
 
 SRCS += tde/unf_tde.c
