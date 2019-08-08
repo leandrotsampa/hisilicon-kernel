@@ -100,14 +100,14 @@ static pthread_mutex_t  g_AvplayMutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 /* video buffer dither waterline */
-/* CNcomment: ÊÓÆµ»º³å¹ÜÀí¶¶¶¯Ë®ÏßµÄ°Ù·Ö±È£¬0-99 */
+/* CNcomment: ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë®ï¿½ßµÄ°Ù·Ö±È£ï¿½0-99 */
 #define    AVPLAY_ES_VID_FULL_PERCENT    85
 #define    AVPLAY_ES_VID_HIGH_PERCENT    70
 #define    AVPLAY_ES_VID_LOW_PERCENT     30
 #define    AVPLAY_ES_VID_EMPTY_PERCENT   10
 
 /* audio buffer dither waterline */
-/* CNcomment: ÒôÆµ»º³å¹ÜÀí¶¶¶¯Ë®ÏßµÄ°Ù·Ö±È£¬0-99 */
+/* CNcomment: ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë®ï¿½ßµÄ°Ù·Ö±È£ï¿½0-99 */
 #define    AVPLAY_ES_AUD_FULL_PERCENT    98
 #define    AVPLAY_ES_AUD_HIGH_PERCENT    85
 #define    AVPLAY_ES_AUD_LOW_PERCENT     5
@@ -261,11 +261,11 @@ typedef struct
 
     /*frc parameters*/
     HI_BOOL                         bFrcEnable;
-    AVPLAY_FRC_CFG_S                FrcParamCfg;        /* config frc param */ /*CNcomment: ÅäÖÃµÄfrc²ÎÊý */
-    AVPLAY_ALG_FRC_S                FrcCalAlg;          /* frc used rate info */ /*CNcomment: frcÕýÔÚÊ¹ÓÃµÄÖ¡ÂÊÐÅÏ¢ */
-    AVPLAY_FRC_CTRL_S               FrcCtrlInfo;        /* frc control */ /*CNcomment: frc¿ØÖÆÐÅÏ¢ */
-    HI_U32                          FrcNeedPlayCnt;     /* this frame need to play time*/ /*CNcomment:¸ÃÖ¡ÐèÒª²¥¼¸´Î */
-    HI_U32                          FrcCurPlayCnt;      /* this frame had played time*/   /*CNcomment:¸ÃÖ¡Êµ¼Ê²¥µ½µÚ¼¸´Î*/
+    AVPLAY_FRC_CFG_S                FrcParamCfg;        /* config frc param */ /*CNcomment: ï¿½ï¿½ï¿½Ãµï¿½frcï¿½ï¿½ï¿½ï¿½ */
+    AVPLAY_ALG_FRC_S                FrcCalAlg;          /* frc used rate info */ /*CNcomment: frcï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½Ö¡ï¿½ï¿½ï¿½ï¿½Ï¢ */
+    AVPLAY_FRC_CTRL_S               FrcCtrlInfo;        /* frc control */ /*CNcomment: frcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
+    HI_U32                          FrcNeedPlayCnt;     /* this frame need to play time*/ /*CNcomment:ï¿½ï¿½Ö¡ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+    HI_U32                          FrcCurPlayCnt;      /* this frame had played time*/   /*CNcomment:ï¿½ï¿½Ö¡Êµï¿½Ê²ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½*/
 
     /*flush stream control*/
     HI_BOOL                         bSetEosFlag;
@@ -8389,7 +8389,7 @@ HI_S32 AVPLAY_DetachWindow(AVPLAY_S *pAvplay, HI_HANDLE hWin)
         return HI_ERR_AVPLAY_INVALID_OPT;
     }
 
-    /* homologous window*/ /* CNcomment: Í¬Ô´´°¿Ú */
+    /* homologous window*/ /* CNcomment: Í¬Ô´ï¿½ï¿½ï¿½ï¿½ */
     if (HI_DRV_WIN_ACTIVE_MAIN_AND_SLAVE == WinInfo.eType)
     {
         if (pAvplay->MasterFrmChn.hWindow != WinInfo.hPrim)
@@ -8464,7 +8464,7 @@ HI_S32 AVPLAY_DetachWindow(AVPLAY_S *pAvplay, HI_HANDLE hWin)
         pAvplay->hSharedOrgWin = HI_INVALID_HANDLE;
 
     }
-    /*  analogous master window*/ /* CNcomment: ·ÇÍ¬Ô´ Ö÷´°¿Ú¼°´Ó´°¿Ú */
+    /*  analogous master window*/ /* CNcomment: ï¿½ï¿½Í¬Ô´ ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ */
     else if (HI_DRV_WIN_ACTIVE_SINGLE == WinInfo.eType)
     {
         if (pAvplay->MasterFrmChn.hWindow == hWin)
@@ -8534,7 +8534,7 @@ HI_S32 AVPLAY_DetachWindow(AVPLAY_S *pAvplay, HI_HANDLE hWin)
             pAvplay->SlaveFrmChn[i].hPort = HI_INVALID_HANDLE;
         }
     }
-    /* analogous virtual window*/ /* CNcomment ·ÇÍ¬Ô´ ÐéÄâ´°¿Ú*/
+    /* analogous virtual window*/ /* CNcomment ï¿½ï¿½Í¬Ô´ ï¿½ï¿½ï¿½â´°ï¿½ï¿½*/
     else
     {
         for (i = 0; i < AVPLAY_MAX_VIR_FRMCHAN; i++)
@@ -12679,7 +12679,7 @@ HI_S32 HI_MPI_AVPLAY_GetSndHandle(HI_HANDLE hAvplay, HI_HANDLE *phTrack)
     return HI_SUCCESS;
 }
 
-// TODO: È·ÈÏ¸Ã½Ó¿ÚÄÜ·ñÉ¾³ý
+// TODO: È·ï¿½Ï¸Ã½Ó¿ï¿½ï¿½Ü·ï¿½É¾ï¿½ï¿½
 HI_S32 HI_MPI_AVPLAY_GetWindowHandle(HI_HANDLE hAvplay, HI_HANDLE *phWindow)
 {
     HI_U32      Id = GET_AVPLAY_ID(hAvplay);
@@ -12757,7 +12757,7 @@ HI_S32 HI_MPI_AVPLAY_DetachWindow(HI_HANDLE hAvplay, HI_HANDLE hWindow)
 }
 
 
-// TODO: È·ÈÏ¸Ã¹¦ÄÜÊÇ·ñ»¹ÐèÒª
+// TODO: È·ï¿½Ï¸Ã¹ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Òª
 HI_S32 HI_MPI_AVPLAY_SetWindowRepeat(HI_HANDLE hAvplay, HI_U32 u32Repeat)
 {
     HI_U32      Id = GET_AVPLAY_ID(hAvplay);
@@ -13489,7 +13489,12 @@ HI_S32 HI_MPI_AVPLAY_RlsUserData(HI_HANDLE hAvplay, HI_UNF_VIDEO_USERDATA_S* pst
         return HI_ERR_AVPLAY_INVALID_OPT;
     }
 
+#if 0 //Spitzbube
     Ret = HI_MPI_VDEC_RlsUserData(pAvplay->hVdec, pstUserData);
+#else
+    Ret = HI_MPI_VDEC_RlsUserData(pAvplay->hVdec, pstUserData, NULL);
+    HI_ERR_AVPLAY("HI_MPI_VDEC_RlsUserData: unsupported signature.\n");
+#endif
     if (HI_SUCCESS != Ret)
     {
         AVPLAY_INST_UNLOCK(Id);

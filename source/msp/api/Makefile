@@ -43,7 +43,7 @@ SRCS += pq/mpi_pq.c \
 
 #--------------- AVPLAY ------------------
 
-#SRCS += avplay/mpi_avplay.c \
+SRCS += avplay/mpi_avplay.c \
         avplay/unf_avplay.c \
         avplay/avplay_frc.c \
         avplay/frame_detect.c \
