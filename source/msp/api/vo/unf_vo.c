@@ -406,7 +406,6 @@ HI_S32 HI_UNF_VO_GetWindowZorder(HI_HANDLE hWindow, HI_U32* pu32Zorder)
     return s32Ret;
 }
 
-#if 0 //Spitzbube
 HI_S32 HI_UNF_VO_AttachWindow(HI_HANDLE hWindow, HI_HANDLE hSrc)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -466,7 +465,6 @@ HI_S32 HI_UNF_VO_DetachWindow(HI_HANDLE hWindow, HI_HANDLE hSrc)
 
     return HI_SUCCESS;
 }
-#endif //Spitzbube
 
 #if 0
 HI_S32 HI_UNF_VO_SetFrostGlassLevel(HI_HANDLE hWindow, HI_UNF_WINDOW_FROST_E enWinFrostMode)
