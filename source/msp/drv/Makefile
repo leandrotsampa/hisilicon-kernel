@@ -3,7 +3,7 @@ objects := pq hdmi vo hifb tde jpeg
 
 objects += demux
 
-objects += sync adsp adec vfmw vdec omxvdec
+objects += sync adsp adec vfmw vdec mce omxvdec
 
 objects += gfx2d
 
