@@ -9,6 +9,7 @@ include $(SDK_DIR)/base.mak
 #	local varibale
 #=======================================
 
+CFLAGS += -I$(MSP_DIR)/api/higo/include
 CFLAGS += -I$(MSP_DIR)/api/tde/include
 
 #--------------- HDMI ------------------
@@ -126,6 +127,9 @@ SRCS += vdec/$(VDEC_VER)/hi_codec.c \
         vdec/$(VDEC_VER)/mpi_vdec_adapter.c \
         vdec/$(VDEC_VER)/mpi_vdec.c
         
+#--------------- MCE ------------------
+SRCS += mce/unf_mce.c
+
 #-------------------------------------
 
 CFG_HI_CFLAGS += -I$(COMMON_UNF_INCLUDE) \
