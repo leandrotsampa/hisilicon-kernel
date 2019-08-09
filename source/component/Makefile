@@ -9,6 +9,8 @@ include $(SDK_DIR)/base.mak
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 objects := ha_codec
 
+objects += subtoutput
+
 depends := $(objects)
 
 depends += hiplayer
