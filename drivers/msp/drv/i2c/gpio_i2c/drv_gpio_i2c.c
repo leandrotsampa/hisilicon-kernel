@@ -44,7 +44,7 @@
 static HI_U32 g_GpioI2cPhyAddr[HI_GPIO_MAX_GROUP_NUM]={HI_GPIO_0_ADDR,HI_GPIO_1_ADDR,HI_GPIO_2_ADDR,HI_GPIO_3_ADDR,HI_GPIO_4_ADDR,\
                                                     HI_GPIO_5_ADDR,HI_GPIO_6_ADDR,HI_GPIO_7_ADDR,HI_GPIO_8_ADDR};
 
-#elif defined(CHIP_TYPE_hi3719mv100)|| defined(CHIP_TYPE_hi3798mv200)||defined(CHIP_TYPE_hi3798mv200_a)||defined(CHIP_TYPE_hi3796mv200)
+#elif defined(CHIP_TYPE_hi3719mv100)|| defined(CHIP_TYPE_hi3796mv200)
 
 static HI_U32 g_GpioI2cPhyAddr[HI_GPIO_MAX_GROUP_NUM]={HI_GPIO_0_ADDR,HI_GPIO_1_ADDR,HI_GPIO_2_ADDR,HI_GPIO_3_ADDR,HI_GPIO_4_ADDR,\
                                                     HI_GPIO_5_ADDR,HI_GPIO_6_ADDR,HI_GPIO_7_ADDR,HI_GPIO_8_ADDR,HI_GPIO_9_ADDR};
@@ -60,7 +60,7 @@ static HI_U32 g_GpioI2cPhyAddr[HI_GPIO_MAX_GROUP_NUM]={HI_GPIO_0_ADDR,HI_GPIO_1_
                                                     HI_GPIO_5_ADDR,HI_GPIO_6_ADDR,HI_GPIO_7_ADDR,HI_GPIO_8_ADDR,HI_GPIO_9_ADDR,\
                                                     HI_GPIO_10_ADDR};
 
-#elif defined(CHIP_TYPE_hi3798cv200)
+#elif defined(CHIP_TYPE_hi3798cv200) || defined(CHIP_TYPE_hi3798mv200) || defined(CHIP_TYPE_hi3798mv200_a)
 
 static HI_U32 g_GpioI2cPhyAddr[HI_GPIO_MAX_GROUP_NUM]={HI_GPIO_0_ADDR,HI_GPIO_1_ADDR,HI_GPIO_2_ADDR,HI_GPIO_3_ADDR,HI_GPIO_4_ADDR,\
                                                     HI_GPIO_5_ADDR,HI_GPIO_6_ADDR,HI_GPIO_7_ADDR,HI_GPIO_8_ADDR,HI_GPIO_9_ADDR,\

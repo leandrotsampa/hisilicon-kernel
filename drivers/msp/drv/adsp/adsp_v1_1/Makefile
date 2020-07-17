@@ -95,19 +95,8 @@ EXTRA_CFLAGS += -I$(ASRC_DIR)/inc
 EXTRA_CFLAGS += -DHI_SND_IMEDIA_SRC_SUPPORT
 endif
 
-$(warning $(O))
-
-ifeq ($(O),)
-ADSP_EXT_LIB_DIR := $(HI_OUT_DIR)/$(OBJ_NAME)/$(subst $(SDK_DIR)/,,$(ASRC_DIR)/lib)
-else
-ADSP_EXT_LIB_DIR := $(O)/drivers/msp/drv/adsp/adsp_v1_1/external/ASRC_ARM/lib
-endif
-
-$(warning $(ADSP_EXT_LIB_DIR))
-
 ifeq ($(CFG_HI_CPU_ARCH),arm)
-$(shell mkdir -p $(ADSP_EXT_LIB_DIR))
-$(shell cp $(ASRC_DIR)/lib/libimedia_asrc_arma9.lib $(ADSP_EXT_LIB_DIR)/libimedia_asrc_arma9.a)
+$(shell cp $(ASRC_DIR)/lib/libimedia_asrc_arma9.lib $(ASRC_DIR)/lib/libimedia_asrc_arma9.a)
 
 $(MOD_NAME)-y += ./external/ASRC_ARM/lib/libimedia_asrc_arma9.a
 endif

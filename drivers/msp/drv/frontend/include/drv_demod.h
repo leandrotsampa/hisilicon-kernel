@@ -750,6 +750,33 @@ extern HI_S32   mxl68x_set_ter_attr(HI_U32 u32TunerPort, HI_UNF_TUNER_TER_ATTR_S
 //extern HI_S32   mxl68x_get_powerspecdata(HI_U32 u32TunerPort, HI_U32 u32freqStartInHz,HI_U32 u32freqStepInHz,HI_U32 u32numOfFreqSteps,HI_S16 *ps16powerData);
 #endif
 
+//for gx1132
+#ifdef DEMOD_DEV_TYPE_GX1132
+extern HI_S32 gx1132_init(HI_U32 u32TunerPort, HI_U8 enI2cChannel, HI_UNF_TUNER_DEV_TYPE_E enTunerDevType);
+extern HI_S32 gx1132_connect(HI_U32 u32TunerPort, TUNER_ACC_QAM_PARAMS_S *pstChannel);
+extern HI_S32 gx1132_get_snr(HI_U32 u32TunerPort, HI_U32* pu32SNR);
+extern HI_S32 gx1132_set_ts_type(HI_U32 u32TunerPort, HI_UNF_TUNER_OUPUT_MODE_E enTsType);
+extern HI_S32 gx1132_get_status (HI_U32 u32TunerPort, HI_UNF_TUNER_LOCK_STATUS_E  *penTunerStatus);
+extern HI_S32 gx1132_get_ber(HI_U32 u32TunerPort, HI_U32* pu32ber);
+extern HI_S32 gx1132_get_signal_strength(HI_U32 u32TunerPort, HI_U32* pu32SignalStrength);
+extern HI_S32 gx1132_send_continuous_22K(HI_U32 u32TunerPort, HI_U32 u32Continuous22K);
+extern HI_S32 gx1132_send_tone(HI_U32 u32TunerPort, HI_U32 u32Tone);
+extern HI_S32 gx1132_DiSEqC_send_msg(HI_U32 u32TunerPort, HI_UNF_TUNER_DISEQC_SENDMSG_S *pstSendMsg);
+extern HI_S32 gx1132_DiSEqC_recv_msg(HI_U32 u32TunerPort, HI_UNF_TUNER_DISEQC_RECVMSG_S *pstRecvMsg);
+#endif
+
+//for fc8300
+#ifdef DEMOD_DEV_TYPE_FC8300
+extern HI_S32 _fc8300_init(HI_U32 u32TunerPort, HI_U8 enI2cChannel, HI_UNF_TUNER_DEV_TYPE_E enTunerDevType);
+extern HI_S32 _fc8300_connect(HI_U32 u32TunerPort, TUNER_ACC_QAM_PARAMS_S *pstChannel);
+extern HI_S32 _fc8300_get_snr(HI_U32 u32TunerPort, HI_U32* pu32SNR);
+extern HI_S32 _fc8300_set_ts_type(HI_U32 u32TunerPort, HI_UNF_TUNER_OUPUT_MODE_E enTsType);
+extern HI_VOID _fc8300_connect_timeout(HI_U32 u32ConnectTimeout);
+extern HI_S32 _fc8300_get_status (HI_U32 u32TunerPort, HI_UNF_TUNER_LOCK_STATUS_E  *penTunerStatus);
+extern HI_S32 _fc8300_get_ber(HI_U32 u32TunerPort, HI_U32* pu32ber);
+extern HI_S32 _fc8300_get_signal_strength(HI_U32 u32TunerPort, HI_U32* pu32SignalStrength);
+#endif
+
 #ifdef DEMOD_DEV_TYPE_TP5001
 extern HI_S32 tp5001_demod_init(HI_U32 u32TunerPort, HI_U8 enI2cChannel, HI_UNF_TUNER_DEV_TYPE_E enTunerDevType);
 extern HI_S32 tp5001_demod_set_sat_attr(HI_U32 u32TunerPort, HI_UNF_TUNER_SAT_ATTR_S *pstSatTunerAttr);

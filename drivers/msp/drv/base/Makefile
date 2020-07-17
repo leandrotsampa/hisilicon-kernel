@@ -18,12 +18,12 @@ endif
 #===============================================================================
 EXTRA_CFLAGS += $(CFG_HI_KMOD_CFLAGS)
 
-EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                 \
+EXTRA_CFLAGS += -I$(COMMON_DRV_INCLUDE)                 \
+                -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(COMMON_API_INCLUDE)                 \
-                -I$(COMMON_DRV_INCLUDE)                 \
+                -I$(MSP_DRV_INCLUDE)                    \
                 -I$(MSP_UNF_INCLUDE)                    \
                 -I$(MSP_API_INCLUDE)                    \
-                -I$(MSP_DRV_INCLUDE)                    \
                 -I$(MSP_DIR)/api/higo/include	        \
                 -I$(MSP_DIR)/api/tde/include	        \
                 -I$(MSP_DIR)/api/jpge/include	        \
@@ -106,6 +106,18 @@ endif
 ifeq ($(CFG_HI_HDMI_RX_SUPPORT),y)
 EXTRA_CFLAGS += -DHI_VI_REAL_SUPPORT
 EXTRA_CFLAGS += -DHI_HDMI_RX_SUPPORT
+endif
+
+ifeq ($(CFG_HI_FB),y)
+EXTRA_CFLAGS += -DHI_FB_ENABLED
+endif
+
+ifeq ($(CONFIG_HISI_IR),y)
+EXTRA_CFLAGS += -DHI_IR_DISABLED
+endif
+
+ifeq ($(CFG_HI_SND_ALSA_AO_SUPPORT),y)
+EXTRA_CFLAGS += -DHI_ALSA_AO_SUPPORT
 endif
 
 MOD_NAME := hi_base

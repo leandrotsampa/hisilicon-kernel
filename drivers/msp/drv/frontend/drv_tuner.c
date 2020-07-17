@@ -812,6 +812,25 @@ static HI_VOID select_demod_mxl2x4(HI_U32 u32TunerPort)
 }
 #endif
 
+#if defined(DEMOD_DEV_TYPE_GX1132)
+static HI_VOID select_demod_gx1132(HI_U32 u32TunerPort)
+{
+	g_stTunerOps[u32TunerPort].demod_init = gx1132_init;	
+	g_stTunerOps[u32TunerPort].tuner_connect = gx1132_connect;
+	g_stTunerOps[u32TunerPort].tuner_get_status = gx1132_get_status;
+	g_stTunerOps[u32TunerPort].tuner_get_ber = gx1132_get_ber;
+	g_stTunerOps[u32TunerPort].tuner_get_snr = gx1132_get_snr;
+	g_stTunerOps[u32TunerPort].tuner_get_signal_strength  = gx1132_get_signal_strength; 		   
+	g_stTunerOps[u32TunerPort].tuner_set_ts_type = gx1132_set_ts_type;
+
+	g_stTunerOps[u32TunerPort].tuner_set_lnb_out = HI_NULL;
+	g_stTunerOps[u32TunerPort].tuner_send_continuous_22K = gx1132_send_continuous_22K;
+	g_stTunerOps[u32TunerPort].tuner_send_tone = gx1132_send_tone;
+	g_stTunerOps[u32TunerPort].tuner_DiSEqC_send_msg = gx1132_DiSEqC_send_msg;
+	g_stTunerOps[u32TunerPort].tuner_DiSEqC_recv_msg = gx1132_DiSEqC_recv_msg;
+}
+#endif
+
 #if defined(DEMOD_DEV_TYPE_TDA18280)
 static HI_VOID select_demod_tda18280(HI_U32 u32TunerPort)
 {
@@ -859,6 +878,20 @@ static HI_VOID select_demod_mxl68x(HI_U32 u32TunerPort)
     g_stTunerOps[u32TunerPort].tuner_set_ter_attr = mxl68x_set_ter_attr;
     //g_stTunerOps[u32TunerPort].tuner_get_signal_info = mxl68x_get_signal_info;
     //g_stTunerOps[u32TunerPort].tuner_get_powerspecdata =  mxl68x_get_powerspecdata;
+}
+#endif
+
+#if defined(DEMOD_DEV_TYPE_FC8300)
+static HI_VOID select_demod_fc8300(HI_U32 u32TunerPort)
+{
+    g_stTunerOps[u32TunerPort].demod_init = _fc8300_init;
+    g_stTunerOps[u32TunerPort].tuner_connect = _fc8300_connect;
+    g_stTunerOps[u32TunerPort].tuner_get_status = _fc8300_get_status;
+    g_stTunerOps[u32TunerPort].tuner_get_ber = _fc8300_get_ber;
+    g_stTunerOps[u32TunerPort].tuner_get_snr = _fc8300_get_snr;
+    g_stTunerOps[u32TunerPort].tuner_get_signal_strength  = _fc8300_get_signal_strength;
+    g_stTunerOps[u32TunerPort].tuner_set_ts_type = _fc8300_set_ts_type;
+    g_stTunerOps[u32TunerPort].tuner_connect_timeout = _fc8300_connect_timeout;
 }
 #endif
 
@@ -1004,6 +1037,16 @@ static HI_S32 select_demod_type(HI_U32 u32TunerPort, HI_U32 u32ResetGpioNo)
             break;
         }
 #endif
+
+#if defined(DEMOD_DEV_TYPE_GX1132)
+        case HI_UNF_DEMOD_DEV_TYPE_GX1132:
+        {
+			bChipReset = HI_TRUE;
+            select_demod_gx1132(u32TunerPort);
+            break;
+        }
+#endif
+
 #if defined(DEMOD_DEV_TYPE_TDA18280)
         case HI_UNF_DEMOD_DEV_TYPE_TDA18280:
         {
@@ -1026,6 +1069,14 @@ static HI_S32 select_demod_type(HI_U32 u32TunerPort, HI_U32 u32ResetGpioNo)
         {
             bChipReset = HI_TRUE;
             select_demod_mxl68x(u32TunerPort);
+            break;
+        }
+#endif
+
+#if defined(DEMOD_DEV_TYPE_FC8300)
+        case HI_UNF_DEMOD_DEV_TYPE_FC8300:
+        {
+            select_demod_fc8300(u32TunerPort);
             break;
         }
 #endif
@@ -1438,6 +1489,19 @@ HI_S32 tuner_set_sat_attr(HI_U32 u32TunerPort, HI_UNF_TUNER_SAT_ATTR_S *pstSatTu
             break;
         }
 #endif
+
+#if defined(DEMOD_DEV_TYPE_GX1132)
+		case HI_UNF_DEMOD_DEV_TYPE_GX1132:
+        {
+            g_stTunerOps[u32TunerPort].tuner_set_lnb_out = HI_NULL;
+            g_stTunerOps[u32TunerPort].tuner_send_continuous_22K = gx1132_send_continuous_22K;
+            g_stTunerOps[u32TunerPort].tuner_send_tone = gx1132_send_tone;
+            g_stTunerOps[u32TunerPort].tuner_DiSEqC_send_msg = gx1132_DiSEqC_send_msg;
+            g_stTunerOps[u32TunerPort].tuner_DiSEqC_recv_msg = gx1132_DiSEqC_recv_msg;
+            break;
+        }
+#endif
+
         default:
         {
             HI_INFO_TUNER("Demod type error! Not sat demod!\n");
@@ -7655,8 +7719,6 @@ static HI_S32 HI_DRV_TUNER_Connect_C(HI_U32 u32tunerId, const HI_UNF_TUNER_CONNE
     stSignal.unSRBW.u32SymbolRate = pstConnectPara->unConnectPara.stCab.u32SymbolRate;
     stSignal.bSI = pstConnectPara->unConnectPara.stCab.bReverse;
 
-    stSignal.u8DVBTMode = 2; //zhaobaoren
-
     switch(pstConnectPara->unConnectPara.stCab.enModType)
     {
         case HI_UNF_MOD_TYPE_QAM_16:
@@ -8029,16 +8091,9 @@ static HI_S32 HI_DRV_TUNER_Connect_T(HI_U32 u32tunerId, const HI_UNF_TUNER_CONNE
     }
     stSignal.u32Frequency                = pstConnectPara->unConnectPara.stTer.u32Freq;
     stSignal.unSRBW.u32BandWidth         = pstConnectPara->unConnectPara.stTer.u32BandWidth;
-    //stSignal.bSI                         = pstConnectPara->unConnectPara.stTer.bReverse;
-    if(pstConnectPara->enSigType == HI_UNF_TUNER_SIG_TYPE_DVB_T)
-    {
-        stSignal.unTer.enDVBT                = pstConnectPara->unConnectPara.stTer.enDVBTPrio;
-    }
-    else
-    {
-        stSignal.unTer.enDVBT2.enChannelAttr = pstConnectPara->unConnectPara.stTer.enChannelMode;
-        stSignal.unTer.enDVBT2.u8PlpId       = pstConnectPara->unConnectPara.stTer.bReverse;
-    }
+    stSignal.bSI                         = pstConnectPara->unConnectPara.stTer.bReverse;
+    stSignal.unTer.enDVBT2.enChannelAttr = pstConnectPara->unConnectPara.stTer.enChannelMode;
+    stSignal.unTer.enDVBT                = pstConnectPara->unConnectPara.stTer.enDVBTPrio;
     stSignal.u8DVBTMode                  = (pstConnectPara->enSigType == HI_UNF_TUNER_SIG_TYPE_DVB_T) ? 1 : 0;
 
     s32Ret = down_interruptible(&g_TunerMutex);

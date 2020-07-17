@@ -2,14 +2,14 @@
 export KBUILD_EXTRA_SYMBOLS += $(COMMON_DIR)/drv/Module.symvers
 
 #SDK include header files
-export EXTRA_CFLAGS += -I$(SDK_DIR)/source/msp/drv/gpu/mali700/include                \
-                -I$(SDK_DIR)/source/msp/drv/gpu/mali700/drivers/gpu/arm/midgard       \
+export EXTRA_CFLAGS += -I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/include                \
+                -I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/drivers/gpu/arm/midgard       \
                 -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(COMMON_DRV_INCLUDE)                 \
                 -I$(MSP_DRV_INCLUDE)    
 
-export ccflags-y += -I$(SDK_DIR)/source/msp/drv/gpu/mali700/include                   \
-                -I$(SDK_DIR)/source/msp/drv/gpu/mali700/drivers/gpu/arm/midgard       \
+export ccflags-y += -I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/include                   \
+                -I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/drivers/gpu/arm/midgard       \
                 -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(COMMON_DRV_INCLUDE)                 \
                 -I$(MSP_DRV_INCLUDE)    

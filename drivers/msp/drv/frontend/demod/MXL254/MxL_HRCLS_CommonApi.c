@@ -1708,7 +1708,7 @@ MXL_HRCLS_API MXL_STATUS_E MxLWare_HRCLS_API_ReqTunerPowerSpectrum(
               stepsReq = SPECTRUM_BIN_LIMIT;
             }
             MXLDBG2(MxL_HRCLS_DEBUG("currFreqStartInHz =%d, stepsReq =%d\n", currFreqStartInHz, stepsReq););
-            status |= MxL_HRCLS_Ctrl_CfgTunerFFTRunMode(devContextPtr, MXL_HRCLS_FFT_MODE_SPECTRUM_API, (MXL_HRCLS_FFT_SOURCE_TYPE_E)00(MXL_HRCLS_FFT_DEBUG_TYPE_E) 0currFreqStartInHz, freqStepInHz, stepsReq);
+            status |= MxL_HRCLS_Ctrl_CfgTunerFFTRunMode(devContextPtr, MXL_HRCLS_FFT_MODE_SPECTRUM_API, (MXL_HRCLS_FFT_SOURCE_TYPE_E)0/*D/C*/, 0/*D/C*/, (MXL_HRCLS_FFT_DEBUG_TYPE_E) 0/*D/C*/, currFreqStartInHz, freqStepInHz, stepsReq);
             if (MXL_SUCCESS == status)
             {
 #ifndef _MXL_DIAG_ENABLED_              

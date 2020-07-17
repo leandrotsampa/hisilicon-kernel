@@ -172,6 +172,65 @@ HI_VOID DmxDestroyAllDescrambler(Dmx_Set_S *DmxSet, struct file * file)
     mutex_unlock(&DmxSet->LockAllKey);
 }
 
+/******* proc function begin ********/
+#ifdef HI_DEMUX_PROC_SUPPORT
+HI_S32 DMXKeyProcRead(struct seq_file *p, HI_VOID *v)
+{
+    Dmx_Cluster_S *DmxCluster = GetDmxCluster();
+    Dmx_Set_S *DmxSet = HI_NULL;
+
+    if (DMX_CLUSTER_INACTIVED == DmxCluster->Ops->GetClusterState())
+    {
+        HI_WARN_DEMUX("Demux cluster has not started.\n");
+        goto out;
+    }
+
+    PROC_PRINT(p, "DmxId KeyId ChnCnt AttachCnt DetachCnt SetEvenKeyCnt SetOddKeyCnt EvenKey                             OddKey\n");
+
+    TraverseForEachDmxSet(DmxSet, &DmxCluster->head)
+    {
+        HI_U32 KeyId;
+
+        mutex_lock(&DmxSet->LockAllKey);
+
+        for_each_set_bit(KeyId, DmxSet->KeyBitmap, DmxSet->DmxKeyCnt)
+        {
+            if (HI_SUCCESS == DmxGetKeyInstance(DmxSet, KeyId))
+            {
+                DMX_KeyInfo_S *KeyInfo = &DmxSet->DmxKeyInfo[KeyId];
+
+                BUG_ON(KeyInfo->CaType == HI_UNF_DMX_CA_BUTT);
+
+                PROC_PRINT(p, "  %u    %u      %u        %d         %d          %d             %d       %08x %08x %08x %08x %08x %08x %08x %08x\n",
+                    KeyInfo->DmxId,
+                    KeyId,
+                    KeyInfo->ChanCount,
+                    KeyInfo->AttachDescCnt,
+                    KeyInfo->DetachDescCnt,
+                    KeyInfo->SetEvenKeyCnt,
+                    KeyInfo->SetOddKeyCnt,
+                    KeyInfo->EvenKey[0],
+                    KeyInfo->EvenKey[1],
+                    KeyInfo->EvenKey[2],
+                    KeyInfo->EvenKey[3],
+                    KeyInfo->OddKey[0],
+                    KeyInfo->OddKey[1],
+                    KeyInfo->OddKey[2],
+                    KeyInfo->OddKey[3]
+                );
+
+                DmxPutKeyInstance(DmxSet, KeyId);
+            }
+        }
+
+        mutex_unlock(&DmxSet->LockAllKey);
+    }
+
+out:
+    return HI_SUCCESS;
+}
+#endif
+/******* proc function end ********/
 
 HI_S32 HI_DRV_DMX_CreateDescrambler(HI_U32 DmxId, HI_UNF_DMX_DESCRAMBLER_ATTR_S *DescAttr, HI_HANDLE *KeyHandle, HI_VOID *file)
 {

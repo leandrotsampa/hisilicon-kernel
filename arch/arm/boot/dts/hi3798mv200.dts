@@ -410,7 +410,7 @@
 				reg = <0xf8001000 0x1000>;
 				interrupts = <0 47 4>;
 				clocks = <&hisilicon_clock HIIR_CLK>;
-				linux,rc-map-name = "rc-hisi";
+				linux,rc-map-name = "rc-atto";
 			};
 
 			armv7-pmu {

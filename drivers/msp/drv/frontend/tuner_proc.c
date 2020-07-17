@@ -319,6 +319,12 @@ static HI_VOID tuner_proc_get_demod_type(HI_U32 u32TunerPort, HI_CHAR acDemodTyp
         case HI_UNF_DEMOD_DEV_TYPE_MXL683:
             strncpy(acDemodType, "mxl683", u32ArrayLen);
             break;
+		case HI_UNF_DEMOD_DEV_TYPE_GX1132:
+            strncpy(acDemodType, "gx1132", u32ArrayLen);
+            break;
+		case HI_UNF_DEMOD_DEV_TYPE_FC8300:
+            strncpy(acDemodType, "fc8300", u32ArrayLen);
+            break;
         case HI_UNF_DEMOD_DEV_TYPE_TP5001:
             strncpy(acDemodType, "TP5001", u32ArrayLen);
             break;

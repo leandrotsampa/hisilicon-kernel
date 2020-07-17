@@ -3303,6 +3303,7 @@ HI_S32 DISP_GetFormat(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_STEREO_MODE_E* penSte
 
     return HI_SUCCESS;
 }
+EXPORT_SYMBOL(DISP_GetFormat);
 
 HI_S32 DISP_SetRightEyeFirst(HI_DRV_DISPLAY_E enDisp, HI_BOOL bEnable)
 {
@@ -3545,6 +3546,7 @@ HI_S32 DISP_GetScreenOffset(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_OFFSET_S* pstSc
 //set aspect ratio
 HI_S32 DISP_SetAspectRatio(HI_DRV_DISPLAY_E enDisp, HI_U32 u32Ratio_h, HI_U32 u32Ratio_v)
 {
+
     DISP_S* pstDisp;
 
     DispCheckDeviceState();
@@ -3582,6 +3584,7 @@ HI_S32 DISP_SetAspectRatio(HI_DRV_DISPLAY_E enDisp, HI_U32 u32Ratio_h, HI_U32 u3
 
     return HI_SUCCESS;
 }
+EXPORT_SYMBOL(DISP_SetAspectRatio);
 
 HI_S32 DISP_GetAspectRatio(HI_DRV_DISPLAY_E enDisp, HI_U32* pu32Ratio_h, HI_U32* pu32Ratio_v)
 {

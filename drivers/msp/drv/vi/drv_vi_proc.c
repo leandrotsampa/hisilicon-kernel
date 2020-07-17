@@ -301,7 +301,7 @@ static HI_S32 VI_DRV_ProcRead(struct seq_file* p, HI_VOID* v)
     if (HI_FALSE == q->stAttr.bVirtual)
     {
         PROC_PRINT(p,
-                   "InputRect           :%d\n"
+                   "InputRect           :%d/%d/%d/%d\n"
                    "InputMode           :%s\n"
                    "VideoFormat         :%s\n"
                    "BufferMgmt          :%s\n",
@@ -313,7 +313,7 @@ static HI_S32 VI_DRV_ProcRead(struct seq_file* p, HI_VOID* v)
     else
     {
         PROC_PRINT(p,
-                   "InputRect           :%d\n",
+                   "InputRect           :%d/%d/%d/%d\n",
                    0, 0, q->stFrame[0].u32Width, q->stFrame[0].u32Height);
     }
 

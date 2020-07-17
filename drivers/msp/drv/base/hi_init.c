@@ -76,6 +76,12 @@
 #include "drv_cimaxplus_ext.h"
 #include "drv_hdmirx_ext.h"
 
+#ifdef HI_ALSA_AO_SUPPORT
+extern HI_S32 HI_DRV_AO_SND_Init(struct file* pfile);
+extern HI_S32 HI_DRV_AO_SND_GetDefaultOpenAttr(HI_UNF_SND_E enSound, DRV_SND_ATTR_S* pstAttr);
+extern HI_S32 HI_DRV_AO_SND_Open(HI_UNF_SND_E enSound, DRV_SND_ATTR_S* pstAttr, struct file*  pfile);
+#endif
+
 #ifndef MODULE
 HI_S32 HI_DRV_LoadModules(HI_VOID)
 {
@@ -85,7 +91,7 @@ HI_S32 HI_DRV_LoadModules(HI_VOID)
     GPIOI2C_DRV_ModInit();
 #endif
 
-#ifndef HI_IR_TYPE_LIRC
+#if !defined(HI_IR_TYPE_LIRC) && !defined(HI_IR_DISABLED)
     IR_DRV_ModInit();
 #endif
 
@@ -99,7 +105,9 @@ HI_S32 HI_DRV_LoadModules(HI_VOID)
 
     TDE_DRV_ModInit();
 
+#if defined(HI_FB_ENABLED)
     HIFB_DRV_ModInit();
+#endif
 
     JPEG_DRV_ModInit();
 
@@ -130,7 +138,7 @@ HI_S32 HI_DRV_LoadModules(HI_VOID)
 #endif
 
 #ifdef HI_FRONTEND_SUPPORT
-    //TUNER_DRV_ModInit();
+    TUNER_DRV_ModInit();
 #endif
 
     DMX_DRV_ModInit();
@@ -213,7 +221,7 @@ HI_S32 HI_DRV_LoadModules(HI_VOID)
 
     /* Please put pmoc in last one for stability*/
 #if !defined(HI_RECOVERY_SUPPORT)
-    //PMOC_DRV_ModInit();
+    PMOC_DRV_ModInit();
 #endif
 
 #ifdef HI_ADAC_SLIC_SUPPORT
@@ -226,6 +234,16 @@ HI_S32 HI_DRV_LoadModules(HI_VOID)
 
 #ifdef HI_CI_DEV_CIMAXPLUS
     CIMAXPLUS_DRV_ModInit();
+#endif
+
+#ifdef HI_ALSA_AO_SUPPORT
+    if (HI_DRV_AO_SND_Init(HI_NULL) == HI_SUCCESS)
+    {
+        DRV_SND_ATTR_S stAttr;
+
+        if (HI_DRV_AO_SND_GetDefaultOpenAttr(HI_UNF_SND_0, &stAttr) == HI_SUCCESS)
+            HI_DRV_AO_SND_Open(HI_UNF_SND_0, &stAttr, HI_NULL);
+    }
 #endif
 
     return HI_SUCCESS;

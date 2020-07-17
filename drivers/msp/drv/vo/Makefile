@@ -18,12 +18,12 @@ endif
 #===============================================================================
 EXTRA_CFLAGS += $(CFG_HI_KMOD_CFLAGS)
 
-EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                 \
+EXTRA_CFLAGS += -I$(COMMON_DRV_INCLUDE)                 \
+                -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(COMMON_API_INCLUDE)                 \
-                -I$(COMMON_DRV_INCLUDE)                 \
+                -I$(MSP_DRV_INCLUDE)                    \
                 -I$(MSP_UNF_INCLUDE)                    \
                 -I$(MSP_API_INCLUDE)                    \
-                -I$(MSP_DRV_INCLUDE)                    \
                 -I$(MSP_DIR)/api/higo/include           \
                 -I$(MSP_DIR)/api/vo
 

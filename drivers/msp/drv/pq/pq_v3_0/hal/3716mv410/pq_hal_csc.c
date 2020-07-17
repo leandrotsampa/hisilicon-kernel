@@ -73,7 +73,7 @@ HI_S32 PQ_HAL_EnableCSC(HAL_DISP_LAYER_E enLayer, HI_BOOL bCscEn)
     }
     else
     {
-        HI_ERR_PQ("[%d]Not VP/V3/V4 CSC!\n", enLayer);
+        HI_ERR_PQ("[%d]Not VP/V0/V1/V2/V3/V4 CSC!\n", enLayer);
     }
 
     return HI_SUCCESS;
@@ -209,7 +209,7 @@ HI_S32 PQ_HAL_SetCscCoef(HAL_DISP_LAYER_E enChan, CSC_COEF_S* pstCscCoef)
     }
     else
     {
-        HI_ERR_PQ("[%d]Not Vo/v4/VP CSC!\n", enChan);
+        HI_ERR_PQ("[%d]Not Vo/V1/v2/v3/v4/VP CSC!\n", enChan);
     }
 
     return HI_SUCCESS;
@@ -308,7 +308,7 @@ HI_S32 PQ_HAL_SetCscDcCoef(HAL_DISP_LAYER_E enChan, CSC_DCCOEF_S* pstCscCoef)
     }
     else
     {
-        HI_ERR_PQ("[%d]Not Vo/v4/VP CSC!\n", enChan);
+        HI_ERR_PQ("[%d]Not Vo/V1/v2/v3/v4/VP CSC!\n", enChan);
     }
 
     return HI_SUCCESS;

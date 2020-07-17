@@ -3591,7 +3591,7 @@ HI_S32 WIN_SetAttr(HI_HANDLE hWin, HI_DRV_WIN_ATTR_S *pWinAttr)
     return nRet;
 }
 
-
+EXPORT_SYMBOL(WIN_SetAttr);
 
 HI_S32 WIN_GetAttr(HI_HANDLE hWin, HI_DRV_WIN_ATTR_S *pWinAttr)
 {
@@ -3618,7 +3618,7 @@ HI_S32 WIN_GetAttr(HI_HANDLE hWin, HI_DRV_WIN_ATTR_S *pWinAttr)
 
     return HI_SUCCESS;
 }
-
+EXPORT_SYMBOL(WIN_GetAttr);
 
 //get info for source
 HI_S32 WIN_GetInfo(HI_HANDLE hWin, HI_DRV_WIN_INFO_S * pstInfo)

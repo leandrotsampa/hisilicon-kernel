@@ -178,11 +178,11 @@ static HI_VOID PDM_DispProcRead(struct seq_file *p)
         PROC_PRINT(p, "source display:          %d\n", DispParam.enSrcDisp);
         PROC_PRINT(p, "background color:        0x%02x%02x%02x\n",
             DispParam.stBgColor.u8Red, DispParam.stBgColor.u8Green, DispParam.stBgColor.u8Blue);
-        PROC_PRINT(p, "HuePlus/Brightness/Contrast/Saturation: %d\n",
+        PROC_PRINT(p, "HuePlus/Brightness/Contrast/Saturation: %d/%d/%d/%d\n",
             DispParam.u32HuePlus, DispParam.u32Brightness, DispParam.u32Contrast, DispParam.u32Saturation);
         PROC_PRINT(p, "virtual screen(Width/Height):        %d/%d\n",
             DispParam.u32VirtScreenWidth, DispParam.u32VirtScreenHeight);
-        PROC_PRINT(p, "offset(Left/Top/Right/Bottom):       %d\n",
+        PROC_PRINT(p, "offset(Left/Top/Right/Bottom):       %d/%d/%d/%d\n",
             DispParam.stOffsetInfo.u32Left, DispParam.stOffsetInfo.u32Top,
             DispParam.stOffsetInfo.u32Right, DispParam.stOffsetInfo.u32Bottom);
         PROC_PRINT(p, "bGammaEnable:        %d\n",DispParam.bGammaEnable);

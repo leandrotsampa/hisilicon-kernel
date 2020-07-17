@@ -410,7 +410,7 @@ HI_S32 DRV_WIN_ProcRead(struct seq_file *p, HI_VOID *v)
                                                                     pstProcInfo->stAttr.stCropRect.u32TopOffset,
                                                                     pstProcInfo->stAttr.stCropRect.u32RightOffset,
                                                                     pstProcInfo->stAttr.stCropRect.u32BottomOffset);
-    PROC_PRINT(p, "%-19s:%d\n", "|OriRect(X/Y/W/H)",  0,
+    PROC_PRINT(p, "%-19s:%d/%d/%d/%d\n", "|OriRect(X/Y/W/H)",  0,
                                                                0,
                                                                     pstPriv->stVideoOriginalInfo.u32Width,
                                                                     pstPriv->stVideoOriginalInfo.u32Height);
@@ -494,12 +494,12 @@ HI_S32 DRV_WIN_ProcRead(struct seq_file *p, HI_VOID *v)
                 PROC_PRINT(p, "%-25s%d/%d \n", "Original frame Size(w/h):", pstProcInfo->stWinInfoForDeveloper.stOringinFrameSize.s32Width,
                                                                    pstProcInfo->stWinInfoForDeveloper.stOringinFrameSize.s32Height);
 
-                PROC_PRINT(p, "%-25s%d \n", "Window Output Coordinate(x/y/w/h):", pstProcInfo->stWinInfoForDeveloper.stFinalWinOutputSize.s32X,
+                PROC_PRINT(p, "%-25s%d/%d/%d/%d \n", "Window Output Coordinate(x/y/w/h):", pstProcInfo->stWinInfoForDeveloper.stFinalWinOutputSize.s32X,
                                                                    pstProcInfo->stWinInfoForDeveloper.stFinalWinOutputSize.s32Y,
                                                                    pstProcInfo->stWinInfoForDeveloper.stFinalWinOutputSize.s32Width,
                                                                    pstProcInfo->stWinInfoForDeveloper.stFinalWinOutputSize.s32Height);
 
-                PROC_PRINT(p, "%-25s%d \n", "V0'S Output Coordinate(x/y/w/h):",
+                PROC_PRINT(p, "%-25s%d/%d/%d/%d \n", "V0'S Output Coordinate(x/y/w/h):",
                                                                    pstProcInfo->stWinInfoForDeveloper.stOutputSizeOfV0.s32X,
                                                                    pstProcInfo->stWinInfoForDeveloper.stOutputSizeOfV0.s32Y,
                                                                    pstProcInfo->stWinInfoForDeveloper.stOutputSizeOfV0.s32Width,
@@ -526,19 +526,19 @@ HI_S32 DRV_WIN_ProcRead(struct seq_file *p, HI_VOID *v)
                 PROC_PRINT(p, "%-25s%d/%d \n", "Vpss Give Frame Size(w/h):", pstProcInfo->stWinInfoForDeveloper.stDciFrameSize.s32Width,
                            pstProcInfo->stWinInfoForDeveloper.stDciFrameSize.s32Height);
 
-                PROC_PRINT(p, "%-25s%d \n", "Vpss Give Dci Position(x/y/x'/y'):",
+                PROC_PRINT(p, "%-25s%d/%d/%d/%d \n", "Vpss Give Dci Position(x/y/x'/y'):",
                                            pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32X,
                                            pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32Y,
                                            pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32Width + pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32X,
                                            pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32Height + pstProcInfo->stWinInfoForDeveloper.stOriginDCIPositionInFrame.s32Y);
 
-                PROC_PRINT(p, "%-25s%d \n", "DCI  input  effective content size(x/y/w/h):",
+                PROC_PRINT(p, "%-25s%d/%d/%d/%d \n", "DCI  input  effective content size(x/y/w/h):",
                                            pstProcInfo->stWinInfoForDeveloper.stDciEffecttiveContentInputSize.s32X,
                                            pstProcInfo->stWinInfoForDeveloper.stDciEffecttiveContentInputSize.s32Y,
                                            pstProcInfo->stWinInfoForDeveloper.stDciEffecttiveContentInputSize.s32Width,
                                            pstProcInfo->stWinInfoForDeveloper.stDciEffecttiveContentInputSize.s32Height);
 
-                PROC_PRINT(p, "%-25s%d \n", "DCI  Config   Position(x/y/x'/y'):",
+                PROC_PRINT(p, "%-25s%d/%d/%d/%d \n", "DCI  Config   Position(x/y/x'/y'):",
                                            pstProcInfo->stWinInfoForDeveloper.stWinFinalPosition.s32X,
                                            pstProcInfo->stWinInfoForDeveloper.stWinFinalPosition.s32Y,
                                            pstProcInfo->stWinInfoForDeveloper.stWinFinalPosition.s32Width + pstProcInfo->stWinInfoForDeveloper.stWinFinalPosition.s32X,

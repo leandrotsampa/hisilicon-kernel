@@ -20,9 +20,9 @@
 #include "tmbslTDA18251.h"
 #include "tmbslTDA18251local.h"
 #include "tmbslTDA18251StaticInstance.h"*/
-///////
+////////////////////////////////////////////////////////////////////////////////////////
 
-/
+/////////////////////////////////////////////////////////////////////////
 
 /*
   Copyright (C) 2006-2009 NXP B.V., All Rights Reserved.
@@ -264,7 +264,7 @@ tmErrorCode_t UserWrittenMutexRelease (ptmbslFrontEndMutexHandle pMutex)
 	return err;
 }
 
-
+//////////////////////////////////////////////////////////////
 
 #define TDA_I2C_ADDR    (0xC0)
 #define SITUNER_TRACE_LEVEL 8

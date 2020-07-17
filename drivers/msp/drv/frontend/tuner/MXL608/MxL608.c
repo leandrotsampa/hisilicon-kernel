@@ -249,13 +249,13 @@ HI_S32 mxl608_init_tuner2(HI_U32 u32TunerPort,HI_U32 uiIFHz)
     UINT8  devId;
 
     devId  = u32TunerPort;
-    HI_ERR_TUNER("!!!!!!MxL608T_Initialize{%d-%d}\n", devId,uiIFHz);
+    HI_INFO_TUNER("MxL608T_Initialize{%d}\n", devId);
 
     // Step 1 : Soft Reset MxL608
     status = MxLWare608_API_CfgDevSoftReset(devId);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgdevsoftreset failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgdevsoftreset failuret\n");
         return 1;
     }
 
@@ -266,18 +266,14 @@ HI_S32 mxl608_init_tuner2(HI_U32 u32TunerPort,HI_U32 uiIFHz)
     status = MxLWare608_API_CfgDevOverwriteDefaults(devId, singleSupply_3_3V);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgdevoverwritedefaults failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgdevoverwritedefaults failuret\n");
         return 1;
     }
     // Step 3 : XTAL Setting
     xtalCfg.xtalFreqSel  = MXL608_XTAL_16MHz;
 //	xtalCfg.xtalCap = 12;
-    //xtalCfg.xtalCap = 28; // old
+//  xtalCfg.xtalCap = 28; // old
     xtalCfg.xtalCap = 12; // sky(x)
-#ifdef xtal_24
-    	xtalCfg.xtalFreqSel = MXL608_XTAL_24MHz;
-    	xtalCfg.xtalCap = 30; //orig is 30,but CDT-816T33M-MH00 is25upF,gbiao...
-#endif
 //	xtalCfg.clkOutEnable = MXL_ENABLE;
     xtalCfg.clkOutEnable = MXL_DISABLE; 	// old
     // sky(for dual tuner)
@@ -294,7 +290,7 @@ HI_S32 mxl608_init_tuner2(HI_U32 u32TunerPort,HI_U32 uiIFHz)
     MxLWare608_API_CfgTunerLoopThrough(devId, MXL_DISABLE,NULL,NULL);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgtunerloopthrough failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgtunerloopthrough failuret\n");
         return 1;
     }
 
@@ -336,7 +332,7 @@ HI_S32 mxl608_init_tuner2(HI_U32 u32TunerPort,HI_U32 uiIFHz)
     status = MxLWare608_API_CfgTunerIFOutParam(devId, ifOutCfg);
     if(status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgtunerifoutparam failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgtunerifoutparam failuret\n");
         return 1;
     }
 
@@ -347,7 +343,7 @@ HI_S32 mxl608_init_tuner2(HI_U32 u32TunerPort,HI_U32 uiIFHz)
     status = MxLWare608_API_CfgTunerAGC(devId, agcCfg);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgtuneragc failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgtuneragc failuret\n");
         return 1;
     }
     return 0;
@@ -469,7 +465,7 @@ HI_S32 mxl608_set_tuner(HI_U32 u32TunerPort, HI_U8 i2c_channel, HI_U32 puRF)
     HI_ERR_TUNER("Error! MxLWare608_API_CfgTunerChanTune\n");
     return HI_FAILURE;
   }
-  HI_ERR_TUNER("--> mxl608_set_tuner OK.\n");
+  HI_INFO_TUNER("--> mxl608_set_tuner OK.\n");
   #if 0
   // Wait 15 ms 
   MxLWare608_OEM_Sleep(15);
@@ -527,7 +523,7 @@ HI_S32 mxl608_set_tuner2(HI_U32 u32TunerPort, HI_U8 i2c_channel, HI_U32 puRF,HI_
     devId = u32TunerPort;//g_stTunerOps[u32TunerPort].u32TunerAddress;
     MxL608_I2C_SetChn(i2c_channel,g_stTunerOps[u32TunerPort].u32TunerAddress);
 
-    HI_ERR_TUNER("    Mxl608T_tune{%d}{%8d,%4d}{%d}\n",
+    HI_INFO_TUNER("    Mxl608T_tune{%d}{%8d,%4d}{%d}\n",
             devId,
             puRF,
             uiBandwidthHz,
@@ -564,16 +560,13 @@ HI_S32 mxl608_set_tuner2(HI_U32 u32TunerPort, HI_U8 i2c_channel, HI_U32 puRF,HI_
         tunerModeCfg.ifOutFreqinKHz = 36150;
     }
 //	tunerModeCfg.ifOutFreqinKHz = 5000;	// sky(x)
-	#ifdef xtal_24
-    tunerModeCfg.xtalFreqSel = MXL608_XTAL_24MHz;//MXL608_XTAL_16MHz; zhaobaoren
-	#else
-	tunerModeCfg.xtalFreqSel = MXL608_XTAL_16MHz;
-	#endif
+
+    tunerModeCfg.xtalFreqSel = MXL608_XTAL_16MHz;
     tunerModeCfg.ifOutGainLevel = 11;
     status = MxLWare608_API_CfgTunerMode(devId, tunerModeCfg);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgtunermode failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgtunermode failuret\n");
         return 1;
     }
 
@@ -655,16 +648,12 @@ HI_S32 mxl608_set_tuner2(HI_U32 u32TunerPort, HI_U8 i2c_channel, HI_U32 puRF,HI_
     }
 
     chanTuneCfg.freqInHz = puRF; // Unit:Hz
-	#ifdef xtal_24
-    chanTuneCfg.xtalFreqSel = MXL608_XTAL_24MHz;//MXL608_XTAL_16MHz;zhaobaoren
-	#else
-	chanTuneCfg.xtalFreqSel = MXL608_XTAL_16MHz;
-	#endif
+    chanTuneCfg.xtalFreqSel = MXL608_XTAL_16MHz;
     chanTuneCfg.startTune   = MXL_START_TUNE;
     status = MxLWare608_API_CfgTunerChanTune(devId, chanTuneCfg);
     if (status != MXL_SUCCESS)
     {
-        HI_ERR_TUNER("Mxl608::cfgtunerchantune failuret\n");
+        HI_INFO_TUNER("Mxl608::cfgtunerchantune failuret\n");
         return 1;
     }
 // 	MxLWare608_OEM_Sleep(15);//new

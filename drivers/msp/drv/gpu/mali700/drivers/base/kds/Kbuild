@@ -25,10 +25,10 @@ ifeq ($(CFG_HI_EXPORT_FLAG),)
     include $(SDK_DIR)/base.mak
 endif
 
-include $(SDK_DIR)/source/msp/drv/gpu/mali700/kbuild_flags
+include $(SDK_DIR)/drivers/msp/drv/gpu/mali700/kbuild_flags
 
-ccflags-y += -I$(SDK_DIR)/source/msp/drv/gpu/mali700/drivers/base/kds \
-		-I$(SDK_DIR)/source/msp/drv/gpu/mali700/include
+ccflags-y += -I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/drivers/base/kds \
+		-I$(SDK_DIR)/drivers/msp/drv/gpu/mali700/include
 
 $(warning "ccflags-y = $(ccflags-y)...")
 obj-$(CONFIG_KDS) += kds.o

@@ -16,9 +16,9 @@ endif
 #===============================================================================
 # local variables
 #===============================================================================
-EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                 \
+EXTRA_CFLAGS += -I$(COMMON_DRV_INCLUDE)                 \
+                -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(COMMON_API_INCLUDE)                 \
-                -I$(COMMON_DRV_INCLUDE)                 \
                 -I$(MSP_UNF_INCLUDE)                    \
                 -I$(MSP_API_INCLUDE)                    \
                 -I$(MSP_DRV_INCLUDE)                    \
@@ -109,7 +109,7 @@ endif
 
 MOD_NAME := hi_fb
 
-obj-$(HI_DRV_BUILDTYPE) += $(MOD_NAME).o
+obj-$(CFG_HI_FB) += $(MOD_NAME).o
 
 EXTRA_CFLAGS += $(CFG_HI_KMOD_CFLAGS)
 

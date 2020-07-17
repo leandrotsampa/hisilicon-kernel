@@ -29,11 +29,11 @@ ifeq ($(CFG_HI_EXPORT_FLAG),)
     include $(SDK_DIR)/base.mak
 endif
 
-include $(SDK_DIR)/source/msp/drv/gpu/mali700/kbuild_flags
+include $(SDK_DIR)/drivers/msp/drv/gpu/mali700/kbuild_flags
 $(warning "CONFIG_MALI_PLATFORM_FAKE = $(CONFIG_MALI_PLATFORM_FAKE)")
 
 # Paths required for build
-CUR_DIR = $(SDK_DIR)/source/msp/drv/gpu/mali700/drivers/gpu/arm/midgard
+CUR_DIR = $(SDK_DIR)/drivers/msp/drv/gpu/mali700/drivers/gpu/arm/midgard
 KBASE_PATH = $(CUR_DIR)
 $(warning "src=$(src)..............")
 KBASE_PLATFORM_PATH = $(KBASE_PATH)/platform_dummy

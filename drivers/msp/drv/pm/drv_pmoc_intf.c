@@ -101,14 +101,14 @@ static GPIO_EXT_FUNC_S *s_pGpioFunc = HI_NULL;
 #define GPIO_LIGHT HI_GPIO_LIGHT_SET
 #endif
 
-static HI_U32 wdgon = 0x0;
+static HI_U32 wdgon     = 0x1; /** Reset on WakeUp **/
 static HI_U32 dbgmask   = 0x1;
 static HI_U32 keyVal    = 0;
-static HI_U32 kltype    = 0;
+static HI_U32 kltype    = 4; /** IR Type: 0 - 74HC164 | 1 - PT6961 | 2 - CT1642 | 3 - PT6964 | 4 - FD650 **/
 static HI_U32 timeVal   = 0xffffffff;
-static HI_U32 dispMode  = 2;
-static HI_U32 irtype    = 0;
-static HI_U32 irpmocnum = 1;
+static HI_U32 dispMode  = 0; /** Display Mode: 0 - No Display | 1 - Display Number | 2 - Display Time **/
+static HI_U32 irtype    = 4; /** IR mode: 0 - NEC Simple | 1 - TC9012 | 2 - NEC Full | 3 - SONY | 4 - RAW **/
+static HI_U32 irpmocnum = 5; /** IR Keys Count for WakeUp **/
 static HI_U32 dispvalue = 0x00093a00;
 static HI_U8 g_u8UsbWakeUpMask = 0;
 static HI_U8 g_u8EthWakeUpEnable = 0;
@@ -117,7 +117,7 @@ static HI_U32 irValhigh[PMOC_WKUP_IRKEY_MAXNUM] = {
     0, 0, 0, 0, 0, 0
 };
 static HI_U32 irVallow[PMOC_WKUP_IRKEY_MAXNUM] = {
-    0x639cff00, 0, 0, 0, 0, 0
+    0xf50a3e01, 0x5fa0377d, 0xf50abf00, 0xff000820, 0xf30ccd02, 0 /** IR Keys for WakeUp **/
 };
 
 static UMAP_DEVICE_S g_stPmDev;
@@ -126,7 +126,13 @@ static HI_U32 GpioValArray[2] = {
     0, 0
 };
 
+#if defined(CHIP_TYPE_hi3798cv200)
+static HI_U32 g_u32GpioPortVal = 45; /** GPIO WakeUP Port **/
+#elif defined(CHIP_TYPE_hi3798mv200)
+static HI_U32 g_u32GpioPortVal = 41; /** GPIO WakeUP Port **/
+#else
 static HI_U32 g_u32GpioPortVal = 0;
+#endif
 static HI_U8 g_u8GpioIEV = 0; //0:Falling edge or low level; 1: Rising edge or high level
 static HI_U8 g_u8GpioIBE = 0; //0:single edge; 1:double edge
 static HI_U8 g_u8GpioIS = 0; //0:edge; 1: level

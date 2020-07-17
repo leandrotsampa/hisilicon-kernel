@@ -599,8 +599,8 @@ static HI_VOID DRV_PQ_ProcPrintHelp(HI_VOID)
     HI_DRV_PROC_EchoHelper("echo demomode        fixr/fixl/scrollr/scrolll  > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("echo zme             vdpfir/vdpcopy/vdpmedon/vdpmedoff          > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("echo zme             vpssfir/vpsscopy/vpssmedon/vpssmedoff      > /proc/msp/pq\n");
-    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/tnr/snrl            <0~100>         > /proc/msp/pq\n");
-    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/tnr/snr/dei/ds/all  enable/disable  > /proc/msp/pq\n");
+    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/tnr/snr/db/dm/all            <0~100>         > /proc/msp/pq\n");
+    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/tnr/snr/dei/db/dm/dr/ds/all  enable/disable  > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/tnr/snr/dei/db/all           demoon/demooff  > /proc/msp/pq\n");
 
     HI_DRV_PROC_EchoHelper("\n");

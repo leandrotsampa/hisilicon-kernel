@@ -54,18 +54,18 @@ HI_S32 SCDetection_core(SCDInput* pSCDInput,  SCDRls* pSCDRls, int flagTB)
     divWidth = pSCDInput->scdPara.SCDDivWidth;
     divHeight = pSCDInput->scdPara.SCDDivHeight;
 
-    //////Hareware///////
+    ///////////////Hareware/////////////////////////
 
     for (i = 0; i < 32; i++)
     {
         s32SCHist_CFbuf[i] = 0;
     }
 
-    /////SoftWare////////
-    / GET s32SCHist_CF from HAREWARE
-    / GET divWidth divHeight BINSTEP K_HISTLPF BINNUM k2_histdiff k1_histdiff kbin_histdiff corebin_histdiff k1_sumdiff k1_sumdiff k2_sumdiff k1_sumdiff core_scwdiff
-    / 	   gainH_TF gainL_TF k_scwdiff_TF AND SO ON from PARAMETER or SETTING
-    / SAVE SCW_P1 FOR NEXT FRAME
+    ///////////////////////SoftWare///////////////////////////////////
+    ////////// GET s32SCHist_CF from HAREWARE
+    ////////// GET divWidth divHeight BINSTEP K_HISTLPF BINNUM k2_histdiff k1_histdiff kbin_histdiff corebin_histdiff k1_sumdiff k1_sumdiff k2_sumdiff k1_sumdiff core_scwdiff
+    ////////// 	   gainH_TF gainL_TF k_scwdiff_TF AND SO ON from PARAMETER or SETTING
+    ////////// SAVE SCW_P1 FOR NEXT FRAME
 
 
 

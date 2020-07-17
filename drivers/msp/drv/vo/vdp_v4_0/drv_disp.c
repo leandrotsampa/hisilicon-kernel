@@ -546,19 +546,19 @@ static HI_VOID DISP_DolbyHdrProcRead(struct seq_file *p,DISP_PROC_INFO_S *pstDis
     PROC_PRINT(p, "%-20s:%s\n", "HdrCfg->bMute",
       g_pDispYNString[pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.bMuteEn]);
 
-    PROC_PRINT(p, "%-20s:%d\n", "HdrCfg->OutReso",
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "HdrCfg->OutReso",
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoOut.s32X,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoOut.s32Y,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoOut.s32Width,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoOut.s32Height);
 
-    PROC_PRINT(p, "%-20s:%d\n", "HdrCfg->BL ResoIn",
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "HdrCfg->BL ResoIn",
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoIn.s32X,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoIn.s32Y,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoIn.s32Width,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stBLResoIn.s32Height);
 
-    PROC_PRINT(p, "%-20s:%d\n", "HdrCfg->EL ResoIn",
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "HdrCfg->EL ResoIn",
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stELResoIn.s32X,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stELResoIn.s32Y,
       pstDispAttr->stHdrProcInfo.stDolbyHdrProcInfo.stDolbyHdrCfg.stELResoIn.s32Width,
@@ -646,13 +646,13 @@ static HI_VOID DISP_HisiHdrProcRead(struct seq_file *p,DISP_PROC_INFO_S *pstDisp
     PROC_PRINT(p, "%-20s:%s\n", "HdrCfg->outCS",
       g_pVDPColorSpaceString[pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.enOutColorSpace]);
 
-    PROC_PRINT(p, "%-20s:%d\n", "HdrCfg->OutReso",
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "HdrCfg->OutReso",
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoOut.s32X,
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoOut.s32Y,
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoOut.s32Width,
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoOut.s32Height);
 
-    PROC_PRINT(p, "%-20s:%d\n", "HdrCfg->ResoIn",
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "HdrCfg->ResoIn",
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoIn.s32X,
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoIn.s32Y,
       pstDispAttr->stHdrProcInfo.stHisiHdrProcInfo.stHisiHdrCfg.stResoIn.s32Width,
@@ -691,13 +691,13 @@ static HI_S32 DISP_ProcRead(struct seq_file *p, HI_VOID *v)
         PROC_PRINT(p, "       %-20s: %d/%d/%d\n","HACT/VACT/VFreq" ,s_DispAttr.stTiming.u32HACT,s_DispAttr.stTiming.u32VACT,s_DispAttr.stTiming.u32VertFreq);
         PROC_PRINT(p, "       %-20s: %d/%d/%d\n","HBB/HFB/HPW " ,s_DispAttr.stTiming.u32HBB,s_DispAttr.stTiming.u32HFB,s_DispAttr.stTiming.u32HPW);
         PROC_PRINT(p, "       %-20s: %d/%d/%d\n","VBB/VFB/VPW" ,s_DispAttr.stTiming.u32VBB,s_DispAttr.stTiming.u32VFB,s_DispAttr.stTiming.u32VPW);
-        PROC_PRINT(p, "       %-20s: %d\n","Inter/IDV/IHS/IVS" ,s_DispAttr.stTiming.bInterlace,s_DispAttr.stTiming.bIDV,s_DispAttr.stTiming.bIHS,s_DispAttr.stTiming.bIVS);
+        PROC_PRINT(p, "       %-20s: %d/%d/%d/%d\n","Inter/IDV/IHS/IVS" ,s_DispAttr.stTiming.bInterlace,s_DispAttr.stTiming.bIDV,s_DispAttr.stTiming.bIHS,s_DispAttr.stTiming.bIVS);
         PROC_PRINT(p, "       %-20s: %d/%d/%d\n","PixFreq/ARW/ARH",s_DispAttr.stTiming.u32PixFreq, s_DispAttr.stTiming.u32AspectRatioW,s_DispAttr.stTiming.u32AspectRatioH);
         PROC_PRINT(p, "       %-20s: 0x%x/0x%x\n","ClkPara0/ClkPara1/" ,s_DispAttr.stTiming.u32ClkPara0,s_DispAttr.stTiming.u32ClkPara1);
     }
     PROC_PRINT(p, "%-20s:%s\n", "RightEyeFirst",g_pVDPDispState_1[s_DispAttr.bRightEyeFirst]);
     PROC_PRINT(p, "%-20s:%d/%d\n", "VirtualScreen",s_DispAttr.stVirtaulScreen.s32Width,s_DispAttr.stVirtaulScreen.s32Height);
-    PROC_PRINT(p, "%-20s:%d\n", "Offset(L/T/R/B)",s_DispAttr.stOffsetInfo.u32Left,
+    PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "Offset(L/T/R/B)",s_DispAttr.stOffsetInfo.u32Left,
                                                   s_DispAttr.stOffsetInfo.u32Top,
                                                   s_DispAttr.stOffsetInfo.u32Right,
                                                   s_DispAttr.stOffsetInfo.u32Bottom);
@@ -752,7 +752,7 @@ static HI_S32 DISP_ProcRead(struct seq_file *p, HI_VOID *v)
         PROC_PRINT(p,"------------------CAST Info---------------------------------\n");
         PROC_PRINT(p, "%-20s:%s\n", "State", g_pVDPDispState_1[s_DispAttr.stCastInfor.bEnable]);
         PROC_PRINT(p, "%-20s:%s\n", "Crop", "False");
-        PROC_PRINT(p, "%-20s:%d\n", "CropRect(L/T/R/B)", 0,0,0,0);
+        PROC_PRINT(p, "%-20s:%d/%d/%d/%d\n", "CropRect(L/T/R/B)", 0,0,0,0);
         PROC_PRINT(p, "%-20s:%d/%d\n", "Resolution", s_DispAttr.stCastInfor.u32OutResolutionWidth,
                                                   s_DispAttr.stCastInfor.u32OutResolutionHeight);
 
@@ -1901,6 +1901,7 @@ HI_S32 HI_DRV_DISP_SetFormat(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_FMT_E enFormat
     Ret = HI_DRV_DISP_Process(CMD_DISP_SET_FORMAT,  &enDispFormat);
     return Ret;
 }
+EXPORT_SYMBOL(DISP_SetFormat);
 
 HI_S32 HI_DRV_DISP_GetFormat(HI_DRV_DISPLAY_E enDisp, HI_DRV_DISP_FMT_E *penFormat)
 {

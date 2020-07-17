@@ -222,6 +222,8 @@ typedef enum    hiUNF_DEMOD_DEV_TYPE_E
     HI_UNF_DEMOD_DEV_TYPE_ATBM888X,             /**External ATBM888X*/                      /**<CNcomment:支持外部ATBM888X芯片*/
     HI_UNF_DEMOD_DEV_TYPE_MN88473,              /**< Panasonic 88473 */                     /**<CNcomment:支持Panasonic 88473 */
     HI_UNF_DEMOD_DEV_TYPE_MXL683,               /**<External mxl683*/                       /**<CNcomment:外部mxl683芯片*/
+    HI_UNF_DEMOD_DEV_TYPE_GX1132,               /** GX1132 **/
+    HI_UNF_DEMOD_DEV_TYPE_FC8300,				/** ISDB-T */
     HI_UNF_DEMOD_DEV_TYPE_TP5001,               /**External TP5001*/                        /**<CNcomment:支持外部TP5001芯片*/
     HI_UNF_DEMOD_DEV_TYPE_HD2501,               /**External HD2501*/                        /**<CNcomment:支持外部HD2501芯片*/
     HI_UNF_DEMOD_DEV_TYPE_AVL6381,              /**External AVL6381*/                       /**<CNcomment:支持外部AVL6381芯片*/

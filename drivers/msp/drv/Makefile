@@ -51,7 +51,7 @@ endif
 endif
 
 ifneq ($(CFG_HI_RECOVERY_SUPPORT),y)
-objects += i2c demux 
+objects += i2c demux pm
 endif
 
 ifneq ($(CFG_HI_LOADER_APPLOADER),y)
@@ -75,6 +75,18 @@ endif
 
 ifeq ($(CFG_HI_FRONTEND_SUPPORT),y)
 objects += frontend
+
+ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/dvb-hisi))
+objects += dvb-hisi
+endif
+endif
+
+ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/xpad))
+objects += xpad
+endif
+
+ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/xpadneo))
+objects += xpadneo
 endif
 
 ifeq ($(CFG_HI_PVR_SUPPORT),y)

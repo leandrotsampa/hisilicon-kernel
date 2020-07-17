@@ -697,7 +697,7 @@ HI_S32 mxl254_get_status (HI_U32 u32TunerPort, HI_UNF_TUNER_LOCK_STATUS_E  *penT
     status = MxLWare_HRCLS_API_ReqDemodAllLockStatus(HRCLS_DEVICE_ID, u32TunerPort, &qamLock, &fecLock, &mpegLock, &relock);
     if (MXL_SUCCESS != status)
     {
-	    HI_ERR_TUNER("MxLWare_HRCLS_API_ReqDemodAllLockStatus error!\n");
+	    //HI_ERR_TUNER("MxLWare_HRCLS_API_ReqDemodAllLockStatus error!\n");
         return HI_FAILURE;
     }
     
@@ -729,8 +729,8 @@ HI_S32 mxl254_get_signal_strength(HI_U32 u32TunerPort, HI_U32 *pu32SignalStrengt
      status = MxLWare_HRCLS_API_ReqTunerRxPwr(HRCLS_DEVICE_ID,u32TunerPort,&PwrIndBuV,&accuracy);
      if ((MXL_SUCCESS != status) || (MXL_HRCLS_PWR_INVALID == accuracy ))
     {
-	   HI_ERR_TUNER("mxl254_get_signal_strength error!\n");
-          return HI_FAILURE;
+		//HI_ERR_TUNER("mxl254_get_signal_strength error!\n");
+        return HI_FAILURE;
     }
 
     pu32SignalStrength[1] = (HI_U32)(PwrIndBuV / 10 - 5);

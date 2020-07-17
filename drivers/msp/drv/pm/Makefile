@@ -26,7 +26,7 @@ EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                 \
                 -I$(MSP_DIR)/api/jpge/include           \
                 -I$(MSP_DIR)/api/tde/include            \
                 -I$(MSP_DIR)/drv/pm			\
-                -I$(COMPONENT_DIR)/pm/c51
+                -I$(MSP_DIR)/drv/pm/c51
 
 EXTRA_CFLAGS += $(CFG_HI_KMOD_CFLAGS)
 

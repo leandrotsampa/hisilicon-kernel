@@ -2757,6 +2757,16 @@ HI_S32 DMX_DRV_ModInit(HI_VOID)
         HI_ERR_DEMUX("add proc demux_filter failed\n");
     }
 
+/******* proc function begin ********/
+#ifdef DMX_DESCRAMBLER_SUPPORT
+    stFnOpt.fnRead = DMXKeyProcRead;
+    item = HI_DRV_PROC_AddModule("demux_key", &stFnOpt, NULL);
+    if (!item)
+    {
+        HI_ERR_DEMUX("add proc demux_key failed\n");
+    }
+#endif
+/******* proc function end ********/
 
     stFnOpt.fnRead = DMXPcrProcRead;
     item = HI_DRV_PROC_AddModule("demux_pcr", &stFnOpt, NULL);
@@ -2819,6 +2829,11 @@ HI_VOID DMX_DRV_ModExit(HI_VOID)
     HI_DRV_PROC_RemoveModule("demux_rec");
     HI_DRV_PROC_RemoveModule("demux_pcr");
 
+/******* proc function begin ********/
+#ifdef DMX_DESCRAMBLER_SUPPORT
+    HI_DRV_PROC_RemoveModule("demux_key");
+#endif
+/******* proc function end ********/
 
     HI_DRV_PROC_RemoveModule("demux_filter");
     HI_DRV_PROC_RemoveModule("demux_chanbuf");

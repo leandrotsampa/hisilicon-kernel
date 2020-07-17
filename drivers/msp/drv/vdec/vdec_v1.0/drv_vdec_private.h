@@ -255,7 +255,7 @@ typedef struct tagVDEC_CHANNEL_S
     HI_UNF_ENC_FMT_E        enDisplayNorm;
     HI_UNF_VIDEO_FRAME_PACKING_TYPE_E eFramePackType;
     /* Last display frame info */
-    HI_DRV_VIDEO_FRAME_S stLastDispFrameInfo;23
+    HI_DRV_VIDEO_FRAME_S stLastDispFrameInfo;
 
     HI_U32                  u32BitRate;
     HI_U32                  u32Profile;

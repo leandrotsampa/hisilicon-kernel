@@ -3172,8 +3172,8 @@ static HI_VOID DRV_PQ_ProcPrintHelp(HI_VOID)
     HI_DRV_PROC_EchoHelper("echo fodmode    auto/top1st/bottom1st                 > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("echo ds         flat/medfir                           > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("echo vpsszme/vdpzme  fir/copy/medon/medoff            > /proc/msp/pq\n");
-    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/sr/tnrss/vdp/all    enable/disable   > /proc/msp/pq\n");
-    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/sr/tnri/all         demoon/demooff   > /proc/msp/pq\n");
+    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/sr/tnr/db/dm/vpss/vdp/all    enable/disable   > /proc/msp/pq\n");
+    HI_DRV_PROC_EchoHelper("echo sharp/dci/acm/sr/tnr/db/dm/dei/all         demoon/demooff   > /proc/msp/pq\n");
     HI_DRV_PROC_EchoHelper("\n");
 
 #endif

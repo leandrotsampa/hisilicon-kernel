@@ -264,7 +264,7 @@ Avl68xx_ChkLockStatus(HI_U32 uiChipNo, AVL_int16 *pLockFlag)
 {
     AVL_DemodMode eCurrentDemodMode;
     AVL_uchar ucLockStatus = 0;
-
+    AVL_uchar ucNosignal = 0;
     AVL_ErrorCode r = AVL_EC_OK;
 
 	*pLockFlag = 0;
@@ -274,21 +274,18 @@ Avl68xx_ChkLockStatus(HI_U32 uiChipNo, AVL_int16 *pLockFlag)
     // No signal Detection
     if (eCurrentDemodMode == AVL_DVBTX)
     {
-        AVL_uchar ucNosignal = 0;
       	r = AVL_Demod_DVBTxSignalDetection(&ucNosignal, uiChipNo);
 	    if (r != AVL_EC_OK) return r;
       	if (ucNosignal==0)//ucNosignal=1:signal exist 0:nosignal
       	{
       		*pLockFlag = -1;
-            //HI_ERR_TUNER("Avl68xx::---- NoSignal ---- \n");
+        // 	HI_INFO_TUNER("Avl68xx::---- NoSignal ---- \n");
 	        return r;
       	}
     }
     //get the lock status
     r = AVL_Demod_GetLockStatus(&ucLockStatus, uiChipNo);
-    //HI_ERR_TUNER("Avl68xx::--- ucLockStatus %d ---\n",ucLockStatus);
-
-    if (r != AVL_EC_OK) return r;
+	if (r != AVL_EC_OK) return r;
     if (ucLockStatus == 1)
     {
     //	HI_INFO_TUNER("Avl68xx::--- locked! ---\n");
@@ -366,7 +363,7 @@ Avl68xx_DVBC_Connect(HI_U32 uiChipNo, AVL_uint32 FreqKhz, AVL_uint32 SymbolrateK
     r = AVL_Demod_DVBCAutoLock(uiChipNo);
     if (r != AVL_EC_OK)
     {
-        HI_ERR_TUNER("Avl68xx::C:Failed to lock the channel! %d\n",r);
+        HI_INFO_TUNER("Avl68xx::C:Failed to lock the channel!\n");
         return r;
     }
 
@@ -522,7 +519,7 @@ Avl68xx_DVBT2_Connect(HI_U32 uiChipNo, AVL_uint32 FreqKhz, AVL_uint32 BandwidthK
 
     r = Avl68xx_DVBT_SetTuner(uiChipNo, FreqKhz, BandwidthKhz);
 
-    HI_ERR_TUNER("Avl68xx::T2:Freq is %d MHz, Bandwide is %d MHz, DATA PLP ID is %d   T2_Profile=%d\n",
+    HI_INFO_TUNER("Avl68xx::T2:Freq is %d MHz, Bandwide is %d MHz, DATA PLP ID is %d   T2_Profile=%d\n",
                        FreqKhz/1000, BandwidthKhz/1000, PLP_ID, ucT2Profile);
 
     nBand = Avl68xx_DVBT_ByBandwidth(BandwidthKhz);
@@ -546,28 +543,10 @@ AVL68XX_Connect(HI_U32 u32TunerPort, TUNER_ACC_QAM_PARAMS_S *pstChannel)
     AVL_ErrorCode r = AVL_EC_OK;
 
 	HI_ASSERT(HI_NULL != pstChannel);
-    if(pstChannel->u8DVBTMode == 0)
-    {
-        g_stTunerOps[u32TunerPort].enSigType = HI_UNF_TUNER_SIG_TYPE_DVB_T2;
-    }
-    else if(pstChannel->u8DVBTMode == 1)
-    {
-        g_stTunerOps[u32TunerPort].enSigType = HI_UNF_TUNER_SIG_TYPE_DVB_T;
-    }
-    else if(pstChannel->u8DVBTMode == 2)
-    {
-        g_stTunerOps[u32TunerPort].enSigType = HI_UNF_TUNER_SIG_TYPE_CAB;
-    }
-    else
-    {
-        HI_ERR_TUNER("$$$$$$$$$$$$$error type @frontend$$$$$$$$$$\n");
-    }
-    HI_ERR_TUNER("Avl68xx::CONNECT-%d-type %d{%d, %d, %d} {%d.%d.%d, %d}\n",
+    HI_ERR_TUNER("Avl68xx::CONNECT-%d{%d, %d} {%d.%d.%d, %d}\n",
 			uiChipNo,
-            g_stTunerOps[u32TunerPort].enSigType,
 			pstChannel->u32Frequency,
 			pstChannel->unSRBW.u32BandWidth,
-            pstChannel->unSRBW.u32SymbolRate,
 			g_stTunerOps[u32TunerPort].enSigType,
 			pstChannel->unTer.enDVBT2.u8PlpId,
             pstChannel->unTer.enDVBT2.enChannelAttr,
@@ -618,7 +597,7 @@ AVL68XX_Connect(HI_U32 u32TunerPort, TUNER_ACC_QAM_PARAMS_S *pstChannel)
 	    	HI_ERR_TUNER("Avl68xx::not supported!\n");
 	       	return HI_FAILURE;
     }
-    AVL_IBSP_Delay(100);
+	AVL_IBSP_Delay(100);
 //  r = Avl68xx_ChkLockStatus(uiChipNo, &nLockFlag);
 //	HI_INFO_TUNER("Avl68xx::lockstatus{%d}\n", nLockFlag);
     return HI_SUCCESS;

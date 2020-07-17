@@ -25,7 +25,7 @@ ifeq ($(CFG_HI_EXPORT_FLAG),)
     include $(SDK_DIR)/base.mak
 endif
 
-include $(SDK_DIR)/source/msp/drv/gpu/mali700/kbuild_flags
+include $(SDK_DIR)/drivers/msp/drv/gpu/mali700/kbuild_flags
 
 
 KDIR ?= /lib/modules/$(shell uname -r)/build

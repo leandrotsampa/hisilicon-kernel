@@ -20,12 +20,12 @@ FRONTEND_DIR := $(MSP_DIR)/drv/frontend
 
 EXTRA_CFLAGS += $(CFG_HI_KMOD_CFLAGS)
 
-EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                                             \
+EXTRA_CFLAGS += -I$(COMMON_DRV_INCLUDE)                                             \
+                -I$(COMMON_UNF_INCLUDE)                                             \
                 -I$(COMMON_API_INCLUDE)                                             \
-                -I$(COMMON_DRV_INCLUDE)                                             \
+                -I$(MSP_DRV_INCLUDE)                                                \
                 -I$(MSP_UNF_INCLUDE)                                                \
                 -I$(MSP_API_INCLUDE)                                                \
-                -I$(MSP_DRV_INCLUDE)                                                \
                 -I$(FRONTEND_DIR)/include                                           \
                 -I$(FRONTEND_DIR)/demod/AVL_DVBSx_SDK/AVL_DVBSx/include             \
                 -I$(FRONTEND_DIR)/demod/AVL_DVBSx_SDK/BSP                           \
@@ -46,7 +46,7 @@ EXTRA_CFLAGS += -I$(SOURCE_DIR)/common/api/stat/
 #################### base #####################
 MOD_NAME := hi_tuner
 
-obj-m += $(MOD_NAME).o
+obj-$(HI_DRV_BUILDTYPE) += $(MOD_NAME).o
 
 $(MOD_NAME)-y := drv_tuner.o
 $(MOD_NAME)-y += tuner_intf.o
@@ -187,6 +187,18 @@ hi_tuner-y  +=  demod/MXL254/MxL254.o  \
 EXTRA_CFLAGS += -DDEMOD_DEV_TYPE_MXL254
 endif
 
+ifeq ($(CFG_HI_DEMOD_TYPE_GX1132),y)
+hi_tuner-y += demod/gx1132/GX1132_drv.o \
+              demod/gx1132/GX1132.o \
+              demod/gx1132/ExtAv2011.o \
+              demod/gx1132/dbs_rf_mj0914s.o \
+              demod/gx1132/Sharp7306.o \
+              demod/gx1132/zl10037.o \
+              demod/gx1132/rda5812.o \
+              demod/gx1132/Stv6110A.o
+EXTRA_CFLAGS += -DDEMOD_DEV_TYPE_GX1132
+endif
+
 ifeq ($(CFG_HI_DEMOD_TYPE_TDA18280),y)
 hi_tuner-y  +=  demod/NXP18280/tda18280.o\
                 demod/NXP18280/tmbslTDA18280.o \
@@ -201,6 +213,26 @@ hi_tuner-y  +=  demod/NXP18280/tda18280.o\
                 demod/NXP18280/tmbslTDA18204_RegDef.o  \
                 demod/NXP18280/tmutilOM3990.o
 EXTRA_CFLAGS += -DDEMOD_DEV_TYPE_TDA18280
+endif
+
+ifeq ($(CFG_HI_DEMOD_TYPE_FC8300),y)
+hi_tuner-y += demod/fc8300/bbm.o \
+                demod/fc8300/fc8300_bb.o \
+                demod/fc8300/fc8300_i2c.o \
+                demod/fc8300/fc8300_ppi.o \
+                demod/fc8300/fc8300_spi.o \
+                demod/fc8300/fc8300_isr.o \
+                demod/fc8300/fc8300_tun.o \
+                demod/fc8300/fc8300_tun_table.o \
+                demod/fc8300/fc8300b_tun.o \
+                demod/fc8300/fc8300b_tun_table.o \
+                demod/fc8300/fci_hal.o \
+                demod/fc8300/fci_hpi.o \
+                demod/fc8300/fci_oal.o \
+                demod/fc8300/fci_tun.o \
+                demod/fc8300/_fc8300.o
+
+EXTRA_CFLAGS += -DDEMOD_DEV_TYPE_FC8300
 endif
 
 ifeq ($(CFG_HI_DEMOD_TYPE_ATBM888X),y)
