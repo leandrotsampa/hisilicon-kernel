@@ -76,7 +76,7 @@ endif
 ifeq ($(CFG_HI_FRONTEND_SUPPORT),y)
 objects += frontend
 
-ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/dvb-hisi))
+ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/dvb-hisi 2>/dev/null))
 objects += dvb-hisi
 endif
 endif
