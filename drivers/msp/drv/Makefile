@@ -78,6 +78,8 @@ objects += frontend
 
 ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/dvb-hisi 2>/dev/null))
 objects += dvb-hisi
+else ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/e2proc 2>/dev/null))
+objects += e2proc
 endif
 endif
 
