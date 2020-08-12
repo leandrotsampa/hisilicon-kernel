@@ -43,7 +43,7 @@ endif
 EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android \
                 -I$(MSP_DIR)/drv/hifb/adp/$(HAL_DIR)
 
-ifeq ($(CFG_ANDROID_PRODUCT),y)
+ifneq ($(CFG_HI_LOADER_APPLOADER),y)
 ifneq ($(CFG_HI_RECOVERY_SUPPORT),y)
 EXTRA_CFLAGS += -DCFG_HIFB_FENCE_SUPPORT
 endif

@@ -37,8 +37,10 @@ ifneq ($(findstring $(CFG_HI_CHIP_TYPE), hi3716mv410 hi3716mv420),)
 EXTRA_CFLAGS += -DHi3716MV410
 endif
 
-ifeq ($(CFG_ANDROID_PRODUCT),y)
+ifneq ($(CFG_HI_LOADER_APPLOADER),y)
+ifneq ($(CFG_HI_RECOVERY_SUPPORT),y)
 EXTRA_CFLAGS += -DANDROID
+endif
 endif
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

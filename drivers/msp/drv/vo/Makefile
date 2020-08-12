@@ -162,14 +162,11 @@ HAL_DIR := 3798m
 VO_VER := vdp_v2_0
 endif
 
-ifeq ($(CFG_ANDROID_PRODUCT),y)
+ifneq ($(CFG_HI_LOADER_APPLOADER),y)
 ifneq ($(CFG_HI_RECOVERY_SUPPORT),y)
 EXTRA_CFLAGS += -I$(srctree)/drivers/staging/android
 EXTRA_CFLAGS += -DHI_VO_WIN_SYNC_SUPPORT
 endif
-endif
-
-ifeq ($(CFG_ANDROID_PRODUCT),y)
 EXTRA_CFLAGS += -DHI_VO_DISP_ISOLATED_FMT_SUPPORT
 endif
 
