@@ -31,7 +31,7 @@ History:
 extern "C" {
 #endif    /* __cpluscplus*/
 #endif    /* __cpluscplus*/
-
+#include "limits.h"
 #include "iMedia_common.h"
 
 #pragma pack(push, 1)

@@ -3,8 +3,8 @@
 
 OUTPUT_NAME_SO = libhwmedia.so
 OUTPUT_NAME_LIB = libhwmedia.a
-ifeq ($(ARCH),ARM)
-CROSS_PREFIX = arm-hisi_vfpv3d16-linux-
+ifeq ($(ARCH),arm)
+CROSS_PREFIX = arm-linux-gnueabihf-
 OUTPUT_DIR = ../bin/arm-hisi_linux/
 else
 OUTPUT_DIR = ../bin/suse11_i386/
@@ -42,7 +42,7 @@ endif
 #CCFLAGS += -std=c99 -D_GNUC_
 CCFLAGS += -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=c99 -fomit-frame-pointer
 
-ifeq ($(ARCH),ARM)
+ifeq ($(ARCH),arm)
 CCFLAGS += -DBUILD_ARM -mtune=cortex-a9 -march=armv7-a -fno-signed-zeros -DHAVE_IPP=0
 #elifeq ($(ARCH),X86_64)
 #CCFLAGS += -DBUILD_X86
@@ -55,6 +55,7 @@ endif
 # EACH DIRECTORY WITH HEADERS MUST BE APPENDED IN THIS MANNER TO THE CCFLAGS
 CCFLAGS += -I./
 CCFLAGS += -I../inc
+CCFLAGS += -I../../
 CCFLAGS += -I./hwdec/inc
 CCFLAGS += -I./hwdec/hwcodec
 CCFLAGS += -I./hwdec/hwutil
@@ -78,7 +79,7 @@ LINK_LIBS += -Wl,-rpath=./
 CFILES = ./imedia_util.c \
 	./imedia_viddec.c
 
-ifeq ($(ARCH),ARM)
+ifeq ($(ARCH),arm)
 ASMFILES = 
 else
 ASMFILES = ./x86/cpu-a.asm

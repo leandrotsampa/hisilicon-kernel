@@ -3,8 +3,8 @@
 
 OUTPUT_NAME_SO = libhwdec.so
 OUTPUT_NAME_LIB = libhwdec.a
-ifeq ($(ARCH),ARM)
-CROSS_PREFIX = arm-hisi_vfpv3d16-linux-
+ifeq ($(ARCH),arm)
+CROSS_PREFIX = arm-linux-gnueabihf-
 OUTPUT_DIR = ../../bin/arm-hisi_linux/
 else
 OUTPUT_DIR = ../../bin/suse11_i386/
@@ -39,7 +39,7 @@ CCFLAGS += -DHAVE_AV_CONFIG_H
 CCFLAGS += -D_ISOC99_SOURCE -D_POSIX_C_SOURCE=200112 -std=c99 -fomit-frame-pointer -Wdeclaration-after-statement -Wno-switch -Wdisabled-optimization -Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wcast-qual -Wwrite-strings -Wundef -fno-math-errno 
 
 #CCFLAGS += -std=c99 -D_GNUC_
-ifeq ($(ARCH),ARM)
+ifeq ($(ARCH),arm)
 CCFLAGS += -DBUILD_ARM -mtune=cortex-a9 -march=armv7-a -fno-signed-zeros -DHAVE_IPP=0 -DARM_ASM_OPT -DASMIDCT
 ifndef CFG_HI_STATIC_LIB_ONLY
 CCFLAGS  += -fPIC
@@ -64,6 +64,7 @@ CCFLAGS += -I./hwcodec/x86/asm
 CCFLAGS += -I./hwutil
 CCFLAGS += -I./hwutil/x86
 CCFLAGS += -I../../inc
+CCFLAGS += -I../../../
 
 ASFLAGS += -I../x86
 
@@ -80,7 +81,7 @@ CFILES = ./probe_header.c \
 	./hwutil/log.c \
 	./hwutil/mathematics.c \
 	./hwutil/mem.c \
-	./hwcodec/bitstream.c \
+	./hwcodec/Bitstream.c \
 	./hwcodec/cabac.c \
 	./hwcodec/dsputil.c \
 	./hwcodec/error_resilience.c \
@@ -127,7 +128,7 @@ CFILES = ./probe_header.c \
 	./hwcodec/vp56data.c 
 		
 
-ifeq ($(ARCH),ARM)
+ifeq ($(ARCH),arm)
 CFILES += ./hwcodec/arm/dsputil_arm.c \
 	./hwcodec/arm/float_arm_vfp.c \
 	./hwcodec/arm/mpegvideo_arm.c \
@@ -195,7 +196,7 @@ lib: $(OUTPUT_NAME_LIB)
 $(OUTPUT_NAME_LIB): $(CFILES:.c=.o) $(SFILES:.S=.o) $(CPPFILES:.cpp=.o) $(ASMFILES:.asm=.o)
 	$(AR) -r $@ $(CFILES:.c=.o) $(SFILES:.S=.o) $(CPPFILES:.cpp=.o) $(ASMFILES:.asm=.o)
 	$(RANLIB) $@
-	#cp $@ $(OUTPUT_DIR)
+	cp $@ $(OUTPUT_DIR)
 	
 .PHONY: clean
 clean:

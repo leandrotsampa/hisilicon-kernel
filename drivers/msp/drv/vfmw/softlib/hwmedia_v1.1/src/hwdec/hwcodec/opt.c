@@ -238,10 +238,10 @@ int av_set_string3(void *obj, const char *name, const char *val, int alloc, cons
                 if (o_named && o_named->type == FF_OPT_TYPE_CONST)
                 { d = o_named->default_val; }
                 else if (!strncmp(buf, "default", 8)) { d = o->default_val; }
-                else if (!strncmp(buf, "max"    , 4) d = o->max;
-                         else if (!strncmp(buf, "min"    , 4) d = o->min;
-                                      else if (!strncmp(buf, "none"   , 5) d = 0;
-                                                   else if (!strncmp(buf, "all"    , 4) d = ~0;
+                else if (!strncmp(buf, "max"    , 4)) d = o->max;
+                         else if (!strncmp(buf, "min"    , 4)) d = o->min;
+                                      else if (!strncmp(buf, "none"   , 5)) d = 0;
+                                                   else if (!strncmp(buf, "all"    , 4)) d = ~0;
                                                                 else
                             {
                                 if (error)
