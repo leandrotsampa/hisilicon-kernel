@@ -211,6 +211,10 @@ HI_U32 MaskCtrlWord = 0;
 #define DEFAULT_MAP_FRM   (HI_FALSE)
 HI_BOOL g_bMapFrmEnable = DEFAULT_MAP_FRM;
 
+/* HI-V4L2: export so hi_v4l2.ko can auto-enable de-tile (maskcmp + map_frm) */
+EXPORT_SYMBOL(MaskCtrlWord);
+EXPORT_SYMBOL(g_bMapFrmEnable);
+
 /*½áÊøÂë´óÈ«*/
 HI_CHAR g_EopTab_H264[] = {0x00, 0x00, 0x01, 0x1E, 0x48, 0x53, 0x50, 0x49, 0x43, 0x45, 0x4E, 0x44, 0x00, 0x00, 0x01, 0x00};
 HI_CHAR g_EopTab_MPEG4[] = {0x00, 0x00, 0x01, 0x1E, 0x48, 0x53, 0x50, 0x49, 0x43, 0x45, 0x4E, 0x44, 0x00, 0x00, 0x01};
@@ -16820,6 +16824,7 @@ HI_S32 HI_DRV_VDEC_AllocChan(HI_HANDLE* phHandle, HI_UNF_AVPLAY_OPEN_OPT_S* pstC
     }
 
     //return VDEC_Chan_Alloc((*phHandle)&0xff, pstCapParam);
+    s_stVdecDrv.astChanEntity[(*phHandle) & 0xff].u32DynamicFsEn = 1;  /* enable Dynamic Frame Store (VP9/HEVC need many frame stores) - ADR-0010/KI-016, ported to hisilicon-kernel */
     return VDEC_Chan_InitParam((*phHandle) & 0xff, pstCapParam);
 }
 
@@ -17565,6 +17570,63 @@ HI_VOID HI_DRV_VDEC_ReportEsRels(HI_HANDLE hDmxVidChn)
 
 
 module_param(RefFrameNum, int, S_IRUGO);
+
+/* hi_v4l2 vp/zero-copy (KI-003): wrappers kernel-direto p/ buffers VPSS user/vpss-managed. */
+HI_S32 HI_DRV_VDEC_UserBuf_SetMode(HI_HANDLE hVdec, HI_U32 bUserAlloc)
+{
+    HI_HANDLE hVpss;
+    HI_S32 s32Ret = VDEC_FindVpssHandleByVdecHandle(hVdec & 0xff, &hVpss);
+    if (HI_SUCCESS != s32Ret) { HI_ERR_VDEC("UserBuf_SetMode: find vpss err!\n"); return HI_FAILURE; }
+    return VDEC_Chan_SetFrameBufferMode(hVpss,
+        bUserAlloc ? VDEC_BUF_USER_ALLOC_MANAGE : VDEC_BUF_VPSS_ALLOC_MANAGE);
+}
+HI_S32 HI_DRV_VDEC_UserBuf_Commit(HI_HANDLE hVdec, HI_U32* pu32PhyAddr,
+        HI_U64* pu64UsrVirAddr, HI_U32 u32BufNum, HI_U32 u32BufSize, HI_U32 u32Stride)
+{
+    HI_HANDLE hVpss;
+    VDEC_BUFFER_ATTR_PRI_S stAttr;
+    HI_U32 i;
+    HI_S32 s32Ret;
+    if (HI_NULL == pu32PhyAddr || HI_NULL == pu64UsrVirAddr || 0 == u32BufNum || u32BufNum > 16) {
+        HI_ERR_VDEC("UserBuf_Commit: bad param (num=%d)!\n", u32BufNum);
+        return HI_ERR_VDEC_INVALID_PARA;
+    }
+    s32Ret = VDEC_FindVpssHandleByVdecHandle(hVdec & 0xff, &hVpss);
+    if (HI_SUCCESS != s32Ret) { HI_ERR_VDEC("UserBuf_Commit: find vpss err!\n"); return HI_FAILURE; }
+    memset(&stAttr, 0, sizeof(stAttr));
+    for (i = 0; i < u32BufNum; i++) {
+        stAttr.u32PhyAddr[i]      = pu32PhyAddr[i];
+        stAttr.u64UsrVirAddr[i]   = pu64UsrVirAddr[i];
+        stAttr.u32PhyAddr_meta[i] = 0xffffffff;
+        stAttr.s32MetadataBufFd[i] = -1;
+    }
+    stAttr.u32BufNum      = u32BufNum;
+    stAttr.u32BufSize     = u32BufSize;
+    stAttr.u32MetaBufSize = 0;
+    stAttr.u32Stride      = u32Stride;
+    stAttr.bTvp           = 0;
+    stAttr.bVideoBypass   = HI_FALSE;
+    return VDEC_Chan_SetExtBuffer(hVpss, &stAttr);
+}
+HI_S32 HI_DRV_VDEC_UserBuf_SetState(HI_HANDLE hVdec, HI_U32 bStart)
+{
+    HI_HANDLE hVpss;
+    HI_S32 s32Ret = VDEC_FindVpssHandleByVdecHandle(hVdec & 0xff, &hVpss);
+    if (HI_SUCCESS != s32Ret) { HI_ERR_VDEC("UserBuf_SetState: find vpss err!\n"); return HI_FAILURE; }
+    return VDEC_Chan_SetExtBufferState(hVpss,
+        bStart ? VDEC_EXTBUFFER_STATE_START : VDEC_EXTBUFFER_STATE_BUTT);
+}
+HI_S32 HI_DRV_VDEC_UserBuf_Release(HI_HANDLE hVdec, HI_DRV_VIDEO_FRAME_S* pstFrm)
+{
+    HI_HANDLE hPort;
+    if (HI_NULL == pstFrm || (hVdec & 0xff) >= HI_VDEC_MAX_INSTANCE_NEW) {
+        HI_ERR_VDEC("UserBuf_Release: bad param!\n");
+        return HI_ERR_VDEC_INVALID_PARA;
+    }
+    hPort = s_stVdecDrv.astChanEntity[hVdec & 0xff].stVpssChan.stPort[0].hPort;
+    return VDEC_Chan_VORlsFrame(hPort, pstFrm);
+}
+
 module_param(DispFrameNum, int, S_IRUGO);
 module_param(EnVcmp, int, S_IRUGO);
 module_param(En2d, int, S_IRUGO);
@@ -17603,6 +17665,11 @@ EXPORT_SYMBOL(HI_DRV_VDEC_RegisterDmxHdlCallback);
 EXPORT_SYMBOL(VDEC_Chan_FindPreMem);
 EXPORT_SYMBOL(VDEC_Chan_ReleasePreMem);
 EXPORT_SYMBOL(HI_DRV_VDEC_SetOmxCallBacks);
+EXPORT_SYMBOL(HI_DRV_VDEC_RlsFrmBuf);
+EXPORT_SYMBOL(HI_DRV_VDEC_UserBuf_SetMode);
+EXPORT_SYMBOL(HI_DRV_VDEC_UserBuf_Commit);
+EXPORT_SYMBOL(HI_DRV_VDEC_UserBuf_SetState);
+EXPORT_SYMBOL(HI_DRV_VDEC_UserBuf_Release);
 
 
 
