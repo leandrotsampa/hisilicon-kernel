@@ -1136,3 +1136,10 @@ VOID InitVfmwInterface(VOID)
 EXPORT_SYMBOL(vfmw_Osal_Func_Ptr_S);
 #endif
 
+
+/* HI-V4L2: export the VFMW tile->2D (de-tile) routine (yuv_convert.S) so the
+ * v4l2-hisi driver zero-copy/de-tile selftest can reach it. De-tile only --
+ * needs the frame uncompressed (maskcmp on); it does not decompress VCMP. */
+extern void IMAGE_TileTo2D(void *pYuvParam, unsigned int width,
+			   unsigned int height, void *pYuvAddr);
+EXPORT_SYMBOL(IMAGE_TileTo2D);
