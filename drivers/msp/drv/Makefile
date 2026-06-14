@@ -91,6 +91,12 @@ ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/xpadneo))
 objects += xpadneo
 endif
 
+# V4L2 codec driver (hi_v4l2.ko: mem2mem decoder + encoder). Own git, cloned
+# into drivers/msp/drv/v4l2-hisi; picked up automatically when the dir exists.
+ifneq (,$(shell ls -d $(SDK_DIR)/drivers/msp/drv/v4l2-hisi 2>/dev/null))
+objects += v4l2-hisi
+endif
+
 ifeq ($(CFG_HI_PVR_SUPPORT),y)
 objects += pvr
 endif
